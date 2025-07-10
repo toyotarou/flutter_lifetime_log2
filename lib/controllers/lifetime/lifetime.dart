@@ -1,12 +1,10 @@
-// ignore_for_file: avoid_dynamic_calls
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/http/client.dart';
 import '../../data/http/path.dart';
 import '../../extensions/extensions.dart';
-import '../../models/lifetime.dart';
+import '../../models/lifetime_model.dart';
 import '../../utility/utility.dart';
 
 part 'lifetime.freezed.dart';
@@ -41,7 +39,9 @@ class Lifetime extends _$Lifetime {
 
       // ignore: always_specify_types
       await client.post(path: APIPath.getAllLifetimeRecord).then((value) {
+        // ignore: avoid_dynamic_calls
         for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
+          // ignore: avoid_dynamic_calls
           final LifetimeModel val = LifetimeModel.fromJson(value['data'][i] as Map<String, dynamic>);
 
           list.add(val);

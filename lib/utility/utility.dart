@@ -9,7 +9,7 @@ class Utility {
   }
 
   ///
-  Color getYoubiColor({required DateTime date, required String youbiStr, required List<DateTime> holiday}) {
+  Color getYoubiColor({required String date, required String youbiStr, required List<String> holiday}) {
     Color color = Colors.black.withValues(alpha: 0.2);
 
     switch (youbiStr) {

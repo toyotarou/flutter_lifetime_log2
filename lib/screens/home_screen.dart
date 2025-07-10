@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../controllers/controllers_mixin.dart';
-import '../models/lifetime.dart';
+import '../models/lifetime_model.dart';
 import 'page/monthly_lifetime_display_page.dart';
 
 class TabInfo {
@@ -31,6 +31,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
     lifetimeNotifier.getAllLifetimeData();
 
     lifetimeItemNotifier.getAllLifetimeItemData();
+
+    holidayNotifier.getAllHolidayData();
+
+    walkNotifier.getAllWalkData();
   }
 
   ///

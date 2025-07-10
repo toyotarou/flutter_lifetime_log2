@@ -4,48 +4,44 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/http/client.dart';
 import '../../data/http/path.dart';
 import '../../extensions/extensions.dart';
-import '../../models/lifetime_item_model.dart';
 import '../../utility/utility.dart';
 
-part 'lifetime_item.freezed.dart';
+part 'holiday.freezed.dart';
 
-part 'lifetime_item.g.dart';
+part 'holiday.g.dart';
 
 @freezed
-class LifetimeItemState with _$LifetimeItemState {
-  const factory LifetimeItemState({@Default(<LifetimeItemModel>[]) List<LifetimeItemModel> lifetimeItemList}) =
-      _LifetimeItemState;
+class HolidayState with _$HolidayState {
+  const factory HolidayState({@Default(<String>[]) List<String> holidayList}) = _HolidayState;
 }
 
 @riverpod
-class LifetimeItem extends _$LifetimeItem {
+class Holiday extends _$Holiday {
   final Utility utility = Utility();
 
   ///
   @override
-  LifetimeItemState build() => const LifetimeItemState();
+  HolidayState build() => const HolidayState();
 
   //============================================== api
 
   ///
-  Future<LifetimeItemState> fetchAllLifetimeItemData() async {
+  Future<HolidayState> fetchAllHolidayData() async {
     final HttpClient client = ref.read(httpClientProvider);
 
     try {
-      final List<LifetimeItemModel> list = <LifetimeItemModel>[];
+      final List<String> list = <String>[];
 
       // ignore: always_specify_types
-      await client.post(path: APIPath.getLifetimeRecordItem).then((value) {
+      await client.post(path: APIPath.getholiday).then((value) {
         // ignore: avoid_dynamic_calls
         for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
           // ignore: avoid_dynamic_calls
-          final LifetimeItemModel val = LifetimeItemModel.fromJson(value['data'][i] as Map<String, dynamic>);
-
-          list.add(val);
+          list.add(value['data'][i].toString());
         }
       });
 
-      return state.copyWith(lifetimeItemList: list);
+      return state.copyWith(holidayList: list);
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
@@ -53,9 +49,9 @@ class LifetimeItem extends _$LifetimeItem {
   }
 
   ///
-  Future<void> getAllLifetimeItemData() async {
+  Future<void> getAllHolidayData() async {
     try {
-      final LifetimeItemState newState = await fetchAllLifetimeItemData();
+      final HolidayState newState = await fetchAllHolidayData();
 
       state = newState;
     } catch (_) {}

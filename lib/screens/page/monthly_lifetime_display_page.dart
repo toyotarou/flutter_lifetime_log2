@@ -56,9 +56,14 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     ) {
       final String date = '${widget.yearmonth}-${i.toString().padLeft(2, '0')}';
 
+      final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
+
       list.add(
         Card(
-          color: Colors.blueGrey.withValues(alpha: 0.2),
+          color: (youbi == 'Saturday' || youbi == 'Sunday')
+              ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: holidayState.holidayList)
+              : Colors.blueGrey.withValues(alpha: 0.2),
+
           child: DefaultTextStyle(
             style: const TextStyle(color: Colors.white, fontSize: 12),
             child: ConstrainedBox(
@@ -69,29 +74,56 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                 child: Column(
                   children: <Widget>[
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        SizedBox(
+                          width: context.screenSize.width * 0.3,
 
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[Text(i.toString().padLeft(2, '0')), const SizedBox.shrink()],
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
 
-                            const SizedBox(height: 10),
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text('${i.toString().padLeft(2, '0')} $youbi'),
+                                  const SizedBox.shrink(),
+                                ],
+                              ),
 
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
-                                const SizedBox.shrink(),
-                              ],
-                            ),
-                          ],
+                              const SizedBox(height: 10),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
+                                  const SizedBox.shrink(),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
 
-                        const Expanded(child: Column()),
+                        Expanded(
+                          child: Column(
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  const Expanded(child: Text('step')),
+                                  Expanded(
+                                    child: Container(alignment: Alignment.topRight, child: Text('')),
+                                  ),
+                                  const SizedBox(width: 20),
+
+                                  const Expanded(child: Text('distance')),
+                                  Expanded(
+                                    child: Container(alignment: Alignment.topRight, child: Text('')),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
 
@@ -175,7 +207,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
         const SizedBox(height: 5),
 
         Text(
-          (num % 6 == 0) ? num.toString() : '',
+          (num % 6 == 0) ? num.toString().padLeft(2, '0') : '',
           style: TextStyle(fontSize: 10, color: Colors.white.withValues(alpha: 0.4)),
         ),
       ],
