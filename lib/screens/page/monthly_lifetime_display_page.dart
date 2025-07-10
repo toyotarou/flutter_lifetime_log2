@@ -156,6 +156,49 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                   ),
                                 ],
                               ),
+
+                              Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Container(
+                                      alignment: Alignment.topRight,
+
+                                      decoration: BoxDecoration(
+                                        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
+                                      ),
+
+                                      padding: const EdgeInsets.all(5),
+
+                                      child: Text(
+                                        (appParamState.keepWalkModelMap[date] != null)
+                                            ? (appParamState.keepWalkModelMap[date]!.spend == '0')
+                                                  ? '0 円'
+                                                  : appParamState.keepWalkModelMap[date]!.spend
+                                            : '',
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+
+                                  Expanded(
+                                    child: Container(
+                                      alignment: Alignment.topRight,
+
+                                      decoration: BoxDecoration(
+                                        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
+                                      ),
+
+                                      padding: const EdgeInsets.all(5),
+
+                                      child: Text(
+                                        (appParamState.keepMoneyMap[date] != null)
+                                            ? '${appParamState.keepMoneyMap[date]!.sum.toCurrency()} 円'
+                                            : '',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),

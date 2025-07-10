@@ -22,6 +22,8 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     super.initState();
 
     walkNotifier.getAllWalkData();
+
+    moneyNotifier.getAllMoneyData();
   }
 
   ///
@@ -29,7 +31,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       themeMode: ThemeMode.dark,
-      home: HomeScreen(walkMap: walkState.walkMap),
+      home: HomeScreen(walkMap: walkState.walkMap, moneyMap: moneyState.moneyMap),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'app_param/app_param.dart';
 import 'holiday/holiday.dart';
 import 'lifetime/lifetime.dart';
 import 'lifetime_item/lifetime_item.dart';
+import 'money/money.dart';
 import 'walk/walk.dart';
 
 mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
@@ -37,6 +38,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   WalkState get walkState => ref.watch(walkProvider);
 
   Walk get walkNotifier => ref.read(walkProvider.notifier);
+
+  //==========================================//
+
+  MoneyState get moneyState => ref.watch(moneyProvider);
+
+  Money get moneyNotifier => ref.read(moneyProvider.notifier);
 
   //==========================================//
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../controllers/controllers_mixin.dart';
 import '../models/lifetime_model.dart';
+import '../models/money_model.dart';
 import '../models/walk_model.dart';
 import 'page/monthly_lifetime_display_page.dart';
 
@@ -15,9 +16,10 @@ class TabInfo {
 }
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key, required this.walkMap});
+  const HomeScreen({super.key, required this.walkMap, required this.moneyMap});
 
   final Map<String, WalkModel> walkMap;
+  final Map<String, MoneyModel> moneyMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -45,6 +47,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       appParamNotifier.setKeepWalkModelMap(map: widget.walkMap);
+
+      appParamNotifier.setKeepMoneyMap(map: widget.moneyMap);
     });
 
     return DefaultTabController(

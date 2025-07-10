@@ -18,6 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$AppParamState {
   Map<String, WalkModel> get keepWalkModelMap =>
       throw _privateConstructorUsedError;
+  Map<String, MoneyModel> get keepMoneyMap =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
@@ -32,7 +34,9 @@ abstract class $AppParamStateCopyWith<$Res> {
           AppParamState value, $Res Function(AppParamState) then) =
       _$AppParamStateCopyWithImpl<$Res, AppParamState>;
   @useResult
-  $Res call({Map<String, WalkModel> keepWalkModelMap});
+  $Res call(
+      {Map<String, WalkModel> keepWalkModelMap,
+      Map<String, MoneyModel> keepMoneyMap});
 }
 
 /// @nodoc
@@ -51,12 +55,17 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
   @override
   $Res call({
     Object? keepWalkModelMap = null,
+    Object? keepMoneyMap = null,
   }) {
     return _then(_value.copyWith(
       keepWalkModelMap: null == keepWalkModelMap
           ? _value.keepWalkModelMap
           : keepWalkModelMap // ignore: cast_nullable_to_non_nullable
               as Map<String, WalkModel>,
+      keepMoneyMap: null == keepMoneyMap
+          ? _value.keepMoneyMap
+          : keepMoneyMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, MoneyModel>,
     ) as $Val);
   }
 }
@@ -69,7 +78,9 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       __$$AppParamStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Map<String, WalkModel> keepWalkModelMap});
+  $Res call(
+      {Map<String, WalkModel> keepWalkModelMap,
+      Map<String, MoneyModel> keepMoneyMap});
 }
 
 /// @nodoc
@@ -86,12 +97,17 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? keepWalkModelMap = null,
+    Object? keepMoneyMap = null,
   }) {
     return _then(_$AppParamStateImpl(
       keepWalkModelMap: null == keepWalkModelMap
           ? _value._keepWalkModelMap
           : keepWalkModelMap // ignore: cast_nullable_to_non_nullable
               as Map<String, WalkModel>,
+      keepMoneyMap: null == keepMoneyMap
+          ? _value._keepMoneyMap
+          : keepMoneyMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, MoneyModel>,
     ));
   }
 }
@@ -101,8 +117,11 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
 class _$AppParamStateImpl implements _AppParamState {
   const _$AppParamStateImpl(
       {final Map<String, WalkModel> keepWalkModelMap =
-          const <String, WalkModel>{}})
-      : _keepWalkModelMap = keepWalkModelMap;
+          const <String, WalkModel>{},
+      final Map<String, MoneyModel> keepMoneyMap =
+          const <String, MoneyModel>{}})
+      : _keepWalkModelMap = keepWalkModelMap,
+        _keepMoneyMap = keepMoneyMap;
 
   final Map<String, WalkModel> _keepWalkModelMap;
   @override
@@ -113,9 +132,18 @@ class _$AppParamStateImpl implements _AppParamState {
     return EqualUnmodifiableMapView(_keepWalkModelMap);
   }
 
+  final Map<String, MoneyModel> _keepMoneyMap;
+  @override
+  @JsonKey()
+  Map<String, MoneyModel> get keepMoneyMap {
+    if (_keepMoneyMap is EqualUnmodifiableMapView) return _keepMoneyMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_keepMoneyMap);
+  }
+
   @override
   String toString() {
-    return 'AppParamState(keepWalkModelMap: $keepWalkModelMap)';
+    return 'AppParamState(keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap)';
   }
 
   @override
@@ -124,12 +152,16 @@ class _$AppParamStateImpl implements _AppParamState {
         (other.runtimeType == runtimeType &&
             other is _$AppParamStateImpl &&
             const DeepCollectionEquality()
-                .equals(other._keepWalkModelMap, _keepWalkModelMap));
+                .equals(other._keepWalkModelMap, _keepWalkModelMap) &&
+            const DeepCollectionEquality()
+                .equals(other._keepMoneyMap, _keepMoneyMap));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(_keepWalkModelMap));
+      runtimeType,
+      const DeepCollectionEquality().hash(_keepWalkModelMap),
+      const DeepCollectionEquality().hash(_keepMoneyMap));
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
@@ -142,10 +174,13 @@ class _$AppParamStateImpl implements _AppParamState {
 
 abstract class _AppParamState implements AppParamState {
   const factory _AppParamState(
-      {final Map<String, WalkModel> keepWalkModelMap}) = _$AppParamStateImpl;
+      {final Map<String, WalkModel> keepWalkModelMap,
+      final Map<String, MoneyModel> keepMoneyMap}) = _$AppParamStateImpl;
 
   @override
   Map<String, WalkModel> get keepWalkModelMap;
+  @override
+  Map<String, MoneyModel> get keepMoneyMap;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
