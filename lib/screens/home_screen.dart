@@ -43,7 +43,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
   Widget build(BuildContext context) {
     _makeTab();
 
-    print(widget.walkMap.length);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      appParamNotifier.setKeepWalkModelMap(map: widget.walkMap);
+    });
 
     return DefaultTabController(
       length: _tabs.length,

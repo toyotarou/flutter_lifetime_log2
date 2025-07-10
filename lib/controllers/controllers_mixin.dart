@@ -1,12 +1,19 @@
 // ignore: depend_on_referenced_packages
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'app_param/app_param.dart';
 import 'holiday/holiday.dart';
 import 'lifetime/lifetime.dart';
 import 'lifetime_item/lifetime_item.dart';
 import 'walk/walk.dart';
 
 mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
+  //==========================================//
+
+  AppParamState get appParamState => ref.watch(appParamProvider);
+
+  AppParam get appParamNotifier => ref.read(appParamProvider.notifier);
+
   //==========================================//
 
   LifetimeState get lifetimeState => ref.watch(lifetimeProvider);

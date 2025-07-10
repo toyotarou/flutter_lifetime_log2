@@ -21,6 +21,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   ///
   @override
   Widget build(BuildContext context) {
+    print('aaaaaaaaaa');
+    print(appParamState.keepWalkModelMap.length);
+    print('aaaaaaaaaa');
+
     return Scaffold(
       backgroundColor: Colors.transparent,
 

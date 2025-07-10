@@ -27,8 +27,6 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
   ///
   @override
   Widget build(BuildContext context) {
-    print(walkState.walkMap.length);
-
     return MaterialApp(
       themeMode: ThemeMode.dark,
       home: HomeScreen(walkMap: walkState.walkMap),
