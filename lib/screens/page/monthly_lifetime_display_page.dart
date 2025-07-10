@@ -21,10 +21,6 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   ///
   @override
   Widget build(BuildContext context) {
-    print('aaaaaaaaaa');
-    print(appParamState.keepWalkModelMap.length);
-    print('aaaaaaaaaa');
-
     return Scaffold(
       backgroundColor: Colors.transparent,
 
@@ -90,7 +86,16 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Text('${i.toString().padLeft(2, '0')} $youbi'),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: <Widget>[
+                                      Text(i.toString().padLeft(2, '0'), style: const TextStyle(fontSize: 20)),
+
+                                      const SizedBox(width: 5),
+
+                                      Text(youbi),
+                                    ],
+                                  ),
                                   const SizedBox.shrink(),
                                 ],
                               ),
@@ -113,15 +118,41 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                             children: <Widget>[
                               Row(
                                 children: <Widget>[
-                                  const Expanded(child: Text('step')),
                                   Expanded(
-                                    child: Container(alignment: Alignment.topRight, child: Text('')),
+                                    child: Container(
+                                      alignment: Alignment.topRight,
+
+                                      decoration: BoxDecoration(
+                                        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
+                                      ),
+
+                                      padding: const EdgeInsets.all(5),
+
+                                      child: Text(
+                                        (appParamState.keepWalkModelMap[date] != null)
+                                            ? '${appParamState.keepWalkModelMap[date]!.step.toString().toCurrency()} step'
+                                            : '',
+                                      ),
+                                    ),
                                   ),
                                   const SizedBox(width: 20),
 
-                                  const Expanded(child: Text('distance')),
                                   Expanded(
-                                    child: Container(alignment: Alignment.topRight, child: Text('')),
+                                    child: Container(
+                                      alignment: Alignment.topRight,
+
+                                      decoration: BoxDecoration(
+                                        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
+                                      ),
+
+                                      padding: const EdgeInsets.all(5),
+
+                                      child: Text(
+                                        (appParamState.keepWalkModelMap[date] != null)
+                                            ? '${appParamState.keepWalkModelMap[date]!.distance.toString().toCurrency()} m'
+                                            : '',
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
