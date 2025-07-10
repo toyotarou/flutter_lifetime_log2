@@ -1,17 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'controllers/controllers_mixin.dart';
 import 'screens/home_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
+  ///
+  @override
+  void initState() {
+    super.initState();
+
+    walkNotifier.getAllWalkData();
+  }
+
+  ///
+  @override
   Widget build(BuildContext context) {
-    return const MaterialApp(themeMode: ThemeMode.dark, home: HomeScreen());
+    print(walkState.walkMap.length);
+
+    return MaterialApp(
+      themeMode: ThemeMode.dark,
+      home: HomeScreen(walkMap: walkState.walkMap),
+    );
   }
 }

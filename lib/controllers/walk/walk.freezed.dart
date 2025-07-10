@@ -109,8 +109,8 @@ class __$$WalkStateImplCopyWithImpl<$Res>
 
 class _$WalkStateImpl implements _WalkState {
   const _$WalkStateImpl(
-      {final List<WalkModel> walkList = const [],
-      final Map<String, WalkModel> walkMap = const {}})
+      {final List<WalkModel> walkList = const <WalkModel>[],
+      final Map<String, WalkModel> walkMap = const <String, WalkModel>{}})
       : _walkList = walkList,
         _walkMap = walkMap;
 

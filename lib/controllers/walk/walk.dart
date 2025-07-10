@@ -14,8 +14,8 @@ part 'walk.g.dart';
 @freezed
 class WalkState with _$WalkState {
   const factory WalkState({
-    @Default(<dynamic>[]) List<WalkModel> walkList,
-    @Default(<dynamic, dynamic>{}) Map<String, WalkModel> walkMap,
+    @Default(<WalkModel>[]) List<WalkModel> walkList,
+    @Default(<String, WalkModel>{}) Map<String, WalkModel> walkMap,
   }) = _WalkState;
 }
 
@@ -49,8 +49,6 @@ class Walk extends _$Walk {
           map[val.date] = val;
         }
       });
-
-      print(map);
 
       return state.copyWith(walkList: list, walkMap: map);
     } catch (e) {

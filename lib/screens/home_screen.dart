@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../controllers/controllers_mixin.dart';
 import '../models/lifetime_model.dart';
+import '../models/walk_model.dart';
 import 'page/monthly_lifetime_display_page.dart';
 
 class TabInfo {
@@ -14,7 +15,9 @@ class TabInfo {
 }
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.walkMap});
+
+  final Map<String, WalkModel> walkMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -33,14 +36,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
     lifetimeItemNotifier.getAllLifetimeItemData();
 
     holidayNotifier.getAllHolidayData();
-
-    walkNotifier.getAllWalkData();
   }
 
   ///
   @override
   Widget build(BuildContext context) {
     _makeTab();
+
+    print(widget.walkMap.length);
 
     return DefaultTabController(
       length: _tabs.length,
