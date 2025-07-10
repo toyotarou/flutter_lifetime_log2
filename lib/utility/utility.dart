@@ -1,0 +1,79 @@
+import 'package:flutter/material.dart';
+
+class Utility {
+  ///
+  void showError(String msg) {
+    ScaffoldMessenger.of(
+      NavigationService.navigatorKey.currentContext!,
+    ).showSnackBar(SnackBar(content: Text(msg), duration: const Duration(seconds: 5)));
+  }
+
+  ///
+  Color getYoubiColor({required DateTime date, required String youbiStr, required List<DateTime> holiday}) {
+    Color color = Colors.black.withValues(alpha: 0.2);
+
+    switch (youbiStr) {
+      case 'Sunday':
+        color = Colors.redAccent.withValues(alpha: 0.2);
+
+      case 'Saturday':
+        color = Colors.blueAccent.withValues(alpha: 0.2);
+
+      default:
+        color = Colors.black.withValues(alpha: 0.2);
+    }
+
+    if (holiday.contains(date)) {
+      color = Colors.greenAccent.withValues(alpha: 0.2);
+    }
+
+    return color;
+  }
+
+  ///
+  Color getLifetimeRowBgColor({required String value, required bool textDisplay}) {
+    final double opa = (!textDisplay) ? 0.4 : 0.2;
+
+    switch (value) {
+      case '自宅':
+      case '実家':
+        return Colors.white.withValues(alpha: opa);
+
+      case '睡眠':
+        return Colors.yellowAccent.withValues(alpha: opa);
+
+      case '移動':
+        return Colors.green.withValues(alpha: opa);
+
+      case '仕事':
+        return Colors.indigo.withValues(alpha: opa);
+
+      case '外出':
+      case '旅行':
+      case 'イベント':
+        return Colors.pinkAccent.withValues(alpha: opa);
+
+      case 'ボクシング':
+      case '俳句会':
+      case '勉強':
+        return Colors.purpleAccent.withValues(alpha: opa);
+
+      case '飲み会':
+        return Colors.orangeAccent.withValues(alpha: opa);
+
+      case '歩き':
+        return Colors.lightBlueAccent.withValues(alpha: opa);
+
+      case '緊急事態':
+        return Colors.redAccent.withValues(alpha: opa);
+    }
+
+    return Colors.transparent;
+  }
+}
+
+class NavigationService {
+  const NavigationService._();
+
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+}
