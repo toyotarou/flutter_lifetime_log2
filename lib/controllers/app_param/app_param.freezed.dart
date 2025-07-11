@@ -16,9 +16,12 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$AppParamState {
+  List<String> get keepHolidayList => throw _privateConstructorUsedError;
   Map<String, WalkModel> get keepWalkModelMap =>
       throw _privateConstructorUsedError;
   Map<String, MoneyModel> get keepMoneyMap =>
+      throw _privateConstructorUsedError;
+  List<LifetimeItemModel> get keepLifetimeItemList =>
       throw _privateConstructorUsedError;
 
   /// Create a copy of AppParamState
@@ -35,8 +38,10 @@ abstract class $AppParamStateCopyWith<$Res> {
       _$AppParamStateCopyWithImpl<$Res, AppParamState>;
   @useResult
   $Res call(
-      {Map<String, WalkModel> keepWalkModelMap,
-      Map<String, MoneyModel> keepMoneyMap});
+      {List<String> keepHolidayList,
+      Map<String, WalkModel> keepWalkModelMap,
+      Map<String, MoneyModel> keepMoneyMap,
+      List<LifetimeItemModel> keepLifetimeItemList});
 }
 
 /// @nodoc
@@ -54,10 +59,16 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? keepHolidayList = null,
     Object? keepWalkModelMap = null,
     Object? keepMoneyMap = null,
+    Object? keepLifetimeItemList = null,
   }) {
     return _then(_value.copyWith(
+      keepHolidayList: null == keepHolidayList
+          ? _value.keepHolidayList
+          : keepHolidayList // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       keepWalkModelMap: null == keepWalkModelMap
           ? _value.keepWalkModelMap
           : keepWalkModelMap // ignore: cast_nullable_to_non_nullable
@@ -66,6 +77,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.keepMoneyMap
           : keepMoneyMap // ignore: cast_nullable_to_non_nullable
               as Map<String, MoneyModel>,
+      keepLifetimeItemList: null == keepLifetimeItemList
+          ? _value.keepLifetimeItemList
+          : keepLifetimeItemList // ignore: cast_nullable_to_non_nullable
+              as List<LifetimeItemModel>,
     ) as $Val);
   }
 }
@@ -79,8 +94,10 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Map<String, WalkModel> keepWalkModelMap,
-      Map<String, MoneyModel> keepMoneyMap});
+      {List<String> keepHolidayList,
+      Map<String, WalkModel> keepWalkModelMap,
+      Map<String, MoneyModel> keepMoneyMap,
+      List<LifetimeItemModel> keepLifetimeItemList});
 }
 
 /// @nodoc
@@ -96,10 +113,16 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? keepHolidayList = null,
     Object? keepWalkModelMap = null,
     Object? keepMoneyMap = null,
+    Object? keepLifetimeItemList = null,
   }) {
     return _then(_$AppParamStateImpl(
+      keepHolidayList: null == keepHolidayList
+          ? _value._keepHolidayList
+          : keepHolidayList // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       keepWalkModelMap: null == keepWalkModelMap
           ? _value._keepWalkModelMap
           : keepWalkModelMap // ignore: cast_nullable_to_non_nullable
@@ -108,6 +131,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value._keepMoneyMap
           : keepMoneyMap // ignore: cast_nullable_to_non_nullable
               as Map<String, MoneyModel>,
+      keepLifetimeItemList: null == keepLifetimeItemList
+          ? _value._keepLifetimeItemList
+          : keepLifetimeItemList // ignore: cast_nullable_to_non_nullable
+              as List<LifetimeItemModel>,
     ));
   }
 }
@@ -116,12 +143,25 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
 
 class _$AppParamStateImpl implements _AppParamState {
   const _$AppParamStateImpl(
-      {final Map<String, WalkModel> keepWalkModelMap =
+      {final List<String> keepHolidayList = const <String>[],
+      final Map<String, WalkModel> keepWalkModelMap =
           const <String, WalkModel>{},
-      final Map<String, MoneyModel> keepMoneyMap =
-          const <String, MoneyModel>{}})
-      : _keepWalkModelMap = keepWalkModelMap,
-        _keepMoneyMap = keepMoneyMap;
+      final Map<String, MoneyModel> keepMoneyMap = const <String, MoneyModel>{},
+      final List<LifetimeItemModel> keepLifetimeItemList =
+          const <LifetimeItemModel>[]})
+      : _keepHolidayList = keepHolidayList,
+        _keepWalkModelMap = keepWalkModelMap,
+        _keepMoneyMap = keepMoneyMap,
+        _keepLifetimeItemList = keepLifetimeItemList;
+
+  final List<String> _keepHolidayList;
+  @override
+  @JsonKey()
+  List<String> get keepHolidayList {
+    if (_keepHolidayList is EqualUnmodifiableListView) return _keepHolidayList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_keepHolidayList);
+  }
 
   final Map<String, WalkModel> _keepWalkModelMap;
   @override
@@ -141,9 +181,19 @@ class _$AppParamStateImpl implements _AppParamState {
     return EqualUnmodifiableMapView(_keepMoneyMap);
   }
 
+  final List<LifetimeItemModel> _keepLifetimeItemList;
+  @override
+  @JsonKey()
+  List<LifetimeItemModel> get keepLifetimeItemList {
+    if (_keepLifetimeItemList is EqualUnmodifiableListView)
+      return _keepLifetimeItemList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_keepLifetimeItemList);
+  }
+
   @override
   String toString() {
-    return 'AppParamState(keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList)';
   }
 
   @override
@@ -152,16 +202,22 @@ class _$AppParamStateImpl implements _AppParamState {
         (other.runtimeType == runtimeType &&
             other is _$AppParamStateImpl &&
             const DeepCollectionEquality()
+                .equals(other._keepHolidayList, _keepHolidayList) &&
+            const DeepCollectionEquality()
                 .equals(other._keepWalkModelMap, _keepWalkModelMap) &&
             const DeepCollectionEquality()
-                .equals(other._keepMoneyMap, _keepMoneyMap));
+                .equals(other._keepMoneyMap, _keepMoneyMap) &&
+            const DeepCollectionEquality()
+                .equals(other._keepLifetimeItemList, _keepLifetimeItemList));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      const DeepCollectionEquality().hash(_keepHolidayList),
       const DeepCollectionEquality().hash(_keepWalkModelMap),
-      const DeepCollectionEquality().hash(_keepMoneyMap));
+      const DeepCollectionEquality().hash(_keepMoneyMap),
+      const DeepCollectionEquality().hash(_keepLifetimeItemList));
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
@@ -174,13 +230,20 @@ class _$AppParamStateImpl implements _AppParamState {
 
 abstract class _AppParamState implements AppParamState {
   const factory _AppParamState(
-      {final Map<String, WalkModel> keepWalkModelMap,
-      final Map<String, MoneyModel> keepMoneyMap}) = _$AppParamStateImpl;
+          {final List<String> keepHolidayList,
+          final Map<String, WalkModel> keepWalkModelMap,
+          final Map<String, MoneyModel> keepMoneyMap,
+          final List<LifetimeItemModel> keepLifetimeItemList}) =
+      _$AppParamStateImpl;
 
+  @override
+  List<String> get keepHolidayList;
   @override
   Map<String, WalkModel> get keepWalkModelMap;
   @override
   Map<String, MoneyModel> get keepMoneyMap;
+  @override
+  List<LifetimeItemModel> get keepLifetimeItemList;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.

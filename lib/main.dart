@@ -21,9 +21,15 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
   void initState() {
     super.initState();
 
+    lifetimeNotifier.getAllLifetimeData();
+
+    holidayNotifier.getAllHolidayData();
+
     walkNotifier.getAllWalkData();
 
     moneyNotifier.getAllMoneyData();
+
+    lifetimeItemNotifier.getAllLifetimeItemData();
   }
 
   ///
@@ -31,7 +37,12 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       themeMode: ThemeMode.dark,
-      home: HomeScreen(walkMap: walkState.walkMap, moneyMap: moneyState.moneyMap),
+      home: HomeScreen(
+        holidayList: holidayState.holidayList,
+        walkMap: walkState.walkMap,
+        moneyMap: moneyState.moneyMap,
+        lifetimeItemList: lifetimeItemState.lifetimeItemList,
+      ),
     );
   }
 }

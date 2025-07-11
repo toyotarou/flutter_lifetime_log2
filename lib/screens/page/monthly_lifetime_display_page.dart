@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../utility/utility.dart';
+import '../components/lifetime_input_alert.dart';
+import '../parts/lifetime_dialog.dart';
 
 class MonthlyLifetimeDisplayPage extends ConsumerStatefulWidget {
   const MonthlyLifetimeDisplayPage({super.key, required this.yearmonth});
@@ -60,8 +62,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
       list.add(
         Card(
-          color: (youbi == 'Saturday' || youbi == 'Sunday')
-              ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: holidayState.holidayList)
+          color: (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(date))
+              ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
               : Colors.blueGrey.withValues(alpha: 0.2),
 
           child: DefaultTextStyle(
@@ -105,7 +107,20 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
+                                  GestureDetector(
+                                    onTap: () {
+                                      LifetimeDialog(
+                                        context: context,
+                                        widget: LifetimeInputAlert(
+                                          date: date,
+
+                                          dateLifetime: lifetimeState.lifetimeMap[date],
+                                        ),
+                                      );
+                                    },
+
+                                    child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
+                                  ),
                                   const SizedBox.shrink(),
                                 ],
                               ),

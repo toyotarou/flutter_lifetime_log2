@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app_param/app_param.dart';
 import 'holiday/holiday.dart';
 import 'lifetime/lifetime.dart';
+import 'lifetime_input/lifetime_input.dart';
 import 'lifetime_item/lifetime_item.dart';
 import 'money/money.dart';
 import 'walk/walk.dart';
@@ -44,6 +45,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   MoneyState get moneyState => ref.watch(moneyProvider);
 
   Money get moneyNotifier => ref.read(moneyProvider.notifier);
+
+  //==========================================//
+
+  LifetimeInputState get lifetimeInputState => ref.watch(lifetimeInputProvider);
+
+  LifetimeInput get lifetimeInputNotifier => ref.read(lifetimeInputProvider.notifier);
 
   //==========================================//
 }
