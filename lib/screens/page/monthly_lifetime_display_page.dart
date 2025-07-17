@@ -60,17 +60,29 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
       final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
 
+      Color cardColor = (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(date))
+          ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
+          : Colors.blueGrey.withValues(alpha: 0.2);
+
+      double constrainedBoxHeight = context.screenSize.height / 5;
+
+      if (DateTime(
+        date.split('-')[0].toInt(),
+        date.split('-')[1].toInt(),
+        date.split('-')[2].toInt(),
+      ).isAfter(DateTime.now())) {
+        cardColor = Colors.grey.withValues(alpha: 0.1);
+
+        constrainedBoxHeight = context.screenSize.height / 12;
+      }
+
       list.add(
         Card(
-          color: (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(date))
-              ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
-              : Colors.blueGrey.withValues(alpha: 0.2),
-
+          color: cardColor,
           child: DefaultTextStyle(
             style: const TextStyle(color: Colors.white, fontSize: 12),
             child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: context.screenSize.height / 5),
-
+              constraints: BoxConstraints(minHeight: constrainedBoxHeight),
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Column(
@@ -101,29 +113,6 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                   const SizedBox.shrink(),
                                 ],
                               ),
-
-                              const SizedBox(height: 10),
-
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () {
-                                      LifetimeDialog(
-                                        context: context,
-                                        widget: LifetimeInputAlert(
-                                          date: date,
-
-                                          dateLifetime: lifetimeState.lifetimeMap[date],
-                                        ),
-                                      );
-                                    },
-
-                                    child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
-                                  ),
-                                  const SizedBox.shrink(),
-                                ],
-                              ),
                             ],
                           ),
                         ),
@@ -131,89 +120,99 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         Expanded(
                           child: Column(
                             children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Container(
-                                      alignment: Alignment.topRight,
+                              if (lifetimeState.lifetimeMap[date] != null) ...<Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: Container(
+                                        alignment: Alignment.topRight,
 
-                                      decoration: BoxDecoration(
-                                        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
-                                      ),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                                          ),
+                                        ),
 
-                                      padding: const EdgeInsets.all(5),
+                                        padding: const EdgeInsets.all(5),
 
-                                      child: Text(
-                                        (appParamState.keepWalkModelMap[date] != null)
-                                            ? '${appParamState.keepWalkModelMap[date]!.step.toString().toCurrency()} step'
-                                            : '',
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 20),
-
-                                  Expanded(
-                                    child: Container(
-                                      alignment: Alignment.topRight,
-
-                                      decoration: BoxDecoration(
-                                        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
-                                      ),
-
-                                      padding: const EdgeInsets.all(5),
-
-                                      child: Text(
-                                        (appParamState.keepWalkModelMap[date] != null)
-                                            ? '${appParamState.keepWalkModelMap[date]!.distance.toString().toCurrency()} m'
-                                            : '',
+                                        child: Text(
+                                          (appParamState.keepWalkModelMap[date] != null)
+                                              ? '${appParamState.keepWalkModelMap[date]!.step.toString().toCurrency()} step'
+                                              : '',
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                    const SizedBox(width: 20),
 
-                              Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Container(
-                                      alignment: Alignment.topRight,
+                                    Expanded(
+                                      child: Container(
+                                        alignment: Alignment.topRight,
 
-                                      decoration: BoxDecoration(
-                                        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
-                                      ),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                                          ),
+                                        ),
 
-                                      padding: const EdgeInsets.all(5),
+                                        padding: const EdgeInsets.all(5),
 
-                                      child: Text(
-                                        (appParamState.keepWalkModelMap[date] != null)
-                                            ? (appParamState.keepWalkModelMap[date]!.spend == '0')
-                                                  ? '0 円'
-                                                  : appParamState.keepWalkModelMap[date]!.spend
-                                            : '',
+                                        child: Text(
+                                          (appParamState.keepWalkModelMap[date] != null)
+                                              ? '${appParamState.keepWalkModelMap[date]!.distance.toString().toCurrency()} m'
+                                              : '',
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 20),
+                                  ],
+                                ),
 
-                                  Expanded(
-                                    child: Container(
-                                      alignment: Alignment.topRight,
+                                Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: Container(
+                                        alignment: Alignment.topRight,
 
-                                      decoration: BoxDecoration(
-                                        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
-                                      ),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                                          ),
+                                        ),
 
-                                      padding: const EdgeInsets.all(5),
+                                        padding: const EdgeInsets.all(5),
 
-                                      child: Text(
-                                        (appParamState.keepMoneyMap[date] != null)
-                                            ? '${appParamState.keepMoneyMap[date]!.sum.toCurrency()} 円'
-                                            : '',
+                                        child: Text(
+                                          (appParamState.keepWalkModelMap[date] != null)
+                                              ? (appParamState.keepWalkModelMap[date]!.spend == '0')
+                                                    ? '0 円'
+                                                    : appParamState.keepWalkModelMap[date]!.spend
+                                              : '',
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                    const SizedBox(width: 20),
+
+                                    Expanded(
+                                      child: Container(
+                                        alignment: Alignment.topRight,
+
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                                          ),
+                                        ),
+
+                                        padding: const EdgeInsets.all(5),
+
+                                        child: Text(
+                                          (appParamState.keepMoneyMap[date] != null)
+                                              ? '${appParamState.keepMoneyMap[date]!.sum.toCurrency()} 円'
+                                              : '',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ],
                           ),
                         ),
@@ -228,6 +227,31 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         children: List.generate(24, (index) => index).map((e) {
                           return getLifetimeDisplayCell(date: date, num: e);
                         }).toList(),
+                      ),
+                    ],
+
+                    if (DateTime(
+                      date.split('-')[0].toInt(),
+                      date.split('-')[1].toInt(),
+                      date.split('-')[2].toInt(),
+                    ).isBefore(DateTime.now())) ...<Widget>[
+                      const SizedBox(height: 10),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              LifetimeDialog(
+                                context: context,
+                                widget: LifetimeInputAlert(date: date, dateLifetime: lifetimeState.lifetimeMap[date]),
+                              );
+                            },
+
+                            child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
+                          ),
+                          const SizedBox.shrink(),
+                        ],
                       ),
                     ],
                   ],
