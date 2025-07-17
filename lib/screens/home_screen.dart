@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../controllers/controllers_mixin.dart';
+import '../extensions/extensions.dart';
 import '../models/lifetime_item_model.dart';
 import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
 import '../models/walk_model.dart';
+import '../utility/utility.dart';
 import 'page/monthly_lifetime_display_page.dart';
 
 class TabInfo {
@@ -36,6 +38,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<HomeScreen> {
   final List<TabInfo> _tabs = <TabInfo>[];
+
+  Utility utility = Utility();
 
   ///
   @override
@@ -76,8 +80,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             ),
           ),
         ),
-        body: Column(
-          children: <Widget>[Expanded(child: TabBarView(children: _tabs.map((TabInfo tab) => tab.widget).toList()))],
+        body: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            utility.getBackGround(),
+
+            Container(
+              width: context.screenSize.width,
+              height: context.screenSize.height,
+              decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.6)),
+            ),
+
+            Column(
+              children: <Widget>[
+                Expanded(child: TabBarView(children: _tabs.map((TabInfo tab) => tab.widget).toList())),
+              ],
+            ),
+          ],
         ),
       ),
     );
