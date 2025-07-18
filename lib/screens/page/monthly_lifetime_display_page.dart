@@ -163,6 +163,19 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                         ),
                                       ),
                                     ),
+
+                                    SizedBox(
+                                      width: 40,
+
+                                      child: Container(
+                                        alignment: Alignment.topRight,
+
+                                        child: GestureDetector(
+                                          onTap: () {},
+                                          child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
 
@@ -210,6 +223,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                         ),
                                       ),
                                     ),
+
+                                    const SizedBox(width: 40, child: SizedBox()),
                                   ],
                                 ),
                               ],

@@ -28,13 +28,9 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
     for (int i = 0; i <= 23; i++) {
       tecs.add(TextEditingController(text: ''));
     }
-  }
 
-  ///
-  @override
-  Widget build(BuildContext context) {
-    //-----------------------------------------//
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    // ignore: always_specify_types
+    Future(() {
       if (widget.dateLifetime != null) {
         final List<String> dispValList = <String>[
           widget.dateLifetime!.hour00,
@@ -70,8 +66,11 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
         }
       }
     });
-    //-----------------------------------------//
+  }
 
+  ///
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
 
@@ -262,13 +261,6 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
     await lifetimeInputNotifier.inputLifetime(date: widget.date).then((value) {
       if (mounted) {
         context.findAncestorStateOfType<AppRootState>()?.restartApp();
-
-        // // ignore: use_build_context_synchronously
-        // Navigator.pop(context);
-        //
-        //
-        //
-        //
       }
     });
   }
