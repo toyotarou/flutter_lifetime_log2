@@ -17,6 +17,8 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$LifetimeInputState {
   String get selectedInputChoiceChip => throw _privateConstructorUsedError;
+  int get itemPos => throw _privateConstructorUsedError;
+  List<String> get lifetimeStringList => throw _privateConstructorUsedError;
 
   /// Create a copy of LifetimeInputState
   /// with the given fields replaced by the non-null parameter values.
@@ -31,7 +33,10 @@ abstract class $LifetimeInputStateCopyWith<$Res> {
           LifetimeInputState value, $Res Function(LifetimeInputState) then) =
       _$LifetimeInputStateCopyWithImpl<$Res, LifetimeInputState>;
   @useResult
-  $Res call({String selectedInputChoiceChip});
+  $Res call(
+      {String selectedInputChoiceChip,
+      int itemPos,
+      List<String> lifetimeStringList});
 }
 
 /// @nodoc
@@ -50,12 +55,22 @@ class _$LifetimeInputStateCopyWithImpl<$Res, $Val extends LifetimeInputState>
   @override
   $Res call({
     Object? selectedInputChoiceChip = null,
+    Object? itemPos = null,
+    Object? lifetimeStringList = null,
   }) {
     return _then(_value.copyWith(
       selectedInputChoiceChip: null == selectedInputChoiceChip
           ? _value.selectedInputChoiceChip
           : selectedInputChoiceChip // ignore: cast_nullable_to_non_nullable
               as String,
+      itemPos: null == itemPos
+          ? _value.itemPos
+          : itemPos // ignore: cast_nullable_to_non_nullable
+              as int,
+      lifetimeStringList: null == lifetimeStringList
+          ? _value.lifetimeStringList
+          : lifetimeStringList // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ) as $Val);
   }
 }
@@ -68,7 +83,10 @@ abstract class _$$LifetimeInputStateImplCopyWith<$Res>
       __$$LifetimeInputStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String selectedInputChoiceChip});
+  $Res call(
+      {String selectedInputChoiceChip,
+      int itemPos,
+      List<String> lifetimeStringList});
 }
 
 /// @nodoc
@@ -85,12 +103,22 @@ class __$$LifetimeInputStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? selectedInputChoiceChip = null,
+    Object? itemPos = null,
+    Object? lifetimeStringList = null,
   }) {
     return _then(_$LifetimeInputStateImpl(
       selectedInputChoiceChip: null == selectedInputChoiceChip
           ? _value.selectedInputChoiceChip
           : selectedInputChoiceChip // ignore: cast_nullable_to_non_nullable
               as String,
+      itemPos: null == itemPos
+          ? _value.itemPos
+          : itemPos // ignore: cast_nullable_to_non_nullable
+              as int,
+      lifetimeStringList: null == lifetimeStringList
+          ? _value._lifetimeStringList
+          : lifetimeStringList // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -98,15 +126,31 @@ class __$$LifetimeInputStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$LifetimeInputStateImpl implements _LifetimeInputState {
-  const _$LifetimeInputStateImpl({this.selectedInputChoiceChip = ''});
+  const _$LifetimeInputStateImpl(
+      {this.selectedInputChoiceChip = '',
+      this.itemPos = -1,
+      final List<String> lifetimeStringList = const []})
+      : _lifetimeStringList = lifetimeStringList;
 
   @override
   @JsonKey()
   final String selectedInputChoiceChip;
+  @override
+  @JsonKey()
+  final int itemPos;
+  final List<String> _lifetimeStringList;
+  @override
+  @JsonKey()
+  List<String> get lifetimeStringList {
+    if (_lifetimeStringList is EqualUnmodifiableListView)
+      return _lifetimeStringList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_lifetimeStringList);
+  }
 
   @override
   String toString() {
-    return 'LifetimeInputState(selectedInputChoiceChip: $selectedInputChoiceChip)';
+    return 'LifetimeInputState(selectedInputChoiceChip: $selectedInputChoiceChip, itemPos: $itemPos, lifetimeStringList: $lifetimeStringList)';
   }
 
   @override
@@ -116,11 +160,15 @@ class _$LifetimeInputStateImpl implements _LifetimeInputState {
             other is _$LifetimeInputStateImpl &&
             (identical(
                     other.selectedInputChoiceChip, selectedInputChoiceChip) ||
-                other.selectedInputChoiceChip == selectedInputChoiceChip));
+                other.selectedInputChoiceChip == selectedInputChoiceChip) &&
+            (identical(other.itemPos, itemPos) || other.itemPos == itemPos) &&
+            const DeepCollectionEquality()
+                .equals(other._lifetimeStringList, _lifetimeStringList));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, selectedInputChoiceChip);
+  int get hashCode => Object.hash(runtimeType, selectedInputChoiceChip, itemPos,
+      const DeepCollectionEquality().hash(_lifetimeStringList));
 
   /// Create a copy of LifetimeInputState
   /// with the given fields replaced by the non-null parameter values.
@@ -133,11 +181,17 @@ class _$LifetimeInputStateImpl implements _LifetimeInputState {
 }
 
 abstract class _LifetimeInputState implements LifetimeInputState {
-  const factory _LifetimeInputState({final String selectedInputChoiceChip}) =
-      _$LifetimeInputStateImpl;
+  const factory _LifetimeInputState(
+      {final String selectedInputChoiceChip,
+      final int itemPos,
+      final List<String> lifetimeStringList}) = _$LifetimeInputStateImpl;
 
   @override
   String get selectedInputChoiceChip;
+  @override
+  int get itemPos;
+  @override
+  List<String> get lifetimeStringList;
 
   /// Create a copy of LifetimeInputState
   /// with the given fields replaced by the non-null parameter values.

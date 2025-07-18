@@ -16,7 +16,7 @@ class LifetimeInputAlert extends ConsumerStatefulWidget {
 }
 
 class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with ControllersMixin<LifetimeInputAlert> {
-  final List<TextEditingController> _lifetimeItemTecs = <TextEditingController>[];
+  final List<TextEditingController> tecs = <TextEditingController>[];
 
   ///
   @override
@@ -24,7 +24,7 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
     super.initState();
 
     for (int i = 0; i <= 23; i++) {
-      _lifetimeItemTecs.add(TextEditingController(text: ''));
+      tecs.add(TextEditingController(text: ''));
     }
 
     if (widget.dateLifetime != null) {
@@ -56,7 +56,7 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
       ];
 
       for (int i = 0; i <= 23; i++) {
-        _lifetimeItemTecs.add(TextEditingController(text: dispValList[i]));
+        tecs.add(TextEditingController(text: dispValList[i]));
       }
     }
   }
@@ -78,12 +78,30 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-                  children: <Widget>[Text(widget.date), const SizedBox.shrink()],
+                  children: <Widget>[
+                    Text(widget.date),
+
+                    Row(
+                      children: <Widget>[
+                        _displayBetweenInputButton(),
+
+                        const SizedBox(width: 20),
+
+                        ElevatedButton(
+                          onPressed: () {},
+
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+
+                          child: const Text('input'),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
 
                 Divider(thickness: 5, color: Colors.white.withValues(alpha: 0.4)),
 
-                Expanded(child: Container()),
+                Expanded(child: lifetimeInputParts()),
 
                 Divider(thickness: 2, color: Colors.white.withValues(alpha: 0.4)),
 
@@ -94,6 +112,61 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
         ),
       ),
     );
+  }
+
+  ///
+  Widget lifetimeInputParts() {
+    final List<Widget> list = <Widget>[];
+
+    for (int i = 0; i < tecs.length; i++) {
+      list.add(
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 5),
+          child: Row(
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  lifetimeInputNotifier.setItemPos(pos: i);
+                },
+                child: CircleAvatar(
+                  backgroundColor: (i == lifetimeInputState.itemPos)
+                      ? Colors.yellowAccent.withValues(alpha: 0.2)
+                      : Colors.black.withValues(alpha: 0.2),
+                  child: Text(i.toString().padLeft(2, '0'), style: const TextStyle(color: Colors.white)),
+                ),
+              ),
+
+              const SizedBox(width: 10),
+              Expanded(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: (i == lifetimeInputState.itemPos)
+                          ? Colors.yellowAccent.withOpacity(0.4)
+                          : Colors.transparent,
+                      width: 2,
+                    ),
+                  ),
+
+                  child: TextField(
+                    style: const TextStyle(fontSize: 12),
+                    readOnly: true,
+                    controller: tecs[i],
+                    decoration: const InputDecoration(
+                      filled: true,
+                      contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(child: Column(children: list));
   }
 
   ///
@@ -112,11 +185,54 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
               selected: e.item == lifetimeInputState.selectedInputChoiceChip,
               onSelected: (bool isSelected) async {
                 lifetimeInputNotifier.setSelectedInputChoiceChip(item: e.item);
+
+                lifetimeInputNotifier.setLifetimeStringList(pos: lifetimeInputState.itemPos, item: e.item);
+
+                tecs[lifetimeInputState.itemPos].text = e.item;
               },
+
+              showCheckmark: false,
             ),
           );
         }).toList(),
       ),
+    );
+  }
+
+  ///
+  Widget _displayBetweenInputButton() {
+    final List<String> list = <String>[];
+
+    for (final String element in lifetimeInputState.lifetimeStringList) {
+      if (element != '') {
+        list.add(element);
+      }
+    }
+
+    if (list.isEmpty) {
+      return const Icon(Icons.check_box_outline_blank, color: Colors.transparent);
+    }
+
+    return GestureDetector(
+      onTap: () async {
+        var endPos = 0;
+        for (var i = lifetimeInputState.itemPos + 1; i < tecs.length; i++) {
+          if (lifetimeInputState.lifetimeStringList[i] != '') {
+            break;
+          }
+
+          endPos = i;
+        }
+
+        final lifetimeStringItem = lifetimeInputState.lifetimeStringList[lifetimeInputState.itemPos];
+
+        for (var i = lifetimeInputState.itemPos; i <= endPos; i++) {
+          tecs[i].text = lifetimeStringItem;
+
+          lifetimeInputNotifier.setLifetimeStringList(pos: i, item: lifetimeStringItem);
+        }
+      },
+      child: Icon(Icons.download_for_offline_outlined, color: Colors.white.withOpacity(0.6)),
     );
   }
 }

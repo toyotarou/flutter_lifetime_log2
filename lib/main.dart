@@ -37,6 +37,10 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       themeMode: ThemeMode.dark,
+
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark(useMaterial3: false),
+
       home: HomeScreen(
         holidayList: holidayState.holidayList,
         walkMap: walkState.walkMap,

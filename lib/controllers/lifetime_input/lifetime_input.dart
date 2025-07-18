@@ -9,7 +9,11 @@ part 'lifetime_input.g.dart';
 
 @freezed
 class LifetimeInputState with _$LifetimeInputState {
-  const factory LifetimeInputState({@Default('') String selectedInputChoiceChip}) = _LifetimeInputState;
+  const factory LifetimeInputState({
+    @Default('') String selectedInputChoiceChip,
+    @Default(-1) int itemPos,
+    @Default(<dynamic>[]) List<String> lifetimeStringList,
+  }) = _LifetimeInputState;
 }
 
 @riverpod
@@ -18,8 +22,23 @@ class LifetimeInput extends _$LifetimeInput {
 
   ///
   @override
-  LifetimeInputState build() => const LifetimeInputState();
+  LifetimeInputState build() {
+    // ignore: always_specify_types
+    final List<String> list = List.generate(24, (int index) => '');
+
+    return LifetimeInputState(lifetimeStringList: list);
+  }
 
   ///
   void setSelectedInputChoiceChip({required String item}) => state = state.copyWith(selectedInputChoiceChip: item);
+
+  ///
+  void setItemPos({required int pos}) => state = state.copyWith(itemPos: pos);
+
+  ///
+  Future<void> setLifetimeStringList({required int pos, required String item}) async {
+    final List<String> items = <String>[...state.lifetimeStringList];
+    items[pos] = item;
+    state = state.copyWith(lifetimeStringList: items);
+  }
 }
