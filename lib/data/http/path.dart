@@ -4,10 +4,11 @@ enum APIPath {
   getLifetimeRecordItem,
   getWalkRecord2,
   getAllMoney,
+  insertLifetime,
 
   // getLifetimeDateRecord,
   // getLifetimeYearlyRecord,
-  // insertLifetime,
+  //
   // getGenbaWorkTime,
   // worktimemonthdata, //{"date":"2022-01-01"}
   // worktimesummary,
@@ -39,8 +40,9 @@ extension APIPathExtension on APIPath {
       case APIPath.getAllMoney:
         return 'getAllMoney';
 
-      // case APIPath.insertLifetime:
-      //   return 'insertLifetime';
+      case APIPath.insertLifetime:
+        return 'insertLifetime';
+
       // case APIPath.getLifetimeDateRecord:
       //   return 'getLifetimeDateRecord';
       // case APIPath.getLifetimeYearlyRecord:

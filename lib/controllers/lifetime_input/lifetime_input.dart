@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../data/http/client.dart';
+import '../../data/http/path.dart';
 import '../../utility/utility.dart';
 
 part 'lifetime_input.freezed.dart';
@@ -40,5 +42,21 @@ class LifetimeInput extends _$LifetimeInput {
     final List<String> items = <String>[...state.lifetimeStringList];
     items[pos] = item;
     state = state.copyWith(lifetimeStringList: items);
+  }
+
+  ///
+  Future<void> inputLifetime({required String date}) async {
+    final HttpClient client = ref.read(httpClientProvider);
+
+    final List<String?> items = <String?>[...state.lifetimeStringList];
+
+    final Map<String, dynamic> uploadData = <String, dynamic>{};
+    uploadData['date'] = date;
+    uploadData['lifetime'] = items.join('|');
+
+    // ignore: always_specify_types
+    await client.post(path: APIPath.insertLifetime, body: uploadData).then((value) {}).catchError((error, _) {
+      utility.showError('予期せぬエラーが発生しました');
+    });
   }
 }

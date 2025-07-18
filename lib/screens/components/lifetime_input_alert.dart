@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../main.dart';
 import '../../models/lifetime_item_model.dart';
 import '../../models/lifetime_model.dart';
+import '../parts/error_dialog.dart';
 
 class LifetimeInputAlert extends ConsumerStatefulWidget {
   const LifetimeInputAlert({super.key, this.dateLifetime, required this.date});
@@ -26,44 +28,50 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
     for (int i = 0; i <= 23; i++) {
       tecs.add(TextEditingController(text: ''));
     }
-
-    if (widget.dateLifetime != null) {
-      final List<String> dispValList = <String>[
-        widget.dateLifetime!.hour00,
-        widget.dateLifetime!.hour01,
-        widget.dateLifetime!.hour02,
-        widget.dateLifetime!.hour03,
-        widget.dateLifetime!.hour04,
-        widget.dateLifetime!.hour05,
-        widget.dateLifetime!.hour06,
-        widget.dateLifetime!.hour07,
-        widget.dateLifetime!.hour08,
-        widget.dateLifetime!.hour09,
-        widget.dateLifetime!.hour10,
-        widget.dateLifetime!.hour11,
-        widget.dateLifetime!.hour12,
-        widget.dateLifetime!.hour13,
-        widget.dateLifetime!.hour14,
-        widget.dateLifetime!.hour15,
-        widget.dateLifetime!.hour16,
-        widget.dateLifetime!.hour17,
-        widget.dateLifetime!.hour18,
-        widget.dateLifetime!.hour19,
-        widget.dateLifetime!.hour20,
-        widget.dateLifetime!.hour21,
-        widget.dateLifetime!.hour22,
-        widget.dateLifetime!.hour23,
-      ];
-
-      for (int i = 0; i <= 23; i++) {
-        tecs.add(TextEditingController(text: dispValList[i]));
-      }
-    }
   }
 
   ///
   @override
   Widget build(BuildContext context) {
+    //-----------------------------------------//
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (widget.dateLifetime != null) {
+        final List<String> dispValList = <String>[
+          widget.dateLifetime!.hour00,
+          widget.dateLifetime!.hour01,
+          widget.dateLifetime!.hour02,
+          widget.dateLifetime!.hour03,
+          widget.dateLifetime!.hour04,
+          widget.dateLifetime!.hour05,
+          widget.dateLifetime!.hour06,
+          widget.dateLifetime!.hour07,
+          widget.dateLifetime!.hour08,
+          widget.dateLifetime!.hour09,
+          widget.dateLifetime!.hour10,
+          widget.dateLifetime!.hour11,
+          widget.dateLifetime!.hour12,
+          widget.dateLifetime!.hour13,
+          widget.dateLifetime!.hour14,
+          widget.dateLifetime!.hour15,
+          widget.dateLifetime!.hour16,
+          widget.dateLifetime!.hour17,
+          widget.dateLifetime!.hour18,
+          widget.dateLifetime!.hour19,
+          widget.dateLifetime!.hour20,
+          widget.dateLifetime!.hour21,
+          widget.dateLifetime!.hour22,
+          widget.dateLifetime!.hour23,
+        ];
+
+        for (int i = 0; i <= 23; i++) {
+          tecs[i].text = dispValList[i];
+
+          lifetimeInputNotifier.setLifetimeStringList(pos: i, item: dispValList[i]);
+        }
+      }
+    });
+    //-----------------------------------------//
+
     return Scaffold(
       backgroundColor: Colors.transparent,
 
@@ -88,10 +96,8 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
                         const SizedBox(width: 20),
 
                         ElevatedButton(
-                          onPressed: () {},
-
+                          onPressed: () async => inputLifetimeData(),
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-
                           child: const Text('input'),
                         ),
                       ],
@@ -215,8 +221,8 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
 
     return GestureDetector(
       onTap: () async {
-        var endPos = 0;
-        for (var i = lifetimeInputState.itemPos + 1; i < tecs.length; i++) {
+        int endPos = 0;
+        for (int i = lifetimeInputState.itemPos + 1; i < tecs.length; i++) {
           if (lifetimeInputState.lifetimeStringList[i] != '') {
             break;
           }
@@ -224,9 +230,9 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
           endPos = i;
         }
 
-        final lifetimeStringItem = lifetimeInputState.lifetimeStringList[lifetimeInputState.itemPos];
+        final String lifetimeStringItem = lifetimeInputState.lifetimeStringList[lifetimeInputState.itemPos];
 
-        for (var i = lifetimeInputState.itemPos; i <= endPos; i++) {
+        for (int i = lifetimeInputState.itemPos; i <= endPos; i++) {
           tecs[i].text = lifetimeStringItem;
 
           lifetimeInputNotifier.setLifetimeStringList(pos: i, item: lifetimeStringItem);
@@ -234,5 +240,36 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
       },
       child: Icon(Icons.download_for_offline_outlined, color: Colors.white.withOpacity(0.6)),
     );
+  }
+
+  ///
+  Future<void> inputLifetimeData() async {
+    final List<String> list = <String>[];
+
+    for (final String element in lifetimeInputState.lifetimeStringList) {
+      if (element != '') {
+        list.add(element);
+      }
+    }
+
+    if (tecs.length != list.length) {
+      error_dialog(context: context, title: 'input error', content: '入力されていない時間があります。');
+
+      return;
+    }
+
+    // ignore: always_specify_types
+    await lifetimeInputNotifier.inputLifetime(date: widget.date).then((value) {
+      if (mounted) {
+        context.findAncestorStateOfType<AppRootState>()?.restartApp();
+
+        // // ignore: use_build_context_synchronously
+        // Navigator.pop(context);
+        //
+        //
+        //
+        //
+      }
+    });
   }
 }
