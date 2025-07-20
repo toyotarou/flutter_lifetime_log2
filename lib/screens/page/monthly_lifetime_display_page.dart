@@ -5,7 +5,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../utility/utility.dart';
 import '../components/lifetime_input_alert.dart';
-import '../components/step_distance_input_alert.dart';
+import '../components/walk_data_input_alert.dart';
 import '../parts/lifetime_dialog.dart';
 
 class MonthlyLifetimeDisplayPage extends ConsumerStatefulWidget {
@@ -226,7 +226,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                           onTap: () {
                                             LifetimeDialog(
                                               context: context,
-                                              widget: StepDistanceInputAlert(
+                                              widget: WalkDataInputAlert(
                                                 date: date,
 
                                                 step: (appParamState.keepWalkModelMap[date] != null)

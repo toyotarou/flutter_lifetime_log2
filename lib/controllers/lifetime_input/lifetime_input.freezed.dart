@@ -129,7 +129,7 @@ class _$LifetimeInputStateImpl implements _LifetimeInputState {
   const _$LifetimeInputStateImpl(
       {this.selectedInputChoiceChip = '',
       this.itemPos = -1,
-      final List<String> lifetimeStringList = const []})
+      final List<String> lifetimeStringList = const <String>[]})
       : _lifetimeStringList = lifetimeStringList;
 
   @override

@@ -3,20 +3,23 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../main.dart';
+import '../parts/error_dialog.dart';
 
-class StepDistanceInputAlert extends ConsumerStatefulWidget {
-  const StepDistanceInputAlert({super.key, required this.date, required this.step, required this.distance});
+class WalkDataInputAlert extends ConsumerStatefulWidget {
+  const WalkDataInputAlert({super.key, required this.date, required this.step, required this.distance});
 
   final String date;
   final String step;
   final String distance;
 
   @override
-  ConsumerState<StepDistanceInputAlert> createState() => _StepDistanceInputAlertState();
+  ConsumerState<WalkDataInputAlert> createState() => _WalkDataAlertState();
 }
 
-class _StepDistanceInputAlertState extends ConsumerState<StepDistanceInputAlert> {
+class _WalkDataAlertState extends ConsumerState<WalkDataInputAlert> with ControllersMixin<WalkDataInputAlert> {
   TextEditingController stepEditingController = TextEditingController();
   TextEditingController distanceEditingController = TextEditingController();
 
@@ -63,7 +66,7 @@ class _StepDistanceInputAlertState extends ConsumerState<StepDistanceInputAlert>
                     const SizedBox.shrink(),
 
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () => _inputWalkData(),
                       child: const Text('データを登録する', style: TextStyle(fontSize: 12)),
                     ),
                   ],
@@ -122,7 +125,7 @@ class _StepDistanceInputAlertState extends ConsumerState<StepDistanceInputAlert>
                   decoration: const InputDecoration(
                     isDense: true,
                     contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                    hintText: 'ディスタンス(10桁以内)',
+                    hintText: 'ディスタンス(5桁以内)',
                     filled: true,
                     border: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white54)),
@@ -138,5 +141,42 @@ class _StepDistanceInputAlertState extends ConsumerState<StepDistanceInputAlert>
         ),
       ),
     );
+  }
+
+  ///
+  Future<void> _inputWalkData() async {
+    bool errFlg = false;
+
+    if (stepEditingController.text.trim() == '' || distanceEditingController.text.trim() == '') {
+      errFlg = true;
+    }
+
+    if (errFlg) {
+      // ignore: always_specify_types
+      Future.delayed(
+        Duration.zero,
+        () => error_dialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          title: '登録できません。',
+          content: '値を正しく入力してください。',
+        ),
+      );
+
+      return;
+    }
+
+    await walkInputNotifier
+        .inputWalkRecord(
+          date: widget.date,
+          steps: stepEditingController.text.trim(),
+          distance: distanceEditingController.text.trim(),
+        )
+        // ignore: always_specify_types
+        .then((value) {
+          if (mounted) {
+            context.findAncestorStateOfType<AppRootState>()?.restartApp();
+          }
+        });
   }
 }

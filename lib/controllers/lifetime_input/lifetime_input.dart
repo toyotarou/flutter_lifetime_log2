@@ -14,7 +14,7 @@ class LifetimeInputState with _$LifetimeInputState {
   const factory LifetimeInputState({
     @Default('') String selectedInputChoiceChip,
     @Default(-1) int itemPos,
-    @Default(<dynamic>[]) List<String> lifetimeStringList,
+    @Default(<String>[]) List<String> lifetimeStringList,
   }) = _LifetimeInputState;
 }
 
