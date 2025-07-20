@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 ///
@@ -8,6 +9,11 @@ extension ContextEx on BuildContext {
   ColorScheme get colorTheme => Theme.of(this).colorScheme;
 
   Size get screenSize => MediaQuery.of(this).size;
+
+  void showKeyboard(FocusNode node) {
+    FocusScope.of(this).requestFocus(node);
+    SystemChannels.textInput.invokeMethod('TextInput.show');
+  }
 }
 
 ///
