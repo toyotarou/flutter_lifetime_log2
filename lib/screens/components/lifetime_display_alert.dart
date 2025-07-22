@@ -86,7 +86,8 @@ class _LifetimeDisplayAlertState extends ConsumerState<LifetimeDisplayAlert>
 
         final String youbi = '$key 00:00:00'.toDateTime().youbiStr;
 
-        Color headColor = (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(key))
+        final Color headColor =
+            (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(key))
             ? utility.getYoubiColor(date: key, youbiStr: youbi, holiday: appParamState.keepHolidayList)
             : Colors.white.withValues(alpha: 0.1);
 
@@ -111,21 +112,7 @@ class _LifetimeDisplayAlertState extends ConsumerState<LifetimeDisplayAlert>
                   ),
                 ),
 
-                Column(
-                  children: dispValList.map((String e) {
-                    final Color color = utility.getLifetimeRowBgColor(value: e, textDisplay: true);
-
-                    return Container(
-                      width: oneWidth,
-
-                      decoration: BoxDecoration(color: color),
-                      margin: const EdgeInsets.all(2),
-                      padding: const EdgeInsets.all(2),
-
-                      child: Text(e),
-                    );
-                  }).toList(),
-                ),
+                displayLifetimeTimeItem(dispValList: dispValList, oneWidth: oneWidth),
               ],
             ),
           ),
@@ -143,5 +130,36 @@ class _LifetimeDisplayAlertState extends ConsumerState<LifetimeDisplayAlert>
         ),
       ),
     );
+  }
+
+  ///
+  Widget displayLifetimeTimeItem({required List<String> dispValList, required double oneWidth}) {
+    final List<Widget> list = <Widget>[];
+
+    for (int i = 0; i < dispValList.length; i++) {
+      final Color color = utility.getLifetimeRowBgColor(value: dispValList[i], textDisplay: true);
+
+      list.add(
+        Container(
+          width: oneWidth,
+
+          decoration: BoxDecoration(color: color),
+          margin: const EdgeInsets.all(2),
+          padding: const EdgeInsets.all(2),
+
+          child: Stack(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[const SizedBox.shrink(), Text((i % 6 == 0) ? i.toString().padLeft(2, '0') : '')],
+              ),
+              Text(dispValList[i]),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Column(children: list);
   }
 }
