@@ -1,0 +1,147 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../controllers/controllers_mixin.dart';
+import '../../extensions/extensions.dart';
+import '../../models/lifetime_model.dart';
+import '../../utility/utility.dart';
+
+class LifetimeDisplayAlert extends ConsumerStatefulWidget {
+  const LifetimeDisplayAlert({super.key, required this.yearmonth});
+
+  final String yearmonth;
+
+  @override
+  ConsumerState<LifetimeDisplayAlert> createState() => _LifetimeDisplayAlertState();
+}
+
+class _LifetimeDisplayAlertState extends ConsumerState<LifetimeDisplayAlert>
+    with ControllersMixin<LifetimeDisplayAlert> {
+  Utility utility = Utility();
+
+  ///
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+
+      body: SafeArea(
+        child: DefaultTextStyle(
+          style: const TextStyle(color: Colors.white),
+
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[Text(widget.yearmonth), const SizedBox.shrink()],
+                ),
+
+                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                Expanded(child: displayLifetime()),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  ///
+  Widget displayLifetime() {
+    final List<Widget> list = <Widget>[];
+
+    const double oneWidth = 120.0;
+
+    lifetimeState.lifetimeMap.forEach((String key, LifetimeModel value) {
+      if ('${key.split('-')[0]}-${key.split('-')[1]}' == widget.yearmonth) {
+        final List<String> dispValList = <String>[
+          value.hour00,
+          value.hour01,
+          value.hour02,
+          value.hour03,
+          value.hour04,
+          value.hour05,
+          value.hour06,
+          value.hour07,
+          value.hour08,
+          value.hour09,
+          value.hour10,
+          value.hour11,
+          value.hour12,
+          value.hour13,
+          value.hour14,
+          value.hour15,
+          value.hour16,
+          value.hour17,
+          value.hour18,
+          value.hour19,
+          value.hour20,
+          value.hour21,
+          value.hour22,
+          value.hour23,
+        ];
+
+        final String youbi = '$key 00:00:00'.toDateTime().youbiStr;
+
+        Color headColor = (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(key))
+            ? utility.getYoubiColor(date: key, youbiStr: youbi, holiday: appParamState.keepHolidayList)
+            : Colors.white.withValues(alpha: 0.1);
+
+        list.add(
+          DefaultTextStyle(
+            style: const TextStyle(fontSize: 10),
+            child: Column(
+              children: <Widget>[
+                Container(
+                  width: oneWidth,
+
+                  decoration: BoxDecoration(color: headColor),
+                  margin: const EdgeInsets.all(2),
+                  padding: const EdgeInsets.all(2),
+
+                  child: Row(
+                    children: <Widget>[
+                      Text(key.split('-')[2], style: const TextStyle(fontSize: 20)),
+                      const SizedBox(width: 5),
+                      Text(youbi),
+                    ],
+                  ),
+                ),
+
+                Column(
+                  children: dispValList.map((String e) {
+                    final Color color = utility.getLifetimeRowBgColor(value: e, textDisplay: true);
+
+                    return Container(
+                      width: oneWidth,
+
+                      decoration: BoxDecoration(color: color),
+                      margin: const EdgeInsets.all(2),
+                      padding: const EdgeInsets.all(2),
+
+                      child: Text(e),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+    });
+
+    return SingleChildScrollView(
+      child: SizedBox(
+        height: context.screenSize.height * 0.7,
+
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: list),
+        ),
+      ),
+    );
+  }
+}

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../utility/utility.dart';
+import '../components/lifetime_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
 import '../components/walk_data_input_alert.dart';
 import '../parts/lifetime_dialog.dart';
@@ -35,7 +36,24 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
             padding: const EdgeInsets.all(20),
             child: Column(
               children: <Widget>[
-                Text(widget.yearmonth),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    const Icon(Icons.square_outlined, color: Colors.transparent),
+
+                    Text(widget.yearmonth),
+
+                    GestureDetector(
+                      onTap: () {
+                        LifetimeDialog(
+                          context: context,
+                          widget: LifetimeDisplayAlert(yearmonth: widget.yearmonth),
+                        );
+                      },
+                      child: const Icon(Icons.list),
+                    ),
+                  ],
+                ),
 
                 const SizedBox(height: 10),
 
@@ -381,7 +399,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     return Column(
       children: <Widget>[
         Container(
-          width: context.screenSize.width / 35,
+          width: context.screenSize.width / 40,
 
           margin: const EdgeInsets.all(1),
 
