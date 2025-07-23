@@ -51,25 +51,15 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           const SizedBox.shrink(),
-                          Row(
-                            children: <Widget>[
-                              GestureDetector(
-                                onTap: () {},
-                                child: Icon(Icons.monetization_on_sharp, color: Colors.white.withValues(alpha: 0.3)),
-                              ),
 
-                              const SizedBox(width: 20),
-
-                              GestureDetector(
-                                onTap: () {
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: LifetimeDisplayAlert(yearmonth: widget.yearmonth),
-                                  );
-                                },
-                                child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.3)),
-                              ),
-                            ],
+                          GestureDetector(
+                            onTap: () {
+                              LifetimeDialog(
+                                context: context,
+                                widget: LifetimeDisplayAlert(yearmonth: widget.yearmonth),
+                              );
+                            },
+                            child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.3)),
                           ),
                         ],
                       ),

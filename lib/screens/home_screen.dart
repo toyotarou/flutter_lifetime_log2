@@ -62,9 +62,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(50),
+          preferredSize: const Size.fromHeight(80),
           child: AppBar(
             backgroundColor: Colors.transparent,
+
+            title: const Text('LIFETIME LOG'),
+            centerTitle: true,
+
             //-------------------------//これを消すと「←」が出てくる（消さない）
             leading: const Icon(Icons.check_box_outline_blank, color: Colors.transparent),
 
@@ -101,6 +105,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               ],
             ),
           ],
+        ),
+        endDrawer: _dispDrawer(),
+      ),
+    );
+  }
+
+  ///
+  Widget _dispDrawer() {
+    return Drawer(
+      backgroundColor: Colors.blueGrey.withOpacity(0.2),
+      child: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.only(left: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(height: 60),
+
+              GestureDetector(
+                onTap: () {},
+                child: const Row(
+                  children: <Widget>[
+                    Icon(Icons.monetization_on_sharp),
+                    SizedBox(width: 20),
+                    Expanded(child: Text('bank money adjust')),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
