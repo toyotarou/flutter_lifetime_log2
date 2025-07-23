@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../main.dart';
 import '../../models/money_model.dart';
 import '../parts/lifetime_log_overlay.dart';
 
@@ -27,6 +28,8 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
 
   final TextEditingController inputDigitsEditingController = TextEditingController();
 
+  MoneyModel? money;
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -34,7 +37,6 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
       if (!moneyInputState.isReplaceInputValueList) {
         List<String> list = List.generate(10, (index) => '');
 
-        MoneyModel? money;
         var date = '';
 
         for (var i = 0; i < 7; i++) {
@@ -52,16 +54,16 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
 
         if (money != null) {
           list = [
-            money.yen10000,
-            money.yen5000,
-            money.yen2000,
-            money.yen1000,
-            money.yen500,
-            money.yen100,
-            money.yen50,
-            money.yen10,
-            money.yen5,
-            money.yen1,
+            money!.yen10000,
+            money!.yen5000,
+            money!.yen2000,
+            money!.yen1000,
+            money!.yen500,
+            money!.yen100,
+            money!.yen50,
+            money!.yen10,
+            money!.yen5,
+            money!.yen1,
           ];
         }
 
@@ -88,7 +90,7 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
                     Text(widget.date),
 
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () => insertMoneyData(),
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
                       child: const Text('input', style: TextStyle(fontSize: 12)),
                     ),
@@ -282,7 +284,7 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
 
                     moneyInputNotifier.setPos(pos: -1);
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black.withOpacity(0.2)),
                   child: const Text('反映'),
                 ),
               ),
@@ -296,7 +298,7 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
 
                     moneyInputNotifier.setPos(pos: -1);
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black.withOpacity(0.2)),
                   child: const Text('消去'),
                 ),
               ),
@@ -353,7 +355,7 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
         height: 60,
         margin: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: Colors.pinkAccent.withOpacity(0.2),
+          color: Colors.black.withOpacity(0.2),
           borderRadius: BorderRadius.circular(8),
           boxShadow: <BoxShadow>[
             BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 4, offset: const Offset(2, 2)),
@@ -366,5 +368,63 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
         ),
       ),
     );
+  }
+
+  ///
+  Future<void> insertMoneyData() async {
+    final Map<String, dynamic> uploadData = {
+      'date': widget.date,
+
+      'yen_10000': (moneyInputState.inputValueList[0] != money?.yen10000)
+          ? moneyInputState.inputValueList[0]
+          : money?.yen10000,
+
+      'yen_5000': (moneyInputState.inputValueList[1] != money?.yen5000)
+          ? moneyInputState.inputValueList[1]
+          : money?.yen5000,
+
+      'yen_2000': (moneyInputState.inputValueList[2] != money?.yen2000)
+          ? moneyInputState.inputValueList[2]
+          : money?.yen2000,
+
+      'yen_1000': (moneyInputState.inputValueList[3] != money?.yen1000)
+          ? moneyInputState.inputValueList[3]
+          : money?.yen1000,
+
+      'yen_500': (moneyInputState.inputValueList[4] != money?.yen500)
+          ? moneyInputState.inputValueList[4]
+          : money?.yen500,
+
+      'yen_100': (moneyInputState.inputValueList[5] != money?.yen100)
+          ? moneyInputState.inputValueList[5]
+          : money?.yen100,
+
+      'yen_50': (moneyInputState.inputValueList[6] != money?.yen50) ? moneyInputState.inputValueList[6] : money?.yen50,
+
+      'yen_10': (moneyInputState.inputValueList[7] != money?.yen10) ? moneyInputState.inputValueList[7] : money?.yen10,
+
+      'yen_5': (moneyInputState.inputValueList[8] != money?.yen5) ? moneyInputState.inputValueList[8] : money?.yen5,
+
+      'yen_1': (moneyInputState.inputValueList[9] != money?.yen1) ? moneyInputState.inputValueList[9] : money?.yen1,
+
+      'bank_a': money?.bankA,
+      'bank_b': money?.bankB,
+      'bank_c': money?.bankC,
+      'bank_d': money?.bankD,
+      'bank_e': money?.bankE,
+
+      'pay_a': money?.payA,
+      'pay_b': money?.payB,
+      'pay_c': money?.payC,
+      'pay_d': money?.payD,
+      'pay_e': money?.payE,
+      'pay_f': money?.payF,
+    };
+
+    await moneyInputNotifier.insertMoney(uploadData: uploadData).then((value) {
+      if (mounted) {
+        context.findAncestorStateOfType<AppRootState>()?.restartApp();
+      }
+    });
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../data/http/client.dart';
+import '../../data/http/path.dart';
 import '../../models/money_model.dart';
 import '../../utility/utility.dart';
 
@@ -72,4 +74,14 @@ class MoneyInput extends _$MoneyInput {
 
   ///
   void setReplaceInputValueListDate({required String date}) => state = state.copyWith(replaceInputValueListDate: date);
+
+  ///
+  Future<void> insertMoney({required Map<String, dynamic> uploadData}) async {
+    final HttpClient client = ref.read(httpClientProvider);
+
+    // ignore: always_specify_types
+    await client.post(path: APIPath.moneyinsert, body: uploadData).then((value) {}).catchError((error, _) {
+      utility.showError('予期せぬエラーが発生しました');
+    });
+  }
 }

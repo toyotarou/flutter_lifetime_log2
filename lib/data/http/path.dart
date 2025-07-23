@@ -6,6 +6,7 @@ enum APIPath {
   getAllMoney,
   insertLifetime,
   insertWalkRecord,
+  moneyinsert,
 
   // getLifetimeDateRecord,
   // getLifetimeYearlyRecord,
@@ -45,6 +46,9 @@ extension APIPathExtension on APIPath {
 
       case APIPath.insertWalkRecord:
         return 'insertWalkRecord';
+
+      case APIPath.moneyinsert:
+        return 'moneyinsert';
 
       // case APIPath.getLifetimeDateRecord:
       //   return 'getLifetimeDateRecord';
