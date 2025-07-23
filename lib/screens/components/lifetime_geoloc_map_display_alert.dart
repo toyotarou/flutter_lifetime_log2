@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../models/geoloc_model.dart';
 
 class LifetimeGeolocMapDisplayAlert extends ConsumerStatefulWidget {
-  const LifetimeGeolocMapDisplayAlert({super.key, required this.date});
+  const LifetimeGeolocMapDisplayAlert({super.key, required this.date, this.geolocList});
 
   final String date;
+  final List<GeolocModel>? geolocList;
 
   @override
   ConsumerState<LifetimeGeolocMapDisplayAlert> createState() => _LifetimeGeolocMapDisplayAlertState();

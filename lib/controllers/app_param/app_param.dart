@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../models/geoloc_model.dart';
 import '../../models/lifetime_item_model.dart';
 import '../../models/money_model.dart';
 import '../../models/walk_model.dart';
@@ -17,6 +18,7 @@ class AppParamState with _$AppParamState {
     @Default(<String, WalkModel>{}) Map<String, WalkModel> keepWalkModelMap,
     @Default(<String, MoneyModel>{}) Map<String, MoneyModel> keepMoneyMap,
     @Default(<LifetimeItemModel>[]) List<LifetimeItemModel> keepLifetimeItemList,
+    @Default(<String, List<GeolocModel>>{}) Map<String, List<GeolocModel>> keepGeolocMap,
   }) = _AppParamState;
 }
 
@@ -40,4 +42,7 @@ class AppParam extends _$AppParam {
   ///
   void setKeepLifetimeItemList({required List<LifetimeItemModel> list}) =>
       state = state.copyWith(keepLifetimeItemList: list);
+
+  ///
+  void setKeepGeolocMap({required Map<String, List<GeolocModel>> map}) => state = state.copyWith(keepGeolocMap: map);
 }

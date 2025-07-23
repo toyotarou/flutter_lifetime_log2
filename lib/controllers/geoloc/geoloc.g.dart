@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'money_input.dart';
+part of 'geoloc.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$moneyInputHash() => r'aea7c6105c4970d49d5fa3ff44ef090fa2687fee';
+String _$geolocHash() => r'950a1844a0df67112e59430a8d2bb37413e1ce26';
 
-/// See also [MoneyInput].
-@ProviderFor(MoneyInput)
-final moneyInputProvider =
-    AutoDisposeNotifierProvider<MoneyInput, MoneyInputState>.internal(
-  MoneyInput.new,
-  name: r'moneyInputProvider',
+/// See also [Geoloc].
+@ProviderFor(Geoloc)
+final geolocProvider =
+    AutoDisposeNotifierProvider<Geoloc, GeolocState>.internal(
+  Geoloc.new,
+  name: r'geolocProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$moneyInputHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$geolocHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$MoneyInput = AutoDisposeNotifier<MoneyInputState>;
+typedef _$Geoloc = AutoDisposeNotifier<GeolocState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

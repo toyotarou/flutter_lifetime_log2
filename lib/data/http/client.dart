@@ -25,11 +25,25 @@ class HttpClient {
     Map<String, dynamic>? queryParameters,
     Map<String, dynamic>? body,
   }) async {
-    final Uri uri = Uri.http(Environment.apiEndPoint,
-        '${Environment.apiBasePath}/${path.value}', queryParameters);
+    final Uri uri = Uri.http(Environment.apiEndPoint, '${Environment.apiBasePath}/${path.value}', queryParameters);
 
-    final Response response = await _client.post(uri,
-        headers: await _headers, body: json.encode(body));
+    final Response response = await _client.post(uri, headers: await _headers, body: json.encode(body));
+
+    final String bodyString = utf8.decode(response.bodyBytes);
+
+    try {
+      if (bodyString.isEmpty) {
+        throw Exception();
+      }
+      return jsonDecode(bodyString);
+    } on Exception catch (_) {
+      throw Exception('json parse error');
+    }
+  }
+
+  ///
+  Future<dynamic> getByPath({required String path, Map<String, dynamic>? queryParameters}) async {
+    final Response response = await _client.get(Uri.parse(path), headers: await _headers);
 
     final String bodyString = utf8.decode(response.bodyBytes);
 
@@ -44,9 +58,7 @@ class HttpClient {
   }
 
   Future<Map<String, String>> get _headers async {
-    return <String, String>{
-      'content-type': 'application/json',
-    };
+    return <String, String>{'content-type': 'application/json'};
   }
 }
 

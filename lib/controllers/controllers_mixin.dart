@@ -2,6 +2,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app_param/app_param.dart';
+import 'geoloc/geoloc.dart';
 import 'holiday/holiday.dart';
 import 'lifetime/lifetime.dart';
 import 'lifetime_input/lifetime_input.dart';
@@ -65,6 +66,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   MoneyInputState get moneyInputState => ref.watch(moneyInputProvider);
 
   MoneyInput get moneyInputNotifier => ref.read(moneyInputProvider.notifier);
+
+  //==========================================//
+
+  GeolocState get geolocState => ref.watch(geolocProvider);
+
+  Geoloc get geolocNotifier => ref.read(geolocProvider.notifier);
 
   //==========================================//
 }

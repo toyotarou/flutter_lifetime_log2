@@ -49,6 +49,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     walkNotifier.getAllWalkData();
     moneyNotifier.getAllMoneyData();
     lifetimeItemNotifier.getAllLifetimeItemData();
+    geolocNotifier.getAllGeolocData();
   }
 
   ///
@@ -63,6 +64,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
         walkMap: walkState.walkMap,
         moneyMap: moneyState.moneyMap,
         lifetimeItemList: lifetimeItemState.lifetimeItemList,
+        geolocMap: geolocState.geolocMap,
       ),
     );
   }

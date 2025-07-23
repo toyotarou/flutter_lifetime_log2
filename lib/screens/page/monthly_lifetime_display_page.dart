@@ -39,20 +39,40 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
             child: Column(
               children: <Widget>[
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    const Icon(Icons.square_outlined, color: Colors.transparent),
+                    const Expanded(child: Icon(Icons.square_outlined, color: Colors.transparent)),
 
-                    Text(widget.yearmonth),
+                    Expanded(
+                      child: Container(alignment: Alignment.center, child: Text(widget.yearmonth)),
+                    ),
 
-                    GestureDetector(
-                      onTap: () {
-                        LifetimeDialog(
-                          context: context,
-                          widget: LifetimeDisplayAlert(yearmonth: widget.yearmonth),
-                        );
-                      },
-                      child: const Icon(Icons.list),
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          const SizedBox.shrink(),
+                          Row(
+                            children: <Widget>[
+                              GestureDetector(
+                                onTap: () {},
+                                child: Icon(Icons.monetization_on_sharp, color: Colors.white.withValues(alpha: 0.3)),
+                              ),
+
+                              const SizedBox(width: 20),
+
+                              GestureDetector(
+                                onTap: () {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: LifetimeDisplayAlert(yearmonth: widget.yearmonth),
+                                  );
+                                },
+                                child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.3)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -152,6 +172,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                 const SizedBox(height: 10),
 
                                 Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     GestureDetector(
                                       onTap: () {
@@ -173,11 +194,25 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                       onTap: () {
                                         LifetimeDialog(
                                           context: context,
-                                          widget: LifetimeGeolocMapDisplayAlert(date: date),
+                                          widget: LifetimeGeolocMapDisplayAlert(
+                                            date: date,
+                                            geolocList: appParamState.keepGeolocMap[date],
+                                          ),
                                         );
                                       },
 
-                                      child: Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+                                      child: Column(
+                                        children: <Widget>[
+                                          Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+
+                                          Text(
+                                            (appParamState.keepGeolocMap[date] != null)
+                                                ? appParamState.keepGeolocMap[date]!.length.toString()
+                                                : '0',
+                                            style: const TextStyle(fontSize: 8),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),

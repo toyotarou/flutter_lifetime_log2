@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../controllers/controllers_mixin.dart';
 import '../extensions/extensions.dart';
+import '../models/geoloc_model.dart';
 import '../models/lifetime_item_model.dart';
 import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
@@ -25,12 +26,14 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.moneyMap,
     required this.lifetimeItemList,
     required this.holidayList,
+    required this.geolocMap,
   });
 
   final List<String> holidayList;
   final Map<String, WalkModel> walkMap;
   final Map<String, MoneyModel> moneyMap;
   final List<LifetimeItemModel> lifetimeItemList;
+  final Map<String, List<GeolocModel>> geolocMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -51,6 +54,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepWalkModelMap(map: widget.walkMap);
       appParamNotifier.setKeepMoneyMap(map: widget.moneyMap);
       appParamNotifier.setKeepLifetimeItemList(list: widget.lifetimeItemList);
+      appParamNotifier.setKeepGeolocMap(map: widget.geolocMap);
     });
 
     return DefaultTabController(
@@ -104,6 +108,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
   ///
   void _makeTab() {
+    _tabs.clear();
+
     final List<String> yearmonthList = <String>[];
 
     lifetimeState.lifetimeList.toList()
