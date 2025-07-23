@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../extensions/extensions.dart';
 import '../../main.dart';
 import '../../models/lifetime_item_model.dart';
 import '../../models/lifetime_model.dart';
@@ -110,7 +111,7 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
 
                 Divider(thickness: 2, color: Colors.white.withValues(alpha: 0.4)),
 
-                displayLifetimeInputItem(),
+                displayLifetimeInputItemList(),
               ],
             ),
           ),
@@ -174,34 +175,89 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
     return SingleChildScrollView(child: Column(children: list));
   }
 
+  //
+  // ///
+  // Widget displayLifetimeInputItem() {
+  //   return SizedBox(
+  //     height: 200,
+  //     child: Wrap(
+  //       children: appParamState.keepLifetimeItemList.map((LifetimeItemModel e) {
+  //         return Container(
+  //           padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 5),
+  //           child: ChoiceChip(
+  //             label: Text(e.item, style: const TextStyle(fontSize: 12)),
+  //             backgroundColor: Colors.black.withValues(alpha: 0.1),
+  //             selectedColor: Colors.greenAccent.withValues(alpha: 0.4),
+  //
+  //             selected: e.item == lifetimeInputState.selectedInputChoiceChip,
+  //             onSelected: (bool isSelected) async {
+  //               lifetimeInputNotifier.setSelectedInputChoiceChip(item: e.item);
+  //
+  //               lifetimeInputNotifier.setLifetimeStringList(pos: lifetimeInputState.itemPos, item: e.item);
+  //
+  //               tecs[lifetimeInputState.itemPos].text = e.item;
+  //             },
+  //
+  //             showCheckmark: false,
+  //           ),
+  //         );
+  //       }).toList(),
+  //     ),
+  //   );
+  // }
+  //
+  //
+  //
+  //
+  //
+
   ///
-  Widget displayLifetimeInputItem() {
-    return SizedBox(
-      height: 200,
-      child: Wrap(
-        children: appParamState.keepLifetimeItemList.map((LifetimeItemModel e) {
-          return Container(
+  Widget displayLifetimeInputItemList() {
+    final List<Widget> list = <Widget>[];
+
+    for (final LifetimeItemModel element in appParamState.keepLifetimeItemList) {
+      bool flag = true;
+
+      if (element.item == '俳句会' &&
+          DateTime(
+            widget.date.split('-')[0].toInt(),
+            widget.date.split('-')[1].toInt(),
+            widget.date.split('-')[2].toInt(),
+          ).isAfter(DateTime(2023, 10, 21))) {
+        flag = false;
+      }
+
+      if (element.item == '自宅' &&
+          DateTime(
+            widget.date.split('-')[0].toInt(),
+            widget.date.split('-')[1].toInt(),
+            widget.date.split('-')[2].toInt(),
+          ).isAfter(DateTime(2024, 2, 10))) {
+        flag = false;
+      }
+
+      if (flag) {
+        list.add(
+          Container(
             padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 5),
             child: ChoiceChip(
-              label: Text(e.item, style: const TextStyle(fontSize: 12)),
+              label: Text(element.item, style: const TextStyle(fontSize: 12)),
               backgroundColor: Colors.black.withValues(alpha: 0.1),
               selectedColor: Colors.greenAccent.withValues(alpha: 0.4),
-
-              selected: e.item == lifetimeInputState.selectedInputChoiceChip,
+              selected: element.item == lifetimeInputState.selectedInputChoiceChip,
               onSelected: (bool isSelected) async {
-                lifetimeInputNotifier.setSelectedInputChoiceChip(item: e.item);
-
-                lifetimeInputNotifier.setLifetimeStringList(pos: lifetimeInputState.itemPos, item: e.item);
-
-                tecs[lifetimeInputState.itemPos].text = e.item;
+                lifetimeInputNotifier.setSelectedInputChoiceChip(item: element.item);
+                lifetimeInputNotifier.setLifetimeStringList(pos: lifetimeInputState.itemPos, item: element.item);
+                tecs[lifetimeInputState.itemPos].text = element.item;
               },
-
               showCheckmark: false,
             ),
-          );
-        }).toList(),
-      ),
-    );
+          ),
+        );
+      }
+    }
+
+    return SizedBox(height: 200, child: Wrap(children: list));
   }
 
   ///
