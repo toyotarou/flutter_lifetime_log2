@@ -5,7 +5,9 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../utility/utility.dart';
 import '../components/lifetime_display_alert.dart';
+import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
+import '../components/money_data_input_alert.dart';
 import '../components/walk_data_input_alert.dart';
 import '../parts/lifetime_dialog.dart';
 
@@ -150,7 +152,6 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                 const SizedBox(height: 10),
 
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
                                     GestureDetector(
                                       onTap: () {
@@ -165,7 +166,19 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                       child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
                                     ),
-                                    const SizedBox.shrink(),
+
+                                    const SizedBox(width: 20),
+
+                                    GestureDetector(
+                                      onTap: () {
+                                        LifetimeDialog(
+                                          context: context,
+                                          widget: LifetimeGeolocMapDisplayAlert(date: date),
+                                        );
+                                      },
+
+                                      child: Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -264,6 +277,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                   ],
                                 ),
 
+                                const SizedBox(height: 10),
+
                                 Row(
                                   children: <Widget>[
                                     Expanded(
@@ -321,7 +336,30 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                       ),
                                     ),
 
-                                    const SizedBox(width: 30, child: SizedBox()),
+                                    SizedBox(
+                                      width: 30,
+
+                                      child: Container(
+                                        alignment: Alignment.topRight,
+
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            moneyInputNotifier.setIsReplaceInputValueList(flag: false);
+
+                                            moneyInputNotifier.setPos(pos: -1);
+
+                                            LifetimeDialog(
+                                              context: context,
+                                              widget: MoneyDataInputAlert(date: date),
+                                              executeFunctionWhenDialogClose: true,
+                                              from: 'MoneyDataInputAlert',
+                                              ref: ref,
+                                            );
+                                          },
+                                          child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],

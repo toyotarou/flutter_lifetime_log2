@@ -7,6 +7,7 @@ import 'lifetime/lifetime.dart';
 import 'lifetime_input/lifetime_input.dart';
 import 'lifetime_item/lifetime_item.dart';
 import 'money/money.dart';
+import 'money_input/money_input.dart';
 import 'walk/walk.dart';
 import 'walk_input/walk_input.dart';
 
@@ -58,6 +59,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   WalkInputState get walkInputState => ref.watch(walkInputProvider);
 
   WalkInput get walkInputNotifier => ref.read(walkInputProvider.notifier);
+
+  //==========================================//
+
+  MoneyInputState get moneyInputState => ref.watch(moneyInputProvider);
+
+  MoneyInput get moneyInputNotifier => ref.read(moneyInputProvider.notifier);
 
   //==========================================//
 }

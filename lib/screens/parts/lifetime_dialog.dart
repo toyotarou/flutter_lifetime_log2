@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'lifetime_log_overlay.dart';
+
 Future<void> LifetimeDialog({
   required BuildContext context,
   required Widget widget,
@@ -32,15 +34,15 @@ Future<void> LifetimeDialog({
     },
     // ignore: always_specify_types
   ).then((value) {
-    // // ignore: use_if_null_to_convert_nulls_to_bools
-    // if (executeFunctionWhenDialogClose == true) {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     if (from == 'HomeScreen' || from == 'RecordDetailListAlert') {
-    //       if (ref != null) {
-    //         ref.read(appParamProvider.notifier).setIsOpenedRakutenPointDialog(flag: false);
-    //       }
-    //     }
-    //   });
-    // }
+    // ignore: use_if_null_to_convert_nulls_to_bools
+    if (executeFunctionWhenDialogClose == true) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (from == 'MoneyDataInputAlert') {
+          if (ref != null) {
+            closeAllOverlays(ref: ref);
+          }
+        }
+      });
+    }
   });
 }

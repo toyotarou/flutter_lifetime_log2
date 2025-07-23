@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'walk_input.dart';
+part of 'money_input.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$walkInputHash() => r'9b8db64535f9c28ed95e331e3010c758c60d4080';
+String _$moneyInputHash() => r'3dcaead749b146d4d88cfdd77e9066ff1e7fa16c';
 
-/// See also [WalkInput].
-@ProviderFor(WalkInput)
-final walkInputProvider =
-    AutoDisposeNotifierProvider<WalkInput, WalkInputState>.internal(
-  WalkInput.new,
-  name: r'walkInputProvider',
+/// See also [MoneyInput].
+@ProviderFor(MoneyInput)
+final moneyInputProvider =
+    AutoDisposeNotifierProvider<MoneyInput, MoneyInputState>.internal(
+  MoneyInput.new,
+  name: r'moneyInputProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$walkInputHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$moneyInputHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$WalkInput = AutoDisposeNotifier<WalkInputState>;
+typedef _$MoneyInput = AutoDisposeNotifier<MoneyInputState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
