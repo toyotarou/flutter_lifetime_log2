@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -136,10 +137,25 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                           child: Stack(
                             children: <Widget>[
                               Positioned(
-                                right: 0,
+                                top: 5,
+                                right: 10,
                                 child: (templeState.templeMap[date] != null)
-                                    ? const Icon(Icons.add)
-                                    : const Icon(Icons.remove),
+                                    ? Column(
+                                        children: <Widget>[
+                                          Icon(
+                                            FontAwesomeIcons.toriiGate,
+                                            size: 20,
+                                            color: Colors.white.withValues(alpha: 0.3),
+                                          ),
+                                          const SizedBox(height: 5),
+
+                                          Text(
+                                            templeState.templeMap[date]!.templeDataList.length.toString(),
+                                            style: const TextStyle(fontSize: 8),
+                                          ),
+                                        ],
+                                      )
+                                    : const SizedBox.shrink(),
                               ),
 
                               Column(
@@ -193,9 +209,11 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                           onTap: () {
                                             LifetimeDialog(
                                               context: context,
+
                                               widget: LifetimeGeolocMapDisplayAlert(
                                                 date: date,
                                                 geolocList: appParamState.keepGeolocMap[date],
+                                                templeMap: templeState.templeMap[date],
                                               ),
                                             );
                                           },
@@ -203,6 +221,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                           child: Column(
                                             children: <Widget>[
                                               Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+
+                                              const SizedBox(height: 5),
 
                                               Text(
                                                 (appParamState.keepGeolocMap[date] != null)
