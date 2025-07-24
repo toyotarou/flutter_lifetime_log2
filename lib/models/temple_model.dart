@@ -1,26 +1,21 @@
-class TempleRecordModel {
-  TempleRecordModel({
-    required this.date,
-    required this.startPoint,
-    required this.endPoint,
-    required this.templeModelList,
-  });
+class TempleModel {
+  TempleModel({required this.date, required this.startPoint, required this.endPoint, required this.templeDataList});
 
-  DateTime date;
+  String date;
   String startPoint;
   String endPoint;
-  List<TempleModel> templeModelList;
+  List<TempleData> templeDataList;
 }
 
-class TempleModel {
-  TempleModel({
+class TempleData {
+  TempleData({
     required this.name,
     required this.address,
     required this.latitude,
     required this.longitude,
     required this.rank,
     this.count,
-    this.templePhotoList,
+    this.templePhotoMap,
   });
 
   String name;
@@ -29,5 +24,5 @@ class TempleModel {
   String longitude;
   String rank;
   int? count;
-  List<String>? templePhotoList;
+  Map<String, List<String>>? templePhotoMap;
 }

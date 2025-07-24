@@ -133,80 +133,91 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         SizedBox(
                           width: context.screenSize.width * 0.3,
 
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-
+                          child: Stack(
                             children: <Widget>[
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: <Widget>[
-                                      Text(i.toString().padLeft(2, '0'), style: const TextStyle(fontSize: 20)),
-
-                                      const SizedBox(width: 5),
-
-                                      Text(youbi),
-                                    ],
-                                  ),
-                                  const SizedBox.shrink(),
-                                ],
+                              Positioned(
+                                right: 0,
+                                child: (templeState.templeMap[date] != null)
+                                    ? const Icon(Icons.add)
+                                    : const Icon(Icons.remove),
                               ),
 
-                              if (DateTime(
-                                date.split('-')[0].toInt(),
-                                date.split('-')[1].toInt(),
-                                date.split('-')[2].toInt(),
-                              ).isBefore(DateTime.now())) ...<Widget>[
-                                const SizedBox(height: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
 
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      onTap: () {
-                                        LifetimeDialog(
-                                          context: context,
-                                          widget: LifetimeInputAlert(
-                                            date: date,
-                                            dateLifetime: lifetimeState.lifetimeMap[date],
-                                          ),
-                                        );
-                                      },
-
-                                      child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
-                                    ),
-
-                                    const SizedBox(width: 20),
-
-                                    GestureDetector(
-                                      onTap: () {
-                                        LifetimeDialog(
-                                          context: context,
-                                          widget: LifetimeGeolocMapDisplayAlert(
-                                            date: date,
-                                            geolocList: appParamState.keepGeolocMap[date],
-                                          ),
-                                        );
-                                      },
-
-                                      child: Column(
+                                children: <Widget>[
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
                                         children: <Widget>[
-                                          Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+                                          Text(i.toString().padLeft(2, '0'), style: const TextStyle(fontSize: 20)),
 
-                                          Text(
-                                            (appParamState.keepGeolocMap[date] != null)
-                                                ? appParamState.keepGeolocMap[date]!.length.toString()
-                                                : '0',
-                                            style: const TextStyle(fontSize: 8),
-                                          ),
+                                          const SizedBox(width: 5),
+
+                                          Text(youbi),
                                         ],
                                       ),
+                                      const SizedBox.shrink(),
+                                    ],
+                                  ),
+
+                                  if (DateTime(
+                                    date.split('-')[0].toInt(),
+                                    date.split('-')[1].toInt(),
+                                    date.split('-')[2].toInt(),
+                                  ).isBefore(DateTime.now())) ...<Widget>[
+                                    const SizedBox(height: 10),
+
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        GestureDetector(
+                                          onTap: () {
+                                            LifetimeDialog(
+                                              context: context,
+                                              widget: LifetimeInputAlert(
+                                                date: date,
+                                                dateLifetime: lifetimeState.lifetimeMap[date],
+                                              ),
+                                            );
+                                          },
+
+                                          child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
+                                        ),
+
+                                        const SizedBox(width: 20),
+
+                                        GestureDetector(
+                                          onTap: () {
+                                            LifetimeDialog(
+                                              context: context,
+                                              widget: LifetimeGeolocMapDisplayAlert(
+                                                date: date,
+                                                geolocList: appParamState.keepGeolocMap[date],
+                                              ),
+                                            );
+                                          },
+
+                                          child: Column(
+                                            children: <Widget>[
+                                              Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+
+                                              Text(
+                                                (appParamState.keepGeolocMap[date] != null)
+                                                    ? appParamState.keepGeolocMap[date]!.length.toString()
+                                                    : '0',
+                                                style: const TextStyle(fontSize: 8),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
-                                ),
-                              ],
+                                ],
+                              ),
                             ],
                           ),
                         ),

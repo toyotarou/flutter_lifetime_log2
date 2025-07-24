@@ -7,10 +7,10 @@ enum APIPath {
   insertLifetime,
   insertWalkRecord,
   moneyinsert,
+  getAllTemple,
+  getTempleLatLng,
+  getTempleDatePhoto,
 
-  // getLifetimeDateRecord,
-  // getLifetimeYearlyRecord,
-  //
   // getGenbaWorkTime,
   // worktimemonthdata, //{"date":"2022-01-01"}
   // worktimesummary,
@@ -18,7 +18,6 @@ enum APIPath {
 
   // getsalary,
   // getmonthlytimeplace,
-  //  // moneydl,
 
   //  // getmonthSpendItem,
 }
@@ -50,11 +49,13 @@ extension APIPathExtension on APIPath {
       case APIPath.moneyinsert:
         return 'moneyinsert';
 
-      // case APIPath.getLifetimeDateRecord:
-      //   return 'getLifetimeDateRecord';
-      // case APIPath.getLifetimeYearlyRecord:
-      //   return 'getLifetimeYearlyRecord';
-      //
+      case APIPath.getAllTemple:
+        return 'getAllTemple';
+      case APIPath.getTempleLatLng:
+        return 'getTempleLatLng';
+      case APIPath.getTempleDatePhoto:
+        return 'getTempleDatePhoto';
+
       // case APIPath.getGenbaWorkTime:
       //   return 'getGenbaWorkTime';
       // case APIPath.worktimemonthdata:
@@ -68,8 +69,6 @@ extension APIPathExtension on APIPath {
       //   return 'getsalary';
       // case APIPath.getmonthlytimeplace:
       //   return 'getmonthlytimeplace';
-      // case APIPath.moneydl:
-      //   return 'moneydl';
 
       // case APIPath.getmonthSpendItem:
       //   return 'getmonthSpendItem';

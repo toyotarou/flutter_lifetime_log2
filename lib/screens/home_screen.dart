@@ -7,6 +7,7 @@ import '../models/geoloc_model.dart';
 import '../models/lifetime_item_model.dart';
 import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
+import '../models/temple_model.dart';
 import '../models/walk_model.dart';
 import '../utility/utility.dart';
 import 'page/monthly_lifetime_display_page.dart';
@@ -27,6 +28,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.lifetimeItemList,
     required this.holidayList,
     required this.geolocMap,
+    required this.templeMap,
   });
 
   final List<String> holidayList;
@@ -34,6 +36,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, MoneyModel> moneyMap;
   final List<LifetimeItemModel> lifetimeItemList;
   final Map<String, List<GeolocModel>> geolocMap;
+  final Map<String, TempleModel> templeMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -50,11 +53,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
     _makeTab();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+
+
+      //
+      // print('aaaaaaaaa');
+      // print(templeState.templeMap);
+      // print('aaaaaaaaa');
+      //
+
+
+
       appParamNotifier.setKeepHolidayList(list: widget.holidayList);
       appParamNotifier.setKeepWalkModelMap(map: widget.walkMap);
       appParamNotifier.setKeepMoneyMap(map: widget.moneyMap);
       appParamNotifier.setKeepLifetimeItemList(list: widget.lifetimeItemList);
       appParamNotifier.setKeepGeolocMap(map: widget.geolocMap);
+      appParamNotifier.setKeepTempleMap(map: widget.templeMap);
     });
 
     return DefaultTabController(

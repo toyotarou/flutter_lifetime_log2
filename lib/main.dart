@@ -50,6 +50,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     moneyNotifier.getAllMoneyData();
     lifetimeItemNotifier.getAllLifetimeItemData();
     geolocNotifier.getAllGeolocData();
+    templeNotifier.getAllTempleData();
   }
 
   ///
@@ -65,6 +66,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
         moneyMap: moneyState.moneyMap,
         lifetimeItemList: lifetimeItemState.lifetimeItemList,
         geolocMap: geolocState.geolocMap,
+        templeMap: templeState.templeMap,
       ),
     );
   }
