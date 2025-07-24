@@ -150,14 +150,12 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                             color: Colors.white.withValues(alpha: 0.3),
                                           ),
                                           const SizedBox(height: 5),
-
                                           Text(
                                             appParamState.keepTempleMap[date]!.templeDataList.length.toString(),
                                             style: const TextStyle(fontSize: 8),
                                           ),
                                         ],
                                       ),
-
                                       const SizedBox(height: 10),
                                     ],
 
@@ -179,9 +177,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                         crossAxisAlignment: CrossAxisAlignment.end,
                                         children: <Widget>[
                                           Text(i.toString().padLeft(2, '0'), style: const TextStyle(fontSize: 20)),
-
                                           const SizedBox(width: 5),
-
                                           Text(youbi),
                                         ],
                                       ),
@@ -215,35 +211,31 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                         const SizedBox(width: 20),
 
-                                        GestureDetector(
-                                          onTap: () {
-                                            LifetimeDialog(
-                                              context: context,
-
-                                              widget: LifetimeGeolocMapDisplayAlert(
-                                                date: date,
-                                                geolocList: appParamState.keepGeolocMap[date],
-                                                temple: appParamState.keepTempleMap[date],
-                                                transportation: appParamState.keepTransportationMap[date],
-                                              ),
-                                            );
-                                          },
-
-                                          child: Column(
-                                            children: <Widget>[
-                                              Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
-
-                                              const SizedBox(height: 5),
-
-                                              Text(
-                                                (appParamState.keepGeolocMap[date] != null)
-                                                    ? appParamState.keepGeolocMap[date]!.length.toString()
-                                                    : '0',
-                                                style: const TextStyle(fontSize: 8),
-                                              ),
-                                            ],
+                                        if (appParamState.keepGeolocMap[date] != null) ...[
+                                          GestureDetector(
+                                            onTap: () {
+                                              LifetimeDialog(
+                                                context: context,
+                                                widget: LifetimeGeolocMapDisplayAlert(
+                                                  date: date,
+                                                  geolocList: appParamState.keepGeolocMap[date],
+                                                  temple: appParamState.keepTempleMap[date],
+                                                  transportation: appParamState.keepTransportationMap[date],
+                                                ),
+                                              );
+                                            },
+                                            child: Column(
+                                              children: <Widget>[
+                                                Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+                                                const SizedBox(height: 5),
+                                                Text(
+                                                  appParamState.keepGeolocMap[date]!.length.toString(),
+                                                  style: const TextStyle(fontSize: 8),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ],
                                     ),
                                   ],
@@ -263,18 +255,14 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                       child: Stack(
                                         children: <Widget>[
                                           Text('🦶', style: TextStyle(color: Colors.white.withValues(alpha: 0.4))),
-
                                           Container(
                                             alignment: Alignment.topRight,
-
                                             decoration: BoxDecoration(
                                               border: Border(
                                                 bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
                                               ),
                                             ),
-
                                             padding: const EdgeInsets.all(5),
-
                                             child: Text(
                                               (appParamState.keepWalkModelMap[date] != null)
                                                   ? appParamState.keepWalkModelMap[date]!.step.toString().toCurrency()
@@ -290,18 +278,14 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                       child: Stack(
                                         children: <Widget>[
                                           Text('🚩', style: TextStyle(color: Colors.white.withValues(alpha: 0.4))),
-
                                           Container(
                                             alignment: Alignment.topRight,
-
                                             decoration: BoxDecoration(
                                               border: Border(
                                                 bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
                                               ),
                                             ),
-
                                             padding: const EdgeInsets.all(5),
-
                                             child: Text(
                                               (appParamState.keepWalkModelMap[date] != null)
                                                   ? appParamState.keepWalkModelMap[date]!.distance
@@ -316,21 +300,17 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                     SizedBox(
                                       width: 30,
-
                                       child: Container(
                                         alignment: Alignment.topRight,
-
                                         child: GestureDetector(
                                           onTap: () {
                                             LifetimeDialog(
                                               context: context,
                                               widget: WalkDataInputAlert(
                                                 date: date,
-
                                                 step: (appParamState.keepWalkModelMap[date] != null)
                                                     ? appParamState.keepWalkModelMap[date]!.step.toString()
                                                     : '',
-
                                                 distance: (appParamState.keepWalkModelMap[date] != null)
                                                     ? appParamState.keepWalkModelMap[date]!.distance.toString()
                                                     : '',
@@ -355,15 +335,12 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                           Container(
                                             alignment: Alignment.topRight,
-
                                             decoration: BoxDecoration(
                                               border: Border(
                                                 bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
                                               ),
                                             ),
-
                                             padding: const EdgeInsets.all(5),
-
                                             child: Text(
                                               (appParamState.keepWalkModelMap[date] != null)
                                                   ? (appParamState.keepWalkModelMap[date]!.spend == '0')
@@ -384,15 +361,12 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                           Container(
                                             alignment: Alignment.topRight,
-
                                             decoration: BoxDecoration(
                                               border: Border(
                                                 bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
                                               ),
                                             ),
-
                                             padding: const EdgeInsets.all(5),
-
                                             child: Text(
                                               (appParamState.keepMoneyMap[date] != null)
                                                   ? '${appParamState.keepMoneyMap[date]!.sum.toCurrency()} 円'
@@ -438,7 +412,6 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                     if (lifetimeState.lifetimeMap[date] != null) ...<Widget>[
                       const SizedBox(height: 10),
-
                       Row(
                         // ignore: always_specify_types
                         children: List.generate(24, (index) => index).map((e) {
@@ -505,16 +478,11 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
       children: <Widget>[
         Container(
           width: context.screenSize.width / 40,
-
           margin: const EdgeInsets.all(1),
-
           decoration: BoxDecoration(color: color),
-
           child: Text(num.toString(), style: const TextStyle(fontSize: 5, color: Colors.transparent)),
         ),
-
         const SizedBox(height: 5),
-
         Text(
           (num % 6 == 0) ? num.toString().padLeft(2, '0') : '',
           style: TextStyle(fontSize: 10, color: Colors.white.withValues(alpha: 0.4)),
