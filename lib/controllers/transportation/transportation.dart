@@ -158,7 +158,7 @@ class Transportation extends _$Transportation {
 
       //---------------------------------------------------------------------------//
 
-      return state.copyWith(transportationList: list, transportationMap: <String, TransportationModel>{});
+      return state.copyWith(transportationList: list, transportationMap: map);
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる

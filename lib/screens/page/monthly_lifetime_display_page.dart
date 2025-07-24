@@ -141,7 +141,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                 right: 10,
                                 child: Column(
                                   children: <Widget>[
-                                    if (appParamState.keepTempleMap[date] != null)
+                                    if (appParamState.keepTempleMap[date] != null) ...<Widget>[
                                       Column(
                                         children: <Widget>[
                                           Icon(
@@ -156,16 +156,14 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                             style: const TextStyle(fontSize: 8),
                                           ),
                                         ],
-                                      )
-                                    else
-                                      const SizedBox.shrink(),
+                                      ),
 
-                                    const SizedBox(height: 5),
+                                      const SizedBox(height: 10),
+                                    ],
 
-                                    if (appParamState.keepTransportationMap[date] != null)
-                                      const Icon(Icons.train)
-                                    else
-                                      const SizedBox.shrink(),
+                                    if (appParamState.keepTransportationMap[date] != null) ...<Widget>[
+                                      Icon(Icons.train, size: 20, color: Colors.white.withValues(alpha: 0.3)),
+                                    ],
                                   ],
                                 ),
                               ),
@@ -225,7 +223,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                               widget: LifetimeGeolocMapDisplayAlert(
                                                 date: date,
                                                 geolocList: appParamState.keepGeolocMap[date],
-                                                templeMap: templeState.templeMap[date],
+                                                temple: appParamState.keepTempleMap[date],
+                                                transportation: appParamState.keepTransportationMap[date],
                                               ),
                                             );
                                           },
