@@ -112,13 +112,13 @@ class Temple extends _$Temple {
         // ignore: avoid_dynamic_calls
         final String templeName = value['list'][i]['temple'].toString();
 
-        final List<TempleData> templeDataList = <TempleData>[];
+        final List<TempleDataModel> templeDataList = <TempleDataModel>[];
 
         if (latlngMap1[templeName] != null) {
           final Map<String, List<String>>? photos1 = photoMap1[templeName];
 
           templeDataList.add(
-            TempleData(
+            TempleDataModel(
               name: latlngMap1[templeName]!['temple']!,
               address: latlngMap1[templeName]!['address']!,
               latitude: latlngMap1[templeName]!['latitude']!,
@@ -140,7 +140,7 @@ class Temple extends _$Temple {
               final Map<String, List<String>>? photos2 = photoMap1[element];
 
               templeDataList.add(
-                TempleData(
+                TempleDataModel(
                   name: latlngMap1[element]!['temple']!,
                   address: latlngMap1[element]!['address']!,
                   latitude: latlngMap1[element]!['latitude']!,

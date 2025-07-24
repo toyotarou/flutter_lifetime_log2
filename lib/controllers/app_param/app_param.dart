@@ -5,11 +5,11 @@ import '../../models/geoloc_model.dart';
 import '../../models/lifetime_item_model.dart';
 import '../../models/money_model.dart';
 import '../../models/temple_model.dart';
+import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
 import '../../utility/utility.dart';
 
 part 'app_param.freezed.dart';
-
 part 'app_param.g.dart';
 
 @freezed
@@ -21,6 +21,7 @@ class AppParamState with _$AppParamState {
     @Default(<LifetimeItemModel>[]) List<LifetimeItemModel> keepLifetimeItemList,
     @Default(<String, List<GeolocModel>>{}) Map<String, List<GeolocModel>> keepGeolocMap,
     @Default(<String, TempleModel>{}) Map<String, TempleModel> keepTempleMap,
+    @Default(<String, TransportationModel>{}) Map<String, TransportationModel> keepTransportationMap,
   }) = _AppParamState;
 }
 
@@ -50,4 +51,8 @@ class AppParam extends _$AppParam {
 
   ///
   void setKeepTempleMap({required Map<String, TempleModel> map}) => state = state.copyWith(keepTempleMap: map);
+
+  ///
+  void setKeepGeoSpotModelMap({required Map<String, TransportationModel> map}) =>
+      state = state.copyWith(keepTransportationMap: map);
 }

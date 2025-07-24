@@ -139,8 +139,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               Positioned(
                                 top: 5,
                                 right: 10,
-                                child: (templeState.templeMap[date] != null)
-                                    ? Column(
+                                child: Column(
+                                  children: <Widget>[
+                                    if (appParamState.keepTempleMap[date] != null)
+                                      Column(
                                         children: <Widget>[
                                           Icon(
                                             FontAwesomeIcons.toriiGate,
@@ -150,12 +152,22 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                           const SizedBox(height: 5),
 
                                           Text(
-                                            templeState.templeMap[date]!.templeDataList.length.toString(),
+                                            appParamState.keepTempleMap[date]!.templeDataList.length.toString(),
                                             style: const TextStyle(fontSize: 8),
                                           ),
                                         ],
                                       )
-                                    : const SizedBox.shrink(),
+                                    else
+                                      const SizedBox.shrink(),
+
+                                    const SizedBox(height: 5),
+
+                                    if (appParamState.keepTransportationMap[date] != null)
+                                      const Icon(Icons.train)
+                                    else
+                                      const SizedBox.shrink(),
+                                  ],
+                                ),
                               ),
 
                               Column(

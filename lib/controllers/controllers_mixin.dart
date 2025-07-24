@@ -10,6 +10,7 @@ import 'lifetime_item/lifetime_item.dart';
 import 'money/money.dart';
 import 'money_input/money_input.dart';
 import 'temple/temple.dart';
+import 'transportation/transportation.dart';
 import 'walk/walk.dart';
 import 'walk_input/walk_input.dart';
 
@@ -79,6 +80,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   TempleState get templeState => ref.watch(templeProvider);
 
   Temple get templeNotifier => ref.read(templeProvider.notifier);
+
+  //==========================================//
+
+  TransportationState get transportationState => ref.watch(transportationProvider);
+
+  Transportation get transportationNotifier => ref.read(transportationProvider.notifier);
 
   //==========================================//
 }

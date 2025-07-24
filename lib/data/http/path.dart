@@ -10,6 +10,9 @@ enum APIPath {
   getAllTemple,
   getTempleLatLng,
   getTempleDatePhoto,
+  gettrainrecord,
+  getBusStopAddress,
+  getDupSpot,
 
   // getGenbaWorkTime,
   // worktimemonthdata, //{"date":"2022-01-01"}
@@ -55,6 +58,13 @@ extension APIPathExtension on APIPath {
         return 'getTempleLatLng';
       case APIPath.getTempleDatePhoto:
         return 'getTempleDatePhoto';
+
+      case APIPath.gettrainrecord:
+        return 'gettrainrecord';
+      case APIPath.getBusStopAddress:
+        return 'getBusStopAddress';
+      case APIPath.getDupSpot:
+        return 'getDupSpot';
 
       // case APIPath.getGenbaWorkTime:
       //   return 'getGenbaWorkTime';

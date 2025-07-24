@@ -4,11 +4,11 @@ class TempleModel {
   String date;
   String startPoint;
   String endPoint;
-  List<TempleData> templeDataList;
+  List<TempleDataModel> templeDataList;
 }
 
-class TempleData {
-  TempleData({
+class TempleDataModel {
+  TempleDataModel({
     required this.name,
     required this.address,
     required this.latitude,

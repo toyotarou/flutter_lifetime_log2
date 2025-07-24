@@ -51,6 +51,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     lifetimeItemNotifier.getAllLifetimeItemData();
     geolocNotifier.getAllGeolocData();
     templeNotifier.getAllTempleData();
+    transportationNotifier.getAllTransportationData();
   }
 
   ///
@@ -67,6 +68,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
         lifetimeItemList: lifetimeItemState.lifetimeItemList,
         geolocMap: geolocState.geolocMap,
         templeMap: templeState.templeMap,
+        transportationMap:transportationState.transportationMap,
       ),
     );
   }
