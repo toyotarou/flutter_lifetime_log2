@@ -30,6 +30,10 @@ mixin _$AppParamState {
   Map<String, TransportationModel> get keepTransportationMap =>
       throw _privateConstructorUsedError;
 
+  ///
+  double get currentZoom => throw _privateConstructorUsedError;
+  int get currentPaddingIndex => throw _privateConstructorUsedError;
+
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -50,7 +54,9 @@ abstract class $AppParamStateCopyWith<$Res> {
       List<LifetimeItemModel> keepLifetimeItemList,
       Map<String, List<GeolocModel>> keepGeolocMap,
       Map<String, TempleModel> keepTempleMap,
-      Map<String, TransportationModel> keepTransportationMap});
+      Map<String, TransportationModel> keepTransportationMap,
+      double currentZoom,
+      int currentPaddingIndex});
 }
 
 /// @nodoc
@@ -75,6 +81,8 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? keepGeolocMap = null,
     Object? keepTempleMap = null,
     Object? keepTransportationMap = null,
+    Object? currentZoom = null,
+    Object? currentPaddingIndex = null,
   }) {
     return _then(_value.copyWith(
       keepHolidayList: null == keepHolidayList
@@ -105,6 +113,14 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.keepTransportationMap
           : keepTransportationMap // ignore: cast_nullable_to_non_nullable
               as Map<String, TransportationModel>,
+      currentZoom: null == currentZoom
+          ? _value.currentZoom
+          : currentZoom // ignore: cast_nullable_to_non_nullable
+              as double,
+      currentPaddingIndex: null == currentPaddingIndex
+          ? _value.currentPaddingIndex
+          : currentPaddingIndex // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -124,7 +140,9 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       List<LifetimeItemModel> keepLifetimeItemList,
       Map<String, List<GeolocModel>> keepGeolocMap,
       Map<String, TempleModel> keepTempleMap,
-      Map<String, TransportationModel> keepTransportationMap});
+      Map<String, TransportationModel> keepTransportationMap,
+      double currentZoom,
+      int currentPaddingIndex});
 }
 
 /// @nodoc
@@ -147,6 +165,8 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? keepGeolocMap = null,
     Object? keepTempleMap = null,
     Object? keepTransportationMap = null,
+    Object? currentZoom = null,
+    Object? currentPaddingIndex = null,
   }) {
     return _then(_$AppParamStateImpl(
       keepHolidayList: null == keepHolidayList
@@ -177,6 +197,14 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value._keepTransportationMap
           : keepTransportationMap // ignore: cast_nullable_to_non_nullable
               as Map<String, TransportationModel>,
+      currentZoom: null == currentZoom
+          ? _value.currentZoom
+          : currentZoom // ignore: cast_nullable_to_non_nullable
+              as double,
+      currentPaddingIndex: null == currentPaddingIndex
+          ? _value.currentPaddingIndex
+          : currentPaddingIndex // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -196,7 +224,9 @@ class _$AppParamStateImpl implements _AppParamState {
       final Map<String, TempleModel> keepTempleMap =
           const <String, TempleModel>{},
       final Map<String, TransportationModel> keepTransportationMap =
-          const <String, TransportationModel>{}})
+          const <String, TransportationModel>{},
+      this.currentZoom = 0,
+      this.currentPaddingIndex = 5})
       : _keepHolidayList = keepHolidayList,
         _keepWalkModelMap = keepWalkModelMap,
         _keepMoneyMap = keepMoneyMap,
@@ -270,9 +300,17 @@ class _$AppParamStateImpl implements _AppParamState {
     return EqualUnmodifiableMapView(_keepTransportationMap);
   }
 
+  ///
+  @override
+  @JsonKey()
+  final double currentZoom;
+  @override
+  @JsonKey()
+  final int currentPaddingIndex;
+
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex)';
   }
 
   @override
@@ -293,7 +331,11 @@ class _$AppParamStateImpl implements _AppParamState {
             const DeepCollectionEquality()
                 .equals(other._keepTempleMap, _keepTempleMap) &&
             const DeepCollectionEquality()
-                .equals(other._keepTransportationMap, _keepTransportationMap));
+                .equals(other._keepTransportationMap, _keepTransportationMap) &&
+            (identical(other.currentZoom, currentZoom) ||
+                other.currentZoom == currentZoom) &&
+            (identical(other.currentPaddingIndex, currentPaddingIndex) ||
+                other.currentPaddingIndex == currentPaddingIndex));
   }
 
   @override
@@ -305,7 +347,9 @@ class _$AppParamStateImpl implements _AppParamState {
       const DeepCollectionEquality().hash(_keepLifetimeItemList),
       const DeepCollectionEquality().hash(_keepGeolocMap),
       const DeepCollectionEquality().hash(_keepTempleMap),
-      const DeepCollectionEquality().hash(_keepTransportationMap));
+      const DeepCollectionEquality().hash(_keepTransportationMap),
+      currentZoom,
+      currentPaddingIndex);
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
@@ -318,14 +362,15 @@ class _$AppParamStateImpl implements _AppParamState {
 
 abstract class _AppParamState implements AppParamState {
   const factory _AppParamState(
-          {final List<String> keepHolidayList,
-          final Map<String, WalkModel> keepWalkModelMap,
-          final Map<String, MoneyModel> keepMoneyMap,
-          final List<LifetimeItemModel> keepLifetimeItemList,
-          final Map<String, List<GeolocModel>> keepGeolocMap,
-          final Map<String, TempleModel> keepTempleMap,
-          final Map<String, TransportationModel> keepTransportationMap}) =
-      _$AppParamStateImpl;
+      {final List<String> keepHolidayList,
+      final Map<String, WalkModel> keepWalkModelMap,
+      final Map<String, MoneyModel> keepMoneyMap,
+      final List<LifetimeItemModel> keepLifetimeItemList,
+      final Map<String, List<GeolocModel>> keepGeolocMap,
+      final Map<String, TempleModel> keepTempleMap,
+      final Map<String, TransportationModel> keepTransportationMap,
+      final double currentZoom,
+      final int currentPaddingIndex}) = _$AppParamStateImpl;
 
   @override
   List<String> get keepHolidayList;
@@ -341,6 +386,12 @@ abstract class _AppParamState implements AppParamState {
   Map<String, TempleModel> get keepTempleMap;
   @override
   Map<String, TransportationModel> get keepTransportationMap;
+
+  ///
+  @override
+  double get currentZoom;
+  @override
+  int get currentPaddingIndex;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.

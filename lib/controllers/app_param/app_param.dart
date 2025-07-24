@@ -10,6 +10,7 @@ import '../../models/walk_model.dart';
 import '../../utility/utility.dart';
 
 part 'app_param.freezed.dart';
+
 part 'app_param.g.dart';
 
 @freezed
@@ -22,6 +23,10 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<GeolocModel>>{}) Map<String, List<GeolocModel>> keepGeolocMap,
     @Default(<String, TempleModel>{}) Map<String, TempleModel> keepTempleMap,
     @Default(<String, TransportationModel>{}) Map<String, TransportationModel> keepTransportationMap,
+
+    ///
+    @Default(0) double currentZoom,
+    @Default(5) int currentPaddingIndex,
   }) = _AppParamState;
 }
 
@@ -55,4 +60,9 @@ class AppParam extends _$AppParam {
   ///
   void setKeepGeoSpotModelMap({required Map<String, TransportationModel> map}) =>
       state = state.copyWith(keepTransportationMap: map);
+
+  //===================================================
+
+  ///
+  void setCurrentZoom({required double zoom}) => state = state.copyWith(currentZoom: zoom);
 }
