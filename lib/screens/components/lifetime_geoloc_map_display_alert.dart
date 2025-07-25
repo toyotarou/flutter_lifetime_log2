@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../controllers/controllers_mixin.dart';
@@ -11,6 +12,7 @@ import '../../models/geoloc_model.dart';
 import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
 import '../../utility/tile_provider.dart';
+import '../../utility/utility.dart';
 
 class LifetimeGeolocMapDisplayAlert extends ConsumerStatefulWidget {
   const LifetimeGeolocMapDisplayAlert({
@@ -37,8 +39,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   List<double> latList = <double>[];
   List<double> lngList = <double>[];
 
-  List<LatLng> latLngList = <LatLng>[];
-
   double minLat = 0.0;
   double maxLat = 0.0;
   double minLng = 0.0;
@@ -51,6 +51,12 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   double currentZoomEightTeen = 18;
 
   List<Marker> markerList = <Marker>[];
+
+  Utility utility = Utility();
+
+  List<Marker> transportationGoalMarkerList = <Marker>[];
+
+  List<Marker> templeMarkerList = <Marker>[];
 
   ///
   @override
@@ -72,15 +78,17 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   ///
   @override
   Widget build(BuildContext context) {
-    print(widget.transportation?.spotDataModelListMap);
-
     makeMinMaxLatLng();
 
     makeMarker();
 
+    makeTransportationGoalMarker();
+
+    makeTempleMarker();
+
     return Scaffold(
       body: Stack(
-        children: [
+        children: <Widget>[
           FlutterMap(
             mapController: mapController,
             options: MapOptions(
@@ -103,30 +111,14 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
               MarkerLayer(markers: markerList),
 
-              // if (widget.transportation != null && widget.transportation!.spotDataModelListMap.isNotEmpty) ...[
-              //   PolylineLayer(polylines: _buildPolylines()),
-              // ],
-              //
-              //
+              if (widget.transportation != null && widget.transportation!.spotDataModelListMap.isNotEmpty) ...<Widget>[
+                // ignore: always_specify_types
+                PolylineLayer(polylines: makeTransportationPolyline()),
+              ],
 
-              //
-              //
-              //
-              //
-              // var transportationPolylineList = <Polyline<Object>>[];
-              //
-              //
+              MarkerLayer(markers: transportationGoalMarkerList),
 
-              //     ///
-              //     void makeTransportationPolyline() {
-              //   if (widget.transportation != null) {
-              //     widget.transportation!.spotDataModelListMap.forEach((key, value) {
-              //       var points = <LatLng>[];
-              //       value.forEach((element) => points.add(LatLng(element.lat.toDouble(), element.lng.toDouble())));
-              //       transportationPolylineList.add(Polyline(points: points, color: Colors.blueAccent, strokeWidth: 5));
-              //     });
-              //   }
-              // }
+              MarkerLayer(markers: templeMarkerList),
             ],
           ),
 
@@ -142,32 +134,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
     lngList = <double>[];
 
-    //
-    //
-    // latLngList = <LatLng>[];
-
-    // if (appParamState.monthGeolocAddMonthButtonLabelList.isNotEmpty) {
-    //   for (final String element in appParamState.monthGeolocAddMonthButtonLabelList) {
-    //     for (final GeolocModel element2 in geolocState.allGeolocList) {
-    //       if ('${element2.year}-${element2.month}' == element) {
-    //         gStateList.add(element2);
-    //       }
-    //     }
-    //   }
-    // }
-    //
-    // for (final GeolocModel element in gStateList) {
-    //   latList.add(element.latitude.toDouble());
-    //   lngList.add(element.longitude.toDouble());
-    //
-    //   final LatLng latlng = LatLng(element.latitude.toDouble(), element.longitude.toDouble());
-    //
-    //   latLngList.add(latlng);
-    //
-    //   latLngGeolocModelMap['${latlng.latitude}|${latlng.longitude}'] = element;
-    // }
-
-    widget.geolocList?.forEach((element) {
+    widget.geolocList?.forEach((GeolocModel element) {
       latList.add(element.latitude.toDouble());
       lngList.add(element.longitude.toDouble());
     });
@@ -182,26 +149,24 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   ///
   void setDefaultBoundsMap() {
-    if (widget.geolocList != null) {
-      if (widget.geolocList!.length > 0) {
-        final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
+    if (widget.geolocList!.isNotEmpty) {
+      final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
 
-        final CameraFit cameraFit = CameraFit.bounds(
-          bounds: bounds,
-          padding: EdgeInsets.all(appParamState.currentPaddingIndex * 10),
-        );
+      final CameraFit cameraFit = CameraFit.bounds(
+        bounds: bounds,
+        padding: EdgeInsets.all(appParamState.currentPaddingIndex * 10),
+      );
 
-        mapController.fitCamera(cameraFit);
+      mapController.fitCamera(cameraFit);
 
-        /// これは残しておく
-        // final LatLng newCenter = mapController.camera.center;
+      /// これは残しておく
+      // final LatLng newCenter = mapController.camera.center;
 
-        final double newZoom = mapController.camera.zoom;
+      final double newZoom = mapController.camera.zoom;
 
-        setState(() => currentZoom = newZoom);
+      setState(() => currentZoom = newZoom);
 
-        appParamNotifier.setCurrentZoom(zoom: newZoom);
-      }
+      appParamNotifier.setCurrentZoom(zoom: newZoom);
     }
   }
 
@@ -209,84 +174,70 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeMarker() {
     markerList.clear();
 
-    widget.geolocList?.forEach((element) {
+    widget.geolocList?.forEach((GeolocModel element) {
       markerList.add(
         Marker(
           point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
           width: 40,
           height: 40,
 
-          child: Icon(Icons.ac_unit, color: Colors.black),
+          child: const Icon(Icons.ac_unit, color: Colors.black),
         ),
       );
     });
-
-    // markerList = <Marker>[];
-    //
-    // for (final GeolocModel element in gStateList) {
-    //   final bool isRed = emphasisMarkers.contains(LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
-    //
-    //   final int? badgeIndex = emphasisMarkersIndices[LatLng(element.latitude.toDouble(), element.longitude.toDouble())];
-    //
-    //   markerList.add(
-    //     Marker(
-    //       point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-    //       width: 40,
-    //       height: 40,
-    //       // ignore: use_if_null_to_convert_nulls_to_bools
-    //       child: (appParamState.mapType == MapType.monthly)
-    //           ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
-    //           : Stack(
-    //         children: <Widget>[
-    //           CircleAvatar(
-    //             // ignore: use_if_null_to_convert_nulls_to_bools
-    //             backgroundColor: isRed
-    //                 ? Colors.redAccent.withOpacity(0.5)
-    //                 : (appParamState.selectedTimeGeoloc != null &&
-    //                 appParamState.selectedTimeGeoloc!.time == element.time)
-    //                 ? Colors.redAccent.withOpacity(0.5)
-    //
-    //             // ignore: use_if_null_to_convert_nulls_to_bools
-    //                 : (widget.displayTempMap == true)
-    //                 ? Colors.orangeAccent.withOpacity(0.5)
-    //                 : Colors.green[900]?.withOpacity(0.5),
-    //             child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
-    //           ),
-    //           if (badgeIndex != null)
-    //             Positioned(
-    //               top: 0,
-    //               left: 0,
-    //               child: Container(
-    //                 width: 16,
-    //                 height: 16,
-    //                 alignment: Alignment.center,
-    //                 decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-    //                 child: Text(badgeIndex.toString(), style: const TextStyle(fontSize: 10, color: Colors.black)),
-    //               ),
-    //             ),
-    //         ],
-    //       ),
-    //     ),
-    //   );
-    // }
   }
 
-  //
-  //
-  //
-  //
-  // ///
-  // List<Polyline> _buildPolylines() {
-  //   return <Polyline<Object>>[
-  //     for (int i = 0; i < widget.transportation!.spotDataModelListMap.length; i++)
-  //       // ignore: always_specify_types
-  //       Polyline(
-  //         points: widget.transportation!.spotDataModelListMap[i]!.map((t) {
-  //           return LatLng(t.lat.toDouble(), t.lng.toDouble());
-  //         }).toList(),
-  //         color: Colors.blue,
-  //         strokeWidth: 5,
-  //       ),
-  //   ];
-  // }
+  ///
+  // ignore: always_specify_types
+  List<Polyline> makeTransportationPolyline() {
+    final List<Color> twelveColor = utility.getTwelveColor();
+
+    return <Polyline<Object>>[
+      for (int i = 0; i < widget.transportation!.spotDataModelListMap.length; i++)
+        // ignore: always_specify_types
+        Polyline(
+          points: widget.transportation!.spotDataModelListMap[i]!.map((SpotDataModel t) {
+            return LatLng(t.lat.toDouble(), t.lng.toDouble());
+          }).toList(),
+          color: twelveColor[i],
+          strokeWidth: 5,
+        ),
+    ];
+  }
+
+  ///
+  void makeTransportationGoalMarker() {
+    transportationGoalMarkerList.clear();
+
+    final List<Color> twelveColor = utility.getTwelveColor();
+
+    if (widget.transportation != null && widget.transportation!.spotDataModelListMap.isNotEmpty) {
+      for (int i = 0; i < widget.transportation!.spotDataModelListMap.length; i++) {
+        final SpotDataModel lastValue = widget.transportation!.spotDataModelListMap[i]!.last;
+
+        transportationGoalMarkerList.add(
+          Marker(
+            point: LatLng(lastValue.lat.toDouble(), lastValue.lng.toDouble()),
+            child: Icon(Icons.flag, color: twelveColor[i]),
+          ),
+        );
+      }
+    }
+  }
+
+  ///
+  void makeTempleMarker() {
+    templeMarkerList.clear();
+
+    if (widget.temple != null) {
+      for (final TempleDataModel element in widget.temple!.templeDataList) {
+        templeMarkerList.add(
+          Marker(
+            point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
+            child: const Icon(FontAwesomeIcons.toriiGate, color: Color(0xFFFBB6CE)),
+          ),
+        );
+      }
+    }
+  }
 }

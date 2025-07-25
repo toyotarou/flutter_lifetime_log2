@@ -211,7 +211,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                         const SizedBox(width: 20),
 
-                                        if (appParamState.keepGeolocMap[date] != null) ...[
+                                        if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
                                           GestureDetector(
                                             onTap: () {
                                               LifetimeDialog(

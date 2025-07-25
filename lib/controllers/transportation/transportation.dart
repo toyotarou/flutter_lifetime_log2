@@ -82,10 +82,12 @@ class Transportation extends _$Transportation {
         final StationModel val = StationModel.fromJson(value2[i] as Map<String, dynamic>);
 
         if (dupMap1[val.stationName] != null) {
-          if (dupMap1[val.stationName]![val.prefecture] != null) {
-            stationMap1[val.stationName] = val;
+          if (dupMap1[val.stationName]?[val.prefecture] == null) {
+            continue;
           }
         }
+
+        stationMap1[val.stationName] = val;
       }
 
       //---------------------------------------------------------------------------//
@@ -113,22 +115,24 @@ class Transportation extends _$Transportation {
           final List<SpotDataModel> spotDataModelList = <SpotDataModel>[];
 
           for (int k = 0; k < exElement.length; k++) {
-            if (stationMap1[exElement[k]] != null) {
+            if (stationMap1[exElement[k].trim()] != null) {
               spotDataModelList.add(
                 SpotDataModel(
-                  name: stationMap1[exElement[k]]!.stationName,
-                  address: stationMap1[exElement[k]]!.address,
-                  lat: stationMap1[exElement[k]]!.lat,
-                  lng: stationMap1[exElement[k]]!.lng,
+                  name: stationMap1[exElement[k].trim()]!.stationName,
+                  address: stationMap1[exElement[k].trim()]!.address,
+                  lat: stationMap1[exElement[k].trim()]!.lat,
+                  lng: stationMap1[exElement[k].trim()]!.lng,
                 ),
               );
-            } else if (busStopMap1[exElement[k]] != null) {
+            }
+
+            if (busStopMap1[exElement[k].trim()] != null) {
               spotDataModelList.add(
                 SpotDataModel(
-                  name: busStopMap1[exElement[k]]!.name,
-                  address: busStopMap1[exElement[k]]!.address,
-                  lat: busStopMap1[exElement[k]]!.latitude,
-                  lng: busStopMap1[exElement[k]]!.longitude,
+                  name: busStopMap1[exElement[k].trim()]!.name,
+                  address: busStopMap1[exElement[k].trim()]!.address,
+                  lat: busStopMap1[exElement[k].trim()]!.latitude,
+                  lng: busStopMap1[exElement[k].trim()]!.longitude,
                 ),
               );
             }
