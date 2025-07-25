@@ -148,6 +148,7 @@ class Transportation extends _$Transportation {
             oufuku: (val.oufuku == '1') ? true : false,
             spotDataModelListMap: spotDataModelListMap,
             rootSpotCountMap: rootSpotCountMap,
+            stationRouteList: exStation,
           ),
         );
 
@@ -157,6 +158,7 @@ class Transportation extends _$Transportation {
           oufuku: (val.oufuku == '1') ? true : false,
           spotDataModelListMap: spotDataModelListMap,
           rootSpotCountMap: rootSpotCountMap,
+          stationRouteList: exStation,
         );
       }
 

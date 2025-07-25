@@ -175,6 +175,16 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                           ),
                         ),
                       ],
+
+                      if (widget.transportation != null &&
+                          widget.transportation!.stationRouteList.isNotEmpty) ...<Widget>[
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: widget.transportation!.stationRouteList.map((String e) {
+                            return Text(e);
+                          }).toList(),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -220,7 +230,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       lngList.add(element.longitude.toDouble());
     });
 
-    if (widget.temple != null) {
+    if (widget.temple != null && widget.temple!.templeDataList.length > 1) {
       latList.clear();
       lngList.clear();
 

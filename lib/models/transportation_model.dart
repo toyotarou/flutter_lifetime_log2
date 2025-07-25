@@ -8,12 +8,14 @@ class TransportationModel {
     required this.oufuku,
     required this.spotDataModelListMap,
     required this.rootSpotCountMap,
+    required this.stationRouteList,
   });
 
   String date;
   bool oufuku;
   Map<int, List<SpotDataModel>> spotDataModelListMap;
   Map<int, int> rootSpotCountMap;
+  List<String> stationRouteList;
 }
 
 /////////////////////////////////////////////////////////////////////////////
