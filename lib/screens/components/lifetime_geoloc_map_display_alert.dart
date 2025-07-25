@@ -127,50 +127,80 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
             right: 5,
             left: 5,
 
-            child: Container(
-              width: context.screenSize.width,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[Text(widget.date, style: const TextStyle(fontSize: 20))],
+            child: Column(
+              children: <Widget>[
+                Container(
+                  width: context.screenSize.width,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
 
-                  const SizedBox(height: 10),
-
-                  Row(
                     children: <Widget>[
-                      Expanded(
-                        child: Column(
+                      Text(widget.date, style: const TextStyle(fontSize: 20)),
+
+                      const SizedBox(height: 10),
+
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                              ),
-                              child: Row(
-                                children: <Widget>[
-                                  const SizedBox(width: 70, child: Text('size:')),
-                                  Expanded(
-                                    child: Container(
-                                      alignment: Alignment.topRight,
-                                      child: Text(
-                                        appParamState.currentZoom.toStringAsFixed(2),
-                                        style: const TextStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            const SizedBox(width: 70, child: Text('size:')),
+
+                            Text(appParamState.currentZoom.toStringAsFixed(2), style: const TextStyle(fontSize: 20)),
                           ],
                         ),
                       ),
+
+                      if (widget.temple != null) ...<Widget>[
+                        const SizedBox(height: 10),
+
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: widget.temple!.templeDataList.map((TempleDataModel e) {
+                              return Container(
+                                margin: const EdgeInsets.all(5),
+                                padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
+                                decoration: BoxDecoration(color: Colors.green[900]?.withOpacity(0.3)),
+                                child: Text(e.name, style: const TextStyle(fontSize: 12)),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 10),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    const SizedBox.shrink(),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: GestureDetector(
+                        onTap: () {
+                          setDefaultBoundsMap();
+                        },
+                        child: const Icon(FontAwesomeIcons.expand),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
 
@@ -211,6 +241,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   ///
   void setDefaultBoundsMap() {
     if (widget.geolocList!.isNotEmpty) {
+      mapController.rotate(0);
+
       final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
 
       final CameraFit cameraFit = CameraFit.bounds(
