@@ -34,23 +34,6 @@ class Money extends _$Money {
     final HttpClient client = ref.read(httpClientProvider);
 
     try {
-      // final List<WalkModel> list = <WalkModel>[];
-      // final Map<String, WalkModel> map = <String, WalkModel>{};
-      //
-      // // ignore: always_specify_types
-      // await client.post(path: APIPath.getWalkRecord2).then((value) {
-      //   // ignore: avoid_dynamic_calls
-      //   for (int i = 0; i < value.length.toString().toInt(); i++) {
-      //     // ignore: avoid_dynamic_calls
-      //     final WalkModel val = WalkModel.fromJson(value[i] as Map<String, dynamic>);
-      //
-      //     list.add(val);
-      //
-      //     map[val.date] = val;
-      //   }
-      // });
-      //
-
       final List<MoneyModel> list = <MoneyModel>[];
       final Map<String, MoneyModel> map = <String, MoneyModel>{};
 

@@ -39,23 +39,23 @@ class BankInput extends _$BankInput {
   void setPos({required int pos}) => state = state.copyWith(pos: pos);
 
   ///
-  void setInputDateList({required String date}) {
+  void setInputDateList({required int pos, required String date}) {
     final List<String> list = <String>[...state.inputDateList];
-    list[state.pos] = date;
+    list[pos] = date;
     state = state.copyWith(inputDateList: list);
   }
 
   ///
-  void setInputBankList({required String bank}) {
+  void setInputBankList({required int pos, required String bank}) {
     final List<String> list = <String>[...state.inputBankList];
-    list[state.pos] = bank;
+    list[pos] = bank;
     state = state.copyWith(inputBankList: list);
   }
 
   ///
-  void setInputValueList({required String value}) {
+  void setInputValueList({required int pos, required String value}) {
     final List<String> list = <String>[...state.inputValueList];
-    list[state.pos] = value;
+    list[pos] = value;
     state = state.copyWith(inputValueList: list);
   }
 

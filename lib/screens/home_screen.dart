@@ -11,7 +11,9 @@ import '../models/temple_model.dart';
 import '../models/transportation_model.dart';
 import '../models/walk_model.dart';
 import '../utility/utility.dart';
+import 'components/bank_data_input_alert.dart';
 import 'page/monthly_lifetime_display_page.dart';
+import 'parts/lifetime_dialog.dart';
 
 class TabInfo {
   TabInfo(this.label, this.widget, {this.highlight = false});
@@ -132,7 +134,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               const SizedBox(height: 60),
 
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  LifetimeDialog(context: context, widget: const BankDataInputAlert());
+                },
                 child: const Row(
                   children: <Widget>[
                     Icon(Icons.monetization_on_sharp),
