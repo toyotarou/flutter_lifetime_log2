@@ -122,6 +122,58 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
             ],
           ),
 
+          Positioned(
+            top: 5,
+            right: 5,
+            left: 5,
+
+            child: Container(
+              width: context.screenSize.width,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[Text(widget.date, style: const TextStyle(fontSize: 20))],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                              ),
+                              child: Row(
+                                children: <Widget>[
+                                  const SizedBox(width: 70, child: Text('size:')),
+                                  Expanded(
+                                    child: Container(
+                                      alignment: Alignment.topRight,
+                                      child: Text(
+                                        appParamState.currentZoom.toStringAsFixed(2),
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
@@ -130,14 +182,23 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   ///
   void makeMinMaxLatLng() {
-    latList = <double>[];
-
-    lngList = <double>[];
+    latList.clear();
+    lngList.clear();
 
     widget.geolocList?.forEach((GeolocModel element) {
       latList.add(element.latitude.toDouble());
       lngList.add(element.longitude.toDouble());
     });
+
+    if (widget.temple != null) {
+      latList.clear();
+      lngList.clear();
+
+      for (final TempleDataModel element in widget.temple!.templeDataList) {
+        latList.add(element.latitude.toDouble());
+        lngList.add(element.longitude.toDouble());
+      }
+    }
 
     if (latList.isNotEmpty && lngList.isNotEmpty) {
       minLat = latList.reduce(min);
