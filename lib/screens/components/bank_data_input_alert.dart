@@ -23,7 +23,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
   void initState() {
     super.initState();
 
-    for (int i = 0; i <= 23; i++) {
+    for (int i = 0; i < 10; i++) {
       dateTecs.add(TextEditingController(text: ''));
       bankTecs.add(TextEditingController(text: ''));
       priceTecs.add(TextEditingController(text: ''));
@@ -44,26 +44,25 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
             padding: const EdgeInsets.all(20),
             child: Column(
               children: <Widget>[
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text('BankDataInputAlert'), SizedBox.shrink()],
+                  children: <Widget>[
+                    const Text('BankDataInputAlert'),
+                    ElevatedButton(
+                      onPressed: () {
+                        _inputBankData();
+                      },
+
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+
+                      child: const Text('input'),
+                    ),
+                  ],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                _displayInputParts(),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    const SizedBox.shrink(),
-
-                    TextButton(
-                      onPressed: () => _inputBankData(),
-                      child: const Text('データを登録する', style: TextStyle(fontSize: 12)),
-                    ),
-                  ],
-                ),
+                Expanded(child: _displayInputParts()),
               ],
             ),
           ),
@@ -85,7 +84,13 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
       list.add(
         Container(
           padding: const EdgeInsets.symmetric(vertical: 5),
+
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
+          ),
+
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               GestureDetector(
                 onTap: () {
@@ -100,43 +105,58 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
               ),
 
               const SizedBox(width: 10),
+
               Expanded(
-                child: Row(
+                child: Column(
                   children: <Widget>[
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.calendar_month)),
-                    const SizedBox(width: 10),
-                    Expanded(child: Text(bankInputState.inputDateList[i])),
+                    Row(
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {},
+                          child: Icon(Icons.calendar_month, color: Colors.white.withValues(alpha: 0.4)),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(child: Text(bankInputState.inputDateList[i])),
+                      ],
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 3,
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            dropdownColor: Colors.pinkAccent.withOpacity(0.1),
+                            iconEnabledColor: Colors.white,
+                            value: bankInputState.inputBankList[i],
+                            onChanged: (String? value) => bankInputNotifier.setInputBankList(pos: i, bank: value ?? ''),
+                            items: dropDownBankName.map((Map<String, String> e) {
+                              final MapEntry<String, String> entry = e.entries.first;
+                              return DropdownMenuItem<String>(value: entry.key, child: Text(entry.value));
+                            }).toList(),
+                          ),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        Expanded(
+                          flex: 2,
+                          child: TextField(
+                            style: const TextStyle(fontSize: 12),
+
+                            controller: priceTecs[i],
+                            decoration: const InputDecoration(
+                              filled: true,
+                              contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
-                ),
-              ),
-
-              const SizedBox(width: 10),
-              // ignore: always_specify_types
-              Expanded(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  dropdownColor: Colors.pinkAccent.withOpacity(0.1),
-                  iconEnabledColor: Colors.white,
-                  value: bankInputState.inputBankList[i],
-                  onChanged: (String? value) => bankInputNotifier.setInputBankList(pos: i, bank: value ?? ''),
-                  items: dropDownBankName.map((Map<String, String> e) {
-                    final MapEntry<String, String> entry = e.entries.first;
-                    return DropdownMenuItem<String>(value: entry.key, child: Text(entry.value));
-                  }).toList(),
-                ),
-              ),
-
-              const SizedBox(width: 10),
-              Expanded(
-                child: TextField(
-                  style: const TextStyle(fontSize: 12),
-
-                  controller: priceTecs[i],
-                  decoration: const InputDecoration(
-                    filled: true,
-                    contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                    border: InputBorder.none,
-                  ),
                 ),
               ),
             ],

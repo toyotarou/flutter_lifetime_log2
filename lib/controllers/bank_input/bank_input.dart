@@ -32,7 +32,10 @@ class BankInput extends _$BankInput {
     // ignore: always_specify_types
     final List<String> list2 = List.generate(10, (int index) => 0.toString());
 
-    return BankInputState(inputBankList: list, inputValueList: list2);
+    // ignore: always_specify_types
+    final List<String> list3 = List.generate(10, (int index) => '');
+
+    return BankInputState(inputBankList: list, inputValueList: list2, inputDateList: list3);
   }
 
   ///
