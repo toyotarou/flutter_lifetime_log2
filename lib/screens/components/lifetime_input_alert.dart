@@ -175,42 +175,6 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
     return SingleChildScrollView(child: Column(children: list));
   }
 
-  //
-  // ///
-  // Widget displayLifetimeInputItem() {
-  //   return SizedBox(
-  //     height: 200,
-  //     child: Wrap(
-  //       children: appParamState.keepLifetimeItemList.map((LifetimeItemModel e) {
-  //         return Container(
-  //           padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 5),
-  //           child: ChoiceChip(
-  //             label: Text(e.item, style: const TextStyle(fontSize: 12)),
-  //             backgroundColor: Colors.black.withValues(alpha: 0.1),
-  //             selectedColor: Colors.greenAccent.withValues(alpha: 0.4),
-  //
-  //             selected: e.item == lifetimeInputState.selectedInputChoiceChip,
-  //             onSelected: (bool isSelected) async {
-  //               lifetimeInputNotifier.setSelectedInputChoiceChip(item: e.item);
-  //
-  //               lifetimeInputNotifier.setLifetimeStringList(pos: lifetimeInputState.itemPos, item: e.item);
-  //
-  //               tecs[lifetimeInputState.itemPos].text = e.item;
-  //             },
-  //
-  //             showCheckmark: false,
-  //           ),
-  //         );
-  //       }).toList(),
-  //     ),
-  //   );
-  // }
-  //
-  //
-  //
-  //
-  //
-
   ///
   Widget displayLifetimeInputItemList() {
     final List<Widget> list = <Widget>[];
