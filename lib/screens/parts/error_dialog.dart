@@ -5,7 +5,11 @@ Future<void> error_dialog({required BuildContext context, required String title,
   return showDialog(
     context: context,
     builder: (BuildContext context) {
-      return AlertDialog(backgroundColor: Colors.blueGrey.withOpacity(0.3), title: Text(title), content: Text(content));
+      return AlertDialog(
+        backgroundColor: Colors.blueGrey.withOpacity(0.3),
+        title: Text(title, style: const TextStyle(fontSize: 12)),
+        content: Text(content, style: const TextStyle(fontSize: 12)),
+      );
     },
   );
 }

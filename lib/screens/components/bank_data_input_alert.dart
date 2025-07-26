@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../main.dart';
 import '../../utility/utility.dart';
+import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 import 'bank_price_list_alert.dart';
 
@@ -23,6 +27,16 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
 
   Map<String, String> bankNameMap = <String, String>{};
 
+  List<FocusNode> focusNodeList = <FocusNode>[];
+
+  bool _isLoading = false;
+
+  static const double maxTime = 5.000;
+
+  double _remainingTime = maxTime;
+
+  Timer? _timer;
+
   ///
   @override
   void initState() {
@@ -35,6 +49,9 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
     }
 
     bankNameMap = utility.getBankName();
+
+    // ignore: always_specify_types
+    focusNodeList = List.generate(10, (int index) => FocusNode());
   }
 
   ///
@@ -43,41 +60,63 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
     return Scaffold(
       backgroundColor: Colors.transparent,
 
-      body: SafeArea(
-        child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white, fontSize: 12),
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: DefaultTextStyle(
+              style: const TextStyle(color: Colors.white, fontSize: 12),
 
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: <Widget>[
-                    const Text('BankDataInputAlert'),
-                    ElevatedButton(
-                      onPressed: () {
-                        _inputBankData();
-                      },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const Text('BankDataInputAlert'),
+                        ElevatedButton(
+                          onPressed: () {
+                            _inputBankData();
+                          },
 
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
 
-                      child: const Text('input'),
+                          child: const Text('input'),
+                        ),
+                      ],
                     ),
+
+                    Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                    _displayBankPriceList(),
+
+                    const SizedBox(height: 10),
+
+                    Expanded(child: _displayInputParts()),
                   ],
                 ),
-
-                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-                _displayBankPriceList(),
-
-                const SizedBox(height: 10),
-
-                Expanded(child: _displayInputParts()),
-              ],
+              ),
             ),
           ),
-        ),
+
+          if (_isLoading) ...<Widget>[
+            Center(
+              child: Column(
+                children: <Widget>[
+                  SizedBox(width: context.screenSize.width),
+                  const Spacer(),
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 10),
+                  Text(
+                    _remainingTime.toStringAsFixed(3),
+                    style: const TextStyle(fontSize: 30, color: Colors.yellowAccent),
+                  ),
+                  const Spacer(),
+                ],
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -215,13 +254,17 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
                           flex: 2,
                           child: TextField(
                             style: const TextStyle(fontSize: 12),
-
                             controller: priceTecs[i],
                             decoration: const InputDecoration(
                               filled: true,
                               contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                               border: InputBorder.none,
                             ),
+                            keyboardType: TextInputType.number,
+                            onChanged: (String value) => bankInputNotifier.setInputValueList(pos: i, value: value),
+                            onTapOutside: (PointerDownEvent event) => FocusManager.instance.primaryFocus?.unfocus(),
+                            focusNode: focusNodeList[i],
+                            onTap: () => context.showKeyboard(focusNodeList[i]),
                           ),
                         ),
                       ],
@@ -280,5 +323,80 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
   }
 
   ///
-  Future<void> _inputBankData() async {}
+  Future<void> _inputBankData() async {
+    bool errFlg = false;
+
+    final List<Map<String, dynamic>> uploadDataList = <Map<String, dynamic>>[];
+
+    for (int i = 0; i < bankTecs.length; i++) {
+      if (bankInputState.inputDateList[i] != '' &&
+          bankInputState.inputBankList[i] != '' &&
+          bankInputState.inputValueList[i] != '') {
+        uploadDataList.add(<String, dynamic>{
+          'date': bankInputState.inputDateList[i],
+          'bank': bankInputState.inputBankList[i],
+          'price': bankInputState.inputValueList[i],
+        });
+      }
+    }
+
+    if (uploadDataList.isEmpty) {
+      errFlg = true;
+    }
+
+    if (errFlg) {
+      // ignore: always_specify_types
+      Future.delayed(
+        Duration.zero,
+        () => error_dialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          title: '登録できません。',
+          content: '値を正しく入力してください。',
+        ),
+      );
+
+      return;
+    }
+
+    _startCountdown();
+
+    setState(() => _isLoading = true);
+
+    for (final Map<String, dynamic> element in uploadDataList) {
+      bankInputNotifier.updateBankMoney(uploadData: element);
+    }
+
+    // ignore: always_specify_types
+    Future.delayed(const Duration(seconds: 5), () {
+      if (mounted) {
+        setState(() => _isLoading = false);
+
+        context.findAncestorStateOfType<AppRootState>()?.restartApp();
+      }
+    });
+  }
+
+  ///
+  void _startCountdown() {
+    _timer?.cancel();
+
+    setState(() => _remainingTime = maxTime);
+
+    const Duration interval = Duration(milliseconds: 10);
+
+    final DateTime startTime = DateTime.now();
+
+    _timer = Timer.periodic(interval, (Timer timer) {
+      final double elapsed = DateTime.now().difference(startTime).inMilliseconds / 1000;
+
+      final double newRemaining = (maxTime - elapsed).clamp(0.0, maxTime);
+
+      setState(() => _remainingTime = newRemaining);
+
+      if (newRemaining <= 0.0) {
+        _timer?.cancel();
+      }
+    });
+  }
 }
