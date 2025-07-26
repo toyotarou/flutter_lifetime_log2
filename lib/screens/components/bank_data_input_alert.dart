@@ -90,7 +90,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
 
                     _displayBankPriceList(),
 
-                    const SizedBox(height: 10),
+                    _displayLastPriceBox(),
 
                     Expanded(child: _displayInputParts()),
                   ],
@@ -118,6 +118,129 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
           ],
         ],
       ),
+    );
+  }
+
+  ///
+  Widget _displayLastPriceBox() {
+    final RegExp reg = RegExp('bank');
+    final RegExp reg2 = RegExp('pay');
+
+    return ExpansionTile(
+      iconColor: Colors.white,
+
+      title: const Text('LAST PRICE', style: TextStyle(fontSize: 10, color: Colors.white)),
+
+      children: <Widget>[
+        Container(
+          decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: 0.5))),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 230),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  child: Column(
+                    children: bankNameMap.entries.map((MapEntry<String, String> e) {
+                      if (reg.firstMatch(e.key) != null) {
+                        final List<Map<String, int>>? mapList = moneyState.bankMoneyMap[e.key];
+                        if (mapList != null) {
+                          Map<String, int> map = <String, int>{};
+                          int keepPrice = 0;
+                          for (final Map<String, int> element in mapList) {
+                            final MapEntry<String, int> entry = element.entries.first;
+                            if (keepPrice != entry.value) {
+                              map = element;
+                            }
+                            keepPrice = entry.value;
+                          }
+                          final MapEntry<String, int> last1 = map.entries.first;
+                          return Container(
+                            decoration: BoxDecoration(
+                              border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                            ),
+                            padding: const EdgeInsets.all(5),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(e.value),
+                                    Text(e.key, style: const TextStyle(fontSize: 8)),
+                                  ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: <Widget>[
+                                    Text(last1.value.toString().toCurrency()),
+                                    Text(last1.key, style: const TextStyle(fontSize: 8)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      }
+                      return const SizedBox.shrink();
+                    }).toList(),
+                  ),
+                ),
+
+                Expanded(
+                  child: Column(
+                    children: bankNameMap.entries.map((MapEntry<String, String> e) {
+                      if (reg2.firstMatch(e.key) != null) {
+                        final List<Map<String, int>>? mapList = moneyState.bankMoneyMap[e.key];
+                        if (mapList != null) {
+                          Map<String, int> map = <String, int>{};
+                          int keepPrice = 0;
+                          for (final Map<String, int> element in mapList) {
+                            final MapEntry<String, int> entry = element.entries.first;
+                            if (keepPrice != entry.value) {
+                              map = element;
+                            }
+                            keepPrice = entry.value;
+                          }
+                          final MapEntry<String, int> last1 = map.entries.first;
+                          return Container(
+                            decoration: BoxDecoration(
+                              border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                            ),
+                            padding: const EdgeInsets.all(5),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(e.value),
+                                    Text(e.key, style: const TextStyle(fontSize: 8)),
+                                  ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: <Widget>[
+                                    Text(last1.value.toString().toCurrency()),
+                                    Text(last1.key, style: const TextStyle(fontSize: 8)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      }
+                      return const SizedBox.shrink();
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 20),
+      ],
     );
   }
 
@@ -151,20 +274,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
                       ? Colors.yellowAccent.withValues(alpha: 0.4)
                       : Colors.blueGrey.withValues(alpha: 0.4),
 
-                  child: Column(
-                    children: <Widget>[
-                      const SizedBox(height: 8),
-
-                      Text(e.key, style: const TextStyle(fontSize: 10)),
-
-                      Text(
-                        bankNameMap[e.key] ?? '',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 8),
-                      ),
-                    ],
-                  ),
+                  child: Text(e.key, style: const TextStyle(fontSize: 10)),
                 ),
               ),
             );
@@ -364,7 +474,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
     setState(() => _isLoading = true);
 
     for (final Map<String, dynamic> element in uploadDataList) {
-      bankInputNotifier.updateBankMoney(uploadData: element);
+      await bankInputNotifier.updateBankMoney(uploadData: element);
     }
 
     // ignore: always_specify_types
