@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../extensions/extensions.dart';
 import '../../utility/utility.dart';
+import '../parts/lifetime_dialog.dart';
+import 'bank_price_list_alert.dart';
 
 class BankDataInputAlert extends ConsumerStatefulWidget {
   const BankDataInputAlert({super.key});
@@ -18,6 +21,8 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
 
   Utility utility = Utility();
 
+  Map<String, String> bankNameMap = <String, String>{};
+
   ///
   @override
   void initState() {
@@ -28,6 +33,8 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
       bankTecs.add(TextEditingController(text: ''));
       priceTecs.add(TextEditingController(text: ''));
     }
+
+    bankNameMap = utility.getBankName();
   }
 
   ///
@@ -38,7 +45,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
 
       body: SafeArea(
         child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white, fontSize: 12),
 
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -62,10 +69,67 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
+                _displayBankPriceList(),
+
+                const SizedBox(height: 10),
+
                 Expanded(child: _displayInputParts()),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  ///
+  Widget _displayBankPriceList() {
+    return SizedBox(
+      height: 50,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+
+        child: Row(
+          children: utility.getBankName().entries.map((MapEntry<String, String> e) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+
+              child: GestureDetector(
+                onTap: () {
+                  bankInputNotifier.setSelectedBankKey(key: e.key);
+
+                  LifetimeDialog(
+                    context: context,
+                    widget: BankPriceListAlert(bankKey: e.key),
+                    clearBarrierColor: true,
+                    executeFunctionWhenDialogClose: true,
+                    ref: ref,
+                    from: 'BankPriceListAlert',
+                  );
+                },
+                child: CircleAvatar(
+                  backgroundColor: (e.key == bankInputState.selectedBankKey)
+                      ? Colors.yellowAccent.withValues(alpha: 0.4)
+                      : Colors.blueGrey.withValues(alpha: 0.4),
+
+                  child: Column(
+                    children: <Widget>[
+                      const SizedBox(height: 8),
+
+                      Text(e.key, style: const TextStyle(fontSize: 10)),
+
+                      Text(
+                        bankNameMap[e.key] ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 8),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
         ),
       ),
     );
@@ -77,7 +141,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
 
     final List<Map<String, String>> dropDownBankName = <Map<String, String>>[
       <String, String>{'': ''},
-      ...utility.getBankName().entries.map((MapEntry<String, String> e) => <String, String>{e.key: e.value}),
+      ...bankNameMap.entries.map((MapEntry<String, String> e) => <String, String>{e.key: e.value}),
     ];
 
     for (int i = 0; i < bankTecs.length; i++) {
@@ -100,7 +164,10 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
                   backgroundColor: (i == lifetimeInputState.itemPos)
                       ? Colors.yellowAccent.withValues(alpha: 0.2)
                       : Colors.black.withValues(alpha: 0.2),
-                  child: Text(i.toString().padLeft(2, '0'), style: const TextStyle(color: Colors.white)),
+                  child: Text(
+                    (i + 1).toString().padLeft(2, '0'),
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                  ),
                 ),
               ),
 
@@ -112,15 +179,15 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
                     Row(
                       children: <Widget>[
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            _showDP(pos: i);
+                          },
                           child: Icon(Icons.calendar_month, color: Colors.white.withValues(alpha: 0.4)),
                         ),
                         const SizedBox(width: 10),
                         Expanded(child: Text(bankInputState.inputDateList[i])),
                       ],
                     ),
-
-                    const SizedBox(height: 10),
 
                     Row(
                       children: <Widget>[
@@ -134,7 +201,10 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
                             onChanged: (String? value) => bankInputNotifier.setInputBankList(pos: i, bank: value ?? ''),
                             items: dropDownBankName.map((Map<String, String> e) {
                               final MapEntry<String, String> entry = e.entries.first;
-                              return DropdownMenuItem<String>(value: entry.key, child: Text(entry.value));
+                              return DropdownMenuItem<String>(
+                                value: entry.key,
+                                child: Text(entry.value, style: const TextStyle(fontSize: 12)),
+                              );
                             }).toList(),
                           ),
                         ),
@@ -165,7 +235,48 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
       );
     }
 
-    return SingleChildScrollView(child: Column(children: list));
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) => list[index],
+            childCount: list.length,
+          ),
+        ),
+      ],
+    );
+  }
+
+  ///
+  Future<void> _showDP({required int pos}) async {
+    final DateTime? selectedDate = await showDatePicker(
+      barrierColor: Colors.transparent,
+      locale: const Locale('ja'),
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now().add(const Duration(days: 360)),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            scaffoldBackgroundColor: Colors.black.withOpacity(0.1),
+            canvasColor: Colors.black.withOpacity(0.1),
+            cardColor: Colors.black.withOpacity(0.1),
+            dividerColor: Colors.indigo,
+            primaryColor: Colors.black.withOpacity(0.1),
+            secondaryHeaderColor: Colors.black.withOpacity(0.1),
+            dialogBackgroundColor: Colors.black.withOpacity(0.1),
+            primaryColorDark: Colors.black.withOpacity(0.1),
+            highlightColor: Colors.black.withOpacity(0.1),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (selectedDate != null) {
+      bankInputNotifier.setInputDateList(pos: pos, date: selectedDate.yyyymmdd);
+    }
   }
 
   ///

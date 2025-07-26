@@ -6,7 +6,7 @@ part of 'bank_input.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bankInputHash() => r'382fecdf16d7193acb61df6e51a3727698c1f72f';
+String _$bankInputHash() => r'ead52d8292829f2cd892fea201f07911b7977a82';
 
 /// See also [BankInput].
 @ProviderFor(BankInput)

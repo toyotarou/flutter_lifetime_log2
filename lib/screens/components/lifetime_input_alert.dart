@@ -172,7 +172,16 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
       );
     }
 
-    return SingleChildScrollView(child: Column(children: list));
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) => list[index],
+            childCount: list.length,
+          ),
+        ),
+      ],
+    );
   }
 
   ///

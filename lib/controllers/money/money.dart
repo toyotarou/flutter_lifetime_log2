@@ -16,6 +16,7 @@ class MoneyState with _$MoneyState {
   const factory MoneyState({
     @Default(<MoneyModel>[]) List<MoneyModel> moneyList,
     @Default(<String, MoneyModel>{}) Map<String, MoneyModel> moneyMap,
+    @Default(<String, List<Map<String, int>>>{}) Map<String, List<Map<String, int>>> bankMoneyMap,
   }) = _MoneyState;
 }
 
@@ -36,6 +37,28 @@ class Money extends _$Money {
     try {
       final List<MoneyModel> list = <MoneyModel>[];
       final Map<String, MoneyModel> map = <String, MoneyModel>{};
+
+      // final Map<String, Map<String, int>> map2 = <String, Map<String, int>>{};
+      //
+      //
+      //
+      //
+      //
+
+      final Map<String, List<Map<String, int>>> map2 = <String, List<Map<String, int>>>{};
+
+      map2['bank_a'] = <Map<String, int>>[];
+      map2['bank_b'] = <Map<String, int>>[];
+      map2['bank_c'] = <Map<String, int>>[];
+      map2['bank_d'] = <Map<String, int>>[];
+      map2['bank_e'] = <Map<String, int>>[];
+
+      map2['pay_a'] = <Map<String, int>>[];
+      map2['pay_b'] = <Map<String, int>>[];
+      map2['pay_c'] = <Map<String, int>>[];
+      map2['pay_d'] = <Map<String, int>>[];
+      map2['pay_e'] = <Map<String, int>>[];
+      map2['pay_f'] = <Map<String, int>>[];
 
       final List<int> kind = <int>[10000, 5000, 2000, 1000, 500, 100, 50, 10, 5, 1];
 
@@ -96,10 +119,23 @@ class Money extends _$Money {
           list.add(val);
 
           map[val.date] = val;
+
+          map2['bank_a']?.add(<String, int>{val.date: exValue[12].toInt()});
+          map2['bank_b']?.add(<String, int>{val.date: exValue[13].toInt()});
+          map2['bank_c']?.add(<String, int>{val.date: exValue[14].toInt()});
+          map2['bank_d']?.add(<String, int>{val.date: exValue[15].toInt()});
+          map2['bank_e']?.add(<String, int>{val.date: exValue[16].toInt()});
+
+          map2['pay_a']?.add(<String, int>{val.date: exValue[17].toInt()});
+          map2['pay_b']?.add(<String, int>{val.date: exValue[18].toInt()});
+          map2['pay_c']?.add(<String, int>{val.date: exValue[19].toInt()});
+          map2['pay_d']?.add(<String, int>{val.date: exValue[20].toInt()});
+          map2['pay_e']?.add(<String, int>{val.date: exValue[21].toInt()});
+          map2['pay_f']?.add(<String, int>{val.date: exValue[22].toInt()});
         }
       });
 
-      return state.copyWith(moneyList: list, moneyMap: map);
+      return state.copyWith(moneyList: list, moneyMap: map, bankMoneyMap: map2);
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる

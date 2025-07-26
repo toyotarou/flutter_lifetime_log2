@@ -20,6 +20,7 @@ mixin _$BankInputState {
   List<String> get inputDateList => throw _privateConstructorUsedError;
   List<String> get inputBankList => throw _privateConstructorUsedError;
   List<String> get inputValueList => throw _privateConstructorUsedError;
+  String get selectedBankKey => throw _privateConstructorUsedError;
 
   /// Create a copy of BankInputState
   /// with the given fields replaced by the non-null parameter values.
@@ -38,7 +39,8 @@ abstract class $BankInputStateCopyWith<$Res> {
       {int pos,
       List<String> inputDateList,
       List<String> inputBankList,
-      List<String> inputValueList});
+      List<String> inputValueList,
+      String selectedBankKey});
 }
 
 /// @nodoc
@@ -60,6 +62,7 @@ class _$BankInputStateCopyWithImpl<$Res, $Val extends BankInputState>
     Object? inputDateList = null,
     Object? inputBankList = null,
     Object? inputValueList = null,
+    Object? selectedBankKey = null,
   }) {
     return _then(_value.copyWith(
       pos: null == pos
@@ -78,6 +81,10 @@ class _$BankInputStateCopyWithImpl<$Res, $Val extends BankInputState>
           ? _value.inputValueList
           : inputValueList // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      selectedBankKey: null == selectedBankKey
+          ? _value.selectedBankKey
+          : selectedBankKey // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -94,7 +101,8 @@ abstract class _$$BankInputStateImplCopyWith<$Res>
       {int pos,
       List<String> inputDateList,
       List<String> inputBankList,
-      List<String> inputValueList});
+      List<String> inputValueList,
+      String selectedBankKey});
 }
 
 /// @nodoc
@@ -114,6 +122,7 @@ class __$$BankInputStateImplCopyWithImpl<$Res>
     Object? inputDateList = null,
     Object? inputBankList = null,
     Object? inputValueList = null,
+    Object? selectedBankKey = null,
   }) {
     return _then(_$BankInputStateImpl(
       pos: null == pos
@@ -132,6 +141,10 @@ class __$$BankInputStateImplCopyWithImpl<$Res>
           ? _value._inputValueList
           : inputValueList // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      selectedBankKey: null == selectedBankKey
+          ? _value.selectedBankKey
+          : selectedBankKey // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -143,7 +156,8 @@ class _$BankInputStateImpl implements _BankInputState {
       {this.pos = -1,
       final List<String> inputDateList = const <String>[],
       final List<String> inputBankList = const <String>[],
-      final List<String> inputValueList = const <String>[]})
+      final List<String> inputValueList = const <String>[],
+      this.selectedBankKey = ''})
       : _inputDateList = inputDateList,
         _inputBankList = inputBankList,
         _inputValueList = inputValueList;
@@ -179,8 +193,12 @@ class _$BankInputStateImpl implements _BankInputState {
   }
 
   @override
+  @JsonKey()
+  final String selectedBankKey;
+
+  @override
   String toString() {
-    return 'BankInputState(pos: $pos, inputDateList: $inputDateList, inputBankList: $inputBankList, inputValueList: $inputValueList)';
+    return 'BankInputState(pos: $pos, inputDateList: $inputDateList, inputBankList: $inputBankList, inputValueList: $inputValueList, selectedBankKey: $selectedBankKey)';
   }
 
   @override
@@ -194,7 +212,9 @@ class _$BankInputStateImpl implements _BankInputState {
             const DeepCollectionEquality()
                 .equals(other._inputBankList, _inputBankList) &&
             const DeepCollectionEquality()
-                .equals(other._inputValueList, _inputValueList));
+                .equals(other._inputValueList, _inputValueList) &&
+            (identical(other.selectedBankKey, selectedBankKey) ||
+                other.selectedBankKey == selectedBankKey));
   }
 
   @override
@@ -203,7 +223,8 @@ class _$BankInputStateImpl implements _BankInputState {
       pos,
       const DeepCollectionEquality().hash(_inputDateList),
       const DeepCollectionEquality().hash(_inputBankList),
-      const DeepCollectionEquality().hash(_inputValueList));
+      const DeepCollectionEquality().hash(_inputValueList),
+      selectedBankKey);
 
   /// Create a copy of BankInputState
   /// with the given fields replaced by the non-null parameter values.
@@ -220,7 +241,8 @@ abstract class _BankInputState implements BankInputState {
       {final int pos,
       final List<String> inputDateList,
       final List<String> inputBankList,
-      final List<String> inputValueList}) = _$BankInputStateImpl;
+      final List<String> inputValueList,
+      final String selectedBankKey}) = _$BankInputStateImpl;
 
   @override
   int get pos;
@@ -230,6 +252,8 @@ abstract class _BankInputState implements BankInputState {
   List<String> get inputBankList;
   @override
   List<String> get inputValueList;
+  @override
+  String get selectedBankKey;
 
   /// Create a copy of BankInputState
   /// with the given fields replaced by the non-null parameter values.

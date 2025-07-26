@@ -18,6 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$MoneyState {
   List<MoneyModel> get moneyList => throw _privateConstructorUsedError;
   Map<String, MoneyModel> get moneyMap => throw _privateConstructorUsedError;
+  Map<String, List<Map<String, int>>> get bankMoneyMap =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of MoneyState
   /// with the given fields replaced by the non-null parameter values.
@@ -32,7 +34,10 @@ abstract class $MoneyStateCopyWith<$Res> {
           MoneyState value, $Res Function(MoneyState) then) =
       _$MoneyStateCopyWithImpl<$Res, MoneyState>;
   @useResult
-  $Res call({List<MoneyModel> moneyList, Map<String, MoneyModel> moneyMap});
+  $Res call(
+      {List<MoneyModel> moneyList,
+      Map<String, MoneyModel> moneyMap,
+      Map<String, List<Map<String, int>>> bankMoneyMap});
 }
 
 /// @nodoc
@@ -52,6 +57,7 @@ class _$MoneyStateCopyWithImpl<$Res, $Val extends MoneyState>
   $Res call({
     Object? moneyList = null,
     Object? moneyMap = null,
+    Object? bankMoneyMap = null,
   }) {
     return _then(_value.copyWith(
       moneyList: null == moneyList
@@ -62,6 +68,10 @@ class _$MoneyStateCopyWithImpl<$Res, $Val extends MoneyState>
           ? _value.moneyMap
           : moneyMap // ignore: cast_nullable_to_non_nullable
               as Map<String, MoneyModel>,
+      bankMoneyMap: null == bankMoneyMap
+          ? _value.bankMoneyMap
+          : bankMoneyMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<Map<String, int>>>,
     ) as $Val);
   }
 }
@@ -74,7 +84,10 @@ abstract class _$$MoneyStateImplCopyWith<$Res>
       __$$MoneyStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<MoneyModel> moneyList, Map<String, MoneyModel> moneyMap});
+  $Res call(
+      {List<MoneyModel> moneyList,
+      Map<String, MoneyModel> moneyMap,
+      Map<String, List<Map<String, int>>> bankMoneyMap});
 }
 
 /// @nodoc
@@ -92,6 +105,7 @@ class __$$MoneyStateImplCopyWithImpl<$Res>
   $Res call({
     Object? moneyList = null,
     Object? moneyMap = null,
+    Object? bankMoneyMap = null,
   }) {
     return _then(_$MoneyStateImpl(
       moneyList: null == moneyList
@@ -102,6 +116,10 @@ class __$$MoneyStateImplCopyWithImpl<$Res>
           ? _value._moneyMap
           : moneyMap // ignore: cast_nullable_to_non_nullable
               as Map<String, MoneyModel>,
+      bankMoneyMap: null == bankMoneyMap
+          ? _value._bankMoneyMap
+          : bankMoneyMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<Map<String, int>>>,
     ));
   }
 }
@@ -111,9 +129,12 @@ class __$$MoneyStateImplCopyWithImpl<$Res>
 class _$MoneyStateImpl implements _MoneyState {
   const _$MoneyStateImpl(
       {final List<MoneyModel> moneyList = const <MoneyModel>[],
-      final Map<String, MoneyModel> moneyMap = const <String, MoneyModel>{}})
+      final Map<String, MoneyModel> moneyMap = const <String, MoneyModel>{},
+      final Map<String, List<Map<String, int>>> bankMoneyMap =
+          const <String, List<Map<String, int>>>{}})
       : _moneyList = moneyList,
-        _moneyMap = moneyMap;
+        _moneyMap = moneyMap,
+        _bankMoneyMap = bankMoneyMap;
 
   final List<MoneyModel> _moneyList;
   @override
@@ -133,9 +154,18 @@ class _$MoneyStateImpl implements _MoneyState {
     return EqualUnmodifiableMapView(_moneyMap);
   }
 
+  final Map<String, List<Map<String, int>>> _bankMoneyMap;
+  @override
+  @JsonKey()
+  Map<String, List<Map<String, int>>> get bankMoneyMap {
+    if (_bankMoneyMap is EqualUnmodifiableMapView) return _bankMoneyMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_bankMoneyMap);
+  }
+
   @override
   String toString() {
-    return 'MoneyState(moneyList: $moneyList, moneyMap: $moneyMap)';
+    return 'MoneyState(moneyList: $moneyList, moneyMap: $moneyMap, bankMoneyMap: $bankMoneyMap)';
   }
 
   @override
@@ -145,14 +175,17 @@ class _$MoneyStateImpl implements _MoneyState {
             other is _$MoneyStateImpl &&
             const DeepCollectionEquality()
                 .equals(other._moneyList, _moneyList) &&
-            const DeepCollectionEquality().equals(other._moneyMap, _moneyMap));
+            const DeepCollectionEquality().equals(other._moneyMap, _moneyMap) &&
+            const DeepCollectionEquality()
+                .equals(other._bankMoneyMap, _bankMoneyMap));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_moneyList),
-      const DeepCollectionEquality().hash(_moneyMap));
+      const DeepCollectionEquality().hash(_moneyMap),
+      const DeepCollectionEquality().hash(_bankMoneyMap));
 
   /// Create a copy of MoneyState
   /// with the given fields replaced by the non-null parameter values.
@@ -165,13 +198,17 @@ class _$MoneyStateImpl implements _MoneyState {
 
 abstract class _MoneyState implements MoneyState {
   const factory _MoneyState(
-      {final List<MoneyModel> moneyList,
-      final Map<String, MoneyModel> moneyMap}) = _$MoneyStateImpl;
+          {final List<MoneyModel> moneyList,
+          final Map<String, MoneyModel> moneyMap,
+          final Map<String, List<Map<String, int>>> bankMoneyMap}) =
+      _$MoneyStateImpl;
 
   @override
   List<MoneyModel> get moneyList;
   @override
   Map<String, MoneyModel> get moneyMap;
+  @override
+  Map<String, List<Map<String, int>>> get bankMoneyMap;
 
   /// Create a copy of MoneyState
   /// with the given fields replaced by the non-null parameter values.

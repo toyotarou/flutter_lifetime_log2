@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../controllers/bank_input/bank_input.dart';
 import 'lifetime_log_overlay.dart';
 
 Future<void> LifetimeDialog({
@@ -40,6 +41,12 @@ Future<void> LifetimeDialog({
         if (from == 'MoneyDataInputAlert') {
           if (ref != null) {
             closeAllOverlays(ref: ref);
+          }
+        }
+
+        if (from == 'BankPriceListAlert') {
+          if (ref != null) {
+            ref.read(bankInputProvider.notifier).setSelectedBankKey(key: '');
           }
         }
       });

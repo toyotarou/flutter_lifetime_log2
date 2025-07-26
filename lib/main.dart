@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'controllers/controllers_mixin.dart';
@@ -58,17 +59,29 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      themeMode: ThemeMode.dark,
-      debugShowCheckedModeBanner: false,
+      // ignore: always_specify_types
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+
+      supportedLocales: const <Locale>[Locale('en'), Locale('ja')],
       theme: ThemeData.dark(useMaterial3: false),
-      home: HomeScreen(
-        holidayList: holidayState.holidayList,
-        walkMap: walkState.walkMap,
-        moneyMap: moneyState.moneyMap,
-        lifetimeItemList: lifetimeItemState.lifetimeItemList,
-        geolocMap: geolocState.geolocMap,
-        templeMap: templeState.templeMap,
-        transportationMap:transportationState.transportationMap,
+      themeMode: ThemeMode.dark,
+      title: 'LIFETIME LOG',
+      debugShowCheckedModeBanner: false,
+      home: GestureDetector(
+        onTap: () => primaryFocus?.unfocus(),
+        child: HomeScreen(
+          holidayList: holidayState.holidayList,
+          walkMap: walkState.walkMap,
+          moneyMap: moneyState.moneyMap,
+          lifetimeItemList: lifetimeItemState.lifetimeItemList,
+          geolocMap: geolocState.geolocMap,
+          templeMap: templeState.templeMap,
+          transportationMap: transportationState.transportationMap,
+        ),
       ),
     );
   }

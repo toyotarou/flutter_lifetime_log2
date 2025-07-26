@@ -16,6 +16,8 @@ class BankInputState with _$BankInputState {
     @Default(<String>[]) List<String> inputDateList,
     @Default(<String>[]) List<String> inputBankList,
     @Default(<String>[]) List<String> inputValueList,
+
+    @Default('') String selectedBankKey,
   }) = _BankInputState;
 }
 
@@ -71,4 +73,7 @@ class BankInput extends _$BankInput {
       utility.showError('予期せぬエラーが発生しました');
     });
   }
+
+  ///
+  void setSelectedBankKey({required String key}) => state = state.copyWith(selectedBankKey: key);
 }
