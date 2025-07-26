@@ -62,28 +62,39 @@ class _BankPriceListAlertState extends ConsumerState<BankPriceListAlert> with Co
     final List<Widget> list = <Widget>[];
 
     int keepPrice = 0;
-    moneyState.bankMoneyMap[widget.bankKey]?.forEach((Map<String, int> element) {
-      final MapEntry<String, int> entry = element.entries.first;
 
-      if (keepPrice != entry.value) {
-        list.add(
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 5),
+    final List<Map<String, int>>? mapList = moneyState.bankMoneyMap[widget.bankKey];
 
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
+    if (mapList != null) {
+      // 日付順にソートした新しいリストを作成
+      final List<Map<String, int>> sortedList = List<Map<String, int>>.from(mapList)
+        ..sort((Map<String, int> a, Map<String, int> b) {
+          final DateTime dateA = DateTime.parse(a.entries.first.key);
+          final DateTime dateB = DateTime.parse(b.entries.first.key);
+          return dateA.compareTo(dateB); // 昇順
+        });
+
+      for (final Map<String, int> element in sortedList) {
+        final MapEntry<String, int> entry = element.entries.first;
+
+        if (keepPrice != entry.value) {
+          list.add(
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[Text(entry.key), Text(entry.value.toString().toCurrency())],
+              ),
             ),
+          );
+        }
 
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[Text(entry.key), Text(entry.value.toString().toCurrency())],
-            ),
-          ),
-        );
+        keepPrice = entry.value;
       }
-
-      keepPrice = entry.value;
-    });
+    }
 
     return CustomScrollView(
       slivers: <Widget>[

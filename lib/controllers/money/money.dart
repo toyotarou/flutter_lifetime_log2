@@ -38,13 +38,6 @@ class Money extends _$Money {
       final List<MoneyModel> list = <MoneyModel>[];
       final Map<String, MoneyModel> map = <String, MoneyModel>{};
 
-      // final Map<String, Map<String, int>> map2 = <String, Map<String, int>>{};
-      //
-      //
-      //
-      //
-      //
-
       final Map<String, List<Map<String, int>>> map2 = <String, List<Map<String, int>>>{};
 
       map2['bank_a'] = <Map<String, int>>[];

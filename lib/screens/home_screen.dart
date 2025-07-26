@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../controllers/controllers_mixin.dart';
 import '../extensions/extensions.dart';
+import '../main.dart';
 import '../models/geoloc_model.dart';
 import '../models/lifetime_item_model.dart';
 import '../models/lifetime_model.dart';
@@ -79,10 +80,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             title: const Text('LIFETIME LOG'),
             centerTitle: true,
 
-            //-------------------------//これを消すと「←」が出てくる（消さない）
-            leading: const Icon(Icons.check_box_outline_blank, color: Colors.transparent),
+            leading: IconButton(
+              onPressed: () => context.findAncestorStateOfType<AppRootState>()?.restartApp(),
+              icon: const Icon(Icons.refresh),
+            ),
 
-            //-------------------------//これを消すと「←」が出てくる（消さない）
             bottom: TabBar(
               isScrollable: true,
               tabAlignment: TabAlignment.start,

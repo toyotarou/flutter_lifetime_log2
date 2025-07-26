@@ -145,9 +145,18 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
                       if (reg.firstMatch(e.key) != null) {
                         final List<Map<String, int>>? mapList = moneyState.bankMoneyMap[e.key];
                         if (mapList != null) {
+                          // 日付順にソートした新しいリストを作成
+                          final List<Map<String, int>> sortedMapList = List<Map<String, int>>.from(mapList)
+                            ..sort((Map<String, int> a, Map<String, int> b) {
+                              final DateTime dateA = DateTime.parse(a.entries.first.key);
+                              final DateTime dateB = DateTime.parse(b.entries.first.key);
+                              return dateA.compareTo(dateB); // 昇順
+                            });
+
                           Map<String, int> map = <String, int>{};
                           int keepPrice = 0;
-                          for (final Map<String, int> element in mapList) {
+
+                          for (final Map<String, int> element in sortedMapList) {
                             final MapEntry<String, int> entry = element.entries.first;
                             if (keepPrice != entry.value) {
                               map = element;
