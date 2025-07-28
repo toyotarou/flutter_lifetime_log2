@@ -35,6 +35,7 @@ mixin _$AppParamState {
   int get currentPaddingIndex => throw _privateConstructorUsedError;
 
   ///
+  String get selectedYearMonth => throw _privateConstructorUsedError;
   List<String> get monthlyGeolocMapSelectedDateList =>
       throw _privateConstructorUsedError;
 
@@ -61,6 +62,7 @@ abstract class $AppParamStateCopyWith<$Res> {
       Map<String, TransportationModel> keepTransportationMap,
       double currentZoom,
       int currentPaddingIndex,
+      String selectedYearMonth,
       List<String> monthlyGeolocMapSelectedDateList});
 }
 
@@ -88,6 +90,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? keepTransportationMap = null,
     Object? currentZoom = null,
     Object? currentPaddingIndex = null,
+    Object? selectedYearMonth = null,
     Object? monthlyGeolocMapSelectedDateList = null,
   }) {
     return _then(_value.copyWith(
@@ -127,6 +130,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.currentPaddingIndex
           : currentPaddingIndex // ignore: cast_nullable_to_non_nullable
               as int,
+      selectedYearMonth: null == selectedYearMonth
+          ? _value.selectedYearMonth
+          : selectedYearMonth // ignore: cast_nullable_to_non_nullable
+              as String,
       monthlyGeolocMapSelectedDateList: null == monthlyGeolocMapSelectedDateList
           ? _value.monthlyGeolocMapSelectedDateList
           : monthlyGeolocMapSelectedDateList // ignore: cast_nullable_to_non_nullable
@@ -153,6 +160,7 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       Map<String, TransportationModel> keepTransportationMap,
       double currentZoom,
       int currentPaddingIndex,
+      String selectedYearMonth,
       List<String> monthlyGeolocMapSelectedDateList});
 }
 
@@ -178,6 +186,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? keepTransportationMap = null,
     Object? currentZoom = null,
     Object? currentPaddingIndex = null,
+    Object? selectedYearMonth = null,
     Object? monthlyGeolocMapSelectedDateList = null,
   }) {
     return _then(_$AppParamStateImpl(
@@ -217,6 +226,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value.currentPaddingIndex
           : currentPaddingIndex // ignore: cast_nullable_to_non_nullable
               as int,
+      selectedYearMonth: null == selectedYearMonth
+          ? _value.selectedYearMonth
+          : selectedYearMonth // ignore: cast_nullable_to_non_nullable
+              as String,
       monthlyGeolocMapSelectedDateList: null == monthlyGeolocMapSelectedDateList
           ? _value._monthlyGeolocMapSelectedDateList
           : monthlyGeolocMapSelectedDateList // ignore: cast_nullable_to_non_nullable
@@ -243,6 +256,7 @@ class _$AppParamStateImpl implements _AppParamState {
           const <String, TransportationModel>{},
       this.currentZoom = 0,
       this.currentPaddingIndex = 5,
+      this.selectedYearMonth = '',
       final List<String> monthlyGeolocMapSelectedDateList = const <String>[]})
       : _keepHolidayList = keepHolidayList,
         _keepWalkModelMap = keepWalkModelMap,
@@ -327,9 +341,10 @@ class _$AppParamStateImpl implements _AppParamState {
   final int currentPaddingIndex;
 
   ///
+  @override
+  @JsonKey()
+  final String selectedYearMonth;
   final List<String> _monthlyGeolocMapSelectedDateList;
-
-  ///
   @override
   @JsonKey()
   List<String> get monthlyGeolocMapSelectedDateList {
@@ -341,7 +356,7 @@ class _$AppParamStateImpl implements _AppParamState {
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList)';
   }
 
   @override
@@ -367,6 +382,8 @@ class _$AppParamStateImpl implements _AppParamState {
                 other.currentZoom == currentZoom) &&
             (identical(other.currentPaddingIndex, currentPaddingIndex) ||
                 other.currentPaddingIndex == currentPaddingIndex) &&
+            (identical(other.selectedYearMonth, selectedYearMonth) ||
+                other.selectedYearMonth == selectedYearMonth) &&
             const DeepCollectionEquality().equals(
                 other._monthlyGeolocMapSelectedDateList,
                 _monthlyGeolocMapSelectedDateList));
@@ -384,6 +401,7 @@ class _$AppParamStateImpl implements _AppParamState {
       const DeepCollectionEquality().hash(_keepTransportationMap),
       currentZoom,
       currentPaddingIndex,
+      selectedYearMonth,
       const DeepCollectionEquality().hash(_monthlyGeolocMapSelectedDateList));
 
   /// Create a copy of AppParamState
@@ -406,6 +424,7 @@ abstract class _AppParamState implements AppParamState {
           final Map<String, TransportationModel> keepTransportationMap,
           final double currentZoom,
           final int currentPaddingIndex,
+          final String selectedYearMonth,
           final List<String> monthlyGeolocMapSelectedDateList}) =
       _$AppParamStateImpl;
 
@@ -431,6 +450,8 @@ abstract class _AppParamState implements AppParamState {
   int get currentPaddingIndex;
 
   ///
+  @override
+  String get selectedYearMonth;
   @override
   List<String> get monthlyGeolocMapSelectedDateList;
 

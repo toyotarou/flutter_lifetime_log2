@@ -29,6 +29,7 @@ class AppParamState with _$AppParamState {
     @Default(5) int currentPaddingIndex,
 
     ///
+    @Default('') String selectedYearMonth,
     @Default(<String>[]) List<String> monthlyGeolocMapSelectedDateList,
   }) = _AppParamState;
 }
@@ -70,6 +71,9 @@ class AppParam extends _$AppParam {
   void setCurrentZoom({required double zoom}) => state = state.copyWith(currentZoom: zoom);
 
   //===================================================
+
+  ///
+  void setSelectedYearMonth({required String yearmonth}) => state = state.copyWith(selectedYearMonth: yearmonth);
 
   ///
   void setMonthlyGeolocMapSelectedDateList({required String date}) {

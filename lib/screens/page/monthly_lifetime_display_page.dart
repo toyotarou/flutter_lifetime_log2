@@ -59,6 +59,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               if (appParamState.keepGeolocMap.isNotEmpty) ...<Widget>[
                                 GestureDetector(
                                   onTap: () {
+                                    appParamNotifier.setSelectedYearMonth(yearmonth: widget.yearmonth);
+
                                     LifetimeDialog(
                                       context: context,
                                       widget: MonthlyGeolocMapDisplayAlert(yearmonth: widget.yearmonth),

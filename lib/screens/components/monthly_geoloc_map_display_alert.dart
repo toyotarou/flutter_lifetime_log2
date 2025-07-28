@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../mixin/monthly_geoloc_map_date_list/monthly_geoloc_map_date_list_widget.dart';
 import '../../models/geoloc_model.dart';
 import '../../utility/tile_provider.dart';
 import '../../utility/utility.dart';
@@ -120,7 +121,22 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                           ),
                           child: GestureDetector(
                             onTap: () {
-                              callFirstBox();
+                              moneyInputNotifier.setFirstOverlayParams(firstEntries: _firstEntries);
+
+                              addFirstOverlay(
+                                context: context,
+                                setStateCallback: setState,
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                height: MediaQuery.of(context).size.width * 0.8,
+                                color: Colors.blueGrey.withOpacity(0.3),
+                                initialPosition: Offset(MediaQuery.of(context).size.width * 0.6, 90),
+                                widget: const MonthlyGeolocMapDateListWidget(),
+                                firstEntries: _firstEntries,
+                                secondEntries: _secondEntries,
+                                onPositionChanged: (Offset newPos) => moneyInputNotifier.updateOverlayPosition(newPos),
+
+                                fixedFlag: true,
+                              );
                             },
                             child: const Icon(Icons.calendar_month),
                           ),
@@ -159,81 +175,6 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
           if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
-    );
-  }
-
-  ///
-  void callFirstBox() {
-    moneyInputNotifier.setFirstOverlayParams(firstEntries: _firstEntries);
-
-    addFirstOverlay(
-      context: context,
-      setStateCallback: setState,
-      width: MediaQuery.of(context).size.width * 0.4,
-      height: MediaQuery.of(context).size.width * 0.8,
-      color: Colors.blueGrey.withOpacity(0.3),
-      initialPosition: Offset(MediaQuery.of(context).size.width * 0.6, 90),
-
-      widget: SizedBox(
-        height: MediaQuery.of(context).size.width * 0.65,
-
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: appParamState.keepGeolocMap.entries.map((MapEntry<String, List<GeolocModel>> e) {
-                    if ('${e.key.split('-')[0]}-${e.key.split('-')[1]}' == widget.yearmonth) {
-                      final String youbi = '${e.key} 00:00:00'.toDateTime().youbiStr;
-
-                      final Color cardColor =
-                          (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(e.key))
-                          ? utility.getYoubiColor(date: e.key, youbiStr: youbi, holiday: appParamState.keepHolidayList)
-                          : Colors.transparent;
-
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: cardColor,
-
-                          border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
-                        ),
-                        padding: const EdgeInsets.all(5),
-
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-                          children: <Widget>[
-                            Text(e.key.split('-')[2]),
-
-                            Row(
-                              children: <Widget>[
-                                Text(e.value.length.toString()),
-
-                                IconButton(
-                                  onPressed: () => appParamNotifier.setMonthlyGeolocMapSelectedDateList(date: e.key),
-                                  icon: Icon(Icons.location_on, color: Colors.white.withValues(alpha: 0.4)),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    return const SizedBox.shrink();
-                  }).toList(),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-
-      firstEntries: _firstEntries,
-      secondEntries: _secondEntries,
-      onPositionChanged: (Offset newPos) => moneyInputNotifier.updateOverlayPosition(newPos),
-
-      fixedFlag: true,
     );
   }
 }
