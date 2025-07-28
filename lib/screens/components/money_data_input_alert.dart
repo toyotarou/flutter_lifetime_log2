@@ -238,7 +238,7 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
 
   ///
   void callFirstBox() {
-    moneyInputNotifier.setFirstOverlayParams(firstEntries: _firstEntries);
+    appParamNotifier.setFirstOverlayParams(firstEntries: _firstEntries);
 
     addFirstOverlay(
       context: context,
@@ -309,13 +309,13 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
 
       firstEntries: _firstEntries,
       secondEntries: _secondEntries,
-      onPositionChanged: (Offset newPos) => moneyInputNotifier.updateOverlayPosition(newPos),
+      onPositionChanged: (Offset newPos) => appParamNotifier.updateOverlayPosition(newPos),
     );
   }
 
   ///
   void callSecondBox() {
-    moneyInputNotifier.setSecondOverlayParams(secondEntries: _secondEntries);
+    appParamNotifier.setSecondOverlayParams(secondEntries: _secondEntries);
 
     addSecondOverlay(
       context: context,
@@ -341,7 +341,7 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
         }),
       ),
 
-      onPositionChanged: (Offset newPos) => moneyInputNotifier.updateOverlayPosition(newPos),
+      onPositionChanged: (Offset newPos) => appParamNotifier.updateOverlayPosition(newPos),
       fixedFlag: true,
     );
   }

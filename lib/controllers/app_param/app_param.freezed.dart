@@ -31,6 +31,11 @@ mixin _$AppParamState {
       throw _privateConstructorUsedError;
 
   ///
+  List<OverlayEntry>? get firstEntries => throw _privateConstructorUsedError;
+  List<OverlayEntry>? get secondEntries => throw _privateConstructorUsedError;
+  Offset? get overlayPosition => throw _privateConstructorUsedError;
+
+  ///
   double get currentZoom => throw _privateConstructorUsedError;
   int get currentPaddingIndex => throw _privateConstructorUsedError;
 
@@ -60,6 +65,9 @@ abstract class $AppParamStateCopyWith<$Res> {
       Map<String, List<GeolocModel>> keepGeolocMap,
       Map<String, TempleModel> keepTempleMap,
       Map<String, TransportationModel> keepTransportationMap,
+      List<OverlayEntry>? firstEntries,
+      List<OverlayEntry>? secondEntries,
+      Offset? overlayPosition,
       double currentZoom,
       int currentPaddingIndex,
       String selectedYearMonth,
@@ -88,6 +96,9 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? keepGeolocMap = null,
     Object? keepTempleMap = null,
     Object? keepTransportationMap = null,
+    Object? firstEntries = freezed,
+    Object? secondEntries = freezed,
+    Object? overlayPosition = freezed,
     Object? currentZoom = null,
     Object? currentPaddingIndex = null,
     Object? selectedYearMonth = null,
@@ -122,6 +133,18 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.keepTransportationMap
           : keepTransportationMap // ignore: cast_nullable_to_non_nullable
               as Map<String, TransportationModel>,
+      firstEntries: freezed == firstEntries
+          ? _value.firstEntries
+          : firstEntries // ignore: cast_nullable_to_non_nullable
+              as List<OverlayEntry>?,
+      secondEntries: freezed == secondEntries
+          ? _value.secondEntries
+          : secondEntries // ignore: cast_nullable_to_non_nullable
+              as List<OverlayEntry>?,
+      overlayPosition: freezed == overlayPosition
+          ? _value.overlayPosition
+          : overlayPosition // ignore: cast_nullable_to_non_nullable
+              as Offset?,
       currentZoom: null == currentZoom
           ? _value.currentZoom
           : currentZoom // ignore: cast_nullable_to_non_nullable
@@ -158,6 +181,9 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       Map<String, List<GeolocModel>> keepGeolocMap,
       Map<String, TempleModel> keepTempleMap,
       Map<String, TransportationModel> keepTransportationMap,
+      List<OverlayEntry>? firstEntries,
+      List<OverlayEntry>? secondEntries,
+      Offset? overlayPosition,
       double currentZoom,
       int currentPaddingIndex,
       String selectedYearMonth,
@@ -184,6 +210,9 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? keepGeolocMap = null,
     Object? keepTempleMap = null,
     Object? keepTransportationMap = null,
+    Object? firstEntries = freezed,
+    Object? secondEntries = freezed,
+    Object? overlayPosition = freezed,
     Object? currentZoom = null,
     Object? currentPaddingIndex = null,
     Object? selectedYearMonth = null,
@@ -218,6 +247,18 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value._keepTransportationMap
           : keepTransportationMap // ignore: cast_nullable_to_non_nullable
               as Map<String, TransportationModel>,
+      firstEntries: freezed == firstEntries
+          ? _value._firstEntries
+          : firstEntries // ignore: cast_nullable_to_non_nullable
+              as List<OverlayEntry>?,
+      secondEntries: freezed == secondEntries
+          ? _value._secondEntries
+          : secondEntries // ignore: cast_nullable_to_non_nullable
+              as List<OverlayEntry>?,
+      overlayPosition: freezed == overlayPosition
+          ? _value.overlayPosition
+          : overlayPosition // ignore: cast_nullable_to_non_nullable
+              as Offset?,
       currentZoom: null == currentZoom
           ? _value.currentZoom
           : currentZoom // ignore: cast_nullable_to_non_nullable
@@ -254,6 +295,9 @@ class _$AppParamStateImpl implements _AppParamState {
           const <String, TempleModel>{},
       final Map<String, TransportationModel> keepTransportationMap =
           const <String, TransportationModel>{},
+      final List<OverlayEntry>? firstEntries,
+      final List<OverlayEntry>? secondEntries,
+      this.overlayPosition,
       this.currentZoom = 0,
       this.currentPaddingIndex = 5,
       this.selectedYearMonth = '',
@@ -265,6 +309,8 @@ class _$AppParamStateImpl implements _AppParamState {
         _keepGeolocMap = keepGeolocMap,
         _keepTempleMap = keepTempleMap,
         _keepTransportationMap = keepTransportationMap,
+        _firstEntries = firstEntries,
+        _secondEntries = secondEntries,
         _monthlyGeolocMapSelectedDateList = monthlyGeolocMapSelectedDateList;
 
   final List<String> _keepHolidayList;
@@ -333,6 +379,32 @@ class _$AppParamStateImpl implements _AppParamState {
   }
 
   ///
+  final List<OverlayEntry>? _firstEntries;
+
+  ///
+  @override
+  List<OverlayEntry>? get firstEntries {
+    final value = _firstEntries;
+    if (value == null) return null;
+    if (_firstEntries is EqualUnmodifiableListView) return _firstEntries;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  final List<OverlayEntry>? _secondEntries;
+  @override
+  List<OverlayEntry>? get secondEntries {
+    final value = _secondEntries;
+    if (value == null) return null;
+    if (_secondEntries is EqualUnmodifiableListView) return _secondEntries;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  @override
+  final Offset? overlayPosition;
+
+  ///
   @override
   @JsonKey()
   final double currentZoom;
@@ -356,7 +428,7 @@ class _$AppParamStateImpl implements _AppParamState {
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList)';
   }
 
   @override
@@ -378,6 +450,12 @@ class _$AppParamStateImpl implements _AppParamState {
                 .equals(other._keepTempleMap, _keepTempleMap) &&
             const DeepCollectionEquality()
                 .equals(other._keepTransportationMap, _keepTransportationMap) &&
+            const DeepCollectionEquality()
+                .equals(other._firstEntries, _firstEntries) &&
+            const DeepCollectionEquality()
+                .equals(other._secondEntries, _secondEntries) &&
+            (identical(other.overlayPosition, overlayPosition) ||
+                other.overlayPosition == overlayPosition) &&
             (identical(other.currentZoom, currentZoom) ||
                 other.currentZoom == currentZoom) &&
             (identical(other.currentPaddingIndex, currentPaddingIndex) ||
@@ -399,6 +477,9 @@ class _$AppParamStateImpl implements _AppParamState {
       const DeepCollectionEquality().hash(_keepGeolocMap),
       const DeepCollectionEquality().hash(_keepTempleMap),
       const DeepCollectionEquality().hash(_keepTransportationMap),
+      const DeepCollectionEquality().hash(_firstEntries),
+      const DeepCollectionEquality().hash(_secondEntries),
+      overlayPosition,
       currentZoom,
       currentPaddingIndex,
       selectedYearMonth,
@@ -422,6 +503,9 @@ abstract class _AppParamState implements AppParamState {
           final Map<String, List<GeolocModel>> keepGeolocMap,
           final Map<String, TempleModel> keepTempleMap,
           final Map<String, TransportationModel> keepTransportationMap,
+          final List<OverlayEntry>? firstEntries,
+          final List<OverlayEntry>? secondEntries,
+          final Offset? overlayPosition,
           final double currentZoom,
           final int currentPaddingIndex,
           final String selectedYearMonth,
@@ -442,6 +526,14 @@ abstract class _AppParamState implements AppParamState {
   Map<String, TempleModel> get keepTempleMap;
   @override
   Map<String, TransportationModel> get keepTransportationMap;
+
+  ///
+  @override
+  List<OverlayEntry>? get firstEntries;
+  @override
+  List<OverlayEntry>? get secondEntries;
+  @override
+  Offset? get overlayPosition;
 
   ///
   @override

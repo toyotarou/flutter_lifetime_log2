@@ -1,4 +1,8 @@
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
+//
+//
+//
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -17,12 +21,17 @@ class MoneyInputState with _$MoneyInputState {
     @Default(<MoneyModel>[]) List<MoneyModel> moneyList,
     @Default(<String, MoneyModel>{}) Map<String, MoneyModel> moneyMap,
 
-    ///
-    List<OverlayEntry>? firstEntries,
-    List<OverlayEntry>? secondEntries,
-
-    Offset? overlayPosition,
-
+    // ///
+    // List<OverlayEntry>? firstEntries,
+    // List<OverlayEntry>? secondEntries,
+    //
+    // Offset? overlayPosition,
+    //
+    //
+    //
+    //
+    //
+    //
     @Default(-1) int pos,
     @Default(<String>[]) List<String> inputValueList,
 
@@ -45,16 +54,21 @@ class MoneyInput extends _$MoneyInput {
     return MoneyInputState(inputValueList: list);
   }
 
-  ///
-  void setFirstOverlayParams({required List<OverlayEntry>? firstEntries}) =>
-      state = state.copyWith(firstEntries: firstEntries);
-
-  ///
-  void setSecondOverlayParams({required List<OverlayEntry>? secondEntries}) =>
-      state = state.copyWith(secondEntries: secondEntries);
-
-  ///
-  void updateOverlayPosition(Offset newPos) => state = state.copyWith(overlayPosition: newPos);
+  // ///
+  // void setFirstOverlayParams({required List<OverlayEntry>? firstEntries}) =>
+  //     state = state.copyWith(firstEntries: firstEntries);
+  //
+  // ///
+  // void setSecondOverlayParams({required List<OverlayEntry>? secondEntries}) =>
+  //     state = state.copyWith(secondEntries: secondEntries);
+  //
+  // ///
+  // void updateOverlayPosition(Offset newPos) => state = state.copyWith(overlayPosition: newPos);
+  //
+  //
+  //
+  //
+  //
 
   ///
   void setPos({required int pos}) => state = state.copyWith(pos: pos);

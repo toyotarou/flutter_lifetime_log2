@@ -6,7 +6,7 @@ part of 'money_input.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$moneyInputHash() => r'aea7c6105c4970d49d5fa3ff44ef090fa2687fee';
+String _$moneyInputHash() => r'288d781d0abec2f0cceabda7d5a886c1e6bc0628';
 
 /// See also [MoneyInput].
 @ProviderFor(MoneyInput)

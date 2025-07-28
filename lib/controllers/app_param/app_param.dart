@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -23,6 +24,12 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<GeolocModel>>{}) Map<String, List<GeolocModel>> keepGeolocMap,
     @Default(<String, TempleModel>{}) Map<String, TempleModel> keepTempleMap,
     @Default(<String, TransportationModel>{}) Map<String, TransportationModel> keepTransportationMap,
+
+    ///
+    List<OverlayEntry>? firstEntries,
+    List<OverlayEntry>? secondEntries,
+
+    Offset? overlayPosition,
 
     ///
     @Default(0) double currentZoom,
@@ -64,6 +71,19 @@ class AppParam extends _$AppParam {
   ///
   void setKeepGeoSpotModelMap({required Map<String, TransportationModel> map}) =>
       state = state.copyWith(keepTransportationMap: map);
+
+  //===================================================
+
+  ///
+  void setFirstOverlayParams({required List<OverlayEntry>? firstEntries}) =>
+      state = state.copyWith(firstEntries: firstEntries);
+
+  ///
+  void setSecondOverlayParams({required List<OverlayEntry>? secondEntries}) =>
+      state = state.copyWith(secondEntries: secondEntries);
+
+  ///
+  void updateOverlayPosition(Offset newPos) => state = state.copyWith(overlayPosition: newPos);
 
   //===================================================
 

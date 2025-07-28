@@ -64,6 +64,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                     LifetimeDialog(
                                       context: context,
                                       widget: MonthlyGeolocMapDisplayAlert(yearmonth: widget.yearmonth),
+
+                                      executeFunctionWhenDialogClose: true,
+                                      from: 'MonthlyGeolocMapDisplayAlert',
+                                      ref: ref,
                                     );
                                   },
                                   child: Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),

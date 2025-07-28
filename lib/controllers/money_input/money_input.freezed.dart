@@ -17,12 +17,18 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$MoneyInputState {
   List<MoneyModel> get moneyList => throw _privateConstructorUsedError;
-  Map<String, MoneyModel> get moneyMap => throw _privateConstructorUsedError;
-
-  ///
-  List<OverlayEntry>? get firstEntries => throw _privateConstructorUsedError;
-  List<OverlayEntry>? get secondEntries => throw _privateConstructorUsedError;
-  Offset? get overlayPosition => throw _privateConstructorUsedError;
+  Map<String, MoneyModel> get moneyMap =>
+      throw _privateConstructorUsedError; // ///
+// List<OverlayEntry>? firstEntries,
+// List<OverlayEntry>? secondEntries,
+//
+// Offset? overlayPosition,
+//
+//
+//
+//
+//
+//
   int get pos => throw _privateConstructorUsedError;
   List<String> get inputValueList => throw _privateConstructorUsedError;
   bool get isReplaceInputValueList => throw _privateConstructorUsedError;
@@ -44,9 +50,6 @@ abstract class $MoneyInputStateCopyWith<$Res> {
   $Res call(
       {List<MoneyModel> moneyList,
       Map<String, MoneyModel> moneyMap,
-      List<OverlayEntry>? firstEntries,
-      List<OverlayEntry>? secondEntries,
-      Offset? overlayPosition,
       int pos,
       List<String> inputValueList,
       bool isReplaceInputValueList,
@@ -70,9 +73,6 @@ class _$MoneyInputStateCopyWithImpl<$Res, $Val extends MoneyInputState>
   $Res call({
     Object? moneyList = null,
     Object? moneyMap = null,
-    Object? firstEntries = freezed,
-    Object? secondEntries = freezed,
-    Object? overlayPosition = freezed,
     Object? pos = null,
     Object? inputValueList = null,
     Object? isReplaceInputValueList = null,
@@ -87,18 +87,6 @@ class _$MoneyInputStateCopyWithImpl<$Res, $Val extends MoneyInputState>
           ? _value.moneyMap
           : moneyMap // ignore: cast_nullable_to_non_nullable
               as Map<String, MoneyModel>,
-      firstEntries: freezed == firstEntries
-          ? _value.firstEntries
-          : firstEntries // ignore: cast_nullable_to_non_nullable
-              as List<OverlayEntry>?,
-      secondEntries: freezed == secondEntries
-          ? _value.secondEntries
-          : secondEntries // ignore: cast_nullable_to_non_nullable
-              as List<OverlayEntry>?,
-      overlayPosition: freezed == overlayPosition
-          ? _value.overlayPosition
-          : overlayPosition // ignore: cast_nullable_to_non_nullable
-              as Offset?,
       pos: null == pos
           ? _value.pos
           : pos // ignore: cast_nullable_to_non_nullable
@@ -130,9 +118,6 @@ abstract class _$$MoneyInputStateImplCopyWith<$Res>
   $Res call(
       {List<MoneyModel> moneyList,
       Map<String, MoneyModel> moneyMap,
-      List<OverlayEntry>? firstEntries,
-      List<OverlayEntry>? secondEntries,
-      Offset? overlayPosition,
       int pos,
       List<String> inputValueList,
       bool isReplaceInputValueList,
@@ -154,9 +139,6 @@ class __$$MoneyInputStateImplCopyWithImpl<$Res>
   $Res call({
     Object? moneyList = null,
     Object? moneyMap = null,
-    Object? firstEntries = freezed,
-    Object? secondEntries = freezed,
-    Object? overlayPosition = freezed,
     Object? pos = null,
     Object? inputValueList = null,
     Object? isReplaceInputValueList = null,
@@ -171,18 +153,6 @@ class __$$MoneyInputStateImplCopyWithImpl<$Res>
           ? _value._moneyMap
           : moneyMap // ignore: cast_nullable_to_non_nullable
               as Map<String, MoneyModel>,
-      firstEntries: freezed == firstEntries
-          ? _value._firstEntries
-          : firstEntries // ignore: cast_nullable_to_non_nullable
-              as List<OverlayEntry>?,
-      secondEntries: freezed == secondEntries
-          ? _value._secondEntries
-          : secondEntries // ignore: cast_nullable_to_non_nullable
-              as List<OverlayEntry>?,
-      overlayPosition: freezed == overlayPosition
-          ? _value.overlayPosition
-          : overlayPosition // ignore: cast_nullable_to_non_nullable
-              as Offset?,
       pos: null == pos
           ? _value.pos
           : pos // ignore: cast_nullable_to_non_nullable
@@ -209,17 +179,12 @@ class _$MoneyInputStateImpl implements _MoneyInputState {
   const _$MoneyInputStateImpl(
       {final List<MoneyModel> moneyList = const <MoneyModel>[],
       final Map<String, MoneyModel> moneyMap = const <String, MoneyModel>{},
-      final List<OverlayEntry>? firstEntries,
-      final List<OverlayEntry>? secondEntries,
-      this.overlayPosition,
       this.pos = -1,
       final List<String> inputValueList = const <String>[],
       this.isReplaceInputValueList = false,
       this.replaceInputValueListDate = ''})
       : _moneyList = moneyList,
         _moneyMap = moneyMap,
-        _firstEntries = firstEntries,
-        _secondEntries = secondEntries,
         _inputValueList = inputValueList;
 
   final List<MoneyModel> _moneyList;
@@ -240,31 +205,17 @@ class _$MoneyInputStateImpl implements _MoneyInputState {
     return EqualUnmodifiableMapView(_moneyMap);
   }
 
-  ///
-  final List<OverlayEntry>? _firstEntries;
-
-  ///
-  @override
-  List<OverlayEntry>? get firstEntries {
-    final value = _firstEntries;
-    if (value == null) return null;
-    if (_firstEntries is EqualUnmodifiableListView) return _firstEntries;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-  final List<OverlayEntry>? _secondEntries;
-  @override
-  List<OverlayEntry>? get secondEntries {
-    final value = _secondEntries;
-    if (value == null) return null;
-    if (_secondEntries is EqualUnmodifiableListView) return _secondEntries;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-  @override
-  final Offset? overlayPosition;
+// ///
+// List<OverlayEntry>? firstEntries,
+// List<OverlayEntry>? secondEntries,
+//
+// Offset? overlayPosition,
+//
+//
+//
+//
+//
+//
   @override
   @JsonKey()
   final int pos;
@@ -286,7 +237,7 @@ class _$MoneyInputStateImpl implements _MoneyInputState {
 
   @override
   String toString() {
-    return 'MoneyInputState(moneyList: $moneyList, moneyMap: $moneyMap, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, pos: $pos, inputValueList: $inputValueList, isReplaceInputValueList: $isReplaceInputValueList, replaceInputValueListDate: $replaceInputValueListDate)';
+    return 'MoneyInputState(moneyList: $moneyList, moneyMap: $moneyMap, pos: $pos, inputValueList: $inputValueList, isReplaceInputValueList: $isReplaceInputValueList, replaceInputValueListDate: $replaceInputValueListDate)';
   }
 
   @override
@@ -297,12 +248,6 @@ class _$MoneyInputStateImpl implements _MoneyInputState {
             const DeepCollectionEquality()
                 .equals(other._moneyList, _moneyList) &&
             const DeepCollectionEquality().equals(other._moneyMap, _moneyMap) &&
-            const DeepCollectionEquality()
-                .equals(other._firstEntries, _firstEntries) &&
-            const DeepCollectionEquality()
-                .equals(other._secondEntries, _secondEntries) &&
-            (identical(other.overlayPosition, overlayPosition) ||
-                other.overlayPosition == overlayPosition) &&
             (identical(other.pos, pos) || other.pos == pos) &&
             const DeepCollectionEquality()
                 .equals(other._inputValueList, _inputValueList) &&
@@ -319,9 +264,6 @@ class _$MoneyInputStateImpl implements _MoneyInputState {
       runtimeType,
       const DeepCollectionEquality().hash(_moneyList),
       const DeepCollectionEquality().hash(_moneyMap),
-      const DeepCollectionEquality().hash(_firstEntries),
-      const DeepCollectionEquality().hash(_secondEntries),
-      overlayPosition,
       pos,
       const DeepCollectionEquality().hash(_inputValueList),
       isReplaceInputValueList,
@@ -341,9 +283,6 @@ abstract class _MoneyInputState implements MoneyInputState {
   const factory _MoneyInputState(
       {final List<MoneyModel> moneyList,
       final Map<String, MoneyModel> moneyMap,
-      final List<OverlayEntry>? firstEntries,
-      final List<OverlayEntry>? secondEntries,
-      final Offset? overlayPosition,
       final int pos,
       final List<String> inputValueList,
       final bool isReplaceInputValueList,
@@ -352,15 +291,17 @@ abstract class _MoneyInputState implements MoneyInputState {
   @override
   List<MoneyModel> get moneyList;
   @override
-  Map<String, MoneyModel> get moneyMap;
-
-  ///
-  @override
-  List<OverlayEntry>? get firstEntries;
-  @override
-  List<OverlayEntry>? get secondEntries;
-  @override
-  Offset? get overlayPosition;
+  Map<String, MoneyModel> get moneyMap; // ///
+// List<OverlayEntry>? firstEntries,
+// List<OverlayEntry>? secondEntries,
+//
+// Offset? overlayPosition,
+//
+//
+//
+//
+//
+//
   @override
   int get pos;
   @override

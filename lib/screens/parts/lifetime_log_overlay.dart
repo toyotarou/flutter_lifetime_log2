@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../controllers/money_input/money_input.dart';
+import '../../controllers/app_param/app_param.dart';
+
+// import '../../controllers/money_input/money_input.dart';
+//
+//
+//
+//
 
 //=======================================================//
 
@@ -219,7 +225,7 @@ void addSecondOverlay({
 ///
 void closeAllOverlays({required WidgetRef ref}) {
   final List<OverlayEntry>? firstEntries = ref.watch(
-    moneyInputProvider.select((MoneyInputState value) => value.firstEntries),
+    appParamProvider.select((AppParamState value) => value.firstEntries),
   );
 
   if (firstEntries != null) {
@@ -229,7 +235,7 @@ void closeAllOverlays({required WidgetRef ref}) {
   }
 
   final List<OverlayEntry>? secondEntries = ref.watch(
-    moneyInputProvider.select((MoneyInputState value) => value.secondEntries),
+    appParamProvider.select((AppParamState value) => value.secondEntries),
   );
 
   if (secondEntries != null) {

@@ -121,7 +121,7 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                           ),
                           child: GestureDetector(
                             onTap: () {
-                              moneyInputNotifier.setFirstOverlayParams(firstEntries: _firstEntries);
+                              appParamNotifier.setFirstOverlayParams(firstEntries: _firstEntries);
 
                               addFirstOverlay(
                                 context: context,
@@ -133,7 +133,7 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                                 widget: const MonthlyGeolocMapDateListWidget(),
                                 firstEntries: _firstEntries,
                                 secondEntries: _secondEntries,
-                                onPositionChanged: (Offset newPos) => moneyInputNotifier.updateOverlayPosition(newPos),
+                                onPositionChanged: (Offset newPos) => appParamNotifier.updateOverlayPosition(newPos),
 
                                 fixedFlag: true,
                               );
