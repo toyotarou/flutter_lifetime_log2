@@ -9,6 +9,7 @@ import '../components/lifetime_display_alert.dart';
 import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
 import '../components/money_data_input_alert.dart';
+import '../components/monthly_geoloc_map_display_alert.dart';
 import '../components/walk_data_input_alert.dart';
 import '../parts/lifetime_dialog.dart';
 
@@ -53,14 +54,32 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         children: <Widget>[
                           const SizedBox.shrink(),
 
-                          GestureDetector(
-                            onTap: () {
-                              LifetimeDialog(
-                                context: context,
-                                widget: LifetimeDisplayAlert(yearmonth: widget.yearmonth),
-                              );
-                            },
-                            child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.3)),
+                          Row(
+                            children: <Widget>[
+                              if (appParamState.keepGeolocMap.isNotEmpty) ...<Widget>[
+                                GestureDetector(
+                                  onTap: () {
+                                    LifetimeDialog(
+                                      context: context,
+                                      widget: MonthlyGeolocMapDisplayAlert(yearmonth: widget.yearmonth),
+                                    );
+                                  },
+                                  child: Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+                                ),
+
+                                const SizedBox(width: 20),
+                              ],
+
+                              GestureDetector(
+                                onTap: () {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: LifetimeDisplayAlert(yearmonth: widget.yearmonth),
+                                  );
+                                },
+                                child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.3)),
+                              ),
+                            ],
                           ),
                         ],
                       ),
