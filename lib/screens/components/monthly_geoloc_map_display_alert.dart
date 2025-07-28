@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../controllers/controllers_mixin.dart';
@@ -90,41 +91,67 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
             right: 5,
             left: 5,
 
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
 
-                      child: Text(widget.yearmonth),
+                          child: Text(widget.yearmonth),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: GestureDetector(
+                            onTap: () {
+                              callFirstBox();
+                            },
+                            child: const Icon(Icons.calendar_month),
+                          ),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: GestureDetector(onTap: () {}, child: const Icon(FontAwesomeIcons.expand)),
+                        ),
+                      ],
                     ),
 
-                    const SizedBox(width: 10),
-
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: GestureDetector(
-                        onTap: () {
-                          callFirstBox();
-                        },
-                        child: const Icon(Icons.calendar_month),
-                      ),
-                    ),
+                    const SizedBox.shrink(),
                   ],
                 ),
 
-                const SizedBox.shrink(),
+                if (appParamState.monthlyGeolocMapSelectedDateList.isNotEmpty) ...<Widget>[
+                  const SizedBox(height: 10),
+
+                  Text(
+                    appParamState.monthlyGeolocMapSelectedDateList.last,
+
+                    style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ],
             ),
           ),
@@ -159,7 +186,7 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                     if ('${e.key.split('-')[0]}-${e.key.split('-')[1]}' == widget.yearmonth) {
                       final String youbi = '${e.key} 00:00:00'.toDateTime().youbiStr;
 
-                      Color cardColor =
+                      final Color cardColor =
                           (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(e.key))
                           ? utility.getYoubiColor(date: e.key, youbiStr: youbi, holiday: appParamState.keepHolidayList)
                           : Colors.transparent;
@@ -183,7 +210,7 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                                 Text(e.value.length.toString()),
 
                                 IconButton(
-                                  onPressed: () {},
+                                  onPressed: () => appParamNotifier.setMonthlyGeolocMapSelectedDateList(date: e.key),
                                   icon: Icon(Icons.location_on, color: Colors.white.withValues(alpha: 0.4)),
                                 ),
                               ],
