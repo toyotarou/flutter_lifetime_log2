@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
+
+import '../models/geoloc_model.dart';
 
 class Utility {
   /// 背景取得
@@ -118,6 +122,40 @@ class Utility {
     bankNames['pay_f'] = '楽天キャッシュ';
 
     return bankNames;
+  }
+
+  ///
+  String getBoundingBoxArea({required List<GeolocModel> points}) {
+    if (points.isEmpty) {
+      return '0.0000 km²';
+    }
+
+    final List<double> lats = points.map((GeolocModel p) => double.tryParse(p.latitude) ?? 0).toList();
+    final List<double> lngs = points.map((GeolocModel p) => double.tryParse(p.longitude) ?? 0).toList();
+
+    final double maxLat = lats.reduce((double a, double b) => a > b ? a : b);
+    final double minLat = lats.reduce((double a, double b) => a < b ? a : b);
+    final double maxLng = lngs.reduce((double a, double b) => a > b ? a : b);
+    final double minLng = lngs.reduce((double a, double b) => a < b ? a : b);
+
+    final LatLng southWest = LatLng(minLat, minLng);
+    final LatLng northWest = LatLng(maxLat, minLng);
+    final LatLng southEast = LatLng(minLat, maxLng);
+
+    final double northSouth = calculateDistance(southWest, northWest);
+    final double eastWest = calculateDistance(southWest, southEast);
+
+    final double areaM2 = northSouth * eastWest;
+    final double areaKm2 = areaM2 / 1_000_000;
+
+    final NumberFormat numberFormat = NumberFormat('#,##0.0000');
+    return '${numberFormat.format(areaKm2)} km²';
+  }
+
+  ///
+  double calculateDistance(LatLng p1, LatLng p2) {
+    const Distance distance = Distance();
+    return distance.as(LengthUnit.Meter, p1, p2);
   }
 }
 

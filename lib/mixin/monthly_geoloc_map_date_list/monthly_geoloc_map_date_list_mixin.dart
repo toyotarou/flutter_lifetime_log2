@@ -62,7 +62,7 @@ mixin MonthlyGeolocMapDateListMixin on ConsumerState<MonthlyGeolocMapDateListWid
 
                         if (appParamState.monthlyGeolocMapSelectedDateList.isNotEmpty &&
                             appParamState.monthlyGeolocMapSelectedDateList.last == e.key) {
-                          textColor = Colors.redAccent;
+                          textColor = Colors.yellowAccent;
                         }
 
                         return Container(
@@ -80,18 +80,35 @@ mixin MonthlyGeolocMapDateListMixin on ConsumerState<MonthlyGeolocMapDateListWid
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
                               children: <Widget>[
-                                Text(e.key.split('-')[2]),
+                                Expanded(
+                                  child: Column(
+                                    children: <Widget>[
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[Text(e.key.split('-')[2]), Text(e.value.length.toString())],
+                                      ),
 
-                                Row(
-                                  children: <Widget>[
-                                    Text(e.value.length.toString()),
+                                      const SizedBox(height: 5),
 
-                                    IconButton(
-                                      onPressed: () =>
-                                          appParamNotifier.setMonthlyGeolocMapSelectedDateList(date: e.key),
-                                      icon: Icon(Icons.location_on, color: textColor.withValues(alpha: 0.4)),
-                                    ),
-                                  ],
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          const SizedBox.shrink(),
+
+                                          Text(utility.getBoundingBoxArea(points: e.value)),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(width: 10),
+
+                                GestureDetector(
+                                  onTap: () {
+                                    appParamNotifier.setMonthlyGeolocMapSelectedDateList(date: e.key);
+                                  },
+                                  child: const Icon(Icons.location_on),
                                 ),
                               ],
                             ),

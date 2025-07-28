@@ -168,10 +168,37 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                 if (appParamState.monthlyGeolocMapSelectedDateList.isNotEmpty) ...<Widget>[
                   const SizedBox(height: 10),
 
-                  Text(
-                    appParamState.monthlyGeolocMapSelectedDateList.last,
+                  Container(
+                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.5)),
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Text(
+                      appParamState.monthlyGeolocMapSelectedDateList.last,
 
-                    style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Wrap(
+                          children: appParamState.monthlyGeolocMapSelectedDateList.map((String e) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 5, right: 5),
+                              child: CircleAvatar(
+                                radius: 10,
+
+                                backgroundColor: Colors.green[900]!.withValues(alpha: 0.4),
+
+                                child: Text(e.split('-')[2], style: const TextStyle(fontSize: 10, color: Colors.white)),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+
+                      const Expanded(child: SizedBox.shrink()),
+                    ],
                   ),
                 ],
               ],
