@@ -107,4 +107,7 @@ class AppParam extends _$AppParam {
 
     state = state.copyWith(monthlyGeolocMapSelectedDateList: list);
   }
+
+  ///
+  void clearMonthlyGeolocMapSelectedDateList() => state = state.copyWith(monthlyGeolocMapSelectedDateList: <String>[]);
 }

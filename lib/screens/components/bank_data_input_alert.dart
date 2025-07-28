@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../main.dart';
+import '../../models/money_model.dart';
 import '../../utility/utility.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
@@ -30,12 +31,6 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
   List<FocusNode> focusNodeList = <FocusNode>[];
 
   bool _isLoading = false;
-
-  static const double maxTime = 5.000;
-
-  double _remainingTime = maxTime;
-
-  Timer? _timer;
 
   ///
   @override
@@ -99,23 +94,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
             ),
           ),
 
-          if (_isLoading) ...<Widget>[
-            Center(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(width: context.screenSize.width),
-                  const Spacer(),
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 10),
-                  Text(
-                    _remainingTime.toStringAsFixed(3),
-                    style: const TextStyle(fontSize: 30, color: Colors.yellowAccent),
-                  ),
-                  const Spacer(),
-                ],
-              ),
-            ),
-          ],
+          if (_isLoading) ...<Widget>[const CircularProgressIndicator()],
         ],
       ),
     );
@@ -445,6 +424,28 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
   Future<void> _inputBankData() async {
     bool errFlg = false;
 
+    if (appParamState.keepMoneyMap.isNotEmpty) {
+      final MapEntry<String, MoneyModel> lastMoney = appParamState.keepMoneyMap.entries.last;
+
+      for (final String element in bankInputState.inputDateList) {
+        if (element != '') {
+          if (DateTime(
+            element.split('-')[0].toInt(),
+            element.split('-')[1].toInt(),
+            element.split('-')[2].toInt(),
+          ).isAfter(
+            DateTime(
+              lastMoney.key.split('-')[0].toInt(),
+              lastMoney.key.split('-')[1].toInt(),
+              lastMoney.key.split('-')[2].toInt(),
+            ),
+          )) {
+            errFlg = true;
+          }
+        }
+      }
+    }
+
     final List<Map<String, dynamic>> uploadDataList = <Map<String, dynamic>>[];
 
     for (int i = 0; i < bankTecs.length; i++) {
@@ -478,8 +479,6 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
       return;
     }
 
-    _startCountdown();
-
     setState(() => _isLoading = true);
 
     for (final Map<String, dynamic> element in uploadDataList) {
@@ -492,29 +491,6 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
         setState(() => _isLoading = false);
 
         context.findAncestorStateOfType<AppRootState>()?.restartApp();
-      }
-    });
-  }
-
-  ///
-  void _startCountdown() {
-    _timer?.cancel();
-
-    setState(() => _remainingTime = maxTime);
-
-    const Duration interval = Duration(milliseconds: 10);
-
-    final DateTime startTime = DateTime.now();
-
-    _timer = Timer.periodic(interval, (Timer timer) {
-      final double elapsed = DateTime.now().difference(startTime).inMilliseconds / 1000;
-
-      final double newRemaining = (maxTime - elapsed).clamp(0.0, maxTime);
-
-      setState(() => _remainingTime = newRemaining);
-
-      if (newRemaining <= 0.0) {
-        _timer?.cancel();
       }
     });
   }

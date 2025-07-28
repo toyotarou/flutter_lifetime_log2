@@ -61,6 +61,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                   onTap: () {
                                     appParamNotifier.setSelectedYearMonth(yearmonth: widget.yearmonth);
 
+                                    appParamNotifier.clearMonthlyGeolocMapSelectedDateList();
+
                                     LifetimeDialog(
                                       context: context,
                                       widget: MonthlyGeolocMapDisplayAlert(yearmonth: widget.yearmonth),

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,9 +50,15 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
 
   Utility utility = Utility();
 
+  List<LatLng> latLngList = <LatLng>[];
+
   ///
   @override
   Widget build(BuildContext context) {
+    makeMinMaxLatLng();
+
+    makeMarker();
+
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -74,16 +82,7 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                 userAgentPackageName: 'com.example.app',
               ),
 
-              // MarkerLayer(markers: markerList),
-              //
-              // if (widget.transportation != null && widget.transportation!.spotDataModelListMap.isNotEmpty) ...<Widget>[
-              //   // ignore: always_specify_types
-              //   PolylineLayer(polylines: makeTransportationPolyline()),
-              // ],
-              //
-              // MarkerLayer(markers: transportationGoalMarkerList),
-              //
-              // MarkerLayer(markers: templeMarkerList),
+              MarkerLayer(markers: markerList),
             ],
           ),
 
@@ -127,7 +126,7 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                                 context: context,
                                 setStateCallback: setState,
                                 width: MediaQuery.of(context).size.width * 0.4,
-                                height: MediaQuery.of(context).size.width * 0.8,
+                                height: MediaQuery.of(context).size.height * 0.4,
                                 color: Colors.blueGrey.withOpacity(0.3),
                                 initialPosition: Offset(MediaQuery.of(context).size.width * 0.6, 90),
                                 widget: const MonthlyGeolocMapDateListWidget(),
@@ -142,16 +141,23 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                           ),
                         ),
 
-                        const SizedBox(width: 10),
+                        if (appParamState.monthlyGeolocMapSelectedDateList.isNotEmpty) ...<Widget>[
+                          const SizedBox(width: 10),
 
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(10),
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: GestureDetector(
+                              onTap: () {
+                                setDefaultBoundsMap();
+                              },
+                              child: const Icon(FontAwesomeIcons.expand),
+                            ),
                           ),
-                          child: GestureDetector(onTap: () {}, child: const Icon(FontAwesomeIcons.expand)),
-                        ),
+                        ],
                       ],
                     ),
 
@@ -176,5 +182,84 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
         ],
       ),
     );
+  }
+
+  ///
+  void makeMinMaxLatLng() {
+    latList.clear();
+    lngList.clear();
+
+    latLngList.clear();
+
+    if (appParamState.monthlyGeolocMapSelectedDateList.isNotEmpty) {
+      for (final String element in appParamState.monthlyGeolocMapSelectedDateList) {
+        appParamState.keepGeolocMap[element]?.forEach((GeolocModel element2) {
+          latList.add(element2.latitude.toDouble());
+          lngList.add(element2.longitude.toDouble());
+
+          latLngList.add(LatLng(element2.latitude.toDouble(), element2.longitude.toDouble()));
+        });
+      }
+    }
+
+    if (latList.isNotEmpty && lngList.isNotEmpty) {
+      minLat = latList.reduce(min);
+      maxLat = latList.reduce(max);
+      minLng = lngList.reduce(min);
+      maxLng = lngList.reduce(max);
+    }
+  }
+
+  ///
+  void makeMarker() {
+    markerList.clear();
+
+    if (appParamState.monthlyGeolocMapSelectedDateList.isNotEmpty) {
+      final String lastDate = appParamState.monthlyGeolocMapSelectedDateList.last;
+
+      for (final String element in appParamState.monthlyGeolocMapSelectedDateList) {
+        appParamState.keepGeolocMap[element]?.forEach((GeolocModel element2) {
+          final Color iconColor = ('${element2.year}-${element2.month}-${element2.day}' == lastDate)
+              ? Colors.redAccent
+              : Colors.black;
+
+          markerList.add(
+            Marker(
+              point: LatLng(element2.latitude.toDouble(), element2.longitude.toDouble()),
+
+              width: 40,
+              height: 40,
+
+              child: Icon(Icons.ac_unit, color: iconColor),
+            ),
+          );
+        });
+      }
+    }
+  }
+
+  ///
+  void setDefaultBoundsMap() {
+    if (latList.isNotEmpty && lngList.isNotEmpty) {
+      mapController.rotate(0);
+
+      final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
+
+      final CameraFit cameraFit = CameraFit.bounds(
+        bounds: bounds,
+        padding: EdgeInsets.all(appParamState.currentPaddingIndex * 10),
+      );
+
+      mapController.fitCamera(cameraFit);
+
+      /// これは残しておく
+      // final LatLng newCenter = mapController.camera.center;
+
+      final double newZoom = mapController.camera.zoom;
+
+      setState(() => currentZoom = newZoom);
+
+      appParamNotifier.setCurrentZoom(zoom: newZoom);
+    }
   }
 }
