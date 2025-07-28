@@ -162,7 +162,7 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                       Color cardColor =
                           (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(e.key))
                           ? utility.getYoubiColor(date: e.key, youbiStr: youbi, holiday: appParamState.keepHolidayList)
-                          : Colors.blueGrey.withValues(alpha: 0.2);
+                          : Colors.transparent;
 
                       return Container(
                         decoration: BoxDecoration(
