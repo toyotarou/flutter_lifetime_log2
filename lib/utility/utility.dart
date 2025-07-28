@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../models/bounding_box_info.dart';
 import '../models/geoloc_model.dart';
 
 class Utility {
@@ -125,11 +126,7 @@ class Utility {
   }
 
   ///
-  String getBoundingBoxArea({required List<GeolocModel> points}) {
-    if (points.isEmpty) {
-      return '0.0000 km²';
-    }
-
+  BoundingBoxInfo getBoundingBoxInfo(List<GeolocModel> points) {
     final List<double> lats = points.map((GeolocModel p) => double.tryParse(p.latitude) ?? 0).toList();
     final List<double> lngs = points.map((GeolocModel p) => double.tryParse(p.longitude) ?? 0).toList();
 
@@ -142,14 +139,36 @@ class Utility {
     final LatLng northWest = LatLng(maxLat, minLng);
     final LatLng southEast = LatLng(minLat, maxLng);
 
-    final double northSouth = calculateDistance(southWest, northWest);
-    final double eastWest = calculateDistance(southWest, southEast);
+    const Distance distance = Distance();
+    final double northSouth = distance.as(LengthUnit.Meter, southWest, northWest);
+    final double eastWest = distance.as(LengthUnit.Meter, southWest, southEast);
 
-    final double areaM2 = northSouth * eastWest;
-    final double areaKm2 = areaM2 / 1_000_000;
+    final double areaKm2 = (northSouth * eastWest) / 1_000_000;
 
+    return BoundingBoxInfo(minLat: minLat, maxLat: maxLat, minLng: minLng, maxLng: maxLng, areaKm2: areaKm2);
+  }
+
+  ///
+  String getBoundingBoxArea({required List<GeolocModel> points}) {
+    if (points.isEmpty) {
+      return '0.0000 km²';
+    }
+
+    final BoundingBoxInfo info = getBoundingBoxInfo(points);
     final NumberFormat numberFormat = NumberFormat('#,##0.0000');
-    return '${numberFormat.format(areaKm2)} km²';
+    return '${numberFormat.format(info.areaKm2)} km²';
+  }
+
+  ///
+  List<LatLng> getBoundingBoxPoints(List<GeolocModel> points) {
+    final BoundingBoxInfo info = getBoundingBoxInfo(points);
+
+    return <LatLng>[
+      LatLng(info.minLat, info.minLng),
+      LatLng(info.maxLat, info.minLng),
+      LatLng(info.maxLat, info.maxLng),
+      LatLng(info.minLat, info.maxLng),
+    ];
   }
 
   ///

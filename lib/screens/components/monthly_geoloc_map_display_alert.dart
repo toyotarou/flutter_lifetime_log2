@@ -52,6 +52,13 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
 
   List<LatLng> latLngList = <LatLng>[];
 
+  List<GeolocModel> selectedGeolocList = <GeolocModel>[];
+
+  List<LatLng> polygonPoints = <LatLng>[];
+
+  double centerLat = 0.0;
+  double centerLng = 0.0;
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -83,6 +90,21 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
               ),
 
               MarkerLayer(markers: markerList),
+
+              if (polygonPoints.isNotEmpty) ...<Widget>[
+                // ignore: always_specify_types
+                PolygonLayer(
+                  polygons: <Polygon<Object>>[
+                    // ignore: always_specify_types
+                    Polygon(
+                      points: polygonPoints,
+                      color: Colors.purpleAccent.withValues(alpha: 0.2),
+                      borderColor: Colors.purpleAccent.withValues(alpha: 0.4),
+                      borderStrokeWidth: 2,
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
 
@@ -213,6 +235,8 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
 
   ///
   void makeMinMaxLatLng() {
+    selectedGeolocList.clear();
+
     latList.clear();
     lngList.clear();
 
@@ -221,6 +245,8 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
     if (appParamState.monthlyGeolocMapSelectedDateList.isNotEmpty) {
       for (final String element in appParamState.monthlyGeolocMapSelectedDateList) {
         appParamState.keepGeolocMap[element]?.forEach((GeolocModel element2) {
+          selectedGeolocList.add(element2);
+
           latList.add(element2.latitude.toDouble());
           lngList.add(element2.longitude.toDouble());
 
@@ -230,6 +256,11 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
     }
 
     if (latList.isNotEmpty && lngList.isNotEmpty) {
+      polygonPoints = utility.getBoundingBoxPoints(selectedGeolocList);
+
+      centerLat = (polygonPoints[0].latitude + polygonPoints[2].latitude) / 2;
+      centerLng = (polygonPoints[0].longitude + polygonPoints[2].longitude) / 2;
+
       minLat = latList.reduce(min);
       maxLat = latList.reduce(max);
       minLng = lngList.reduce(min);
