@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../main.dart';
 import '../../utility/utility.dart';
 import '../parts/error_dialog.dart';
 
@@ -367,19 +368,27 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
 
     setState(() => _isLoading = true);
 
-    // for (final Map<String, dynamic> element in uploadDataList) {
-    //   await bankInputNotifier.updateBankMoney(uploadData: element);
-    // }
-    //
-    // // ignore: always_specify_types
-    // Future.delayed(const Duration(seconds: 5), () {
-    //   if (mounted) {
-    //     setState(() => _isLoading = false);
-    //
-    //     context.findAncestorStateOfType<AppRootState>()?.restartApp();
-    //   }
-    // });
-    //
-    //
+    if (insertDataDaily.isNotEmpty) {
+      // ignore: avoid_function_literals_in_foreach_calls
+      insertDataDaily.forEach((Map<String, dynamic> element) async {
+        await spendInputNotifier.insertDataDaily(insertData: element);
+      });
+    }
+
+    if (insertDataCredit.isNotEmpty) {
+      // ignore: avoid_function_literals_in_foreach_calls
+      insertDataCredit.forEach((Map<String, dynamic> element) async {
+        await spendInputNotifier.insertDataCredit(insertData: element);
+      });
+    }
+
+    // ignore: always_specify_types
+    Future.delayed(const Duration(seconds: 5), () {
+      if (mounted) {
+        setState(() => _isLoading = false);
+
+        context.findAncestorStateOfType<AppRootState>()?.restartApp();
+      }
+    });
   }
 }

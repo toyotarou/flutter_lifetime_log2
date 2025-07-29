@@ -76,11 +76,27 @@ class SpendInput extends _$SpendInput {
   }
 
   ///
-  Future<void> inputMoneySpend({required Map<String, dynamic> uploadData}) async {
+  Future<void> insertDataDaily({required Map<String, dynamic> insertData}) async {
     final HttpClient client = ref.read(httpClientProvider);
 
+    final Map<String, dynamic> uploadData = <String, dynamic>{};
+    uploadData['record'] = '${insertData['date']}|${insertData['koumoku']}|${insertData['price']}';
+
     // ignore: always_specify_types
-    await client.post(path: APIPath.updateBankMoney, body: uploadData).then((value) {}).catchError((error, _) {
+    await client.post(path: APIPath.insertDailySpend, body: uploadData).then((value) {}).catchError((error, _) {
+      utility.showError('予期せぬエラーが発生しました');
+    });
+  }
+
+  ///
+  Future<void> insertDataCredit({required Map<String, dynamic> insertData}) async {
+    final HttpClient client = ref.read(httpClientProvider);
+
+    final Map<String, dynamic> uploadData = <String, dynamic>{};
+    uploadData['record'] = '${insertData['date']}|${insertData['item']}|${insertData['price']}';
+
+    // ignore: always_specify_types
+    await client.post(path: APIPath.insertDailySpend, body: uploadData).then((value) {}).catchError((error, _) {
       utility.showError('予期せぬエラーが発生しました');
     });
   }
