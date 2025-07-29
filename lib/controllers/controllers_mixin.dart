@@ -15,6 +15,7 @@ import 'app_param/app_param.dart';
 import 'bank_input/bank_input.dart';
 import 'lifetime_input/lifetime_input.dart';
 import 'money_input/money_input.dart';
+import 'spend_input/spend_input.dart';
 import 'walk_input/walk_input.dart';
 
 mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
@@ -101,6 +102,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   MoneySpendState get moneySpendState => ref.watch(moneySpendProvider);
 
   MoneySpend get moneySpendNotifier => ref.read(moneySpendProvider.notifier);
+
+  //==========================================//
+
+  SpendInputState get spendInputState => ref.watch(spendInputProvider);
+
+  SpendInput get spendInputNotifier => ref.read(spendInputProvider.notifier);
 
   //==========================================//
 }

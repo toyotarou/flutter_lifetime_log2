@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
+import '../parts/lifetime_dialog.dart';
+import 'spend_data_input_alert.dart';
 
 class MonthlyMoneySpendDisplayAlert extends ConsumerStatefulWidget {
   const MonthlyMoneySpendDisplayAlert({super.key, required this.yearmonth});
@@ -92,7 +94,13 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                       date.split('-')[2].toInt(),
                     ).isBefore(DateTime.now()))
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      LifetimeDialog(
+                        context: context,
+                        widget: SpendDateInputAlert(date: date),
+                        clearBarrierColor: true,
+                      );
+                    },
                     child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.4)),
                   )
                 else

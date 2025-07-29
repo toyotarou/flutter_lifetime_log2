@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'money_spend.dart';
+part of 'spend_input.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$moneySpendHash() => r'36f2465a1d6c508c8552cf1fa4b26a1fe7b9493f';
+String _$spendInputHash() => r'0b923436bb55dfb19d3cc3917444b8638bc7ac35';
 
-/// See also [MoneySpend].
-@ProviderFor(MoneySpend)
-final moneySpendProvider =
-    AutoDisposeNotifierProvider<MoneySpend, MoneySpendState>.internal(
-  MoneySpend.new,
-  name: r'moneySpendProvider',
+/// See also [SpendInput].
+@ProviderFor(SpendInput)
+final spendInputProvider =
+    AutoDisposeNotifierProvider<SpendInput, SpendInputState>.internal(
+  SpendInput.new,
+  name: r'spendInputProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$moneySpendHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$spendInputHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$MoneySpend = AutoDisposeNotifier<MoneySpendState>;
+typedef _$SpendInput = AutoDisposeNotifier<SpendInputState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

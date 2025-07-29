@@ -20,8 +20,6 @@ class BankDataInputAlert extends ConsumerStatefulWidget {
 }
 
 class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with ControllersMixin<BankDataInputAlert> {
-  final List<TextEditingController> dateTecs = <TextEditingController>[];
-  final List<TextEditingController> bankTecs = <TextEditingController>[];
   final List<TextEditingController> priceTecs = <TextEditingController>[];
 
   Utility utility = Utility();
@@ -38,8 +36,6 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
     super.initState();
 
     for (int i = 0; i < 10; i++) {
-      dateTecs.add(TextEditingController(text: ''));
-      bankTecs.add(TextEditingController(text: ''));
       priceTecs.add(TextEditingController(text: ''));
     }
 
@@ -281,7 +277,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
       ...bankNameMap.entries.map((MapEntry<String, String> e) => <String, String>{e.key: e.value}),
     ];
 
-    for (int i = 0; i < bankTecs.length; i++) {
+    for (int i = 0; i < priceTecs.length; i++) {
       list.add(
         Container(
           padding: const EdgeInsets.symmetric(vertical: 5),
@@ -448,7 +444,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
 
     final List<Map<String, dynamic>> uploadDataList = <Map<String, dynamic>>[];
 
-    for (int i = 0; i < bankTecs.length; i++) {
+    for (int i = 0; i < priceTecs.length; i++) {
       if (bankInputState.inputDateList[i] != '' &&
           bankInputState.inputBankList[i] != '' &&
           bankInputState.inputValueList[i] != '') {
