@@ -55,9 +55,9 @@ class SpendInput extends _$SpendInput {
   }
 
   ///
-  void setInputItemList({required int pos, required String bank}) {
+  void setInputItemList({required int pos, required String item}) {
     final List<String> list = <String>[...state.inputItemList];
-    list[pos] = bank;
+    list[pos] = item;
     state = state.copyWith(inputItemList: list);
   }
 
@@ -69,9 +69,9 @@ class SpendInput extends _$SpendInput {
   }
 
   ///
-  void setInputKindList({required int pos, required String value}) {
+  void setInputKindList({required int pos, required String kind}) {
     final List<String> list = <String>[...state.inputKindList];
-    list[pos] = value;
+    list[pos] = kind;
     state = state.copyWith(inputKindList: list);
   }
 

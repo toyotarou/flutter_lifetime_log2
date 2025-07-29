@@ -136,10 +136,28 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
                           ),
                         ),
 
-                        const Row(
+                        Row(
                           children: <Widget>[
-                            ChoiceChip(label: Text('aaaa', style: TextStyle(fontSize: 10)), selected: true),
-                            ChoiceChip(label: Text('bbbb', style: TextStyle(fontSize: 10)), selected: false),
+                            ChoiceChip(
+                              label: const Text('daily', style: TextStyle(fontSize: 10)),
+                              backgroundColor: Colors.black.withValues(alpha: 0.1),
+                              selectedColor: Colors.greenAccent.withValues(alpha: 0.4),
+                              selected: spendInputState.inputKindList[i] == 'daily',
+                              onSelected: (bool isSelected) async {
+                                spendInputNotifier.setInputKindList(pos: i, kind: 'daily');
+                              },
+                              showCheckmark: false,
+                            ),
+                            ChoiceChip(
+                              label: const Text('credit', style: TextStyle(fontSize: 10)),
+                              backgroundColor: Colors.black.withValues(alpha: 0.1),
+                              selectedColor: Colors.greenAccent.withValues(alpha: 0.4),
+                              selected: spendInputState.inputKindList[i] == 'credit',
+                              onSelected: (bool isSelected) async {
+                                spendInputNotifier.setInputKindList(pos: i, kind: 'credit');
+                              },
+                              showCheckmark: false,
+                            ),
                           ],
                         ),
                       ],
@@ -149,15 +167,13 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
                       children: <Widget>[
                         Expanded(
                           flex: 3,
-
                           child: DropdownButton<String>(
                             isExpanded: true,
                             dropdownColor: Colors.pinkAccent.withOpacity(0.1),
                             iconEnabledColor: Colors.white,
-
                             value: spendInputState.inputItemList[i],
-
-                            onChanged: (String? value) {},
+                            onChanged: (String? value) =>
+                                spendInputNotifier.setInputItemList(pos: i, item: value ?? ''),
                             items: dropDownItemName.map((String e) {
                               return DropdownMenuItem<String>(
                                 value: e,
@@ -234,9 +250,7 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
     保険料
     水道光熱費
     共済代
-    GOLD
-    投資信託
-    株式買付
+    投資
     アイアールシー
     手数料
     不明
