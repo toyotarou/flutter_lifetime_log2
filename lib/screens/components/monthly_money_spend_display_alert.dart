@@ -71,6 +71,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
       final int diff = spend - sum;
 
+      final bool itemEmpty = appParamState.keepMoneySpendMap[date] == null;
+
       list.add(
         Container(
           decoration: BoxDecoration(
@@ -83,13 +85,18 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                if (diff == 0)
-                  const Icon(Icons.square_outlined, color: Colors.transparent)
-                else
+                if ((itemEmpty || diff > 0) &&
+                    DateTime(
+                      date.split('-')[0].toInt(),
+                      date.split('-')[1].toInt(),
+                      date.split('-')[2].toInt(),
+                    ).isBefore(DateTime.now()))
                   GestureDetector(
                     onTap: () {},
                     child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.4)),
-                  ),
+                  )
+                else
+                  const Icon(Icons.square_outlined, color: Colors.transparent),
 
                 const SizedBox(width: 20),
 
