@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../utility/utility.dart';
+import '../parts/error_dialog.dart';
 
 class SpendDateInputAlert extends ConsumerStatefulWidget {
   const SpendDateInputAlert({super.key, required this.date});
@@ -22,6 +23,8 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
   Map<String, String> bankNameMap = <String, String>{};
 
   List<FocusNode> focusNodeList = <FocusNode>[];
+
+  bool _isLoading = false;
 
   ///
   @override
@@ -44,36 +47,44 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
     return Scaffold(
       backgroundColor: Colors.transparent,
 
-      body: SafeArea(
-        child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white),
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: DefaultTextStyle(
+              style: const TextStyle(color: Colors.white),
 
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: <Widget>[
-                    Text(widget.date),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(widget.date),
 
-                    ElevatedButton(
-                      onPressed: () {},
+                        ElevatedButton(
+                          onPressed: () {
+                            _inputSpendData();
+                          },
 
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
 
-                      child: const Text('input'),
+                          child: const Text('input'),
+                        ),
+                      ],
                     ),
+
+                    Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                    Expanded(child: _displayInputParts()),
                   ],
                 ),
-
-                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-                Expanded(child: _displayInputParts()),
-              ],
+              ),
             ),
           ),
-        ),
+
+          if (_isLoading) ...<Widget>[const CircularProgressIndicator()],
+        ],
       ),
     );
   }
@@ -305,5 +316,70 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
     if (selectedDate != null) {
       spendInputNotifier.setInputDateList(pos: pos, date: selectedDate.yyyymmdd);
     }
+  }
+
+  ///
+  Future<void> _inputSpendData() async {
+    bool errFlg = false;
+
+    final List<Map<String, dynamic>> insertDataDaily = <Map<String, dynamic>>[];
+    final List<Map<String, dynamic>> insertDataCredit = <Map<String, dynamic>>[];
+
+    for (int i = 0; i < priceTecs.length; i++) {
+      if (spendInputState.inputDateList[i] != '' &&
+          spendInputState.inputItemList[i] != '' &&
+          spendInputState.inputValueList[i] != '' &&
+          spendInputState.inputKindList[i] != '') {
+        if (spendInputState.inputKindList[i] == 'daily') {
+          insertDataDaily.add(<String, dynamic>{
+            'date': spendInputState.inputDateList[i],
+            'koumoku': spendInputState.inputItemList[i],
+            'price': spendInputState.inputValueList[i],
+          });
+        } else if (spendInputState.inputKindList[i] == 'credit') {
+          insertDataCredit.add(<String, dynamic>{
+            'date': spendInputState.inputDateList[i],
+            'item': spendInputState.inputItemList[i],
+            'price': spendInputState.inputValueList[i],
+          });
+        }
+      }
+    }
+
+    if (insertDataDaily.isEmpty || insertDataCredit.isEmpty) {
+      errFlg = true;
+    }
+
+    if (errFlg) {
+      // ignore: always_specify_types
+      Future.delayed(
+        Duration.zero,
+        () => error_dialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          title: '登録できません。',
+          content: '値を正しく入力してください。',
+        ),
+      );
+
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    // for (final Map<String, dynamic> element in uploadDataList) {
+    //   await bankInputNotifier.updateBankMoney(uploadData: element);
+    // }
+    //
+    // // ignore: always_specify_types
+    // Future.delayed(const Duration(seconds: 5), () {
+    //   if (mounted) {
+    //     setState(() => _isLoading = false);
+    //
+    //     context.findAncestorStateOfType<AppRootState>()?.restartApp();
+    //   }
+    // });
+    //
+    //
   }
 }

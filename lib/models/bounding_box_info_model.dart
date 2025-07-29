@@ -1,5 +1,5 @@
-class BoundingBoxInfo {
-  BoundingBoxInfo({
+class BoundingBoxInfoModel {
+  BoundingBoxInfoModel({
     required this.minLat,
     required this.maxLat,
     required this.minLng,
