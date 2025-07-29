@@ -14,6 +14,8 @@ enum APIPath {
   getBusStopAddress,
   getDupSpot,
   updateBankMoney,
+  getAllDailySpend,
+  getAllCredit,
 
   // getGenbaWorkTime,
   // worktimemonthdata, //{"date":"2022-01-01"}
@@ -69,6 +71,11 @@ extension APIPathExtension on APIPath {
 
       case APIPath.updateBankMoney:
         return 'updateBankMoney';
+
+      case APIPath.getAllDailySpend:
+        return 'getAllDailySpend';
+      case APIPath.getAllCredit:
+        return 'getAllCredit';
 
       // case APIPath.getGenbaWorkTime:
       //   return 'getGenbaWorkTime';

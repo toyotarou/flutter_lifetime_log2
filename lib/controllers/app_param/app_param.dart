@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/lifetime_item_model.dart';
 import '../../models/money_model.dart';
+import '../../models/money_spend_model.dart';
 import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
@@ -24,6 +25,7 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<GeolocModel>>{}) Map<String, List<GeolocModel>> keepGeolocMap,
     @Default(<String, TempleModel>{}) Map<String, TempleModel> keepTempleMap,
     @Default(<String, TransportationModel>{}) Map<String, TransportationModel> keepTransportationMap,
+    @Default(<String, List<MoneySpendModel>>{}) Map<String, List<MoneySpendModel>> keepMoneySpendMap,
 
     ///
     List<OverlayEntry>? firstEntries,
@@ -71,6 +73,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepGeoSpotModelMap({required Map<String, TransportationModel> map}) =>
       state = state.copyWith(keepTransportationMap: map);
+
+  ///
+  void setKeepMoneySpendMap({required Map<String, List<MoneySpendModel>> map}) =>
+      state = state.copyWith(keepMoneySpendMap: map);
 
   //===================================================
 

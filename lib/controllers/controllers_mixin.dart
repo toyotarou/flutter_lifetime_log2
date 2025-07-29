@@ -3,17 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '_get_data/geoloc/geoloc.dart';
 import '_get_data/holiday/holiday.dart';
-
-import 'app_param/app_param.dart';
-import 'bank_input/bank_input.dart';
 import '_get_data/lifetime/lifetime.dart';
-import 'lifetime_input/lifetime_input.dart';
 import '_get_data/lifetime_item/lifetime_item.dart';
 import '_get_data/money/money.dart';
-import 'money_input/money_input.dart';
+import '_get_data/money_spend/money_spend.dart';
 import '_get_data/temple/temple.dart';
 import '_get_data/transportation/transportation.dart';
 import '_get_data/walk/walk.dart';
+
+import 'app_param/app_param.dart';
+import 'bank_input/bank_input.dart';
+import 'lifetime_input/lifetime_input.dart';
+import 'money_input/money_input.dart';
 import 'walk_input/walk_input.dart';
 
 mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
@@ -94,6 +95,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   BankInputState get bankInputState => ref.watch(bankInputProvider);
 
   BankInput get bankInputNotifier => ref.read(bankInputProvider.notifier);
+
+  //==========================================//
+
+  MoneySpendState get moneySpendState => ref.watch(moneySpendProvider);
+
+  MoneySpend get moneySpendNotifier => ref.read(moneySpendProvider.notifier);
 
   //==========================================//
 }

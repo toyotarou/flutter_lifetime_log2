@@ -53,6 +53,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     geolocNotifier.getAllGeolocData();
     templeNotifier.getAllTempleData();
     transportationNotifier.getAllTransportationData();
+    moneySpendNotifier.getAllMoneySpendData();
   }
 
   ///
@@ -81,6 +82,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           geolocMap: geolocState.geolocMap,
           templeMap: templeState.templeMap,
           transportationMap: transportationState.transportationMap,
+          moneySpendMap: moneySpendState.moneySpendMap,
         ),
       ),
     );

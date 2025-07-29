@@ -294,6 +294,10 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
         });
       }
     }
+
+    if (markerList.isEmpty) {
+      polygonPoints.clear();
+    }
   }
 
   ///

@@ -10,6 +10,7 @@ import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
 import '../components/money_data_input_alert.dart';
 import '../components/monthly_geoloc_map_display_alert.dart';
+import '../components/monthly_money_spend_display_alert.dart';
 import '../components/walk_data_input_alert.dart';
 import '../parts/lifetime_dialog.dart';
 
@@ -77,6 +78,18 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                 const SizedBox(width: 20),
                               ],
+
+                              GestureDetector(
+                                onTap: () {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: MonthlyMoneySpendDisplayAlert(yearmonth: widget.yearmonth),
+                                  );
+                                },
+                                child: Icon(Icons.money, color: Colors.white.withValues(alpha: 0.3)),
+                              ),
+
+                              const SizedBox(width: 20),
 
                               GestureDetector(
                                 onTap: () {
