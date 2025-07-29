@@ -1,10 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../data/http/client.dart';
-import '../../data/http/path.dart';
-import '../../extensions/extensions.dart';
-import '../../utility/utility.dart';
+import '../../../data/http/client.dart';
+import '../../../data/http/path.dart';
+import '../../../extensions/extensions.dart';
+import '../../../utility/utility.dart';
 
 part 'holiday.freezed.dart';
 

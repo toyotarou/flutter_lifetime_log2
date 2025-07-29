@@ -1,18 +1,19 @@
 // ignore: depend_on_referenced_packages
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '_get_data/geoloc/geoloc.dart';
+import '_get_data/holiday/holiday.dart';
+
 import 'app_param/app_param.dart';
 import 'bank_input/bank_input.dart';
-import 'geoloc/geoloc.dart';
-import 'holiday/holiday.dart';
-import 'lifetime/lifetime.dart';
+import '_get_data/lifetime/lifetime.dart';
 import 'lifetime_input/lifetime_input.dart';
-import 'lifetime_item/lifetime_item.dart';
-import 'money/money.dart';
+import '_get_data/lifetime_item/lifetime_item.dart';
+import '_get_data/money/money.dart';
 import 'money_input/money_input.dart';
-import 'temple/temple.dart';
-import 'transportation/transportation.dart';
-import 'walk/walk.dart';
+import '_get_data/temple/temple.dart';
+import '_get_data/transportation/transportation.dart';
+import '_get_data/walk/walk.dart';
 import 'walk_input/walk_input.dart';
 
 mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
