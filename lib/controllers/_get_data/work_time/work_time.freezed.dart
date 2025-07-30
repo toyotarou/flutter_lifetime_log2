@@ -19,6 +19,8 @@ mixin _$WorkTimeState {
   List<WorkTimeModel> get workTimeList => throw _privateConstructorUsedError;
   Map<String, WorkTimeModel> get workTimeMap =>
       throw _privateConstructorUsedError;
+  Map<String, Map<String, String>> get workTimeDateMap =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of WorkTimeState
   /// with the given fields replaced by the non-null parameter values.
@@ -35,7 +37,8 @@ abstract class $WorkTimeStateCopyWith<$Res> {
   @useResult
   $Res call(
       {List<WorkTimeModel> workTimeList,
-      Map<String, WorkTimeModel> workTimeMap});
+      Map<String, WorkTimeModel> workTimeMap,
+      Map<String, Map<String, String>> workTimeDateMap});
 }
 
 /// @nodoc
@@ -55,6 +58,7 @@ class _$WorkTimeStateCopyWithImpl<$Res, $Val extends WorkTimeState>
   $Res call({
     Object? workTimeList = null,
     Object? workTimeMap = null,
+    Object? workTimeDateMap = null,
   }) {
     return _then(_value.copyWith(
       workTimeList: null == workTimeList
@@ -65,6 +69,10 @@ class _$WorkTimeStateCopyWithImpl<$Res, $Val extends WorkTimeState>
           ? _value.workTimeMap
           : workTimeMap // ignore: cast_nullable_to_non_nullable
               as Map<String, WorkTimeModel>,
+      workTimeDateMap: null == workTimeDateMap
+          ? _value.workTimeDateMap
+          : workTimeDateMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, Map<String, String>>,
     ) as $Val);
   }
 }
@@ -79,7 +87,8 @@ abstract class _$$WorkTimeStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {List<WorkTimeModel> workTimeList,
-      Map<String, WorkTimeModel> workTimeMap});
+      Map<String, WorkTimeModel> workTimeMap,
+      Map<String, Map<String, String>> workTimeDateMap});
 }
 
 /// @nodoc
@@ -97,6 +106,7 @@ class __$$WorkTimeStateImplCopyWithImpl<$Res>
   $Res call({
     Object? workTimeList = null,
     Object? workTimeMap = null,
+    Object? workTimeDateMap = null,
   }) {
     return _then(_$WorkTimeStateImpl(
       workTimeList: null == workTimeList
@@ -107,6 +117,10 @@ class __$$WorkTimeStateImplCopyWithImpl<$Res>
           ? _value._workTimeMap
           : workTimeMap // ignore: cast_nullable_to_non_nullable
               as Map<String, WorkTimeModel>,
+      workTimeDateMap: null == workTimeDateMap
+          ? _value._workTimeDateMap
+          : workTimeDateMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, Map<String, String>>,
     ));
   }
 }
@@ -117,9 +131,12 @@ class _$WorkTimeStateImpl implements _WorkTimeState {
   const _$WorkTimeStateImpl(
       {final List<WorkTimeModel> workTimeList = const <WorkTimeModel>[],
       final Map<String, WorkTimeModel> workTimeMap =
-          const <String, WorkTimeModel>{}})
+          const <String, WorkTimeModel>{},
+      final Map<String, Map<String, String>> workTimeDateMap =
+          const <String, Map<String, String>>{}})
       : _workTimeList = workTimeList,
-        _workTimeMap = workTimeMap;
+        _workTimeMap = workTimeMap,
+        _workTimeDateMap = workTimeDateMap;
 
   final List<WorkTimeModel> _workTimeList;
   @override
@@ -139,9 +156,18 @@ class _$WorkTimeStateImpl implements _WorkTimeState {
     return EqualUnmodifiableMapView(_workTimeMap);
   }
 
+  final Map<String, Map<String, String>> _workTimeDateMap;
+  @override
+  @JsonKey()
+  Map<String, Map<String, String>> get workTimeDateMap {
+    if (_workTimeDateMap is EqualUnmodifiableMapView) return _workTimeDateMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_workTimeDateMap);
+  }
+
   @override
   String toString() {
-    return 'WorkTimeState(workTimeList: $workTimeList, workTimeMap: $workTimeMap)';
+    return 'WorkTimeState(workTimeList: $workTimeList, workTimeMap: $workTimeMap, workTimeDateMap: $workTimeDateMap)';
   }
 
   @override
@@ -152,14 +178,17 @@ class _$WorkTimeStateImpl implements _WorkTimeState {
             const DeepCollectionEquality()
                 .equals(other._workTimeList, _workTimeList) &&
             const DeepCollectionEquality()
-                .equals(other._workTimeMap, _workTimeMap));
+                .equals(other._workTimeMap, _workTimeMap) &&
+            const DeepCollectionEquality()
+                .equals(other._workTimeDateMap, _workTimeDateMap));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_workTimeList),
-      const DeepCollectionEquality().hash(_workTimeMap));
+      const DeepCollectionEquality().hash(_workTimeMap),
+      const DeepCollectionEquality().hash(_workTimeDateMap));
 
   /// Create a copy of WorkTimeState
   /// with the given fields replaced by the non-null parameter values.
@@ -172,13 +201,17 @@ class _$WorkTimeStateImpl implements _WorkTimeState {
 
 abstract class _WorkTimeState implements WorkTimeState {
   const factory _WorkTimeState(
-      {final List<WorkTimeModel> workTimeList,
-      final Map<String, WorkTimeModel> workTimeMap}) = _$WorkTimeStateImpl;
+          {final List<WorkTimeModel> workTimeList,
+          final Map<String, WorkTimeModel> workTimeMap,
+          final Map<String, Map<String, String>> workTimeDateMap}) =
+      _$WorkTimeStateImpl;
 
   @override
   List<WorkTimeModel> get workTimeList;
   @override
   Map<String, WorkTimeModel> get workTimeMap;
+  @override
+  Map<String, Map<String, String>> get workTimeDateMap;
 
   /// Create a copy of WorkTimeState
   /// with the given fields replaced by the non-null parameter values.

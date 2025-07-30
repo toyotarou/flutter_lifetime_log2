@@ -85,6 +85,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           transportationMap: transportationState.transportationMap,
           moneySpendMap: moneySpendState.moneySpendMap,
           workTimeMap: workTimeState.workTimeMap,
+          workTimeDateMap: workTimeState.workTimeDateMap,
         ),
       ),
     );

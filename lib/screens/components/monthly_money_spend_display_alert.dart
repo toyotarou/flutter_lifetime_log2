@@ -6,6 +6,7 @@ import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
+import 'monthly_money_spend_summary_alert.dart';
 import 'spend_data_input_alert.dart';
 
 class MonthlyMoneySpendDisplayAlert extends ConsumerStatefulWidget {
@@ -47,7 +48,12 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                       backgroundColor: Colors.black.withValues(alpha: 0.1),
                       selectedColor: Colors.greenAccent.withValues(alpha: 0.2),
                       selected: true,
-                      onSelected: (bool isSelected) {},
+                      onSelected: (bool isSelected) {
+                        LifetimeDialog(
+                          context: context,
+                          widget: MonthlyMoneySpendSummaryAlert(yearmonth: widget.yearmonth),
+                        );
+                      },
                       showCheckmark: false,
                     ),
                   ],
@@ -183,9 +189,15 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                                       : Colors.white,
                                   fontSize: 12,
                                 ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[Text(e.item), Text(e.price.toString().toCurrency())],
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                                  ),
+
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[Text(e.item), Text(e.price.toString().toCurrency())],
+                                  ),
                                 ),
                               );
                             }

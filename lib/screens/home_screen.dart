@@ -38,6 +38,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.transportationMap,
     required this.moneySpendMap,
     required this.workTimeMap,
+    required this.workTimeDateMap,
   });
 
   final List<String> holidayList;
@@ -49,6 +50,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, TransportationModel> transportationMap;
   final Map<String, List<MoneySpendModel>> moneySpendMap;
   final Map<String, WorkTimeModel> workTimeMap;
+  final Map<String, Map<String, String>> workTimeDateMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -74,6 +76,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepGeoSpotModelMap(map: widget.transportationMap);
       appParamNotifier.setKeepMoneySpendMap(map: widget.moneySpendMap);
       appParamNotifier.setKeepWorkTimeMap(map: widget.workTimeMap);
+      appParamNotifier.setKeepWorkTimeDateMap(map: widget.workTimeDateMap);
     });
 
     return DefaultTabController(

@@ -28,6 +28,7 @@ class AppParamState with _$AppParamState {
     @Default(<String, TransportationModel>{}) Map<String, TransportationModel> keepTransportationMap,
     @Default(<String, List<MoneySpendModel>>{}) Map<String, List<MoneySpendModel>> keepMoneySpendMap,
     @Default(<String, WorkTimeModel>{}) Map<String, WorkTimeModel> keepWorkTimeMap,
+    @Default(<String, Map<String, String>>{}) Map<String, Map<String, String>> keepWorkTimeDateMap,
 
     ///
     List<OverlayEntry>? firstEntries,
@@ -82,6 +83,10 @@ class AppParam extends _$AppParam {
 
   ///
   void setKeepWorkTimeMap({required Map<String, WorkTimeModel> map}) => state = state.copyWith(keepWorkTimeMap: map);
+
+  ///
+  void setKeepWorkTimeDateMap({required Map<String, Map<String, String>> map}) =>
+      state = state.copyWith(keepWorkTimeDateMap: map);
 
   //===================================================
 
