@@ -84,7 +84,7 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
             ),
           ),
 
-          if (_isLoading) ...<Widget>[const CircularProgressIndicator()],
+          if (_isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
     );
@@ -131,46 +131,24 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
                 child: Column(
                   children: <Widget>[
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Expanded(
-                          child: Row(
-                            children: <Widget>[
-                              GestureDetector(
-                                onTap: () {
-                                  _showDP(pos: i);
-                                },
-                                child: Icon(Icons.calendar_month, color: Colors.white.withValues(alpha: 0.4)),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(child: Text(spendInputState.inputDateList[i])),
-                            ],
-                          ),
+                        ChoiceChip(
+                          label: const Text('daily', style: TextStyle(fontSize: 10)),
+                          backgroundColor: Colors.black.withOpacity(0.1),
+                          selectedColor: Colors.greenAccent.withOpacity(0.2),
+                          selected: spendInputState.inputKindList[i] == 'daily',
+                          onSelected: (bool isSelected) async =>
+                              spendInputNotifier.setInputKindList(pos: i, kind: 'daily'),
+                          showCheckmark: false,
                         ),
-
-                        Row(
-                          children: <Widget>[
-                            ChoiceChip(
-                              label: const Text('daily', style: TextStyle(fontSize: 10)),
-                              backgroundColor: Colors.black.withValues(alpha: 0.1),
-                              selectedColor: Colors.greenAccent.withValues(alpha: 0.4),
-                              selected: spendInputState.inputKindList[i] == 'daily',
-                              onSelected: (bool isSelected) async {
-                                spendInputNotifier.setInputKindList(pos: i, kind: 'daily');
-                              },
-                              showCheckmark: false,
-                            ),
-                            ChoiceChip(
-                              label: const Text('credit', style: TextStyle(fontSize: 10)),
-                              backgroundColor: Colors.black.withValues(alpha: 0.1),
-                              selectedColor: Colors.greenAccent.withValues(alpha: 0.4),
-                              selected: spendInputState.inputKindList[i] == 'credit',
-                              onSelected: (bool isSelected) async {
-                                spendInputNotifier.setInputKindList(pos: i, kind: 'credit');
-                              },
-                              showCheckmark: false,
-                            ),
-                          ],
+                        ChoiceChip(
+                          label: const Text('credit', style: TextStyle(fontSize: 10)),
+                          backgroundColor: Colors.black.withValues(alpha: 0.1),
+                          selectedColor: Colors.greenAccent.withValues(alpha: 0.2),
+                          selected: spendInputState.inputKindList[i] == 'credit',
+                          onSelected: (bool isSelected) async =>
+                              spendInputNotifier.setInputKindList(pos: i, kind: 'credit'),
+                          showCheckmark: false,
                         ),
                       ],
                     ),
@@ -241,6 +219,7 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
     final List<String> list = <String>[];
 
     const String str = '''
+    楽天キャッシュ
     食費
     牛乳代
     弁当代
@@ -288,38 +267,6 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
   }
 
   ///
-  Future<void> _showDP({required int pos}) async {
-    final DateTime? selectedDate = await showDatePicker(
-      barrierColor: Colors.transparent,
-      locale: const Locale('ja'),
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now().add(const Duration(days: 360)),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.dark().copyWith(
-            scaffoldBackgroundColor: Colors.black.withOpacity(0.1),
-            canvasColor: Colors.black.withOpacity(0.1),
-            cardColor: Colors.black.withOpacity(0.1),
-            dividerColor: Colors.indigo,
-            primaryColor: Colors.black.withOpacity(0.1),
-            secondaryHeaderColor: Colors.black.withOpacity(0.1),
-            dialogBackgroundColor: Colors.black.withOpacity(0.1),
-            primaryColorDark: Colors.black.withOpacity(0.1),
-            highlightColor: Colors.black.withOpacity(0.1),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (selectedDate != null) {
-      spendInputNotifier.setInputDateList(pos: pos, date: selectedDate.yyyymmdd);
-    }
-  }
-
-  ///
   Future<void> _inputSpendData() async {
     bool errFlg = false;
 
@@ -327,19 +274,18 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
     final List<Map<String, dynamic>> insertDataCredit = <Map<String, dynamic>>[];
 
     for (int i = 0; i < priceTecs.length; i++) {
-      if (spendInputState.inputDateList[i] != '' &&
-          spendInputState.inputItemList[i] != '' &&
+      if (spendInputState.inputItemList[i] != '' &&
           spendInputState.inputValueList[i] != '' &&
           spendInputState.inputKindList[i] != '') {
         if (spendInputState.inputKindList[i] == 'daily') {
           insertDataDaily.add(<String, dynamic>{
-            'date': spendInputState.inputDateList[i],
+            'date': widget.date,
             'koumoku': spendInputState.inputItemList[i],
             'price': spendInputState.inputValueList[i],
           });
         } else if (spendInputState.inputKindList[i] == 'credit') {
           insertDataCredit.add(<String, dynamic>{
-            'date': spendInputState.inputDateList[i],
+            'date': widget.date,
             'item': spendInputState.inputItemList[i],
             'price': spendInputState.inputValueList[i],
           });
@@ -347,7 +293,7 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
       }
     }
 
-    if (insertDataDaily.isEmpty || insertDataCredit.isEmpty) {
+    if (insertDataDaily.isEmpty && insertDataCredit.isEmpty) {
       errFlg = true;
     }
 

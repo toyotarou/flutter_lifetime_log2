@@ -13,7 +13,6 @@ part 'spend_input.g.dart';
 class SpendInputState with _$SpendInputState {
   const factory SpendInputState({
     @Default(-1) int pos,
-    @Default(<String>[]) List<String> inputDateList,
     @Default(<String>[]) List<String> inputItemList,
     @Default(<String>[]) List<String> inputValueList,
     @Default(<String>[]) List<String> inputKindList,
@@ -38,21 +37,11 @@ class SpendInput extends _$SpendInput {
     // ignore: always_specify_types
     final List<String> list3 = List.generate(10, (int index) => '');
 
-    // ignore: always_specify_types
-    final List<String> list4 = List.generate(10, (int index) => '');
-
-    return SpendInputState(inputItemList: list, inputValueList: list2, inputDateList: list3, inputKindList: list4);
+    return SpendInputState(inputItemList: list, inputValueList: list2, inputKindList: list3);
   }
 
   ///
   void setPos({required int pos}) => state = state.copyWith(pos: pos);
-
-  ///
-  void setInputDateList({required int pos, required String date}) {
-    final List<String> list = <String>[...state.inputDateList];
-    list[pos] = date;
-    state = state.copyWith(inputDateList: list);
-  }
 
   ///
   void setInputItemList({required int pos, required String item}) {
@@ -79,25 +68,35 @@ class SpendInput extends _$SpendInput {
   Future<void> insertDataDaily({required Map<String, dynamic> insertData}) async {
     final HttpClient client = ref.read(httpClientProvider);
 
-    final Map<String, dynamic> uploadData = <String, dynamic>{};
-    uploadData['record'] = '${insertData['date']}|${insertData['koumoku']}|${insertData['price']}';
-
     // ignore: always_specify_types
-    await client.post(path: APIPath.insertDailySpend, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
-    });
+    await client
+        .post(
+          path: APIPath.insertDailySpend,
+          body: <String, String>{'record': '${insertData['date']}|${insertData['koumoku']}|${insertData['price']}'},
+        )
+        // ignore: always_specify_types
+        .then((value) {})
+        // ignore: always_specify_types
+        .catchError((error, _) {
+          utility.showError('予期せぬエラーが発生しました');
+        });
   }
 
   ///
   Future<void> insertDataCredit({required Map<String, dynamic> insertData}) async {
     final HttpClient client = ref.read(httpClientProvider);
 
-    final Map<String, dynamic> uploadData = <String, dynamic>{};
-    uploadData['record'] = '${insertData['date']}|${insertData['item']}|${insertData['price']}';
-
     // ignore: always_specify_types
-    await client.post(path: APIPath.insertDailySpend, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
-    });
+    await client
+        .post(
+          path: APIPath.insertCredit,
+          body: <String, String>{'record': '${insertData['date']}|${insertData['item']}|${insertData['price']}'},
+        )
+        // ignore: always_specify_types
+        .then((value) {})
+        // ignore: always_specify_types
+        .catchError((error, _) {
+          utility.showError('予期せぬエラーが発生しました');
+        });
   }
 }

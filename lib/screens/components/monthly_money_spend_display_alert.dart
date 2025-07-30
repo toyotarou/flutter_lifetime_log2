@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
+import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'spend_data_input_alert.dart';
 
@@ -18,6 +19,8 @@ class MonthlyMoneySpendDisplayAlert extends ConsumerStatefulWidget {
 
 class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpendDisplayAlert>
     with ControllersMixin<MonthlyMoneySpendDisplayAlert> {
+  Utility utility = Utility();
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -61,6 +64,12 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
     for (int i = 1; i <= endNum; i++) {
       final String date = '${widget.yearmonth}-${i.toString().padLeft(2, '0')}';
 
+      final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
+
+      final Color headColor = (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(date))
+          ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
+          : Colors.yellowAccent.withValues(alpha: 0.1);
+
       int sum = 0;
       appParamState.keepMoneySpendMap[date]?.forEach((MoneySpendModel element) {
         sum += element.price;
@@ -98,7 +107,6 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                       LifetimeDialog(
                         context: context,
                         widget: SpendDateInputAlert(date: date),
-                        clearBarrierColor: true,
                       );
                     },
                     child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.4)),
@@ -112,13 +120,22 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                   child: Column(
                     children: <Widget>[
                       Container(
-                        decoration: BoxDecoration(color: Colors.yellowAccent.withValues(alpha: 0.1)),
+                        decoration: BoxDecoration(color: headColor),
                         padding: const EdgeInsets.symmetric(vertical: 2),
                         margin: const EdgeInsets.symmetric(vertical: 2),
 
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[Text(i.toString().padLeft(2, '0')), Text(spend.toString().toCurrency())],
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Text(i.toString().padLeft(2, '0')),
+                                const SizedBox(width: 5),
+                                Text(youbi),
+                              ],
+                            ),
+                            Text(spend.toString().toCurrency()),
+                          ],
                         ),
                       ),
 

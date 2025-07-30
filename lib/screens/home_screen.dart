@@ -140,9 +140,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               const SizedBox(height: 60),
 
               GestureDetector(
-                onTap: () {
-                  LifetimeDialog(context: context, widget: const BankDataInputAlert());
-                },
+                onTap: () => LifetimeDialog(context: context, widget: const BankDataInputAlert()),
                 child: const Row(
                   children: <Widget>[
                     Icon(Icons.monetization_on_sharp),

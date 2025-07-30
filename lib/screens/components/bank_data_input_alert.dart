@@ -90,7 +90,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
             ),
           ),
 
-          if (_isLoading) ...<Widget>[const CircularProgressIndicator()],
+          if (_isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
     );
@@ -247,7 +247,6 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
                   LifetimeDialog(
                     context: context,
                     widget: BankPriceListAlert(bankKey: e.key),
-                    clearBarrierColor: true,
                     executeFunctionWhenDialogClose: true,
                     ref: ref,
                     from: 'BankPriceListAlert',

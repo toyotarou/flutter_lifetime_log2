@@ -312,7 +312,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                         ],
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 5),
 
                                     Expanded(
                                       child: Stack(
@@ -392,7 +392,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                         ],
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 5),
 
                                     Expanded(
                                       child: Stack(

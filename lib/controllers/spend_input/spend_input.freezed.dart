@@ -17,7 +17,6 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$SpendInputState {
   int get pos => throw _privateConstructorUsedError;
-  List<String> get inputDateList => throw _privateConstructorUsedError;
   List<String> get inputItemList => throw _privateConstructorUsedError;
   List<String> get inputValueList => throw _privateConstructorUsedError;
   List<String> get inputKindList => throw _privateConstructorUsedError;
@@ -38,7 +37,6 @@ abstract class $SpendInputStateCopyWith<$Res> {
   @useResult
   $Res call(
       {int pos,
-      List<String> inputDateList,
       List<String> inputItemList,
       List<String> inputValueList,
       List<String> inputKindList,
@@ -61,7 +59,6 @@ class _$SpendInputStateCopyWithImpl<$Res, $Val extends SpendInputState>
   @override
   $Res call({
     Object? pos = null,
-    Object? inputDateList = null,
     Object? inputItemList = null,
     Object? inputValueList = null,
     Object? inputKindList = null,
@@ -72,10 +69,6 @@ class _$SpendInputStateCopyWithImpl<$Res, $Val extends SpendInputState>
           ? _value.pos
           : pos // ignore: cast_nullable_to_non_nullable
               as int,
-      inputDateList: null == inputDateList
-          ? _value.inputDateList
-          : inputDateList // ignore: cast_nullable_to_non_nullable
-              as List<String>,
       inputItemList: null == inputItemList
           ? _value.inputItemList
           : inputItemList // ignore: cast_nullable_to_non_nullable
@@ -106,7 +99,6 @@ abstract class _$$SpendInputStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {int pos,
-      List<String> inputDateList,
       List<String> inputItemList,
       List<String> inputValueList,
       List<String> inputKindList,
@@ -127,7 +119,6 @@ class __$$SpendInputStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? pos = null,
-    Object? inputDateList = null,
     Object? inputItemList = null,
     Object? inputValueList = null,
     Object? inputKindList = null,
@@ -138,10 +129,6 @@ class __$$SpendInputStateImplCopyWithImpl<$Res>
           ? _value.pos
           : pos // ignore: cast_nullable_to_non_nullable
               as int,
-      inputDateList: null == inputDateList
-          ? _value._inputDateList
-          : inputDateList // ignore: cast_nullable_to_non_nullable
-              as List<String>,
       inputItemList: null == inputItemList
           ? _value._inputItemList
           : inputItemList // ignore: cast_nullable_to_non_nullable
@@ -167,28 +154,17 @@ class __$$SpendInputStateImplCopyWithImpl<$Res>
 class _$SpendInputStateImpl implements _SpendInputState {
   const _$SpendInputStateImpl(
       {this.pos = -1,
-      final List<String> inputDateList = const <String>[],
       final List<String> inputItemList = const <String>[],
       final List<String> inputValueList = const <String>[],
       final List<String> inputKindList = const <String>[],
       this.selectedBankKey = ''})
-      : _inputDateList = inputDateList,
-        _inputItemList = inputItemList,
+      : _inputItemList = inputItemList,
         _inputValueList = inputValueList,
         _inputKindList = inputKindList;
 
   @override
   @JsonKey()
   final int pos;
-  final List<String> _inputDateList;
-  @override
-  @JsonKey()
-  List<String> get inputDateList {
-    if (_inputDateList is EqualUnmodifiableListView) return _inputDateList;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_inputDateList);
-  }
-
   final List<String> _inputItemList;
   @override
   @JsonKey()
@@ -222,7 +198,7 @@ class _$SpendInputStateImpl implements _SpendInputState {
 
   @override
   String toString() {
-    return 'SpendInputState(pos: $pos, inputDateList: $inputDateList, inputItemList: $inputItemList, inputValueList: $inputValueList, inputKindList: $inputKindList, selectedBankKey: $selectedBankKey)';
+    return 'SpendInputState(pos: $pos, inputItemList: $inputItemList, inputValueList: $inputValueList, inputKindList: $inputKindList, selectedBankKey: $selectedBankKey)';
   }
 
   @override
@@ -231,8 +207,6 @@ class _$SpendInputStateImpl implements _SpendInputState {
         (other.runtimeType == runtimeType &&
             other is _$SpendInputStateImpl &&
             (identical(other.pos, pos) || other.pos == pos) &&
-            const DeepCollectionEquality()
-                .equals(other._inputDateList, _inputDateList) &&
             const DeepCollectionEquality()
                 .equals(other._inputItemList, _inputItemList) &&
             const DeepCollectionEquality()
@@ -247,7 +221,6 @@ class _$SpendInputStateImpl implements _SpendInputState {
   int get hashCode => Object.hash(
       runtimeType,
       pos,
-      const DeepCollectionEquality().hash(_inputDateList),
       const DeepCollectionEquality().hash(_inputItemList),
       const DeepCollectionEquality().hash(_inputValueList),
       const DeepCollectionEquality().hash(_inputKindList),
@@ -266,7 +239,6 @@ class _$SpendInputStateImpl implements _SpendInputState {
 abstract class _SpendInputState implements SpendInputState {
   const factory _SpendInputState(
       {final int pos,
-      final List<String> inputDateList,
       final List<String> inputItemList,
       final List<String> inputValueList,
       final List<String> inputKindList,
@@ -274,8 +246,6 @@ abstract class _SpendInputState implements SpendInputState {
 
   @override
   int get pos;
-  @override
-  List<String> get inputDateList;
   @override
   List<String> get inputItemList;
   @override
