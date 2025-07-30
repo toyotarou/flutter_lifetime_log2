@@ -192,11 +192,31 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         style: TextStyle(color: Colors.grey.withValues(alpha: 0.3)),
                         child: Row(
                           children: <Widget>[
-                            const Text('🔨 '),
+                            const Text('🔨'),
+                            const SizedBox(width: 20),
                             Text(appParamState.keepWorkTimeDateMap[date]!['start'] ?? ''),
                             const Text(' - '),
                             Text(appParamState.keepWorkTimeDateMap[date]!['end'] ?? ''),
                           ],
+                        ),
+                      ),
+                    ),
+                  ],
+
+                  if (DateTime(
+                    date.split('-')[0].toInt(),
+                    date.split('-')[1].toInt(),
+                    date.split('-')[2].toInt(),
+                  ).isBefore(DateTime.now())) ...<Widget>[
+                    Positioned(
+                      bottom: 10,
+                      left: 10,
+                      child: DefaultTextStyle(
+                        style: TextStyle(color: Colors.grey.withValues(alpha: 0.3)),
+                        child: Text(
+                          (appParamState.keepWeatherMap[date] != null)
+                              ? appParamState.keepWeatherMap[date]!.weather
+                              : '',
                         ),
                       ),
                     ),

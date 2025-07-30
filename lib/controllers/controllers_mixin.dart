@@ -11,6 +11,7 @@ import '_get_data/temple/temple.dart';
 import '_get_data/transportation/transportation.dart';
 import '_get_data/walk/walk.dart';
 
+import '_get_data/weather/weather.dart';
 import '_get_data/work_time/work_time.dart';
 import 'app_param/app_param.dart';
 import 'bank_input/bank_input.dart';
@@ -115,6 +116,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   WorkTimeState get workTimeState => ref.watch(workTimeProvider);
 
   WorkTime get workTimeNotifier => ref.read(workTimeProvider.notifier);
+
+  //==========================================//
+
+  WeatherState get weatherState => ref.watch(weatherProvider);
+
+  Weather get weatherNotifier => ref.read(weatherProvider.notifier);
 
   //==========================================//
 }
