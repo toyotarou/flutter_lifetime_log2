@@ -158,31 +158,13 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                         ),
                       ),
 
-                      if (widget.temple != null) ...<Widget>[
-                        const SizedBox(height: 10),
-
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: widget.temple!.templeDataList.map((TempleDataModel e) {
-                              return Container(
-                                margin: const EdgeInsets.all(5),
-                                padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
-                                decoration: BoxDecoration(color: Colors.green[900]?.withOpacity(0.3)),
-                                child: Text(e.name, style: const TextStyle(fontSize: 12)),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ],
+                      if (widget.temple != null) ...<Widget>[const SizedBox(height: 10), displayTempleNameList()],
 
                       if (widget.transportation != null &&
                           widget.transportation!.stationRouteList.isNotEmpty) ...<Widget>[
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: widget.transportation!.stationRouteList.map((String e) {
-                            return Text(e);
-                          }).toList(),
+                          children: widget.transportation!.stationRouteList.map((String e) => Text(e)).toList(),
                         ),
                       ],
                     ],
@@ -201,10 +183,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                         color: Colors.black.withOpacity(0.3),
                         borderRadius: BorderRadius.circular(10),
                       ),
+
                       child: GestureDetector(
-                        onTap: () {
-                          setDefaultBoundsMap();
-                        },
+                        onTap: () => setDefaultBoundsMap(),
                         child: const Icon(FontAwesomeIcons.expand),
                       ),
                     ),
@@ -217,6 +198,48 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
+    );
+  }
+
+  ///
+  Widget displayTempleNameList() {
+    final List<Widget> list = <Widget>[];
+
+    for (int i = 0; i < widget.temple!.templeDataList.length; i++) {
+      list.add(
+        Container(
+          margin: const EdgeInsets.all(5),
+
+          padding: const EdgeInsets.only(top: 3, bottom: 3, right: 15, left: 10),
+          decoration: BoxDecoration(color: const Color(0xFFFBB6CE).withValues(alpha: 0.5)),
+          child: Row(
+            children: <Widget>[
+              Container(
+                width: 16,
+                height: 16,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                child: Text(
+                  (i + 1).toString().padLeft(2, '0'),
+                  style: const TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold),
+                ),
+              ),
+
+              const SizedBox(width: 5),
+
+              Text(
+                widget.temple!.templeDataList[i].name,
+                style: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(children: list),
     );
   }
 
@@ -295,13 +318,26 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   List<Polyline> makeTransportationPolyline() {
     final List<Color> twelveColor = utility.getTwelveColor();
 
+    if (widget.transportation!.oufuku) {
+      return <Polyline<Object>>[
+        // ignore: always_specify_types
+        Polyline(
+          points: widget.transportation!.spotDataModelListMap[0]!
+              .map((SpotDataModel t) => LatLng(t.lat.toDouble(), t.lng.toDouble()))
+              .toList(),
+          color: twelveColor[0],
+          strokeWidth: 5,
+        ),
+      ];
+    }
+
     return <Polyline<Object>>[
       for (int i = 0; i < widget.transportation!.spotDataModelListMap.length; i++)
         // ignore: always_specify_types
         Polyline(
-          points: widget.transportation!.spotDataModelListMap[i]!.map((SpotDataModel t) {
-            return LatLng(t.lat.toDouble(), t.lng.toDouble());
-          }).toList(),
+          points: widget.transportation!.spotDataModelListMap[i]!
+              .map((SpotDataModel t) => LatLng(t.lat.toDouble(), t.lng.toDouble()))
+              .toList(),
           color: twelveColor[i],
           strokeWidth: 5,
         ),
@@ -321,7 +357,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         transportationGoalMarkerList.add(
           Marker(
             point: LatLng(lastValue.lat.toDouble(), lastValue.lng.toDouble()),
-            child: Icon(Icons.flag, color: twelveColor[i]),
+            child: Icon(Icons.flag, color: (widget.transportation!.oufuku) ? twelveColor[0] : twelveColor[i]),
           ),
         );
       }
@@ -333,11 +369,36 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     templeMarkerList.clear();
 
     if (widget.temple != null) {
-      for (final TempleDataModel element in widget.temple!.templeDataList) {
+      for (int i = 0; i < widget.temple!.templeDataList.length; i++) {
         templeMarkerList.add(
           Marker(
-            point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-            child: const Icon(FontAwesomeIcons.toriiGate, color: Color(0xFFFBB6CE)),
+            point: LatLng(
+              widget.temple!.templeDataList[i].latitude.toDouble(),
+              widget.temple!.templeDataList[i].longitude.toDouble(),
+            ),
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.only(bottom: 5, right: 5),
+                  child: const Icon(FontAwesomeIcons.toriiGate, color: Color(0xFFFBB6CE)),
+                ),
+
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    width: 16,
+                    height: 16,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                    child: Text(
+                      (i + 1).toString().padLeft(2, '0'),
+                      style: const TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       }
