@@ -11,6 +11,7 @@ import '_get_data/temple/temple.dart';
 import '_get_data/transportation/transportation.dart';
 import '_get_data/walk/walk.dart';
 
+import '_get_data/work_time/work_time.dart';
 import 'app_param/app_param.dart';
 import 'bank_input/bank_input.dart';
 import 'lifetime_input/lifetime_input.dart';
@@ -108,6 +109,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   SpendInputState get spendInputState => ref.watch(spendInputProvider);
 
   SpendInput get spendInputNotifier => ref.read(spendInputProvider.notifier);
+
+  //==========================================//
+
+  WorkTimeState get workTimeState => ref.watch(workTimeProvider);
+
+  WorkTime get workTimeNotifier => ref.read(workTimeProvider.notifier);
 
   //==========================================//
 }

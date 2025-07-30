@@ -54,6 +54,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     templeNotifier.getAllTempleData();
     transportationNotifier.getAllTransportationData();
     moneySpendNotifier.getAllMoneySpendData();
+    workTimeNotifier.getAllWorkTimeData();
   }
 
   ///
@@ -83,6 +84,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           templeMap: templeState.templeMap,
           transportationMap: transportationState.transportationMap,
           moneySpendMap: moneySpendState.moneySpendMap,
+          workTimeMap: workTimeState.workTimeMap,
         ),
       ),
     );

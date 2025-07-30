@@ -18,10 +18,11 @@ enum APIPath {
   getAllCredit,
   insertDailySpend,
   insertCredit,
+  worktimesummary,
 
   // getGenbaWorkTime,
   // worktimemonthdata, //{"date":"2022-01-01"}
-  // worktimesummary,
+  // ,
   // workinggenbaname,
 
   // getsalary,
@@ -84,12 +85,14 @@ extension APIPathExtension on APIPath {
       case APIPath.insertCredit:
         return 'insertCredit';
 
+      case APIPath.worktimesummary:
+        return 'worktimesummary';
+
       // case APIPath.getGenbaWorkTime:
       //   return 'getGenbaWorkTime';
       // case APIPath.worktimemonthdata:
       //   return 'worktimemonthdata';
-      // case APIPath.worktimesummary:
-      //   return 'worktimesummary';
+
       // case APIPath.workinggenbaname:
       //   return 'workinggenbaname';
 

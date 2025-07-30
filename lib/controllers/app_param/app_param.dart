@@ -9,6 +9,7 @@ import '../../models/money_spend_model.dart';
 import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
+import '../../models/work_time_model.dart';
 import '../../utility/utility.dart';
 
 part 'app_param.freezed.dart';
@@ -26,6 +27,7 @@ class AppParamState with _$AppParamState {
     @Default(<String, TempleModel>{}) Map<String, TempleModel> keepTempleMap,
     @Default(<String, TransportationModel>{}) Map<String, TransportationModel> keepTransportationMap,
     @Default(<String, List<MoneySpendModel>>{}) Map<String, List<MoneySpendModel>> keepMoneySpendMap,
+    @Default(<String, WorkTimeModel>{}) Map<String, WorkTimeModel> keepWorkTimeMap,
 
     ///
     List<OverlayEntry>? firstEntries,
@@ -77,6 +79,9 @@ class AppParam extends _$AppParam {
   ///
   void setKeepMoneySpendMap({required Map<String, List<MoneySpendModel>> map}) =>
       state = state.copyWith(keepMoneySpendMap: map);
+
+  ///
+  void setKeepWorkTimeMap({required Map<String, WorkTimeModel> map}) => state = state.copyWith(keepWorkTimeMap: map);
 
   //===================================================
 

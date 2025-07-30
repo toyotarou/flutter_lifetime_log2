@@ -6,17 +6,17 @@ import '../../extensions/extensions.dart';
 import '../../models/lifetime_model.dart';
 import '../../utility/utility.dart';
 
-class LifetimeDisplayAlert extends ConsumerStatefulWidget {
-  const LifetimeDisplayAlert({super.key, required this.yearmonth});
+class MonthlyLifetimeDisplayAlert extends ConsumerStatefulWidget {
+  const MonthlyLifetimeDisplayAlert({super.key, required this.yearmonth});
 
   final String yearmonth;
 
   @override
-  ConsumerState<LifetimeDisplayAlert> createState() => _LifetimeDisplayAlertState();
+  ConsumerState<MonthlyLifetimeDisplayAlert> createState() => _MonthlyLifetimeDisplayAlertState();
 }
 
-class _LifetimeDisplayAlertState extends ConsumerState<LifetimeDisplayAlert>
-    with ControllersMixin<LifetimeDisplayAlert> {
+class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDisplayAlert>
+    with ControllersMixin<MonthlyLifetimeDisplayAlert> {
   Utility utility = Utility();
 
   ///

@@ -5,12 +5,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../utility/utility.dart';
-import '../components/lifetime_display_alert.dart';
 import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
 import '../components/money_data_input_alert.dart';
 import '../components/monthly_geoloc_map_display_alert.dart';
+import '../components/monthly_lifetime_display_alert.dart';
 import '../components/monthly_money_spend_display_alert.dart';
+import '../components/monthly_work_time_display_alert.dart';
 import '../components/walk_data_input_alert.dart';
 import '../parts/lifetime_dialog.dart';
 
@@ -43,41 +44,23 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
               children: <Widget>[
                 Row(
                   children: <Widget>[
-                    const Expanded(child: Icon(Icons.square_outlined, color: Colors.transparent)),
-
-                    Expanded(
-                      child: Container(alignment: Alignment.center, child: Text(widget.yearmonth)),
-                    ),
-
                     Expanded(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          const SizedBox.shrink(),
-
                           Row(
                             children: <Widget>[
-                              if (appParamState.keepGeolocMap.isNotEmpty) ...<Widget>[
-                                GestureDetector(
-                                  onTap: () {
-                                    appParamNotifier.setSelectedYearMonth(yearmonth: widget.yearmonth);
+                              GestureDetector(
+                                onTap: () {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: MonthlyLifetimeDisplayAlert(yearmonth: widget.yearmonth),
+                                  );
+                                },
+                                child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.3)),
+                              ),
 
-                                    appParamNotifier.clearMonthlyGeolocMapSelectedDateList();
-
-                                    LifetimeDialog(
-                                      context: context,
-                                      widget: MonthlyGeolocMapDisplayAlert(yearmonth: widget.yearmonth),
-
-                                      executeFunctionWhenDialogClose: true,
-                                      from: 'MonthlyGeolocMapDisplayAlert',
-                                      ref: ref,
-                                    );
-                                  },
-                                  child: Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
-                                ),
-
-                                const SizedBox(width: 20),
-                              ],
+                              const SizedBox(width: 20),
 
                               GestureDetector(
                                 onTap: () {
@@ -89,18 +72,51 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                 child: Icon(Icons.money, color: Colors.white.withValues(alpha: 0.3)),
                               ),
 
-                              const SizedBox(width: 20),
+                              if (appParamState.keepGeolocMap.isNotEmpty) ...<Widget>[
+                                const SizedBox(width: 20),
 
-                              GestureDetector(
-                                onTap: () {
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: LifetimeDisplayAlert(yearmonth: widget.yearmonth),
-                                  );
-                                },
-                                child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.3)),
-                              ),
+                                GestureDetector(
+                                  onTap: () {
+                                    appParamNotifier.setSelectedYearMonth(yearmonth: widget.yearmonth);
+                                    appParamNotifier.clearMonthlyGeolocMapSelectedDateList();
+
+                                    LifetimeDialog(
+                                      context: context,
+                                      widget: MonthlyGeolocMapDisplayAlert(yearmonth: widget.yearmonth),
+                                      executeFunctionWhenDialogClose: true,
+                                      from: 'MonthlyGeolocMapDisplayAlert',
+                                      ref: ref,
+                                    );
+                                  },
+                                  child: Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+                                ),
+                              ],
                             ],
+                          ),
+
+                          const SizedBox.shrink(),
+                        ],
+                      ),
+                    ),
+
+                    Expanded(
+                      child: Container(alignment: Alignment.center, child: Text(widget.yearmonth)),
+                    ),
+
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          const SizedBox.shrink(),
+
+                          GestureDetector(
+                            onTap: () {
+                              LifetimeDialog(
+                                context: context,
+                                widget: MonthlyWorkTimeDisplayAlert(yearmonth: widget.yearmonth),
+                              );
+                            },
+                            child: Icon(Icons.work, color: Colors.white.withValues(alpha: 0.3)),
                           ),
                         ],
                       ),
