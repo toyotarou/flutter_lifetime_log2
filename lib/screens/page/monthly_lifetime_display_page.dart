@@ -182,7 +182,9 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
               constraints: BoxConstraints(minHeight: constrainedBoxHeight),
               child: Stack(
                 children: <Widget>[
-                  if (appParamState.keepWorkTimeDateMap[date] != null) ...<Widget>[
+                  if (appParamState.keepWorkTimeDateMap[date] != null &&
+                      appParamState.keepWorkTimeDateMap[date]!['start'] != '' &&
+                      appParamState.keepWorkTimeDateMap[date]!['end'] != '') ...<Widget>[
                     Positioned(
                       bottom: 10,
                       right: 10,
