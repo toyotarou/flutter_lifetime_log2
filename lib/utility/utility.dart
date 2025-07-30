@@ -176,6 +176,58 @@ class Utility {
     const Distance distance = Distance();
     return distance.as(LengthUnit.Meter, p1, p2);
   }
+
+  ///
+  List<String> getItemName() {
+    final List<String> list = <String>[];
+
+    const String str = '''
+    楽天キャッシュ
+    食費
+    牛乳代
+    弁当代
+    住居費
+    交通費
+    支払い
+    credit
+    遊興費
+    ジム会費
+    お賽銭
+    交際費
+    雑費
+    教育費
+    機材費
+    被服費
+    医療費
+    美容費
+    通信費
+    保険料
+    水道光熱費
+    共済代
+    投資
+    アイアールシー
+    手数料
+    不明
+    メルカリ
+    利息
+    プラス
+    所得税
+    住民税
+    年金
+    国民年金基金
+    国民健康保険
+    ''';
+
+    final List<String> exStr = str.split('\n');
+
+    for (final String element in exStr) {
+      if (element != '') {
+        list.add(element.trim());
+      }
+    }
+
+    return list;
+  }
 }
 
 class NavigationService {
@@ -183,16 +235,3 @@ class NavigationService {
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 }
-
-
-
-
-/*
-
-
-
-
-
-
-
-*/

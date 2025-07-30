@@ -21,6 +21,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
     with ControllersMixin<MonthlyMoneySpendDisplayAlert> {
   Utility utility = Utility();
 
+  int monthlySum = 0;
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -37,12 +39,37 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.yearmonth), const SizedBox.shrink()],
+                  children: <Widget>[
+                    Text(widget.yearmonth),
+
+                    ChoiceChip(
+                      label: const Text('summary', style: TextStyle(fontSize: 10)),
+                      backgroundColor: Colors.black.withValues(alpha: 0.1),
+                      selectedColor: Colors.greenAccent.withValues(alpha: 0.2),
+                      selected: true,
+                      onSelected: (bool isSelected) {},
+                      showCheckmark: false,
+                    ),
+                  ],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
                 Expanded(child: displayMonthlyMoneySpendList()),
+
+                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                const SizedBox(height: 5),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                  children: <Widget>[
+                    const SizedBox.shrink(),
+                    Text(monthlySum.toString().toCurrency(), style: const TextStyle(fontSize: 12)),
+                  ],
+                ),
+                const SizedBox(height: 5),
               ],
             ),
           ),
@@ -54,6 +81,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   ///
   Widget displayMonthlyMoneySpendList() {
     final List<Widget> list = <Widget>[];
+
+    int listSum = 0;
 
     final int endNum = DateTime(
       widget.yearmonth.split('-')[0].toInt(),
@@ -142,6 +171,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                       if (appParamState.keepMoneySpendMap[date] != null) ...<Widget>[
                         Column(
                           children: appParamState.keepMoneySpendMap[date]!.map((MoneySpendModel e) {
+                            listSum += e.price;
+
                             if (e.item == 'aaa') {
                               return const SizedBox.shrink();
                             } else {
@@ -183,6 +214,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
         ),
       );
     }
+
+    setState(() => monthlySum = listSum);
 
     return CustomScrollView(
       slivers: <Widget>[
