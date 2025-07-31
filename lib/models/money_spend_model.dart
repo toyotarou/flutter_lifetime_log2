@@ -1,3 +1,5 @@
+import '../extensions/extensions.dart';
+
 class MoneySpendModel {
   MoneySpendModel(this.date, this.item, this.price, this.kind);
 
@@ -126,6 +128,30 @@ class CreditModel {
       'created_at': createdAt,
       'updated_at': updatedAt,
     };
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+class MoneySpendItemModel {
+  MoneySpendItemModel({required this.id, required this.name, required this.orderNo});
+
+  /// JSON → Model
+  factory MoneySpendItemModel.fromJson(Map<String, dynamic> json) {
+    return MoneySpendItemModel(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      orderNo: json['order_no'].toString().toInt(),
+    );
+  }
+
+  final int id;
+  final String name;
+  final int orderNo;
+
+  /// Model → JSON
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{'id': id, 'name': name, 'order_no': orderNo};
   }
 }
 

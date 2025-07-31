@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
-import '../../../models/lifetime_item_model.dart';
+import '../../../models/lifetime_model.dart';
 import '../../../utility/utility.dart';
 
 part 'lifetime_item.freezed.dart';

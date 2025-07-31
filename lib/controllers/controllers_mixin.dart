@@ -7,6 +7,7 @@ import '_get_data/lifetime/lifetime.dart';
 import '_get_data/lifetime_item/lifetime_item.dart';
 import '_get_data/money/money.dart';
 import '_get_data/money_spend/money_spend.dart';
+import '_get_data/money_spend_item/money_spend_item.dart';
 import '_get_data/temple/temple.dart';
 import '_get_data/transportation/transportation.dart';
 import '_get_data/walk/walk.dart';
@@ -122,6 +123,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   WeatherState get weatherState => ref.watch(weatherProvider);
 
   Weather get weatherNotifier => ref.read(weatherProvider.notifier);
+
+  //==========================================//
+
+  MoneySpendItemState get moneySpendItemState => ref.watch(moneySpendItemProvider);
+
+  MoneySpendItem get moneySpendItemNotifier => ref.read(moneySpendItemProvider.notifier);
 
   //==========================================//
 }

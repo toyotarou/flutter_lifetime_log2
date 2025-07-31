@@ -20,6 +20,7 @@ enum APIPath {
   insertCredit,
   worktimesummary,
   getAllWeather,
+  getMoneySpendItem,
 
   // getGenbaWorkTime,
   // worktimemonthdata, //{"date":"2022-01-01"}
@@ -91,6 +92,9 @@ extension APIPathExtension on APIPath {
 
       case APIPath.getAllWeather:
         return 'getAllWeather';
+
+      case APIPath.getMoneySpendItem:
+        return 'getMoneySpendItem';
 
       // case APIPath.getGenbaWorkTime:
       //   return 'getGenbaWorkTime';

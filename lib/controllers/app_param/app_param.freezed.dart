@@ -37,6 +37,8 @@ mixin _$AppParamState {
       throw _privateConstructorUsedError;
   Map<String, WeatherModel> get keepWeatherMap =>
       throw _privateConstructorUsedError;
+  Map<String, MoneySpendItemModel> get keepMoneySpendItemMap =>
+      throw _privateConstructorUsedError;
 
   ///
   List<OverlayEntry>? get firstEntries => throw _privateConstructorUsedError;
@@ -77,6 +79,7 @@ abstract class $AppParamStateCopyWith<$Res> {
       Map<String, WorkTimeModel> keepWorkTimeMap,
       Map<String, Map<String, String>> keepWorkTimeDateMap,
       Map<String, WeatherModel> keepWeatherMap,
+      Map<String, MoneySpendItemModel> keepMoneySpendItemMap,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
       Offset? overlayPosition,
@@ -112,6 +115,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? keepWorkTimeMap = null,
     Object? keepWorkTimeDateMap = null,
     Object? keepWeatherMap = null,
+    Object? keepMoneySpendItemMap = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
     Object? overlayPosition = freezed,
@@ -165,6 +169,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.keepWeatherMap
           : keepWeatherMap // ignore: cast_nullable_to_non_nullable
               as Map<String, WeatherModel>,
+      keepMoneySpendItemMap: null == keepMoneySpendItemMap
+          ? _value.keepMoneySpendItemMap
+          : keepMoneySpendItemMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, MoneySpendItemModel>,
       firstEntries: freezed == firstEntries
           ? _value.firstEntries
           : firstEntries // ignore: cast_nullable_to_non_nullable
@@ -217,6 +225,7 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       Map<String, WorkTimeModel> keepWorkTimeMap,
       Map<String, Map<String, String>> keepWorkTimeDateMap,
       Map<String, WeatherModel> keepWeatherMap,
+      Map<String, MoneySpendItemModel> keepMoneySpendItemMap,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
       Offset? overlayPosition,
@@ -250,6 +259,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? keepWorkTimeMap = null,
     Object? keepWorkTimeDateMap = null,
     Object? keepWeatherMap = null,
+    Object? keepMoneySpendItemMap = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
     Object? overlayPosition = freezed,
@@ -303,6 +313,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value._keepWeatherMap
           : keepWeatherMap // ignore: cast_nullable_to_non_nullable
               as Map<String, WeatherModel>,
+      keepMoneySpendItemMap: null == keepMoneySpendItemMap
+          ? _value._keepMoneySpendItemMap
+          : keepMoneySpendItemMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, MoneySpendItemModel>,
       firstEntries: freezed == firstEntries
           ? _value._firstEntries
           : firstEntries // ignore: cast_nullable_to_non_nullable
@@ -359,6 +373,8 @@ class _$AppParamStateImpl implements _AppParamState {
           const <String, Map<String, String>>{},
       final Map<String, WeatherModel> keepWeatherMap =
           const <String, WeatherModel>{},
+      final Map<String, MoneySpendItemModel> keepMoneySpendItemMap =
+          const <String, MoneySpendItemModel>{},
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
       this.overlayPosition,
@@ -377,6 +393,7 @@ class _$AppParamStateImpl implements _AppParamState {
         _keepWorkTimeMap = keepWorkTimeMap,
         _keepWorkTimeDateMap = keepWorkTimeDateMap,
         _keepWeatherMap = keepWeatherMap,
+        _keepMoneySpendItemMap = keepMoneySpendItemMap,
         _firstEntries = firstEntries,
         _secondEntries = secondEntries,
         _monthlyGeolocMapSelectedDateList = monthlyGeolocMapSelectedDateList;
@@ -484,6 +501,16 @@ class _$AppParamStateImpl implements _AppParamState {
     return EqualUnmodifiableMapView(_keepWeatherMap);
   }
 
+  final Map<String, MoneySpendItemModel> _keepMoneySpendItemMap;
+  @override
+  @JsonKey()
+  Map<String, MoneySpendItemModel> get keepMoneySpendItemMap {
+    if (_keepMoneySpendItemMap is EqualUnmodifiableMapView)
+      return _keepMoneySpendItemMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_keepMoneySpendItemMap);
+  }
+
   ///
   final List<OverlayEntry>? _firstEntries;
 
@@ -534,7 +561,7 @@ class _$AppParamStateImpl implements _AppParamState {
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList)';
   }
 
   @override
@@ -565,6 +592,8 @@ class _$AppParamStateImpl implements _AppParamState {
             const DeepCollectionEquality()
                 .equals(other._keepWeatherMap, _keepWeatherMap) &&
             const DeepCollectionEquality()
+                .equals(other._keepMoneySpendItemMap, _keepMoneySpendItemMap) &&
+            const DeepCollectionEquality()
                 .equals(other._firstEntries, _firstEntries) &&
             const DeepCollectionEquality()
                 .equals(other._secondEntries, _secondEntries) &&
@@ -582,26 +611,28 @@ class _$AppParamStateImpl implements _AppParamState {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(_keepHolidayList),
-      const DeepCollectionEquality().hash(_keepWalkModelMap),
-      const DeepCollectionEquality().hash(_keepMoneyMap),
-      const DeepCollectionEquality().hash(_keepLifetimeItemList),
-      const DeepCollectionEquality().hash(_keepGeolocMap),
-      const DeepCollectionEquality().hash(_keepTempleMap),
-      const DeepCollectionEquality().hash(_keepTransportationMap),
-      const DeepCollectionEquality().hash(_keepMoneySpendMap),
-      const DeepCollectionEquality().hash(_keepWorkTimeMap),
-      const DeepCollectionEquality().hash(_keepWorkTimeDateMap),
-      const DeepCollectionEquality().hash(_keepWeatherMap),
-      const DeepCollectionEquality().hash(_firstEntries),
-      const DeepCollectionEquality().hash(_secondEntries),
-      overlayPosition,
-      currentZoom,
-      currentPaddingIndex,
-      selectedYearMonth,
-      const DeepCollectionEquality().hash(_monthlyGeolocMapSelectedDateList));
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        const DeepCollectionEquality().hash(_keepHolidayList),
+        const DeepCollectionEquality().hash(_keepWalkModelMap),
+        const DeepCollectionEquality().hash(_keepMoneyMap),
+        const DeepCollectionEquality().hash(_keepLifetimeItemList),
+        const DeepCollectionEquality().hash(_keepGeolocMap),
+        const DeepCollectionEquality().hash(_keepTempleMap),
+        const DeepCollectionEquality().hash(_keepTransportationMap),
+        const DeepCollectionEquality().hash(_keepMoneySpendMap),
+        const DeepCollectionEquality().hash(_keepWorkTimeMap),
+        const DeepCollectionEquality().hash(_keepWorkTimeDateMap),
+        const DeepCollectionEquality().hash(_keepWeatherMap),
+        const DeepCollectionEquality().hash(_keepMoneySpendItemMap),
+        const DeepCollectionEquality().hash(_firstEntries),
+        const DeepCollectionEquality().hash(_secondEntries),
+        overlayPosition,
+        currentZoom,
+        currentPaddingIndex,
+        selectedYearMonth,
+        const DeepCollectionEquality().hash(_monthlyGeolocMapSelectedDateList)
+      ]);
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
@@ -625,6 +656,7 @@ abstract class _AppParamState implements AppParamState {
           final Map<String, WorkTimeModel> keepWorkTimeMap,
           final Map<String, Map<String, String>> keepWorkTimeDateMap,
           final Map<String, WeatherModel> keepWeatherMap,
+          final Map<String, MoneySpendItemModel> keepMoneySpendItemMap,
           final List<OverlayEntry>? firstEntries,
           final List<OverlayEntry>? secondEntries,
           final Offset? overlayPosition,
@@ -656,6 +688,8 @@ abstract class _AppParamState implements AppParamState {
   Map<String, Map<String, String>> get keepWorkTimeDateMap;
   @override
   Map<String, WeatherModel> get keepWeatherMap;
+  @override
+  Map<String, MoneySpendItemModel> get keepMoneySpendItemMap;
 
   ///
   @override
