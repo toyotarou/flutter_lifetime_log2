@@ -16,6 +16,7 @@ import '../models/weather_model.dart';
 import '../models/work_time_model.dart';
 import '../utility/utility.dart';
 import 'components/bank_data_input_alert.dart';
+import 'components/money_in_possession_display_alert.dart';
 import 'page/monthly_lifetime_display_page.dart';
 import 'parts/lifetime_dialog.dart';
 
@@ -149,6 +150,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               const SizedBox(height: 60),
+
+              GestureDetector(
+                onTap: () => LifetimeDialog(context: context, widget: const MoneyInPossessionDisplayAlert()),
+                child: const Row(
+                  children: <Widget>[
+                    Icon(Icons.money),
+                    SizedBox(width: 20),
+                    Expanded(child: Text('money in possession')),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
 
               GestureDetector(
                 onTap: () => LifetimeDialog(context: context, widget: const BankDataInputAlert()),
