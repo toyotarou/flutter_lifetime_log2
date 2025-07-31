@@ -176,60 +176,6 @@ class Utility {
     const Distance distance = Distance();
     return distance.as(LengthUnit.Meter, p1, p2);
   }
-
-  ///
-  List<String> getItemName() {
-    final List<String> list = <String>[];
-
-    const String str = '''
-    楽天キャッシュ
-    西友
-    食費
-    交通費
-    クレジット
-    雑費
-    お賽銭
-    お線香代
-    遊興費
-    交際費
-    投資
-    お使い
-    支払い
-    医療費
-    通信費
-    手数料
-    教育費
-    美容費
-    ジム会費
-    設備費
-    被服費
-    保険料
-    年金保険
-    共済代
-    国民年金基金
-    国民健康保険
-    社会保険
-    税金
-    国民年金
-    不明
-    プラス
-    収入
-    利息
-    送金
-    水道光熱費
-    住居費
-    ''';
-
-    final List<String> exStr = str.split('\n');
-
-    for (final String element in exStr) {
-      if (element != '') {
-        list.add(element.trim());
-      }
-    }
-
-    return list;
-  }
 }
 
 class NavigationService {

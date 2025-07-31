@@ -50,10 +50,7 @@ class MoneySpendItem extends _$MoneySpendItem {
         }
       });
 
-      return state.copyWith(
-        moneySpendItemList: <MoneySpendItemModel>[],
-        moneySpendItemMap: <String, MoneySpendItemModel>{},
-      );
+      return state.copyWith(moneySpendItemList: list, moneySpendItemMap: map);
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる

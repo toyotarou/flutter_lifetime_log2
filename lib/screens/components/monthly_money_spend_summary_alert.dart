@@ -97,9 +97,9 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
     int listSum = 0;
 
-    utility.getItemName().forEach((String element) {
-      if (moneySpendSummaryMap[element] != null) {
-        listSum += moneySpendSummaryMap[element]!;
+    appParamState.keepMoneySpendItemMap.forEach((String key, MoneySpendItemModel value) {
+      if (moneySpendSummaryMap[value.name] != null) {
+        listSum += moneySpendSummaryMap[value.name]!;
 
         list.add(
           Container(
@@ -111,7 +111,7 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-              children: <Widget>[Text(element), Text(moneySpendSummaryMap[element].toString().toCurrency())],
+              children: <Widget>[Text(value.name), Text(moneySpendSummaryMap[value.name].toString().toCurrency())],
             ),
           ),
         );

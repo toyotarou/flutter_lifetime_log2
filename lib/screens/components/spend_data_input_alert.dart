@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../main.dart';
+import '../../models/money_spend_model.dart';
 import '../../utility/utility.dart';
 import '../parts/error_dialog.dart';
 
@@ -96,7 +97,9 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
 
     final List<String> dropDownItemName = <String>[''];
 
-    utility.getItemName().forEach((String element) => dropDownItemName.add(element));
+    appParamState.keepMoneySpendItemMap.forEach(
+      (String key, MoneySpendItemModel value) => dropDownItemName.add(value.name),
+    );
 
     for (int i = 0; i < priceTecs.length; i++) {
       list.add(
