@@ -207,39 +207,76 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
     for (int i = 0; i < widget.temple!.templeDataList.length; i++) {
       list.add(
-        Container(
-          margin: const EdgeInsets.all(5),
+        Stack(
+          children: <Widget>[
+            Container(
+              margin: const EdgeInsets.only(top: 5, right: 10, left: 5, bottom: 15),
 
-          padding: const EdgeInsets.only(top: 3, bottom: 3, right: 15, left: 10),
-          decoration: BoxDecoration(color: const Color(0xFFFBB6CE).withValues(alpha: 0.5)),
-          child: Row(
-            children: <Widget>[
-              Container(
-                width: 16,
-                height: 16,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                child: Text(
-                  (i + 1).toString().padLeft(2, '0'),
-                  style: const TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold),
-                ),
+              padding: const EdgeInsets.only(top: 3, bottom: 3, right: 20, left: 10),
+              decoration: BoxDecoration(color: const Color(0xFFFBB6CE).withValues(alpha: 0.5)),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    width: 16,
+                    height: 16,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                    child: Text(
+                      (i + 1).toString().padLeft(2, '0'),
+                      style: const TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+
+                  const SizedBox(width: 5),
+
+                  Text(
+                    widget.temple!.templeDataList[i].name,
+                    style: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
+            ),
 
-              const SizedBox(width: 5),
+            Positioned(
+              right: 3,
+              bottom: 3,
+              child: Text(
+                widget.temple!.templeDataList[i].rank,
 
-              Text(
-                widget.temple!.templeDataList[i].name,
-                style: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(children: list),
+    return Row(
+      children: <Widget>[
+        CircleAvatar(
+          radius: 16,
+          backgroundColor: const Color(0xFFFBB6CE),
+          child: CircleAvatar(
+            radius: 14,
+            backgroundColor: Colors.white,
+
+            child: Text(
+              widget.temple!.templeDataList.length.toString().padLeft(2, '0'),
+
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
+        ),
+
+        const SizedBox(width: 10),
+
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(children: list),
+          ),
+        ),
+      ],
     );
   }
 
@@ -318,19 +355,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   List<Polyline> makeTransportationPolyline() {
     final List<Color> twelveColor = utility.getTwelveColor();
 
-    if (widget.transportation!.oufuku) {
-      return <Polyline<Object>>[
-        // ignore: always_specify_types
-        Polyline(
-          points: widget.transportation!.spotDataModelListMap[0]!
-              .map((SpotDataModel t) => LatLng(t.lat.toDouble(), t.lng.toDouble()))
-              .toList(),
-          color: twelveColor[0],
-          strokeWidth: 5,
-        ),
-      ];
-    }
-
     return <Polyline<Object>>[
       for (int i = 0; i < widget.transportation!.spotDataModelListMap.length; i++)
         // ignore: always_specify_types
@@ -338,7 +362,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           points: widget.transportation!.spotDataModelListMap[i]!
               .map((SpotDataModel t) => LatLng(t.lat.toDouble(), t.lng.toDouble()))
               .toList(),
-          color: twelveColor[i],
+          color: (widget.transportation!.oufuku) ? twelveColor[0] : twelveColor[i],
           strokeWidth: 5,
         ),
     ];
