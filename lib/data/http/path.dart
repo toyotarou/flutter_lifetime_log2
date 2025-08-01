@@ -21,16 +21,7 @@ enum APIPath {
   worktimesummary,
   getAllWeather,
   getMoneySpendItem,
-
-  // getGenbaWorkTime,
-  // worktimemonthdata, //{"date":"2022-01-01"}
-  // ,
-  // workinggenbaname,
-
-  // getsalary,
-  // getmonthlytimeplace,
-
-  //  // getmonthSpendItem,
+  getAllBenefit,
 }
 
 extension APIPathExtension on APIPath {
@@ -96,21 +87,8 @@ extension APIPathExtension on APIPath {
       case APIPath.getMoneySpendItem:
         return 'getMoneySpendItem';
 
-      // case APIPath.getGenbaWorkTime:
-      //   return 'getGenbaWorkTime';
-      // case APIPath.worktimemonthdata:
-      //   return 'worktimemonthdata';
-
-      // case APIPath.workinggenbaname:
-      //   return 'workinggenbaname';
-
-      // case APIPath.getsalary:
-      //   return 'getsalary';
-      // case APIPath.getmonthlytimeplace:
-      //   return 'getmonthlytimeplace';
-
-      // case APIPath.getmonthSpendItem:
-      //   return 'getmonthSpendItem';
+      case APIPath.getAllBenefit:
+        return 'getAllBenefit';
     }
   }
 }

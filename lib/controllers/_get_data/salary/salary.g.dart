@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'app_param.dart';
+part of 'salary.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appParamHash() => r'32653011f8033eef007c09e52c477a9b518ed61d';
+String _$salaryHash() => r'a83692f34d41b216ef5946ce71f7ce6094389f15';
 
-/// See also [AppParam].
-@ProviderFor(AppParam)
-final appParamProvider =
-    AutoDisposeNotifierProvider<AppParam, AppParamState>.internal(
-  AppParam.new,
-  name: r'appParamProvider',
+/// See also [Salary].
+@ProviderFor(Salary)
+final salaryProvider =
+    AutoDisposeNotifierProvider<Salary, SalaryState>.internal(
+  Salary.new,
+  name: r'salaryProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$appParamHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$salaryHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$AppParam = AutoDisposeNotifier<AppParamState>;
+typedef _$Salary = AutoDisposeNotifier<SalaryState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

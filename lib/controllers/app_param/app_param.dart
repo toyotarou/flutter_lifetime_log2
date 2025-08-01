@@ -6,6 +6,7 @@ import '../../models/geoloc_model.dart';
 import '../../models/lifetime_model.dart';
 import '../../models/money_model.dart';
 import '../../models/money_spend_model.dart';
+import '../../models/salary_model.dart';
 import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
@@ -32,6 +33,7 @@ class AppParamState with _$AppParamState {
     @Default(<String, Map<String, String>>{}) Map<String, Map<String, String>> keepWorkTimeDateMap,
     @Default(<String, WeatherModel>{}) Map<String, WeatherModel> keepWeatherMap,
     @Default(<String, MoneySpendItemModel>{}) Map<String, MoneySpendItemModel> keepMoneySpendItemMap,
+    @Default(<String, SalaryModel>{}) Map<String, SalaryModel> keepSalaryMap,
 
     ///
     List<OverlayEntry>? firstEntries,
@@ -97,6 +99,9 @@ class AppParam extends _$AppParam {
   ///
   void setKeepMoneySpendItemMap({required Map<String, MoneySpendItemModel> map}) =>
       state = state.copyWith(keepMoneySpendItemMap: map);
+
+  ///
+  void setKeepSalaryMap({required Map<String, SalaryModel> map}) => state = state.copyWith(keepSalaryMap: map);
 
   //===================================================
 

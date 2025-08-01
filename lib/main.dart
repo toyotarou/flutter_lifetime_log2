@@ -57,6 +57,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     workTimeNotifier.getAllWorkTimeData();
     weatherNotifier.getAllWeatherData();
     moneySpendItemNotifier.getAllMoneySpendItemData();
+    salaryNotifier.getAllSalaryData();
   }
 
   ///
@@ -90,6 +91,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           workTimeDateMap: workTimeState.workTimeDateMap,
           weatherMap: weatherState.weatherMap,
           moneySpendItemMap: moneySpendItemState.moneySpendItemMap,
+          salaryMap: salaryState.salaryMap,
         ),
       ),
     );

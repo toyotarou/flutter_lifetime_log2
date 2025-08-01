@@ -8,6 +8,7 @@ import '../models/geoloc_model.dart';
 import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
+import '../models/salary_model.dart';
 import '../models/temple_model.dart';
 import '../models/transportation_model.dart';
 import '../models/walk_model.dart';
@@ -42,6 +43,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.workTimeDateMap,
     required this.weatherMap,
     required this.moneySpendItemMap,
+    required this.salaryMap,
   });
 
   final List<String> holidayList;
@@ -56,6 +58,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, Map<String, String>> workTimeDateMap;
   final Map<String, WeatherModel> weatherMap;
   final Map<String, MoneySpendItemModel> moneySpendItemMap;
+  final Map<String, SalaryModel> salaryMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -84,6 +87,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepWorkTimeDateMap(map: widget.workTimeDateMap);
       appParamNotifier.setKeepWeatherMap(map: widget.weatherMap);
       appParamNotifier.setKeepMoneySpendItemMap(map: widget.moneySpendItemMap);
+      appParamNotifier.setKeepSalaryMap(map: widget.salaryMap);
     });
 
     return DefaultTabController(
