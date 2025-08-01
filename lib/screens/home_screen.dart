@@ -17,6 +17,7 @@ import '../models/work_time_model.dart';
 import '../utility/utility.dart';
 import 'components/bank_data_input_alert.dart';
 import 'components/money_in_possession_display_alert.dart';
+import 'components/salary_list_alert.dart';
 import 'page/monthly_lifetime_display_page.dart';
 import 'parts/lifetime_dialog.dart';
 
@@ -58,7 +59,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, Map<String, String>> workTimeDateMap;
   final Map<String, WeatherModel> weatherMap;
   final Map<String, MoneySpendItemModel> moneySpendItemMap;
-  final Map<String, SalaryModel> salaryMap;
+  final Map<String, List<SalaryModel>> salaryMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -177,6 +178,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                     Icon(Icons.monetization_on_sharp),
                     SizedBox(width: 20),
                     Expanded(child: Text('bank money adjust')),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              GestureDetector(
+                onTap: () => LifetimeDialog(context: context, widget: const SalaryListAlert()),
+
+                child: const Row(
+                  children: <Widget>[
+                    Icon(Icons.diamond),
+                    SizedBox(width: 20),
+                    Expanded(child: Text('salary list')),
                   ],
                 ),
               ),

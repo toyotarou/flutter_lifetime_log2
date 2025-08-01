@@ -39,7 +39,7 @@ mixin _$AppParamState {
       throw _privateConstructorUsedError;
   Map<String, MoneySpendItemModel> get keepMoneySpendItemMap =>
       throw _privateConstructorUsedError;
-  Map<String, SalaryModel> get keepSalaryMap =>
+  Map<String, List<SalaryModel>> get keepSalaryMap =>
       throw _privateConstructorUsedError;
 
   ///
@@ -82,7 +82,7 @@ abstract class $AppParamStateCopyWith<$Res> {
       Map<String, Map<String, String>> keepWorkTimeDateMap,
       Map<String, WeatherModel> keepWeatherMap,
       Map<String, MoneySpendItemModel> keepMoneySpendItemMap,
-      Map<String, SalaryModel> keepSalaryMap,
+      Map<String, List<SalaryModel>> keepSalaryMap,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
       Offset? overlayPosition,
@@ -180,7 +180,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
       keepSalaryMap: null == keepSalaryMap
           ? _value.keepSalaryMap
           : keepSalaryMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, SalaryModel>,
+              as Map<String, List<SalaryModel>>,
       firstEntries: freezed == firstEntries
           ? _value.firstEntries
           : firstEntries // ignore: cast_nullable_to_non_nullable
@@ -234,7 +234,7 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       Map<String, Map<String, String>> keepWorkTimeDateMap,
       Map<String, WeatherModel> keepWeatherMap,
       Map<String, MoneySpendItemModel> keepMoneySpendItemMap,
-      Map<String, SalaryModel> keepSalaryMap,
+      Map<String, List<SalaryModel>> keepSalaryMap,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
       Offset? overlayPosition,
@@ -330,7 +330,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
       keepSalaryMap: null == keepSalaryMap
           ? _value._keepSalaryMap
           : keepSalaryMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, SalaryModel>,
+              as Map<String, List<SalaryModel>>,
       firstEntries: freezed == firstEntries
           ? _value._firstEntries
           : firstEntries // ignore: cast_nullable_to_non_nullable
@@ -389,8 +389,8 @@ class _$AppParamStateImpl implements _AppParamState {
           const <String, WeatherModel>{},
       final Map<String, MoneySpendItemModel> keepMoneySpendItemMap =
           const <String, MoneySpendItemModel>{},
-      final Map<String, SalaryModel> keepSalaryMap =
-          const <String, SalaryModel>{},
+      final Map<String, List<SalaryModel>> keepSalaryMap =
+          const <String, List<SalaryModel>>{},
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
       this.overlayPosition,
@@ -528,10 +528,10 @@ class _$AppParamStateImpl implements _AppParamState {
     return EqualUnmodifiableMapView(_keepMoneySpendItemMap);
   }
 
-  final Map<String, SalaryModel> _keepSalaryMap;
+  final Map<String, List<SalaryModel>> _keepSalaryMap;
   @override
   @JsonKey()
-  Map<String, SalaryModel> get keepSalaryMap {
+  Map<String, List<SalaryModel>> get keepSalaryMap {
     if (_keepSalaryMap is EqualUnmodifiableMapView) return _keepSalaryMap;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_keepSalaryMap);
@@ -686,7 +686,7 @@ abstract class _AppParamState implements AppParamState {
           final Map<String, Map<String, String>> keepWorkTimeDateMap,
           final Map<String, WeatherModel> keepWeatherMap,
           final Map<String, MoneySpendItemModel> keepMoneySpendItemMap,
-          final Map<String, SalaryModel> keepSalaryMap,
+          final Map<String, List<SalaryModel>> keepSalaryMap,
           final List<OverlayEntry>? firstEntries,
           final List<OverlayEntry>? secondEntries,
           final Offset? overlayPosition,
@@ -721,7 +721,7 @@ abstract class _AppParamState implements AppParamState {
   @override
   Map<String, MoneySpendItemModel> get keepMoneySpendItemMap;
   @override
-  Map<String, SalaryModel> get keepSalaryMap;
+  Map<String, List<SalaryModel>> get keepSalaryMap;
 
   ///
   @override

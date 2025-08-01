@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/salary_model.dart';
 import '../../utility/utility.dart';
 import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
@@ -86,7 +87,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                           // ignore: use_build_context_synchronously
                                           context: context,
                                           title: '表示できません。',
-                                          content: '今月分のgeolocがまだありません。',
+                                          content: '今月分のgeolocが存在しません。',
                                         ),
                                       );
 
@@ -234,6 +235,35 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               ? appParamState.keepWeatherMap[date]!.weather
                               : '',
                         ),
+                      ),
+                    ),
+                  ],
+
+                  if (appParamState.keepSalaryMap[date] != null) ...<Widget>[
+                    Positioned(
+                      bottom: 30,
+                      right: 10,
+                      left: 10,
+
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          const SizedBox.shrink(),
+
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              Icon(Icons.diamond, color: Colors.yellowAccent.withValues(alpha: 0.3)),
+
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: appParamState.keepSalaryMap[date]!.map((SalaryModel e) {
+                                  return Text(e.salary.toString().toCurrency());
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ],

@@ -6,7 +6,7 @@ part of 'salary.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$salaryHash() => r'a83692f34d41b216ef5946ce71f7ce6094389f15';
+String _$salaryHash() => r'5a75164cc02123d74bcbbbad6156ca5fc2c05c1a';
 
 /// See also [Salary].
 @ProviderFor(Salary)

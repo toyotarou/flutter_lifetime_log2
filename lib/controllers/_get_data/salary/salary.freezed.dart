@@ -17,7 +17,8 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$SalaryState {
   List<SalaryModel> get salaryList => throw _privateConstructorUsedError;
-  Map<String, SalaryModel> get salaryMap => throw _privateConstructorUsedError;
+  Map<String, List<SalaryModel>> get salaryMap =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of SalaryState
   /// with the given fields replaced by the non-null parameter values.
@@ -32,7 +33,8 @@ abstract class $SalaryStateCopyWith<$Res> {
           SalaryState value, $Res Function(SalaryState) then) =
       _$SalaryStateCopyWithImpl<$Res, SalaryState>;
   @useResult
-  $Res call({List<SalaryModel> salaryList, Map<String, SalaryModel> salaryMap});
+  $Res call(
+      {List<SalaryModel> salaryList, Map<String, List<SalaryModel>> salaryMap});
 }
 
 /// @nodoc
@@ -61,7 +63,7 @@ class _$SalaryStateCopyWithImpl<$Res, $Val extends SalaryState>
       salaryMap: null == salaryMap
           ? _value.salaryMap
           : salaryMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, SalaryModel>,
+              as Map<String, List<SalaryModel>>,
     ) as $Val);
   }
 }
@@ -74,7 +76,8 @@ abstract class _$$SalaryStateImplCopyWith<$Res>
       __$$SalaryStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<SalaryModel> salaryList, Map<String, SalaryModel> salaryMap});
+  $Res call(
+      {List<SalaryModel> salaryList, Map<String, List<SalaryModel>> salaryMap});
 }
 
 /// @nodoc
@@ -101,7 +104,7 @@ class __$$SalaryStateImplCopyWithImpl<$Res>
       salaryMap: null == salaryMap
           ? _value._salaryMap
           : salaryMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, SalaryModel>,
+              as Map<String, List<SalaryModel>>,
     ));
   }
 }
@@ -111,7 +114,8 @@ class __$$SalaryStateImplCopyWithImpl<$Res>
 class _$SalaryStateImpl implements _SalaryState {
   const _$SalaryStateImpl(
       {final List<SalaryModel> salaryList = const <SalaryModel>[],
-      final Map<String, SalaryModel> salaryMap = const <String, SalaryModel>{}})
+      final Map<String, List<SalaryModel>> salaryMap =
+          const <String, List<SalaryModel>>{}})
       : _salaryList = salaryList,
         _salaryMap = salaryMap;
 
@@ -124,10 +128,10 @@ class _$SalaryStateImpl implements _SalaryState {
     return EqualUnmodifiableListView(_salaryList);
   }
 
-  final Map<String, SalaryModel> _salaryMap;
+  final Map<String, List<SalaryModel>> _salaryMap;
   @override
   @JsonKey()
-  Map<String, SalaryModel> get salaryMap {
+  Map<String, List<SalaryModel>> get salaryMap {
     if (_salaryMap is EqualUnmodifiableMapView) return _salaryMap;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_salaryMap);
@@ -167,12 +171,12 @@ class _$SalaryStateImpl implements _SalaryState {
 abstract class _SalaryState implements SalaryState {
   const factory _SalaryState(
       {final List<SalaryModel> salaryList,
-      final Map<String, SalaryModel> salaryMap}) = _$SalaryStateImpl;
+      final Map<String, List<SalaryModel>> salaryMap}) = _$SalaryStateImpl;
 
   @override
   List<SalaryModel> get salaryList;
   @override
-  Map<String, SalaryModel> get salaryMap;
+  Map<String, List<SalaryModel>> get salaryMap;
 
   /// Create a copy of SalaryState
   /// with the given fields replaced by the non-null parameter values.

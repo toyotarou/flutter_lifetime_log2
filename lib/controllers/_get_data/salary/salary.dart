@@ -15,7 +15,7 @@ part 'salary.g.dart';
 class SalaryState with _$SalaryState {
   const factory SalaryState({
     @Default(<SalaryModel>[]) List<SalaryModel> salaryList,
-    @Default(<String, SalaryModel>{}) Map<String, SalaryModel> salaryMap,
+    @Default(<String, List<SalaryModel>>{}) Map<String, List<SalaryModel>> salaryMap,
   }) = _SalaryState;
 }
 
@@ -35,10 +35,10 @@ class Salary extends _$Salary {
 
     try {
       final List<SalaryModel> list = <SalaryModel>[];
-      final Map<String, SalaryModel> map = <String, SalaryModel>{};
+      final Map<String, List<SalaryModel>> map = <String, List<SalaryModel>>{};
 
       // ignore: always_specify_types
-      await client.post(path: APIPath.getAllWeather).then((value) {
+      await client.post(path: APIPath.getAllBenefit).then((value) {
         // ignore: avoid_dynamic_calls
         for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
           // ignore: avoid_dynamic_calls
@@ -53,7 +53,7 @@ class Salary extends _$Salary {
 
           list.add(val);
 
-          map[val.yearmonth] = val;
+          (map[val.date] ??= <SalaryModel>[]).add(val);
         }
       });
 
