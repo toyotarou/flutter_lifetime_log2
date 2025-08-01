@@ -117,8 +117,6 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
       final int diff = spend - sum;
 
-      final bool itemEmpty = appParamState.keepMoneySpendMap[date] == null;
-
       list.add(
         Container(
           decoration: BoxDecoration(
@@ -131,7 +129,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                if ((itemEmpty || diff > 0) &&
+                if (diff != 0 &&
                     DateTime(
                       date.split('-')[0].toInt(),
                       date.split('-')[1].toInt(),

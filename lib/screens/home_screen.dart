@@ -197,6 +197,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         }
       });
 
+    if (!yearmonthList.contains(DateTime.now().yyyymm)) {
+      yearmonthList.add(DateTime.now().yyyymm);
+      yearmonthList.sort((String a, String b) => a.compareTo(b) * -1);
+    }
+
     for (final String element in yearmonthList) {
       _tabs.add(TabInfo(element, MonthlyLifetimeDisplayPage(yearmonth: element)));
     }

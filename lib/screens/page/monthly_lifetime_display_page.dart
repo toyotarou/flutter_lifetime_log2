@@ -13,6 +13,7 @@ import '../components/monthly_lifetime_display_alert.dart';
 import '../components/monthly_money_spend_display_alert.dart';
 import '../components/monthly_work_time_display_alert.dart';
 import '../components/walk_data_input_alert.dart';
+import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 
 class MonthlyLifetimeDisplayPage extends ConsumerStatefulWidget {
@@ -77,6 +78,21 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                 GestureDetector(
                                   onTap: () {
+                                    if (appParamState.keepGeolocMap[widget.yearmonth] == null) {
+                                      // ignore: always_specify_types
+                                      Future.delayed(
+                                        Duration.zero,
+                                        () => error_dialog(
+                                          // ignore: use_build_context_synchronously
+                                          context: context,
+                                          title: '表示できません。',
+                                          content: '今月分のgeolocがまだありません。',
+                                        ),
+                                      );
+
+                                      return;
+                                    }
+
                                     appParamNotifier.setSelectedYearMonth(yearmonth: widget.yearmonth);
                                     appParamNotifier.clearMonthlyGeolocMapSelectedDateList();
 
