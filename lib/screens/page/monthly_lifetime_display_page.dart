@@ -258,7 +258,11 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: appParamState.keepSalaryMap[date]!.map((SalaryModel e) {
-                                  return Text(e.salary.toString().toCurrency());
+                                  return Text(
+                                    e.salary.toString().toCurrency(),
+
+                                    style: TextStyle(color: Colors.yellowAccent.withValues(alpha: 0.3)),
+                                  );
                                 }).toList(),
                               ),
                             ],
