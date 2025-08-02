@@ -384,6 +384,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                 ),
                                               ),
                                             ],
+
+                                            if (appParamState.keepGeolocMap[date] == null) ...<Widget>[
+                                              const SizedBox(height: 38),
+                                            ],
                                           ],
                                         ),
                                       ],
