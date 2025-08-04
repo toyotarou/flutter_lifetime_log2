@@ -17,6 +17,7 @@ class MoneyInPossessionGraphAlert extends ConsumerStatefulWidget {
 class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionGraphAlert>
     with ControllersMixin<MoneyInPossessionGraphAlert> {
   LineChartData graphData = LineChartData();
+  LineChartData graphData2 = LineChartData();
 
   List<FlSpot> _flspots = <FlSpot>[];
 
@@ -38,7 +39,7 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
       backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 50),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -67,6 +68,8 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
 
                     return Stack(
                       children: <Widget>[
+                        LineChart(graphData2),
+
                         LineChart(graphData),
                         Positioned(
                           left: pixelX + 20,
@@ -78,7 +81,7 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
-                              '${angleDeg.toStringAsFixed(1)}°',
+                              '${angleDeg.toStringAsFixed(3)}°',
                               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
                             ),
                           ),
@@ -105,12 +108,14 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
   void _setChartData() {
     _flspots = <FlSpot>[];
     final List<int> list = <int>[];
+    final List<String> dateList = <String>[];
 
     int i = 0;
     appParamState.keepMoneyMap.forEach((String key, MoneyModel value) {
       if (key.split('-')[0].toInt() >= 2023) {
         _flspots.add(FlSpot(i.toDouble(), value.sum.toDouble()));
         list.add(value.sum.toInt());
+        dateList.add(value.date);
 
         if (i == 0) {
           startPrice = value.sum.toInt();
@@ -131,20 +136,69 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
 
       angleFlspotsA = <FlSpot>[
         FlSpot(0, startPrice.toDouble()),
-        FlSpot(_flspots.length.toDouble(), startPrice.toDouble()),
+        FlSpot(_flspots.length.toDouble() - 1, startPrice.toDouble()),
       ];
       angleFlspotsB = <FlSpot>[
         FlSpot(0, startPrice.toDouble()),
-        FlSpot(_flspots.length.toDouble(), endPrice.toDouble()),
+        FlSpot(_flspots.length.toDouble() - 1, endPrice.toDouble()),
       ];
 
       graphData = LineChartData(
         minX: 1,
         maxX: _flspots.length.toDouble(),
+
         minY: graphMin.toDouble(),
         maxY: graphMax.toDouble(),
+
+        lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+            tooltipRoundedRadius: 2,
+            getTooltipItems: (List<LineBarSpot> touchedSpots) {
+              final List<LineTooltipItem> list = <LineTooltipItem>[];
+
+              for (final LineBarSpot element in touchedSpots) {
+                final TextStyle textStyle = TextStyle(
+                  color: element.bar.gradient?.colors.first ?? element.bar.color ?? Colors.blueGrey,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                );
+
+                final String price = element.y.round().toString().split('.')[0].toCurrency();
+
+                final String date = dateList[element.x.toInt()];
+
+                list.add(
+                  (((element.bar.color != null) ? element.bar.color!.red : 0) == 105)
+                      ? LineTooltipItem('$date\n$price', textStyle, textAlign: TextAlign.end)
+                      : const LineTooltipItem('', TextStyle()),
+                );
+              }
+
+              return list;
+            },
+          ),
+        ),
+
+        ///
+        gridData: FlGridData(
+          verticalInterval: 1,
+          getDrawingVerticalLine: (double value) {
+            if (dateList[value.toInt()].split('-')[2] == '01') {
+              if (dateList[value.toInt()].split('-')[1] == '01') {
+                return FlLine(color: const Color(0xFFFBB6CE).withOpacity(0.3), strokeWidth: 3);
+              } else {
+                return FlLine(color: Colors.yellowAccent.withValues(alpha: 0.2), strokeWidth: 1);
+              }
+            } else {
+              return const FlLine(color: Colors.transparent, strokeWidth: 1);
+            }
+          },
+        ),
+
         titlesData: const FlTitlesData(show: false),
+
         borderData: FlBorderData(show: false),
+
         lineBarsData: <LineChartBarData>[
           LineChartBarData(
             spots: _flspots,
@@ -165,6 +219,77 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
             barWidth: 1,
           ),
         ],
+      );
+
+      graphData2 = LineChartData(
+        ///
+        minX: 1,
+        maxX: _flspots.length.toDouble(),
+        //
+        minY: graphMin.toDouble(),
+        maxY: graphMax.toDouble(),
+
+        borderData: FlBorderData(show: false),
+
+        ///
+        lineTouchData: const LineTouchData(enabled: false),
+
+        ///
+        gridData: const FlGridData(show: false),
+
+        ///
+        titlesData: FlTitlesData(
+          //-------------------------// 上部の目盛り
+          topTitles: const AxisTitles(),
+          //-------------------------// 上部の目盛り
+
+          //-------------------------// 下部の目盛り
+          bottomTitles: const AxisTitles(),
+          //-------------------------// 下部の目盛り
+
+          //-------------------------// 左側の目盛り
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 60,
+              getTitlesWidget: (double value, TitleMeta meta) {
+                if (value == graphMin || value == graphMax) {
+                  return const SizedBox();
+                }
+
+                return SideTitleWidget(
+                  space: 4,
+                  axisSide: AxisSide.left,
+                  child: Text(value.toInt().toString().toCurrency(), style: const TextStyle(fontSize: 10)),
+                );
+              },
+            ),
+          ),
+          //-------------------------// 左側の目盛り
+
+          //-------------------------// 右側の目盛り
+          rightTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 60,
+              getTitlesWidget: (double value, TitleMeta meta) {
+                if (value == graphMin || value == graphMax) {
+                  return const SizedBox();
+                }
+
+                return SideTitleWidget(
+                  space: 4,
+                  axisSide: AxisSide.right,
+                  child: Text(value.toInt().toString().toCurrency(), style: const TextStyle(fontSize: 10)),
+                );
+              },
+            ),
+          ),
+          //-------------------------// 右側の目盛り
+        ),
+
+        ///
+        lineBarsData: <LineChartBarData>[],
       );
     }
   }
