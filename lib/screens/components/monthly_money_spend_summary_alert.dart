@@ -37,31 +37,35 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.yearmonth), const SizedBox.shrink()],
-                ),
+            child: DefaultTextStyle(
+              style: const TextStyle(fontSize: 12),
 
-                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[Text(widget.yearmonth), const SizedBox.shrink()],
+                  ),
 
-                Expanded(child: displayMoneySpendSummaryList()),
+                  Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+                  Expanded(child: displayMoneySpendSummaryList()),
 
-                const SizedBox(height: 5),
+                  Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  const SizedBox(height: 5),
 
-                  children: <Widget>[
-                    const SizedBox.shrink(),
-                    Text(monthlySum.toString().toCurrency(), style: const TextStyle(fontSize: 12)),
-                  ],
-                ),
-                const SizedBox(height: 5),
-              ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                    children: <Widget>[
+                      const SizedBox.shrink(),
+                      Text(monthlySum.toString().toCurrency(), style: const TextStyle(fontSize: 12)),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                ],
+              ),
             ),
           ),
         ),

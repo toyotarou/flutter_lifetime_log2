@@ -117,6 +117,18 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
       final int diff = spend - sum;
 
+      final bool inputDisplay =
+          // ignore: avoid_bool_literals_in_conditional_expressions
+          ((diff != 0 ||
+                  DateTime(
+                    date.split('-')[0].toInt(),
+                    date.split('-')[1].toInt(),
+                    date.split('-')[2].toInt(),
+                  ).isBefore(DateTime.now())) &&
+              appParamState.keepMoneySpendMap[date] == null)
+          ? true
+          : false;
+
       list.add(
         Container(
           decoration: BoxDecoration(
@@ -129,12 +141,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                if (diff != 0 &&
-                    DateTime(
-                      date.split('-')[0].toInt(),
-                      date.split('-')[1].toInt(),
-                      date.split('-')[2].toInt(),
-                    ).isBefore(DateTime.now()))
+                if (inputDisplay)
                   GestureDetector(
                     onTap: () {
                       LifetimeDialog(
