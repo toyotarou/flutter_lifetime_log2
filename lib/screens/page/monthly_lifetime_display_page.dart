@@ -79,7 +79,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                 GestureDetector(
                                   onTap: () {
-                                    if (appParamState.keepGeolocMap[widget.yearmonth] == null) {
+                                    if (DateTime.now().day == 1) {
                                       // ignore: always_specify_types
                                       Future.delayed(
                                         Duration.zero,

@@ -18,6 +18,7 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
     with ControllersMixin<MoneyInPossessionGraphAlert> {
   LineChartData graphData = LineChartData();
   LineChartData graphData2 = LineChartData();
+  LineChartData graphData3 = LineChartData();
 
   List<FlSpot> _flspots = <FlSpot>[];
 
@@ -69,7 +70,7 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
                     return Stack(
                       children: <Widget>[
                         LineChart(graphData2),
-
+                        LineChart(graphData3),
                         LineChart(graphData),
                         Positioned(
                           left: pixelX + 20,
@@ -167,11 +168,7 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
 
                 final String date = dateList[element.x.toInt()];
 
-                list.add(
-                  (((element.bar.color != null) ? element.bar.color!.red : 0) == 105)
-                      ? LineTooltipItem('$date\n$price', textStyle, textAlign: TextAlign.end)
-                      : const LineTooltipItem('', TextStyle()),
-                );
+                list.add(LineTooltipItem('$date\n$price', textStyle, textAlign: TextAlign.end));
               }
 
               return list;
@@ -203,18 +200,6 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
           LineChartBarData(
             spots: _flspots,
             color: Colors.greenAccent,
-            dotData: const FlDotData(show: false),
-            barWidth: 1,
-          ),
-          LineChartBarData(
-            spots: angleFlspotsA,
-            color: Colors.white,
-            dotData: const FlDotData(show: false),
-            barWidth: 1,
-          ),
-          LineChartBarData(
-            spots: angleFlspotsB,
-            color: Colors.white,
             dotData: const FlDotData(show: false),
             barWidth: 1,
           ),
@@ -290,6 +275,37 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
 
         ///
         lineBarsData: <LineChartBarData>[],
+      );
+
+      graphData3 = LineChartData(
+        minX: 1,
+        maxX: _flspots.length.toDouble(),
+
+        minY: graphMin.toDouble(),
+        maxY: graphMax.toDouble(),
+
+        lineTouchData: const LineTouchData(enabled: false),
+
+        gridData: const FlGridData(show: false),
+
+        titlesData: const FlTitlesData(show: false),
+
+        borderData: FlBorderData(show: false),
+
+        lineBarsData: <LineChartBarData>[
+          LineChartBarData(
+            spots: angleFlspotsA,
+            color: Colors.white,
+            dotData: const FlDotData(show: false),
+            barWidth: 1,
+          ),
+          LineChartBarData(
+            spots: angleFlspotsB,
+            color: Colors.white,
+            dotData: const FlDotData(show: false),
+            barWidth: 1,
+          ),
+        ],
       );
     }
   }
