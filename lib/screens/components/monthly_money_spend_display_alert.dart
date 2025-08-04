@@ -88,7 +88,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   Widget displayMonthlyMoneySpendList() {
     final List<Widget> list = <Widget>[];
 
-    int listSum = 0;
+    const int listSum = 0;
 
     final int endNum = DateTime(
       widget.yearmonth.split('-')[0].toInt(),
@@ -130,104 +130,93 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
           : false;
 
       list.add(
-        Container(
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
-          ),
-          padding: const EdgeInsets.all(5),
-          child: DefaultTextStyle(
-            style: const TextStyle(fontSize: 12),
+        Stack(
+          children: <Widget>[
+            if (date == DateTime.now().yyyymmdd) ...<Widget>[
+              const Positioned(
+                left: 3,
+                bottom: 3,
+                child: Text('TODAY', style: TextStyle(fontSize: 10, color: Colors.orangeAccent)),
+              ),
+            ],
 
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                if (inputDisplay)
-                  GestureDetector(
-                    onTap: () {
-                      LifetimeDialog(
-                        context: context,
-                        widget: SpendDateInputAlert(date: date),
-                      );
-                    },
-                    child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.4)),
-                  )
-                else
-                  const Icon(Icons.square_outlined, color: Colors.transparent),
+            Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
+              ),
+              padding: const EdgeInsets.all(5),
+              child: DefaultTextStyle(
+                style: const TextStyle(fontSize: 12),
 
-                const SizedBox(width: 20),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    if (inputDisplay)
+                      GestureDetector(
+                        onTap: () {
+                          LifetimeDialog(
+                            context: context,
+                            widget: SpendDateInputAlert(date: date),
+                          );
+                        },
+                        child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.4)),
+                      )
+                    else
+                      const Icon(Icons.square_outlined, color: Colors.transparent),
 
-                Expanded(
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(color: headColor),
-                        padding: const EdgeInsets.symmetric(vertical: 2),
-                        margin: const EdgeInsets.symmetric(vertical: 2),
+                    const SizedBox(width: 20),
 
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Row(
+                    Expanded(
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            decoration: BoxDecoration(color: headColor),
+                            padding: const EdgeInsets.symmetric(vertical: 2),
+                            margin: const EdgeInsets.symmetric(vertical: 2),
+
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(i.toString().padLeft(2, '0')),
-                                const SizedBox(width: 5),
-                                Text(youbi),
+                                Row(
+                                  children: <Widget>[
+                                    Text(i.toString().padLeft(2, '0')),
+                                    const SizedBox(width: 5),
+                                    Text(youbi),
+                                  ],
+                                ),
+                                Text(spend.toString().toCurrency()),
                               ],
                             ),
-                            Text(spend.toString().toCurrency()),
+                          ),
+
+                          if (appParamState.keepMoneySpendMap[date] != null) ...<Widget>[
+                            displayDateMoneySpendList(date: date),
                           ],
-                        ),
-                      ),
 
-                      if (appParamState.keepMoneySpendMap[date] != null) ...<Widget>[
-                        Column(
-                          children: appParamState.keepMoneySpendMap[date]!.map((MoneySpendModel e) {
-                            listSum += e.price;
+                          const SizedBox(height: 5),
 
-                            if (e.item == 'aaa') {
-                              return const SizedBox.shrink();
-                            } else {
-                              return DefaultTextStyle(
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              const SizedBox.shrink(),
+                              Text(
+                                diff.toString().toCurrency(),
                                 style: TextStyle(
-                                  color: (e.kind == 'credit')
-                                      ? Colors.greenAccent.withValues(alpha: 0.6)
-                                      : Colors.white,
-                                  fontSize: 12,
+                                  color: (diff != 0)
+                                      ? Colors.yellowAccent.withValues(alpha: 0.5)
+                                      : Colors.pinkAccent.withValues(alpha: 0.5),
                                 ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                                  ),
-
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[Text(e.item), Text(e.price.toString().toCurrency())],
-                                  ),
-                                ),
-                              );
-                            }
-                          }).toList(),
-                        ),
-                      ],
-
-                      const SizedBox(height: 5),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          const SizedBox.shrink(),
-                          Text(
-                            diff.toString().toCurrency(),
-                            style: TextStyle(color: Colors.pinkAccent.withValues(alpha: 0.5)),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       );
     }
@@ -244,5 +233,45 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
         ),
       ],
     );
+  }
+
+  ///
+  Widget displayDateMoneySpendList({required String date}) {
+    if (appParamState.keepMoneySpendMap[date] == null) {
+      return const SizedBox.shrink();
+    }
+
+    final List<Widget> list = <Widget>[];
+
+    final Map<String, List<MoneySpendModel>> map = <String, List<MoneySpendModel>>{};
+
+    appParamState.keepMoneySpendMap[date]?.forEach(
+      (MoneySpendModel element) => (map[element.item] ??= <MoneySpendModel>[]).add(element),
+    );
+
+    appParamState.keepMoneySpendItemMap.forEach((String key, MoneySpendItemModel value) {
+      map[key]?.forEach((MoneySpendModel element) {
+        list.add(
+          DefaultTextStyle(
+            style: TextStyle(
+              color: (element.kind == 'credit') ? Colors.greenAccent.withValues(alpha: 0.6) : Colors.white,
+              fontSize: 12,
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+              ),
+
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[Text(element.item), Text(element.price.toString().toCurrency())],
+              ),
+            ),
+          ),
+        );
+      });
+    });
+
+    return Column(children: list);
   }
 }
