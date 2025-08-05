@@ -2,6 +2,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '_get_data/geoloc/geoloc.dart';
+import '_get_data/gold/gold.dart';
 import '_get_data/holiday/holiday.dart';
 import '_get_data/lifetime/lifetime.dart';
 import '_get_data/lifetime_item/lifetime_item.dart';
@@ -151,6 +152,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   StockInputState get stockInputState => ref.watch(stockInputProvider);
 
   StockInput get stockInputNotifier => ref.read(stockInputProvider.notifier);
+
+  //==========================================//
+
+  GoldState get goldState => ref.watch(goldProvider);
+
+  Gold get goldNotifier => ref.read(goldProvider.notifier);
 
   //==========================================//
 }

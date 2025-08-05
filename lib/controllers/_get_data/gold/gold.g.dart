@@ -6,7 +6,7 @@ part of 'gold.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$goldHash() => r'e3db3d88a3937ef1cf9e3bc9df9ebb723eccc248';
+String _$goldHash() => r'9acba63454c316f694392cfe841b50b8adee4c33';
 
 /// See also [Gold].
 @ProviderFor(Gold)
@@ -21,4 +21,4 @@ final goldProvider = NotifierProvider<Gold, GoldState>.internal(
 
 typedef _$Gold = Notifier<GoldState>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

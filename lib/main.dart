@@ -59,6 +59,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     moneySpendItemNotifier.getAllMoneySpendItemData();
     salaryNotifier.getAllSalaryData();
     stockNameNotifier.getAllStockNameData();
+    goldNotifier.getAllGoldData();
   }
 
   ///
@@ -94,6 +95,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           moneySpendItemMap: moneySpendItemState.moneySpendItemMap,
           salaryMap: salaryState.salaryMap,
           stockNameMap: stockNameState.stockNameMap,
+          goldMap: goldState.goldMap,
         ),
       ),
     );

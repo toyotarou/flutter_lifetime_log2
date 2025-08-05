@@ -5,6 +5,7 @@ import '../controllers/controllers_mixin.dart';
 import '../extensions/extensions.dart';
 import '../main.dart';
 import '../models/geoloc_model.dart';
+import '../models/gold_model.dart';
 import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
@@ -46,6 +47,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.moneySpendItemMap,
     required this.salaryMap,
     required this.stockNameMap,
+    required this.goldMap,
   });
 
   final List<String> holidayList;
@@ -62,6 +64,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, MoneySpendItemModel> moneySpendItemMap;
   final Map<String, List<SalaryModel>> salaryMap;
   final Map<String, Map<String, String>> stockNameMap;
+  final Map<String, GoldModel> goldMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -92,6 +95,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepMoneySpendItemMap(map: widget.moneySpendItemMap);
       appParamNotifier.setKeepSalaryMap(map: widget.salaryMap);
       appParamNotifier.setKeepStockNameMap(map: widget.stockNameMap);
+      appParamNotifier.setKeepGoldMap(map: widget.goldMap);
     });
 
     return DefaultTabController(

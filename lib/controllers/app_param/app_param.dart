@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../models/geoloc_model.dart';
+import '../../models/gold_model.dart';
 import '../../models/lifetime_model.dart';
 import '../../models/money_model.dart';
 import '../../models/money_spend_model.dart';
@@ -35,6 +36,7 @@ class AppParamState with _$AppParamState {
     @Default(<String, MoneySpendItemModel>{}) Map<String, MoneySpendItemModel> keepMoneySpendItemMap,
     @Default(<String, List<SalaryModel>>{}) Map<String, List<SalaryModel>> keepSalaryMap,
     @Default(<String, Map<String, String>>{}) Map<String, Map<String, String>> keepStockNameMap,
+    @Default(<String, GoldModel>{}) Map<String, GoldModel> keepGoldMap,
 
     ///
     List<OverlayEntry>? firstEntries,
@@ -107,6 +109,9 @@ class AppParam extends _$AppParam {
   ///
   void setKeepStockNameMap({required Map<String, Map<String, String>> map}) =>
       state = state.copyWith(keepStockNameMap: map);
+
+  ///
+  void setKeepGoldMap({required Map<String, GoldModel> map}) => state = state.copyWith(keepGoldMap: map);
 
   //===================================================
 

@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
-import '../../../models/gold.dart';
+import '../../../models/gold_model.dart';
 import '../../../utility/utility.dart';
 
 part 'gold.freezed.dart';
@@ -58,7 +58,7 @@ class Gold extends _$Gold {
   }
 
   ///
-  Future<void> getAllGold() async {
+  Future<void> getAllGoldData() async {
     try {
       final GoldState newState = await fetchAllGold();
 
