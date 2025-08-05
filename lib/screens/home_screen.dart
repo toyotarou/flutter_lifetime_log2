@@ -10,7 +10,9 @@ import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
 import '../models/salary_model.dart';
+import '../models/stock_model.dart';
 import '../models/temple_model.dart';
+import '../models/toushi_shintaku_model.dart';
 import '../models/transportation_model.dart';
 import '../models/walk_model.dart';
 import '../models/weather_model.dart';
@@ -48,6 +50,8 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.salaryMap,
     required this.stockNameMap,
     required this.goldMap,
+    required this.stockMap,
+    required this.toushiShintakuMap,
   });
 
   final List<String> holidayList;
@@ -65,6 +69,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<SalaryModel>> salaryMap;
   final Map<String, Map<String, String>> stockNameMap;
   final Map<String, GoldModel> goldMap;
+  final Map<String, List<StockModel>> stockMap;
+  final Map<String, List<ToushiShintakuModel>> toushiShintakuMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -96,6 +102,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepSalaryMap(map: widget.salaryMap);
       appParamNotifier.setKeepStockNameMap(map: widget.stockNameMap);
       appParamNotifier.setKeepGoldMap(map: widget.goldMap);
+      appParamNotifier.setKeepStockMap(map: widget.stockMap);
+      appParamNotifier.setKeepToushiShintakuMap(map: widget.toushiShintakuMap);
     });
 
     return DefaultTabController(

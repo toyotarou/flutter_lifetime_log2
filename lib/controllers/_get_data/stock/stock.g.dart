@@ -1,24 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'gold.dart';
+part of 'stock.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$goldHash() => r'8f6a355abebdc9e3c262249788a765daa96cd5b8';
+String _$stockHash() => r'9adb7973a98318c86bed1bd1ed91b3551a80f7fc';
 
-/// See also [Gold].
-@ProviderFor(Gold)
-final goldProvider = NotifierProvider<Gold, GoldState>.internal(
-  Gold.new,
-  name: r'goldProvider',
+/// See also [Stock].
+@ProviderFor(Stock)
+final stockProvider = AutoDisposeNotifierProvider<Stock, StockState>.internal(
+  Stock.new,
+  name: r'stockProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$goldHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$stockHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$Gold = Notifier<GoldState>;
+typedef _$Stock = AutoDisposeNotifier<StockState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

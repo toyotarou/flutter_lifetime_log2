@@ -10,8 +10,10 @@ import '_get_data/money/money.dart';
 import '_get_data/money_spend/money_spend.dart';
 import '_get_data/money_spend_item/money_spend_item.dart';
 import '_get_data/salary/salary.dart';
+import '_get_data/stock/stock.dart';
 import '_get_data/stock_name/stock_name.dart';
 import '_get_data/temple/temple.dart';
+import '_get_data/toushi_shintaku/toushi_shintaku.dart';
 import '_get_data/transportation/transportation.dart';
 import '_get_data/walk/walk.dart';
 import '_get_data/weather/weather.dart';
@@ -158,6 +160,18 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   GoldState get goldState => ref.watch(goldProvider);
 
   Gold get goldNotifier => ref.read(goldProvider.notifier);
+
+  //==========================================//
+
+  StockState get stockState => ref.watch(stockProvider);
+
+  Stock get stockNotifier => ref.read(stockProvider.notifier);
+
+  //==========================================//
+
+  ToushiShintakuState get toushiShintakuState => ref.watch(toushiShintakuProvider);
+
+  ToushiShintaku get toushiShintakuNotifier => ref.read(toushiShintakuProvider.notifier);
 
   //==========================================//
 }

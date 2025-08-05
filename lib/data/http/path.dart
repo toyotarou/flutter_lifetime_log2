@@ -25,6 +25,8 @@ enum APIPath {
   getStockName,
   insertDailyStockData,
   getgolddata,
+  getAllStockData,
+  getAllToushiShintakuData,
 }
 
 extension APIPathExtension on APIPath {
@@ -99,6 +101,10 @@ extension APIPathExtension on APIPath {
         return 'insertDailyStockData';
       case APIPath.getgolddata:
         return 'getgolddata';
+      case APIPath.getAllStockData:
+        return 'getAllStockData';
+      case APIPath.getAllToushiShintakuData:
+        return 'getAllToushiShintakuData';
     }
   }
 }

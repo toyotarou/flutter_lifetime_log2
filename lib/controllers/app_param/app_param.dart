@@ -8,7 +8,9 @@ import '../../models/lifetime_model.dart';
 import '../../models/money_model.dart';
 import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
+import '../../models/stock_model.dart';
 import '../../models/temple_model.dart';
+import '../../models/toushi_shintaku_model.dart';
 import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
 import '../../models/weather_model.dart';
@@ -37,6 +39,8 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<SalaryModel>>{}) Map<String, List<SalaryModel>> keepSalaryMap,
     @Default(<String, Map<String, String>>{}) Map<String, Map<String, String>> keepStockNameMap,
     @Default(<String, GoldModel>{}) Map<String, GoldModel> keepGoldMap,
+    @Default(<String, List<StockModel>>{}) Map<String, List<StockModel>> keepStockMap,
+    @Default(<String, List<ToushiShintakuModel>>{}) Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
 
     ///
     List<OverlayEntry>? firstEntries,
@@ -112,6 +116,13 @@ class AppParam extends _$AppParam {
 
   ///
   void setKeepGoldMap({required Map<String, GoldModel> map}) => state = state.copyWith(keepGoldMap: map);
+
+  ///
+  void setKeepStockMap({required Map<String, List<StockModel>> map}) => state = state.copyWith(keepStockMap: map);
+
+  ///
+  void setKeepToushiShintakuMap({required Map<String, List<ToushiShintakuModel>> map}) =>
+      state = state.copyWith(keepToushiShintakuMap: map);
 
   //===================================================
 
