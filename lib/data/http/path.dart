@@ -22,6 +22,7 @@ enum APIPath {
   getAllWeather,
   getMoneySpendItem,
   getAllBenefit,
+  getStockName,
 }
 
 extension APIPathExtension on APIPath {
@@ -89,6 +90,9 @@ extension APIPathExtension on APIPath {
 
       case APIPath.getAllBenefit:
         return 'getAllBenefit';
+
+      case APIPath.getStockName:
+        return 'getStockName';
     }
   }
 }

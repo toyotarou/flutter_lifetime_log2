@@ -9,6 +9,7 @@ import '../../utility/utility.dart';
 import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
 import '../components/money_data_input_alert.dart';
+import '../components/monthly_assets_display_alert.dart';
 import '../components/monthly_geoloc_map_display_alert.dart';
 import '../components/monthly_lifetime_display_alert.dart';
 import '../components/monthly_money_spend_display_alert.dart';
@@ -126,14 +127,30 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         children: <Widget>[
                           const SizedBox.shrink(),
 
-                          GestureDetector(
-                            onTap: () {
-                              LifetimeDialog(
-                                context: context,
-                                widget: MonthlyWorkTimeDisplayAlert(yearmonth: widget.yearmonth),
-                              );
-                            },
-                            child: Icon(Icons.work, color: Colors.white.withValues(alpha: 0.3)),
+                          Row(
+                            children: <Widget>[
+                              GestureDetector(
+                                onTap: () {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: MonthlyAssetsDisplayAlert(yearmonth: widget.yearmonth),
+                                  );
+                                },
+                                child: Icon(FontAwesomeIcons.sun, color: Colors.white.withValues(alpha: 0.3)),
+                              ),
+
+                              const SizedBox(width: 20),
+
+                              GestureDetector(
+                                onTap: () {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: MonthlyWorkTimeDisplayAlert(yearmonth: widget.yearmonth),
+                                  );
+                                },
+                                child: Icon(Icons.work, color: Colors.white.withValues(alpha: 0.3)),
+                              ),
+                            ],
                           ),
                         ],
                       ),
