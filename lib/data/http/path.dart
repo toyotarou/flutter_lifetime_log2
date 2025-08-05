@@ -23,6 +23,8 @@ enum APIPath {
   getMoneySpendItem,
   getAllBenefit,
   getStockName,
+  insertDailyStockData,
+  getgolddata,
 }
 
 extension APIPathExtension on APIPath {
@@ -93,6 +95,10 @@ extension APIPathExtension on APIPath {
 
       case APIPath.getStockName:
         return 'getStockName';
+      case APIPath.insertDailyStockData:
+        return 'insertDailyStockData';
+      case APIPath.getgolddata:
+        return 'getgolddata';
     }
   }
 }

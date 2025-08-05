@@ -53,39 +53,6 @@ class StockName extends _$StockName {
         }
       });
 
-      /*
-
-
-
-
-{
-    "data": [
-        {
-            "ticker": "EPI",
-            "name": "ウィズダムツリー インド株収益ファンド",
-            "hoyuu_suuryou": 5,
-            "heikin_shutoku_kagaku": "3,897.60"
-        },
-        {
-            "ticker": "INFY",
-            "name": "インフォシス・テクノロジーズ",
-            "hoyuu_suuryou": 5,
-            "heikin_shutoku_kagaku": "2,653.60"
-        },
-        {
-            "ticker": "JMIA",
-            "name": "ジュミア・テクノロジーズ",
-            "hoyuu_suuryou": 5,
-            "heikin_shutoku_kagaku": "2,490.00"
-        }
-    ]
-}
-
-
-
-
-      */
-
       return state.copyWith(stockNameMap: map);
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
