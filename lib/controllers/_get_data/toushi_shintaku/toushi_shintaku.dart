@@ -38,7 +38,7 @@ class ToushiShintaku extends _$ToushiShintaku {
       final Map<String, List<ToushiShintakuModel>> map = <String, List<ToushiShintakuModel>>{};
 
       // ignore: always_specify_types
-      await client.post(path: APIPath.getAllStockData).then((value) {
+      await client.post(path: APIPath.getAllToushiShintakuData).then((value) {
         // ignore: avoid_dynamic_calls
         for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
           // ignore: avoid_dynamic_calls
@@ -50,10 +50,7 @@ class ToushiShintaku extends _$ToushiShintaku {
         }
       });
 
-      return state.copyWith(
-        toushiShintakuList: <ToushiShintakuModel>[],
-        toushiShintakuMap: <String, List<ToushiShintakuModel>>{},
-      );
+      return state.copyWith(toushiShintakuList: list, toushiShintakuMap: map);
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる

@@ -1,3 +1,5 @@
+import '../extensions/extensions.dart';
+
 class StockModel {
   StockModel({
     required this.id,
@@ -19,9 +21,11 @@ class StockModel {
       month: json['month'] as String,
       day: json['day'] as String,
       ticker: json['ticker'] as String,
-      name: json['name'] as String,
-      hoyuuSuuryou: json['hoyuu_suuryou'] as int,
-      heikinShutokuKagaku: json['heikin_shutoku_kagaku'] as String,
+
+      name: (json['name'] != null) ? json['name'].toString() : '',
+      hoyuuSuuryou: (json['hoyuu_suuryou'] != null) ? json['hoyuu_suuryou'].toString().toInt() : 0,
+      heikinShutokuKagaku: (json['heikin_shutoku_kagaku'] != null) ? json['heikin_shutoku_kagaku'].toString() : '',
+
       jikaHyoukagaku: json['jika_hyoukagaku'] as String,
     );
   }

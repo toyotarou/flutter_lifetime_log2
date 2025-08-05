@@ -38,7 +38,7 @@ class Gold extends _$Gold {
       final Map<String, GoldModel> map = <String, GoldModel>{};
 
       // ignore: always_specify_types
-      await client.post(path: APIPath.getAllBenefit).then((value) {
+      await client.post(path: APIPath.getgolddata).then((value) {
         // ignore: avoid_dynamic_calls
         for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
           // ignore: avoid_dynamic_calls
