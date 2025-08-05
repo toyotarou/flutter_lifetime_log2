@@ -22,6 +22,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     with ControllersMixin<MonthlyAssetsDisplayAlert> {
   Utility utility = Utility();
 
+  bool todayStockExists = false;
+
+  int elapsedMonths = 0;
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -73,15 +77,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     for (int i = 0; i < 50; i++) {
       final DateTime date = tenDaysAgoFromBeforeMonthEndDay.add(Duration(days: i));
 
-      if (date.isBefore(DateTime.now())) {
-        monthlyAssetsMap[date.yyyymmdd] = <String, int>{
-          'gold': lastGoldSum,
-          'stock': lastStockSum,
-          'toushiShintaku': lastToushiShintakuSum,
-          'insurance': lastInsuranceSum,
-        };
-      }
-
       if (appParamState.keepGoldMap[date.yyyymmdd] != null &&
           appParamState.keepGoldMap[date.yyyymmdd]!.goldValue != '-') {
         lastGoldSum = appParamState.keepGoldMap[date.yyyymmdd]!.goldValue.toString().toInt();
@@ -92,6 +87,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         for (final StockModel element in appParamState.keepStockMap[date.yyyymmdd]!) {
           if (element.jikaHyoukagaku != '-') {
             lastStockSum += element.jikaHyoukagaku.toInt();
+
+            if (date.yyyymmdd == DateTime.now().yyyymmdd) {
+              todayStockExists = true;
+            }
           }
         }
       }
@@ -105,8 +104,17 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         }
       }
 
-      final int elapsedMonths = utility.elapsedMonthsByCutoff(start: checkStart, end: date) + 102;
+      elapsedMonths = utility.elapsedMonthsByCutoff(start: checkStart, end: date) + 102;
       lastInsuranceSum = elapsedMonths * (55880 * 0.7).toInt();
+
+      if (date.isBefore(DateTime.now())) {
+        monthlyAssetsMap[date.yyyymmdd] = <String, int>{
+          'gold': lastGoldSum,
+          'stock': lastStockSum,
+          'toushiShintaku': lastToushiShintakuSum,
+          'insurance': lastInsuranceSum,
+        };
+      }
     }
 
     final int endDay = DateTime(
@@ -147,69 +155,84 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         date.split('-')[2].toInt(),
       ).isBefore(DateTime.now());
 
+      final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
+
       list.add(
         Container(
           decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
           ),
-          padding: const EdgeInsets.all(5),
+          padding: const EdgeInsets.all(10),
 
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const SizedBox(width: 20),
+              Container(
+                decoration: BoxDecoration(
+                  color: utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList),
+                ),
 
-              Row(
-                children: <Widget>[
-                  Text(i.toString().padLeft(2, '0')),
+                padding: const EdgeInsets.all(5),
 
-                  IconButton(
-                    onPressed: () {
-                      LifetimeDialog(
-                        context: context,
-                        widget: StockDataInputAlert(date: date),
-                      );
-                    },
-                    icon: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
-                  ),
-                ],
+                height: context.screenSize.height * 0.12,
+
+                child: Column(
+                  children: <Widget>[
+                    Text(i.toString().padLeft(2, '0')),
+                    const SizedBox(height: 10),
+                    Text(youbi.substring(0, 3), style: const TextStyle(fontSize: 10)),
+                  ],
+                ),
               ),
 
               const SizedBox(width: 20),
 
               Expanded(
-                child: Column(
-                  children: <Widget>[
-                    Text(beforeDate ? total.toString().toCurrency() : '-', style: const TextStyle(fontSize: 24)),
+                child: DefaultTextStyle(
+                  style: TextStyle(color: beforeDate ? Colors.white : Colors.grey.withValues(alpha: 0.6)),
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[const Text('money'), Text(beforeDate ? money.toCurrency() : '')],
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(beforeDate ? total.toString().toCurrency() : '-', style: const TextStyle(fontSize: 24)),
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[const Text('gold'), Text(beforeDate ? gold.toCurrency() : '')],
-                    ),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[const Text('stock'), Text(beforeDate ? stock.toCurrency() : '')],
-                    ),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        const Text('toushiShintaku'),
-                        Text(beforeDate ? toushiShintaku.toCurrency() : ''),
-                      ],
-                    ),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[const Text('insurance'), Text(beforeDate ? insurance.toCurrency() : '')],
-                    ),
-                  ],
+                      priceDisplayParts(
+                        date: date,
+                        beforeDate: beforeDate,
+                        title: 'money',
+                        price: money,
+                        buttonDisp: false,
+                      ),
+                      priceDisplayParts(
+                        date: date,
+                        beforeDate: beforeDate,
+                        title: 'gold',
+                        price: gold,
+                        buttonDisp: false,
+                      ),
+                      priceDisplayParts(
+                        date: date,
+                        beforeDate: beforeDate,
+                        title: 'stock',
+                        price: stock,
+                        buttonDisp: true,
+                      ),
+                      priceDisplayParts(
+                        date: date,
+                        beforeDate: beforeDate,
+                        title: 'toushiShintaku',
+                        price: toushiShintaku,
+                        buttonDisp: false,
+                      ),
+                      priceDisplayParts(
+                        date: date,
+                        beforeDate: beforeDate,
+                        title: 'insurance ($elapsedMonths)',
+                        price: insurance,
+                        buttonDisp: false,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -227,6 +250,58 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           ),
         ),
       ],
+    );
+  }
+
+  ///
+  Widget priceDisplayParts({
+    required String date,
+
+    required bool beforeDate,
+    required String title,
+    required String price,
+    required bool buttonDisp,
+  }) {
+    final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
+
+    final GestureDetector stockInputButton = GestureDetector(
+      onTap: () {
+        LifetimeDialog(
+          context: context,
+          widget: StockDataInputAlert(date: date),
+        );
+      },
+      child: Icon(
+        Icons.input,
+        color: (date == DateTime.now().yyyymmdd && !todayStockExists)
+            ? Colors.greenAccent.withValues(alpha: 0.3)
+            : Colors.white.withValues(alpha: 0.3),
+      ),
+    );
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+      ),
+
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              if (buttonDisp && youbi != 'Saturday' && youbi != 'Sunday' && beforeDate)
+                stockInputButton
+              else
+                const Icon(Icons.square_outlined, color: Colors.transparent),
+
+              const SizedBox(width: 10),
+
+              Text(title),
+            ],
+          ),
+          Text(beforeDate ? price.toCurrency() : ''),
+        ],
+      ),
     );
   }
 }
