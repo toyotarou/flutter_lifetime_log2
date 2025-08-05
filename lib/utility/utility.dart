@@ -176,6 +176,23 @@ class Utility {
     const Distance distance = Distance();
     return distance.as(LengthUnit.Meter, p1, p2);
   }
+
+  ///
+  int elapsedMonthsByCutoff({required DateTime start, required DateTime end}) {
+    if (end.isBefore(start)) {
+      return 0;
+    }
+
+    final int yearDiff = end.year - start.year;
+    final int monthDiff = end.month - start.month;
+    int totalMonths = yearDiff * 12 + monthDiff;
+
+    if (end.day < start.day) {
+      totalMonths -= 1;
+    }
+
+    return totalMonths;
+  }
 }
 
 class NavigationService {
