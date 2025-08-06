@@ -117,17 +117,30 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
       final int diff = spend - sum;
 
-      final bool inputDisplay =
+      /////////////////////////////////////////////////
+      bool inputDisplay = false;
+
+      String flag = '';
+      if (DateTime(
+        date.split('-')[0].toInt(),
+        date.split('-')[1].toInt(),
+        date.split('-')[2].toInt(),
+      ).isBefore(DateTime.now())) {
+        flag = 'before';
+      }
+
+      if (date == DateTime.now().yyyymmdd) {
+        flag = 'today';
+      }
+
+      switch (flag) {
+        case 'before':
           // ignore: avoid_bool_literals_in_conditional_expressions
-          ((diff != 0 ||
-                  DateTime(
-                    date.split('-')[0].toInt(),
-                    date.split('-')[1].toInt(),
-                    date.split('-')[2].toInt(),
-                  ).isBefore(DateTime.now())) &&
-              appParamState.keepMoneySpendMap[date] == null)
-          ? true
-          : false;
+          inputDisplay = (diff > 0) ? true : false;
+        case 'today':
+          inputDisplay = true;
+      }
+      /////////////////////////////////////////////////
 
       list.add(
         Stack(
