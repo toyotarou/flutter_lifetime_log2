@@ -1,3 +1,4 @@
+import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -141,6 +142,10 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
           inputDisplay = true;
       }
       /////////////////////////////////////////////////
+
+      if (date == DateTime.now().yyyymmdd) {
+        list.add(const DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3));
+      }
 
       list.add(
         Stack(
