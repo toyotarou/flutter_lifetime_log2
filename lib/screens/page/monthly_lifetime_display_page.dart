@@ -136,7 +136,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                     widget: MonthlyAssetsDisplayAlert(yearmonth: widget.yearmonth),
                                   );
                                 },
-                                child: Icon(FontAwesomeIcons.sun, color: Colors.white.withValues(alpha: 0.3)),
+                                child: Icon(FontAwesomeIcons.sun, size: 20, color: Colors.white.withValues(alpha: 0.3)),
                               ),
 
                               const SizedBox(width: 20),

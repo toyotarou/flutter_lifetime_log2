@@ -187,7 +187,18 @@ class Utility {
     final int monthDiff = end.month - start.month;
     int totalMonths = yearDiff * 12 + monthDiff;
 
-    if (end.day < start.day) {
+    final DateTime cutoffThisMonth = DateTime(end.year, end.month, start.day);
+
+    final bool checkA =
+        (cutoffThisMonth.weekday == DateTime.saturday || cutoffThisMonth.weekday == DateTime.sunday) &&
+        end.isBefore(DateTime(end.year, end.month, start.day + 1));
+
+    final bool checkB =
+        cutoffThisMonth.weekday != DateTime.saturday &&
+        cutoffThisMonth.weekday != DateTime.sunday &&
+        end.day < start.day;
+
+    if (checkA || checkB) {
       totalMonths -= 1;
     }
 

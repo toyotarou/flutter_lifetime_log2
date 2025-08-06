@@ -24,8 +24,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
   bool todayStockExists = false;
 
-  int elapsedMonths = 0;
-
   ///
   @override
   Widget build(BuildContext context) {
@@ -104,8 +102,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         }
       }
 
-      elapsedMonths = utility.elapsedMonthsByCutoff(start: checkStart, end: date) + 102;
-      lastInsuranceSum = elapsedMonths * (55880 * 0.7).toInt();
+      final int passedMonths = utility.elapsedMonthsByCutoff(start: checkStart, end: date) + 102;
+      lastInsuranceSum = passedMonths * (55880 * 0.7).toInt();
 
       if (date.isBefore(DateTime.now())) {
         monthlyAssetsMap[date.yyyymmdd] = <String, int>{
@@ -113,6 +111,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           'stock': lastStockSum,
           'toushiShintaku': lastToushiShintakuSum,
           'insurance': lastInsuranceSum,
+          'passedMonths': passedMonths,
         };
       }
     }
@@ -157,6 +156,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
       final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
 
+      final String passedMonths = (monthlyAssetsMap[date] != null)
+          ? monthlyAssetsMap[date]!['passedMonths'].toString()
+          : '';
+
       list.add(
         Container(
           decoration: BoxDecoration(
@@ -189,12 +192,23 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
               Expanded(
                 child: DefaultTextStyle(
-                  style: TextStyle(color: beforeDate ? Colors.white : Colors.grey.withValues(alpha: 0.6)),
+                  style: TextStyle(color: beforeDate ? Colors.white : Colors.grey.withValues(alpha: 0.6), fontSize: 12),
 
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(beforeDate ? total.toString().toCurrency() : '-', style: const TextStyle(fontSize: 24)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                        children: <Widget>[
+                          Text(beforeDate ? total.toString().toCurrency() : '-', style: const TextStyle(fontSize: 24)),
+
+                          if (date == DateTime.now().yyyymmdd)
+                            const Text('TODAY', style: TextStyle(color: Colors.orangeAccent))
+                          else
+                            const Text(''),
+                        ],
+                      ),
 
                       priceDisplayParts(
                         date: date,
@@ -203,13 +217,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                         price: money,
                         buttonDisp: false,
                       ),
-                      priceDisplayParts(
-                        date: date,
-                        beforeDate: beforeDate,
-                        title: 'gold',
-                        price: gold,
-                        buttonDisp: false,
-                      ),
+
                       priceDisplayParts(
                         date: date,
                         beforeDate: beforeDate,
@@ -224,10 +232,19 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                         price: toushiShintaku,
                         buttonDisp: false,
                       ),
+
                       priceDisplayParts(
                         date: date,
                         beforeDate: beforeDate,
-                        title: 'insurance ($elapsedMonths)',
+                        title: 'gold',
+                        price: gold,
+                        buttonDisp: false,
+                      ),
+
+                      priceDisplayParts(
+                        date: date,
+                        beforeDate: beforeDate,
+                        title: beforeDate ? 'insurance ($passedMonths)' : 'insurance',
                         price: insurance,
                         buttonDisp: false,
                       ),
