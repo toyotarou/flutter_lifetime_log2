@@ -87,6 +87,8 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
                             ),
                           ),
                         ),
+
+                        Positioned(bottom: 10, left: 10, child: displayGraphYearWidget()),
                       ],
                     );
                   },
@@ -96,6 +98,52 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
           ),
         ),
       ),
+    );
+  }
+
+  ///
+  Widget displayGraphYearWidget() {
+    final List<Widget> list = <Widget>[
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+        child: GestureDetector(
+          onTap: () {
+            appParamNotifier.setSelectedGraphYear(year: 0);
+          },
+          child: CircleAvatar(
+            backgroundColor: (appParamState.selectedGraphYear == 0)
+                ? Colors.yellowAccent.withValues(alpha: 0.3)
+                : Colors.blueGrey.withValues(alpha: 0.8),
+
+            child: const Text('-', style: TextStyle(fontSize: 12, color: Colors.white)),
+          ),
+        ),
+      ),
+    ];
+
+    for (int i = 2023; i <= DateTime.now().year; i++) {
+      list.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+          child: GestureDetector(
+            onTap: () {
+              appParamNotifier.setSelectedGraphYear(year: i);
+            },
+            child: CircleAvatar(
+              backgroundColor: (appParamState.selectedGraphYear == i)
+                  ? Colors.yellowAccent.withValues(alpha: 0.3)
+                  : Colors.blueGrey.withValues(alpha: 0.8),
+
+              child: Text(i.toString(), style: const TextStyle(fontSize: 12, color: Colors.white)),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(children: list),
     );
   }
 
@@ -114,16 +162,31 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
     int i = 0;
     appParamState.keepMoneyMap.forEach((String key, MoneyModel value) {
       if (key.split('-')[0].toInt() >= 2023) {
-        _flspots.add(FlSpot(i.toDouble(), value.sum.toDouble()));
-        list.add(value.sum.toInt());
-        dateList.add(value.date);
+        if (appParamState.selectedGraphYear == 0) {
+          _flspots.add(FlSpot(i.toDouble(), value.sum.toDouble()));
+          list.add(value.sum.toInt());
+          dateList.add(value.date);
 
-        if (i == 0) {
-          startPrice = value.sum.toInt();
+          if (i == 0) {
+            startPrice = value.sum.toInt();
+          }
+          endPrice = value.sum.toInt();
+
+          i++;
+        } else {
+          if (appParamState.selectedGraphYear == key.split('-')[0].toInt()) {
+            _flspots.add(FlSpot(i.toDouble(), value.sum.toDouble()));
+            list.add(value.sum.toInt());
+            dateList.add(value.date);
+
+            if (i == 0) {
+              startPrice = value.sum.toInt();
+            }
+            endPrice = value.sum.toInt();
+
+            i++;
+          }
         }
-        endPrice = value.sum.toInt();
-
-        i++;
       }
     });
 

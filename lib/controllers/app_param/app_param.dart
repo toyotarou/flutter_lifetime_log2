@@ -55,6 +55,8 @@ class AppParamState with _$AppParamState {
     ///
     @Default('') String selectedYearMonth,
     @Default(<String>[]) List<String> monthlyGeolocMapSelectedDateList,
+
+    @Default(0) int selectedGraphYear,
   }) = _AppParamState;
 }
 
@@ -162,4 +164,7 @@ class AppParam extends _$AppParam {
 
   ///
   void clearMonthlyGeolocMapSelectedDateList() => state = state.copyWith(monthlyGeolocMapSelectedDateList: <String>[]);
+
+  ///
+  void setSelectedGraphYear({required int year}) => state = state.copyWith(selectedGraphYear: year);
 }
