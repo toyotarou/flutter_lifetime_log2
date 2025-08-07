@@ -43,7 +43,7 @@ class TemplePhoto extends _$TemplePhoto {
         // ignore: avoid_dynamic_calls
         for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
           // ignore: avoid_dynamic_calls
-          final TemplePhotoModel val = TemplePhotoModel.fromJson(value[i] as Map<String, dynamic>);
+          final TemplePhotoModel val = TemplePhotoModel.fromJson(value['data'][i] as Map<String, dynamic>);
 
           list.add(val);
 

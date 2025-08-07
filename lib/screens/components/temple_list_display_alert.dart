@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../models/temple_model.dart';
+import '../parts/lifetime_dialog.dart';
+import 'temple_photo_list_display_alert.dart';
 
 class TempleListDisplayAlert extends ConsumerStatefulWidget {
   const TempleListDisplayAlert({super.key, this.temple});
@@ -84,7 +86,17 @@ class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         const SizedBox.shrink(),
-                        Icon(Icons.photo, color: Colors.white.withValues(alpha: 0.6)),
+                        GestureDetector(
+                          onTap: () {
+                            LifetimeDialog(
+                              context: context,
+                              widget: TemplePhotoListDisplayAlert(temple: widget.temple!.templeDataList[i]),
+                              clearBarrierColor: true,
+                            );
+                          },
+
+                          child: Icon(Icons.photo, color: Colors.white.withValues(alpha: 0.6)),
+                        ),
                       ],
                     ),
                   ],
