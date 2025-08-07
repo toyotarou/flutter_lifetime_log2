@@ -13,6 +13,8 @@ import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
 import '../../utility/tile_provider.dart';
 import '../../utility/utility.dart';
+import '../parts/lifetime_dialog.dart';
+import 'temple_list_display_alert.dart';
 
 class LifetimeGeolocMapDisplayAlert extends ConsumerStatefulWidget {
   const LifetimeGeolocMapDisplayAlert({
@@ -173,24 +175,68 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
                 const SizedBox(height: 10),
 
+
+
+
+
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     const SizedBox.shrink(),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
 
-                      child: GestureDetector(
-                        onTap: () => setDefaultBoundsMap(),
-                        child: const Icon(FontAwesomeIcons.expand),
-                      ),
+                    Column(
+                      children: <Widget>[
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+
+                          child: GestureDetector(
+                            onTap: () => setDefaultBoundsMap(),
+                            child: const Icon(FontAwesomeIcons.expand),
+                          ),
+                        ),
+
+                        if (widget.temple != null) ...<Widget>[
+                          const SizedBox(height: 10),
+
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+
+                            child: GestureDetector(
+                              onTap: () {
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: TempleListDisplayAlert(temple: widget.temple),
+
+                                  paddingTop: context.screenSize.height * 0.2,
+                                  paddingRight: context.screenSize.width * 0.3,
+
+                                  clearBarrierColor: true,
+                                );
+                              },
+                              child: const Icon(FontAwesomeIcons.toriiGate),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ],
                 ),
+
+
+
+
+
+
+
               ],
             ),
           ),

@@ -1,0 +1,110 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../controllers/controllers_mixin.dart';
+import '../../models/temple_model.dart';
+
+class TempleListDisplayAlert extends ConsumerStatefulWidget {
+  const TempleListDisplayAlert({super.key, this.temple});
+
+  final TempleModel? temple;
+
+  @override
+  ConsumerState<TempleListDisplayAlert> createState() => _TempleListDisplayAlertState();
+}
+
+class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
+    with ControllersMixin<TempleListDisplayAlert> {
+  ///
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+
+      body: SafeArea(
+        child: DefaultTextStyle(
+          style: const TextStyle(color: Colors.white),
+
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: <Widget>[
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[Text('temple'), SizedBox.shrink()],
+                ),
+
+                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                Expanded(child: displayTempleList()),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  ///
+  Widget displayTempleList() {
+    final List<Widget> list = <Widget>[];
+
+    if (widget.temple != null) {
+      for (int i = 0; i < widget.temple!.templeDataList.length; i++) {
+        list.add(
+          Stack(
+            children: <Widget>[
+              Positioned(
+                top: 3,
+                left: 3,
+                child: CircleAvatar(
+                  radius: 10,
+                  backgroundColor: const Color(0xFFFBB6CE),
+                  child: CircleAvatar(
+                    radius: 8,
+                    backgroundColor: Colors.white,
+
+                    child: Text((i + 1).toString().padLeft(2, '0'), style: const TextStyle(fontSize: 12)),
+                  ),
+                ),
+              ),
+
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                ),
+                padding: const EdgeInsets.all(5),
+
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(padding: const EdgeInsets.all(10), child: Text(widget.temple!.templeDataList[i].name)),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const SizedBox.shrink(),
+                        Icon(Icons.photo, color: Colors.white.withValues(alpha: 0.6)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) => list[index],
+            childCount: list.length,
+          ),
+        ),
+      ],
+    );
+  }
+}
