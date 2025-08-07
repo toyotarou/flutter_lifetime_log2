@@ -13,7 +13,6 @@ import '_get_data/salary/salary.dart';
 import '_get_data/stock/stock.dart';
 import '_get_data/stock_name/stock_name.dart';
 import '_get_data/temple/temple.dart';
-import '_get_data/temple_photo/temple_photo.dart';
 import '_get_data/toushi_shintaku/toushi_shintaku.dart';
 import '_get_data/transportation/transportation.dart';
 import '_get_data/walk/walk.dart';
@@ -176,9 +175,10 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   //==========================================//
 
-  TemplePhotoState get templePhotoState => ref.watch(templePhotoProvider);
 
-  TemplePhoto get templePhotoNotifier => ref.read(templePhotoProvider.notifier);
 
-  //==========================================//
+
+
+
+
 }

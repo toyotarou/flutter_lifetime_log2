@@ -42,7 +42,6 @@ class AppParamState with _$AppParamState {
     @Default(<String, GoldModel>{}) Map<String, GoldModel> keepGoldMap,
     @Default(<String, List<StockModel>>{}) Map<String, List<StockModel>> keepStockMap,
     @Default(<String, List<ToushiShintakuModel>>{}) Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
-    @Default(<String, List<TemplePhotoModel>>{}) Map<String, List<TemplePhotoModel>> keepTemplePhotoMap,
 
     ///
     List<OverlayEntry>? firstEntries,
@@ -127,10 +126,6 @@ class AppParam extends _$AppParam {
   ///
   void setKeepToushiShintakuMap({required Map<String, List<ToushiShintakuModel>> map}) =>
       state = state.copyWith(keepToushiShintakuMap: map);
-
-  ///
-  void setKeepTemplePhotoMap({required Map<String, List<TemplePhotoModel>> map}) =>
-      state = state.copyWith(keepTemplePhotoMap: map);
 
   //===================================================
 
