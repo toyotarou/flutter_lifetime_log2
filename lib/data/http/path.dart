@@ -9,7 +9,6 @@ enum APIPath {
   moneyinsert,
   getAllTemple,
   getTempleLatLng,
-  getTempleDatePhoto,
   gettrainrecord,
   getBusStopAddress,
   getDupSpot,
@@ -27,6 +26,7 @@ enum APIPath {
   getgolddata,
   getAllStockData,
   getAllToushiShintakuData,
+  getTempleDatePhoto,
 }
 
 extension APIPathExtension on APIPath {
@@ -60,8 +60,6 @@ extension APIPathExtension on APIPath {
         return 'getAllTemple';
       case APIPath.getTempleLatLng:
         return 'getTempleLatLng';
-      case APIPath.getTempleDatePhoto:
-        return 'getTempleDatePhoto';
 
       case APIPath.gettrainrecord:
         return 'gettrainrecord';
@@ -105,6 +103,9 @@ extension APIPathExtension on APIPath {
         return 'getAllStockData';
       case APIPath.getAllToushiShintakuData:
         return 'getAllToushiShintakuData';
+
+      case APIPath.getTempleDatePhoto:
+        return 'getTempleDatePhoto';
     }
   }
 }
