@@ -1,6 +1,7 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -128,19 +129,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
       final String money = appParamState.keepMoneyMap[date]?.sum ?? '';
 
-      final Map<String, dynamic>? monthlyAssets = monthlyAssetsMap[date];
-
       final List<String> keys = <String>['gold', 'stock', 'toushiShintaku', 'insurance'];
-
-      final List<int> items = <int>[
-        if (money.isNotEmpty) int.tryParse(money) ?? 0 else 0,
-        ...keys.map((String key) {
-          final String value = monthlyAssets?[key]?.toString() ?? '';
-          return value.isNotEmpty ? int.tryParse(value) ?? 0 : 0;
-        }),
-      ];
-
-      final int total = items.fold(0, (int sum, int value) => sum + value);
 
       final String gold = (monthlyAssetsMap[date] != null) ? monthlyAssetsMap[date]!['gold'].toString() : '';
       final String stock = (monthlyAssetsMap[date] != null) ? monthlyAssetsMap[date]!['stock'].toString() : '';
@@ -149,11 +138,23 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           : '';
       final String insurance = (monthlyAssetsMap[date] != null) ? monthlyAssetsMap[date]!['insurance'].toString() : '';
 
-      final bool beforeDate = DateTime(
+      final bool isBeforeDate = DateTime(
         date.split('-')[0].toInt(),
         date.split('-')[1].toInt(),
         date.split('-')[2].toInt(),
       ).isBefore(DateTime.now());
+
+      final DateTime beforeDate = DateTime(
+        date.split('-')[0].toInt(),
+        date.split('-')[1].toInt(),
+        date.split('-')[2].toInt() - 1,
+      );
+
+      final Map<String, int>? beforeData = monthlyAssetsMap[beforeDate.yyyymmdd];
+
+      if (isBeforeDate) {
+        beforeData!['money'] = appParamState.keepMoneyMap[beforeDate.yyyymmdd]?.sum.toInt() ?? 0;
+      }
 
       final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
 
@@ -165,12 +166,42 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         list.add(const DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3));
       }
 
+      //-----------------------------------------//
+      final Map<String, dynamic>? monthlyAssets = monthlyAssetsMap[date];
+
+      final List<int> items = <int>[
+        if (money.isNotEmpty) int.tryParse(money) ?? 0 else 0,
+        ...keys.map((String key) {
+          final String value = monthlyAssets?[key]?.toString() ?? '';
+          return value.isNotEmpty ? int.tryParse(value) ?? 0 : 0;
+        }),
+      ];
+
+      final int total = items.fold(0, (int sum, int value) => sum + value);
+      //-----------------------------------------//
+
+      //-----------------------------------------//
+      final Map<String, dynamic>? monthlyAssetsBefore = monthlyAssetsMap[beforeDate.yyyymmdd];
+
+      final String moneyBefore = appParamState.keepMoneyMap[beforeDate.yyyymmdd]?.sum ?? '';
+
+      final List<int> itemsBefore = <int>[
+        if (moneyBefore.isNotEmpty) int.tryParse(moneyBefore) ?? 0 else 0,
+        ...keys.map((String key) {
+          final String value = monthlyAssetsBefore?[key]?.toString() ?? '';
+          return value.isNotEmpty ? int.tryParse(value) ?? 0 : 0;
+        }),
+      ];
+
+      final int totalBefore = itemsBefore.fold(0, (int sum, int value) => sum + value);
+      //-----------------------------------------//
+
       list.add(
         Container(
           decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
           ),
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
 
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,7 +213,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
                 padding: const EdgeInsets.all(5),
 
-                height: context.screenSize.height * 0.12,
+                height: context.screenSize.height * 0.15,
 
                 child: Column(
                   children: <Widget>[
@@ -193,20 +224,60 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 ),
               ),
 
-              const SizedBox(width: 20),
+              const SizedBox(width: 10),
 
               Expanded(
                 child: DefaultTextStyle(
-                  style: TextStyle(color: beforeDate ? Colors.white : Colors.grey.withValues(alpha: 0.6), fontSize: 12),
+                  style: TextStyle(
+                    color: isBeforeDate ? Colors.white : Colors.grey.withValues(alpha: 0.6),
+                    fontSize: 12,
+                  ),
 
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: <Widget>[
-                          Text(beforeDate ? total.toString().toCurrency() : '-', style: const TextStyle(fontSize: 24)),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+
+                            children: <Widget>[
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  Text(
+                                    isBeforeDate ? total.toString().toCurrency() : '-',
+                                    style: const TextStyle(fontSize: 24),
+                                  ),
+
+                                  if (isBeforeDate) ...<Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        if ((totalBefore - total) < 0) ...<Widget>[
+                                          const Text('+', style: TextStyle(color: Colors.yellowAccent)),
+                                        ],
+
+                                        Text(
+                                          ((totalBefore - total) * -1).toString().toCurrency(),
+
+                                          style: const TextStyle(color: Colors.yellowAccent),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ],
+                              ),
+
+                              if (isBeforeDate) ...<Widget>[
+                                const SizedBox(width: 5),
+
+                                _dispUpDownMark(before: totalBefore, after: total, size: 24),
+                              ],
+                            ],
+                          ),
 
                           if (date == DateTime.now().yyyymmdd)
                             const Text('TODAY', style: TextStyle(color: Colors.orangeAccent))
@@ -217,41 +288,46 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
                       priceDisplayParts(
                         date: date,
-                        beforeDate: beforeDate,
+                        isBeforeDate: isBeforeDate,
                         title: 'money',
                         price: money,
                         buttonDisp: false,
+                        beforeData: beforeData,
                       ),
 
                       priceDisplayParts(
                         date: date,
-                        beforeDate: beforeDate,
+                        isBeforeDate: isBeforeDate,
                         title: 'stock',
                         price: stock,
                         buttonDisp: true,
+                        beforeData: beforeData,
                       ),
                       priceDisplayParts(
                         date: date,
-                        beforeDate: beforeDate,
+                        isBeforeDate: isBeforeDate,
                         title: 'toushiShintaku',
                         price: toushiShintaku,
                         buttonDisp: false,
+                        beforeData: beforeData,
                       ),
 
                       priceDisplayParts(
                         date: date,
-                        beforeDate: beforeDate,
+                        isBeforeDate: isBeforeDate,
                         title: 'gold',
                         price: gold,
                         buttonDisp: false,
+                        beforeData: beforeData,
                       ),
 
                       priceDisplayParts(
                         date: date,
-                        beforeDate: beforeDate,
-                        title: beforeDate ? 'insurance ($passedMonths)' : 'insurance',
+                        isBeforeDate: isBeforeDate,
+                        title: isBeforeDate ? 'insurance ($passedMonths)' : 'insurance',
                         price: insurance,
                         buttonDisp: false,
+                        beforeData: beforeData,
                       ),
                     ],
                   ),
@@ -278,12 +354,14 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   ///
   Widget priceDisplayParts({
     required String date,
-
-    required bool beforeDate,
+    required bool isBeforeDate,
     required String title,
     required String price,
     required bool buttonDisp,
+    Map<String, int>? beforeData,
   }) {
+    final List<String> exTitle = title.split('(');
+
     final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
 
     final GestureDetector stockInputButton = GestureDetector(
@@ -311,7 +389,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         children: <Widget>[
           Row(
             children: <Widget>[
-              if (buttonDisp && youbi != 'Saturday' && youbi != 'Sunday' && beforeDate)
+              if (buttonDisp && youbi != 'Saturday' && youbi != 'Sunday' && isBeforeDate)
                 stockInputButton
               else
                 const Icon(Icons.square_outlined, color: Colors.transparent),
@@ -321,9 +399,58 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
               Text(title),
             ],
           ),
-          Text(beforeDate ? price.toCurrency() : ''),
+
+          if (isBeforeDate) ...<Widget>[
+            Row(
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    Text(price.toCurrency()),
+
+                    const SizedBox(height: 2),
+
+                    if (beforeData != null) ...<Widget>[
+                      Row(
+                        children: <Widget>[
+                          if ((beforeData[exTitle[0].trim()]! - price.toInt()) < 0) ...<Widget>[
+                            const Text('+', style: TextStyle(color: Colors.yellowAccent)),
+                          ],
+
+                          Text(
+                            ((beforeData[exTitle[0].trim()]! - price.toInt()) * -1).toString().toCurrency(),
+
+                            style: const TextStyle(fontSize: 10, color: Colors.yellowAccent),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+
+                if (beforeData != null) ...<Widget>[
+                  const SizedBox(width: 5),
+
+                  _dispUpDownMark(before: beforeData[exTitle[0].trim()]!, after: price.toInt(), size: 12),
+                ],
+              ],
+            ),
+          ],
+
+          if (!isBeforeDate) ...<Widget>[const SizedBox.shrink()],
         ],
       ),
     );
+  }
+
+  ///
+  Widget _dispUpDownMark({required int before, required int after, required double size}) {
+    if (before < after) {
+      return Icon(Icons.arrow_upward, color: Colors.greenAccent, size: size);
+    } else if (before > after) {
+      return Icon(Icons.arrow_downward, color: Colors.redAccent, size: size);
+    } else {
+      return Icon(FontAwesomeIcons.equals, color: Colors.blueAccent, size: size);
+    }
   }
 }

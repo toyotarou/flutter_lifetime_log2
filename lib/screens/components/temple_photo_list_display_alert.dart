@@ -83,12 +83,12 @@ class _TemplePhotoListDisplayAlertState extends ConsumerState<TemplePhotoListDis
                   Container(
                     decoration: BoxDecoration(color: Colors.yellowAccent.withValues(alpha: 0.2)),
 
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    padding: EdgeInsets.all(3),
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    padding: const EdgeInsets.all(3),
 
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [Text(element.date.yyyymmdd), SizedBox.shrink()],
+                      children: <Widget>[Text(element.date.yyyymmdd), const SizedBox.shrink()],
                     ),
                   ),
 
