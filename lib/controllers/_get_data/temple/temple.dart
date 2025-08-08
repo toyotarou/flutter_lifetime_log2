@@ -125,7 +125,7 @@ class Temple extends _$Temple {
               longitude: latlngMap1[templeName]!['longitude']!,
               rank: latlngMap1[templeName]!['rank']!,
               count: (countMap1[templeName] != null) ? countMap1[templeName]!.length : 0,
-              templePhotoMap: photoMap1[templeName],
+              templePhotoModelMap: photoMap1[templeName],
             ),
           );
         }
@@ -145,7 +145,7 @@ class Temple extends _$Temple {
                   longitude: latlngMap1[element]!['longitude']!,
                   rank: latlngMap1[element]!['rank']!,
                   count: (countMap1[element] != null) ? countMap1[element]!.length : 0,
-                  templePhotoMap: photoMap1[element],
+                  templePhotoModelMap: photoMap1[element],
                 ),
               );
             }
