@@ -43,6 +43,9 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<ToushiShintakuModel>>{}) Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
 
     ///
+    @Default(<StationModel>[]) List<StationModel> keepStationList,
+
+    ///
     List<OverlayEntry>? firstEntries,
     List<OverlayEntry>? secondEntries,
 
@@ -57,6 +60,9 @@ class AppParamState with _$AppParamState {
     @Default(<String>[]) List<String> monthlyGeolocMapSelectedDateList,
 
     @Default(0) int selectedGraphYear,
+
+    ///
+    TempleDataModel? selectedTemple,
   }) = _AppParamState;
 }
 
@@ -129,6 +135,11 @@ class AppParam extends _$AppParam {
   //===================================================
 
   ///
+  void setKeepStationList({required List<StationModel> list}) => state = state.copyWith(keepStationList: list);
+
+  //===================================================
+
+  ///
   void setFirstOverlayParams({required List<OverlayEntry>? firstEntries}) =>
       state = state.copyWith(firstEntries: firstEntries);
 
@@ -167,4 +178,7 @@ class AppParam extends _$AppParam {
 
   ///
   void setSelectedGraphYear({required int year}) => state = state.copyWith(selectedGraphYear: year);
+
+  ///
+  void setSelectedTemple({required TempleDataModel temple}) => state = state.copyWith(selectedTemple: temple);
 }

@@ -100,6 +100,8 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           goldMap: goldState.goldMap,
           stockMap: stockState.stockMap,
           toushiShintakuMap: toushiShintakuState.toushiShintakuMap,
+
+          stationList: transportationState.stationList,
         ),
       ),
     );

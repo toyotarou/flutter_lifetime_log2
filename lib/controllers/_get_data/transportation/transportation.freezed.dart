@@ -20,6 +20,7 @@ mixin _$TransportationState {
       throw _privateConstructorUsedError;
   Map<String, TransportationModel> get transportationMap =>
       throw _privateConstructorUsedError;
+  List<StationModel> get stationList => throw _privateConstructorUsedError;
 
   /// Create a copy of TransportationState
   /// with the given fields replaced by the non-null parameter values.
@@ -36,7 +37,8 @@ abstract class $TransportationStateCopyWith<$Res> {
   @useResult
   $Res call(
       {List<TransportationModel> transportationList,
-      Map<String, TransportationModel> transportationMap});
+      Map<String, TransportationModel> transportationMap,
+      List<StationModel> stationList});
 }
 
 /// @nodoc
@@ -56,6 +58,7 @@ class _$TransportationStateCopyWithImpl<$Res, $Val extends TransportationState>
   $Res call({
     Object? transportationList = null,
     Object? transportationMap = null,
+    Object? stationList = null,
   }) {
     return _then(_value.copyWith(
       transportationList: null == transportationList
@@ -66,6 +69,10 @@ class _$TransportationStateCopyWithImpl<$Res, $Val extends TransportationState>
           ? _value.transportationMap
           : transportationMap // ignore: cast_nullable_to_non_nullable
               as Map<String, TransportationModel>,
+      stationList: null == stationList
+          ? _value.stationList
+          : stationList // ignore: cast_nullable_to_non_nullable
+              as List<StationModel>,
     ) as $Val);
   }
 }
@@ -80,7 +87,8 @@ abstract class _$$TransportationStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {List<TransportationModel> transportationList,
-      Map<String, TransportationModel> transportationMap});
+      Map<String, TransportationModel> transportationMap,
+      List<StationModel> stationList});
 }
 
 /// @nodoc
@@ -98,6 +106,7 @@ class __$$TransportationStateImplCopyWithImpl<$Res>
   $Res call({
     Object? transportationList = null,
     Object? transportationMap = null,
+    Object? stationList = null,
   }) {
     return _then(_$TransportationStateImpl(
       transportationList: null == transportationList
@@ -108,6 +117,10 @@ class __$$TransportationStateImplCopyWithImpl<$Res>
           ? _value._transportationMap
           : transportationMap // ignore: cast_nullable_to_non_nullable
               as Map<String, TransportationModel>,
+      stationList: null == stationList
+          ? _value._stationList
+          : stationList // ignore: cast_nullable_to_non_nullable
+              as List<StationModel>,
     ));
   }
 }
@@ -119,9 +132,11 @@ class _$TransportationStateImpl implements _TransportationState {
       {final List<TransportationModel> transportationList =
           const <TransportationModel>[],
       final Map<String, TransportationModel> transportationMap =
-          const <String, TransportationModel>{}})
+          const <String, TransportationModel>{},
+      final List<StationModel> stationList = const <StationModel>[]})
       : _transportationList = transportationList,
-        _transportationMap = transportationMap;
+        _transportationMap = transportationMap,
+        _stationList = stationList;
 
   final List<TransportationModel> _transportationList;
   @override
@@ -143,9 +158,18 @@ class _$TransportationStateImpl implements _TransportationState {
     return EqualUnmodifiableMapView(_transportationMap);
   }
 
+  final List<StationModel> _stationList;
+  @override
+  @JsonKey()
+  List<StationModel> get stationList {
+    if (_stationList is EqualUnmodifiableListView) return _stationList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_stationList);
+  }
+
   @override
   String toString() {
-    return 'TransportationState(transportationList: $transportationList, transportationMap: $transportationMap)';
+    return 'TransportationState(transportationList: $transportationList, transportationMap: $transportationMap, stationList: $stationList)';
   }
 
   @override
@@ -156,14 +180,17 @@ class _$TransportationStateImpl implements _TransportationState {
             const DeepCollectionEquality()
                 .equals(other._transportationList, _transportationList) &&
             const DeepCollectionEquality()
-                .equals(other._transportationMap, _transportationMap));
+                .equals(other._transportationMap, _transportationMap) &&
+            const DeepCollectionEquality()
+                .equals(other._stationList, _stationList));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_transportationList),
-      const DeepCollectionEquality().hash(_transportationMap));
+      const DeepCollectionEquality().hash(_transportationMap),
+      const DeepCollectionEquality().hash(_stationList));
 
   /// Create a copy of TransportationState
   /// with the given fields replaced by the non-null parameter values.
@@ -177,14 +204,16 @@ class _$TransportationStateImpl implements _TransportationState {
 
 abstract class _TransportationState implements TransportationState {
   const factory _TransportationState(
-          {final List<TransportationModel> transportationList,
-          final Map<String, TransportationModel> transportationMap}) =
-      _$TransportationStateImpl;
+      {final List<TransportationModel> transportationList,
+      final Map<String, TransportationModel> transportationMap,
+      final List<StationModel> stationList}) = _$TransportationStateImpl;
 
   @override
   List<TransportationModel> get transportationList;
   @override
   Map<String, TransportationModel> get transportationMap;
+  @override
+  List<StationModel> get stationList;
 
   /// Create a copy of TransportationState
   /// with the given fields replaced by the non-null parameter values.

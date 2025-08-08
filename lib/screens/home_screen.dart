@@ -52,6 +52,8 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.goldMap,
     required this.stockMap,
     required this.toushiShintakuMap,
+
+    required this.stationList,
   });
 
   final List<String> holidayList;
@@ -71,6 +73,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, GoldModel> goldMap;
   final Map<String, List<StockModel>> stockMap;
   final Map<String, List<ToushiShintakuModel>> toushiShintakuMap;
+
+  final List<StationModel> stationList;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -104,6 +108,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepGoldMap(map: widget.goldMap);
       appParamNotifier.setKeepStockMap(map: widget.stockMap);
       appParamNotifier.setKeepToushiShintakuMap(map: widget.toushiShintakuMap);
+
+      appParamNotifier.setKeepStationList(list: widget.stationList);
     });
 
     return DefaultTabController(

@@ -50,6 +50,9 @@ mixin _$AppParamState {
       throw _privateConstructorUsedError;
 
   ///
+  List<StationModel> get keepStationList => throw _privateConstructorUsedError;
+
+  ///
   List<OverlayEntry>? get firstEntries => throw _privateConstructorUsedError;
   List<OverlayEntry>? get secondEntries => throw _privateConstructorUsedError;
   Offset? get overlayPosition => throw _privateConstructorUsedError;
@@ -63,6 +66,9 @@ mixin _$AppParamState {
   List<String> get monthlyGeolocMapSelectedDateList =>
       throw _privateConstructorUsedError;
   int get selectedGraphYear => throw _privateConstructorUsedError;
+
+  ///
+  TempleDataModel? get selectedTemple => throw _privateConstructorUsedError;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
@@ -95,6 +101,7 @@ abstract class $AppParamStateCopyWith<$Res> {
       Map<String, GoldModel> keepGoldMap,
       Map<String, List<StockModel>> keepStockMap,
       Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
+      List<StationModel> keepStationList,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
       Offset? overlayPosition,
@@ -102,7 +109,8 @@ abstract class $AppParamStateCopyWith<$Res> {
       int currentPaddingIndex,
       String selectedYearMonth,
       List<String> monthlyGeolocMapSelectedDateList,
-      int selectedGraphYear});
+      int selectedGraphYear,
+      TempleDataModel? selectedTemple});
 }
 
 /// @nodoc
@@ -137,6 +145,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? keepGoldMap = null,
     Object? keepStockMap = null,
     Object? keepToushiShintakuMap = null,
+    Object? keepStationList = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
     Object? overlayPosition = freezed,
@@ -145,6 +154,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? selectedYearMonth = null,
     Object? monthlyGeolocMapSelectedDateList = null,
     Object? selectedGraphYear = null,
+    Object? selectedTemple = freezed,
   }) {
     return _then(_value.copyWith(
       keepHolidayList: null == keepHolidayList
@@ -215,6 +225,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.keepToushiShintakuMap
           : keepToushiShintakuMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<ToushiShintakuModel>>,
+      keepStationList: null == keepStationList
+          ? _value.keepStationList
+          : keepStationList // ignore: cast_nullable_to_non_nullable
+              as List<StationModel>,
       firstEntries: freezed == firstEntries
           ? _value.firstEntries
           : firstEntries // ignore: cast_nullable_to_non_nullable
@@ -247,6 +261,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.selectedGraphYear
           : selectedGraphYear // ignore: cast_nullable_to_non_nullable
               as int,
+      selectedTemple: freezed == selectedTemple
+          ? _value.selectedTemple
+          : selectedTemple // ignore: cast_nullable_to_non_nullable
+              as TempleDataModel?,
     ) as $Val);
   }
 }
@@ -277,6 +295,7 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       Map<String, GoldModel> keepGoldMap,
       Map<String, List<StockModel>> keepStockMap,
       Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
+      List<StationModel> keepStationList,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
       Offset? overlayPosition,
@@ -284,7 +303,8 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       int currentPaddingIndex,
       String selectedYearMonth,
       List<String> monthlyGeolocMapSelectedDateList,
-      int selectedGraphYear});
+      int selectedGraphYear,
+      TempleDataModel? selectedTemple});
 }
 
 /// @nodoc
@@ -317,6 +337,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? keepGoldMap = null,
     Object? keepStockMap = null,
     Object? keepToushiShintakuMap = null,
+    Object? keepStationList = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
     Object? overlayPosition = freezed,
@@ -325,6 +346,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? selectedYearMonth = null,
     Object? monthlyGeolocMapSelectedDateList = null,
     Object? selectedGraphYear = null,
+    Object? selectedTemple = freezed,
   }) {
     return _then(_$AppParamStateImpl(
       keepHolidayList: null == keepHolidayList
@@ -395,6 +417,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value._keepToushiShintakuMap
           : keepToushiShintakuMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<ToushiShintakuModel>>,
+      keepStationList: null == keepStationList
+          ? _value._keepStationList
+          : keepStationList // ignore: cast_nullable_to_non_nullable
+              as List<StationModel>,
       firstEntries: freezed == firstEntries
           ? _value._firstEntries
           : firstEntries // ignore: cast_nullable_to_non_nullable
@@ -427,6 +453,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value.selectedGraphYear
           : selectedGraphYear // ignore: cast_nullable_to_non_nullable
               as int,
+      selectedTemple: freezed == selectedTemple
+          ? _value.selectedTemple
+          : selectedTemple // ignore: cast_nullable_to_non_nullable
+              as TempleDataModel?,
     ));
   }
 }
@@ -466,6 +496,7 @@ class _$AppParamStateImpl implements _AppParamState {
           const <String, List<StockModel>>{},
       final Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap =
           const <String, List<ToushiShintakuModel>>{},
+      final List<StationModel> keepStationList = const <StationModel>[],
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
       this.overlayPosition,
@@ -473,7 +504,8 @@ class _$AppParamStateImpl implements _AppParamState {
       this.currentPaddingIndex = 5,
       this.selectedYearMonth = '',
       final List<String> monthlyGeolocMapSelectedDateList = const <String>[],
-      this.selectedGraphYear = 0})
+      this.selectedGraphYear = 0,
+      this.selectedTemple})
       : _keepHolidayList = keepHolidayList,
         _keepWalkModelMap = keepWalkModelMap,
         _keepMoneyMap = keepMoneyMap,
@@ -491,6 +523,7 @@ class _$AppParamStateImpl implements _AppParamState {
         _keepGoldMap = keepGoldMap,
         _keepStockMap = keepStockMap,
         _keepToushiShintakuMap = keepToushiShintakuMap,
+        _keepStationList = keepStationList,
         _firstEntries = firstEntries,
         _secondEntries = secondEntries,
         _monthlyGeolocMapSelectedDateList = monthlyGeolocMapSelectedDateList;
@@ -655,6 +688,18 @@ class _$AppParamStateImpl implements _AppParamState {
   }
 
   ///
+  final List<StationModel> _keepStationList;
+
+  ///
+  @override
+  @JsonKey()
+  List<StationModel> get keepStationList {
+    if (_keepStationList is EqualUnmodifiableListView) return _keepStationList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_keepStationList);
+  }
+
+  ///
   final List<OverlayEntry>? _firstEntries;
 
   ///
@@ -706,9 +751,13 @@ class _$AppParamStateImpl implements _AppParamState {
   @JsonKey()
   final int selectedGraphYear;
 
+  ///
+  @override
+  final TempleDataModel? selectedTemple;
+
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepStockNameMap: $keepStockNameMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepStockNameMap: $keepStockNameMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple)';
   }
 
   @override
@@ -751,6 +800,8 @@ class _$AppParamStateImpl implements _AppParamState {
             const DeepCollectionEquality()
                 .equals(other._keepToushiShintakuMap, _keepToushiShintakuMap) &&
             const DeepCollectionEquality()
+                .equals(other._keepStationList, _keepStationList) &&
+            const DeepCollectionEquality()
                 .equals(other._firstEntries, _firstEntries) &&
             const DeepCollectionEquality()
                 .equals(other._secondEntries, _secondEntries) &&
@@ -766,7 +817,9 @@ class _$AppParamStateImpl implements _AppParamState {
                 other._monthlyGeolocMapSelectedDateList,
                 _monthlyGeolocMapSelectedDateList) &&
             (identical(other.selectedGraphYear, selectedGraphYear) ||
-                other.selectedGraphYear == selectedGraphYear));
+                other.selectedGraphYear == selectedGraphYear) &&
+            (identical(other.selectedTemple, selectedTemple) ||
+                other.selectedTemple == selectedTemple));
   }
 
   @override
@@ -789,6 +842,7 @@ class _$AppParamStateImpl implements _AppParamState {
         const DeepCollectionEquality().hash(_keepGoldMap),
         const DeepCollectionEquality().hash(_keepStockMap),
         const DeepCollectionEquality().hash(_keepToushiShintakuMap),
+        const DeepCollectionEquality().hash(_keepStationList),
         const DeepCollectionEquality().hash(_firstEntries),
         const DeepCollectionEquality().hash(_secondEntries),
         overlayPosition,
@@ -796,7 +850,8 @@ class _$AppParamStateImpl implements _AppParamState {
         currentPaddingIndex,
         selectedYearMonth,
         const DeepCollectionEquality().hash(_monthlyGeolocMapSelectedDateList),
-        selectedGraphYear
+        selectedGraphYear,
+        selectedTemple
       ]);
 
   /// Create a copy of AppParamState
@@ -827,6 +882,7 @@ abstract class _AppParamState implements AppParamState {
       final Map<String, GoldModel> keepGoldMap,
       final Map<String, List<StockModel>> keepStockMap,
       final Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
+      final List<StationModel> keepStationList,
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
       final Offset? overlayPosition,
@@ -834,7 +890,8 @@ abstract class _AppParamState implements AppParamState {
       final int currentPaddingIndex,
       final String selectedYearMonth,
       final List<String> monthlyGeolocMapSelectedDateList,
-      final int selectedGraphYear}) = _$AppParamStateImpl;
+      final int selectedGraphYear,
+      final TempleDataModel? selectedTemple}) = _$AppParamStateImpl;
 
   @override
   List<String> get keepHolidayList;
@@ -873,6 +930,10 @@ abstract class _AppParamState implements AppParamState {
 
   ///
   @override
+  List<StationModel> get keepStationList;
+
+  ///
+  @override
   List<OverlayEntry>? get firstEntries;
   @override
   List<OverlayEntry>? get secondEntries;
@@ -892,6 +953,10 @@ abstract class _AppParamState implements AppParamState {
   List<String> get monthlyGeolocMapSelectedDateList;
   @override
   int get selectedGraphYear;
+
+  ///
+  @override
+  TempleDataModel? get selectedTemple;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.

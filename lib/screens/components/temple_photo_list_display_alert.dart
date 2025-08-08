@@ -1,10 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../extensions/extensions.dart';
 import '../../models/temple_model.dart';
 import '../../models/temple_photo_model.dart';
+import '../../models/transportation_model.dart';
+import '../../utility/utility.dart';
 
 class TemplePhotoListDisplayAlert extends ConsumerStatefulWidget {
   const TemplePhotoListDisplayAlert({super.key, required this.temple});
@@ -17,6 +21,50 @@ class TemplePhotoListDisplayAlert extends ConsumerStatefulWidget {
 
 class _TemplePhotoListDisplayAlertState extends ConsumerState<TemplePhotoListDisplayAlert>
     with ControllersMixin<TemplePhotoListDisplayAlert> {
+  Utility utility = Utility();
+
+  List<MapEntry<StationModel, double>> nearStationList = <MapEntry<StationModel, double>>[];
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+
+    // ignore: always_specify_types
+    Future(() {
+      if (appParamState.selectedTemple != null) {
+        final List<StationModel> roughFiltered = utility.filterByBoundingBox(
+          stationList: appParamState.keepStationList,
+          baseLat: appParamState.selectedTemple!.latitude.toDouble(),
+          baseLng: appParamState.selectedTemple!.longitude.toDouble(),
+          radiusKm: 3,
+        );
+
+        final List<MapEntry<StationModel, double>> list = roughFiltered
+            .map((StationModel station) {
+              final double d = utility.calculateDistance(
+                LatLng(
+                  appParamState.selectedTemple!.latitude.toDouble(),
+                  appParamState.selectedTemple!.longitude.toDouble(),
+                ),
+                LatLng(station.lat.toDouble(), station.lng.toDouble()),
+              );
+
+              // ignore: always_specify_types
+              return MapEntry(station, d);
+            })
+            .where((MapEntry<StationModel, double> entry) => entry.value <= 3 * 1000)
+            .toList();
+
+        list.sort((MapEntry<StationModel, double> a, MapEntry<StationModel, double> b) => a.value.compareTo(b.value));
+
+        setState(() {
+          nearStationList = list;
+        });
+      }
+    });
+  }
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -51,10 +99,35 @@ class _TemplePhotoListDisplayAlertState extends ConsumerState<TemplePhotoListDis
                   ],
                 ),
 
+                displayNearStationList(),
+
                 Expanded(child: displayTemplePhotoList()),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  ///
+  Widget displayNearStationList() {
+    return Container(
+      width: double.infinity,
+      height: 200,
+
+      decoration: BoxDecoration(color: Colors.redAccent.withValues(alpha: 0.1)),
+      child: SingleChildScrollView(
+        child: Column(
+          children: nearStationList.map((MapEntry<StationModel, double> e) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(e.key.stationName),
+                Text(e.value.toString()),
+              ],
+            );
+          }).toList(),
         ),
       ),
     );

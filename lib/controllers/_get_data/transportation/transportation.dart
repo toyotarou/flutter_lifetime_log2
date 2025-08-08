@@ -16,6 +16,8 @@ class TransportationState with _$TransportationState {
   const factory TransportationState({
     @Default(<TransportationModel>[]) List<TransportationModel> transportationList,
     @Default(<String, TransportationModel>{}) Map<String, TransportationModel> transportationMap,
+
+    @Default(<StationModel>[]) List<StationModel> stationList,
   }) = _TransportationState;
 }
 
@@ -72,6 +74,8 @@ class Transportation extends _$Transportation {
 
       //---------------------------------------------------------------------------//
 
+      final List<StationModel> stationList1 = <StationModel>[];
+
       final dynamic value2 = await client.getByPath(path: 'http://49.212.175.205:3000/api/v1/station');
 
       final Map<String, StationModel> stationMap1 = <String, StationModel>{};
@@ -88,6 +92,8 @@ class Transportation extends _$Transportation {
         }
 
         stationMap1[val.stationName] = val;
+
+        stationList1.add(val);
       }
 
       //---------------------------------------------------------------------------//
@@ -164,7 +170,7 @@ class Transportation extends _$Transportation {
 
       //---------------------------------------------------------------------------//
 
-      return state.copyWith(transportationList: list, transportationMap: map);
+      return state.copyWith(transportationList: list, transportationMap: map, stationList: stationList1);
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる

@@ -1,11 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../extensions/extensions.dart';
 import '../models/bounding_box_info_model.dart';
 import '../models/geoloc_model.dart';
 import '../models/temple_model.dart';
 import '../models/temple_photo_model.dart';
+import '../models/transportation_model.dart';
 
 class Utility {
   /// 背景取得
@@ -232,6 +236,25 @@ class Utility {
     }
 
     return ret;
+  }
+
+  ///
+  List<StationModel> filterByBoundingBox({
+    required List<StationModel> stationList,
+
+    required double baseLat,
+    required double baseLng,
+    required double radiusKm,
+  }) {
+    const double earthRadiusKm = 111.0;
+    final double latRange = radiusKm / earthRadiusKm;
+    final double lngRange = radiusKm / (earthRadiusKm * cos(baseLat * pi / 180.0));
+
+    return stationList.where((StationModel station) {
+      final double latDiff = (station.lat.toDouble() - baseLat).abs();
+      final double lngDiff = (station.lng.toDouble() - baseLng).abs();
+      return latDiff <= latRange && lngDiff <= lngRange;
+    }).toList();
   }
 }
 

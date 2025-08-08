@@ -119,6 +119,8 @@ class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
                         const SizedBox.shrink(),
                         GestureDetector(
                           onTap: () {
+                            appParamNotifier.setSelectedTemple(temple: widget.temple!.templeDataList[i]);
+
                             LifetimeDialog(
                               context: context,
                               widget: TemplePhotoListDisplayAlert(temple: widget.temple!.templeDataList[i]),
