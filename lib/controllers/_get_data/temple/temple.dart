@@ -5,6 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/temple_model.dart';
+import '../../../models/temple_photo_model.dart';
 import '../../../utility/utility.dart';
 
 part 'temple.freezed.dart';
@@ -64,28 +65,29 @@ class Temple extends _$Temple {
       //---------------------------------------------------------------------------//
       final dynamic value3 = await client.post(path: APIPath.getTempleDatePhoto);
 
-      final Map<String, Map<String, List<String>>> photoMap1 = <String, Map<String, List<String>>>{};
+      final Map<String, List<TemplePhotoModel>> photoMap1 = <String, List<TemplePhotoModel>>{};
 
       // ignore: avoid_dynamic_calls
       for (int i = 0; i < value3['data'].length.toString().toInt(); i++) {
-        try {
-          // ignore: avoid_dynamic_calls
-          final dynamic item = value3['data'][i];
+        // ignore: avoid_dynamic_calls
+        final dynamic item = value3['data'][i];
 
-          // ignore: avoid_dynamic_calls
-          final String temple = item['temple'].toString();
-          // ignore: avoid_dynamic_calls
-          final String date = item['date'].toString();
+        // ignore: avoid_dynamic_calls
+        final String temple = item['temple'].toString();
+        // ignore: avoid_dynamic_calls
+        final String date = item['date'].toString();
 
-          // ignore: avoid_dynamic_calls
-          final dynamic rawPhotos = item['templephotos'];
+        // ignore: avoid_dynamic_calls
+        final dynamic rawPhotos = item['templephotos'];
 
-          // ignore: always_specify_types
-          final List<String> photos = (rawPhotos is List) ? rawPhotos.map((e) => e.toString()).toList() : <String>[];
+        // ignore: always_specify_types
+        final List<String> templephotos = (rawPhotos is List)
+            ? rawPhotos.map((e) => e.toString()).toList()
+            : <String>[];
 
-          photoMap1[temple] = <String, List<String>>{date: photos};
-          // ignore: empty_catches
-        } catch (e) {}
+        (photoMap1[temple] ??= <TemplePhotoModel>[]).add(
+          TemplePhotoModel(date: date, temple: temple, templephotos: templephotos),
+        );
       }
 
       //---------------------------------------------------------------------------//
@@ -115,8 +117,6 @@ class Temple extends _$Temple {
         final List<TempleDataModel> templeDataList = <TempleDataModel>[];
 
         if (latlngMap1[templeName] != null) {
-          final Map<String, List<String>>? photos1 = photoMap1[templeName];
-
           templeDataList.add(
             TempleDataModel(
               name: latlngMap1[templeName]!['temple']!,
@@ -125,7 +125,7 @@ class Temple extends _$Temple {
               longitude: latlngMap1[templeName]!['longitude']!,
               rank: latlngMap1[templeName]!['rank']!,
               count: (countMap1[templeName] != null) ? countMap1[templeName]!.length : 0,
-              templePhotoMap: photos1,
+              templePhotoMap: photoMap1[templeName],
             ),
           );
         }
@@ -137,8 +137,6 @@ class Temple extends _$Temple {
 
           for (final String element in exMemo) {
             if (latlngMap1[element] != null) {
-              final Map<String, List<String>>? photos2 = photoMap1[element];
-
               templeDataList.add(
                 TempleDataModel(
                   name: latlngMap1[element]!['temple']!,
@@ -147,7 +145,7 @@ class Temple extends _$Temple {
                   longitude: latlngMap1[element]!['longitude']!,
                   rank: latlngMap1[element]!['rank']!,
                   count: (countMap1[element] != null) ? countMap1[element]!.length : 0,
-                  templePhotoMap: photos2,
+                  templePhotoMap: photoMap1[element],
                 ),
               );
             }

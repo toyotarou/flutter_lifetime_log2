@@ -1,3 +1,7 @@
+import 'temple_photo_model.dart';
+
+/////////////////////////////////////////////////////////////////////////////
+
 class TempleModel {
   TempleModel({required this.date, required this.startPoint, required this.endPoint, required this.templeDataList});
 
@@ -6,6 +10,8 @@ class TempleModel {
   String endPoint;
   List<TempleDataModel> templeDataList;
 }
+
+/////////////////////////////////////////////////////////////////////////////
 
 class TempleDataModel {
   TempleDataModel({
@@ -24,5 +30,7 @@ class TempleDataModel {
   String longitude;
   String rank;
   int? count;
-  Map<String, List<String>>? templePhotoMap;
+  List<TemplePhotoModel>? templePhotoMap;
 }
+
+/////////////////////////////////////////////////////////////////////////////
