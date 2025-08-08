@@ -31,12 +31,25 @@ class _TemplePhotoListDisplayAlertState extends ConsumerState<TemplePhotoListDis
             padding: const EdgeInsets.all(20),
             child: Column(
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.temple.name), const SizedBox.shrink()],
-                ),
+                Stack(
+                  children: <Widget>[
+                    Positioned(
+                      right: 5,
+                      child: Text(widget.temple.rank, style: const TextStyle(fontSize: 35, color: Color(0xFFFBB6CE))),
+                    ),
 
-                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+                    Column(
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[Text(widget.temple.name), const SizedBox.shrink()],
+                        ),
+
+                        Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+                      ],
+                    ),
+                  ],
+                ),
 
                 Expanded(child: displayTemplePhotoList()),
               ],

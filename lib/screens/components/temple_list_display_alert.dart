@@ -63,15 +63,26 @@ class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
               Positioned(
                 top: 3,
                 left: 3,
-                child: CircleAvatar(
-                  radius: 10,
-                  backgroundColor: const Color(0xFFFBB6CE),
-                  child: CircleAvatar(
-                    radius: 8,
-                    backgroundColor: Colors.white,
+                child: Row(
+                  children: <Widget>[
+                    CircleAvatar(
+                      radius: 10,
+                      backgroundColor: const Color(0xFFFBB6CE),
+                      child: CircleAvatar(
+                        radius: 8,
+                        backgroundColor: Colors.white,
 
-                    child: Text((i + 1).toString().padLeft(2, '0'), style: const TextStyle(fontSize: 12)),
-                  ),
+                        child: Text((i + 1).toString().padLeft(2, '0'), style: const TextStyle(fontSize: 12)),
+                      ),
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    Text(
+                      widget.temple!.templeDataList[i].rank,
+                      style: const TextStyle(fontSize: 20, color: Color(0xFFFBB6CE)),
+                    ),
+                  ],
                 ),
               ),
 
