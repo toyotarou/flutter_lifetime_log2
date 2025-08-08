@@ -53,7 +53,7 @@ class _TemplePhotoListDisplayAlertState extends ConsumerState<TemplePhotoListDis
               // ignore: always_specify_types
               return MapEntry(station, d);
             })
-            .where((MapEntry<StationModel, double> entry) => entry.value <= 3 * 1000)
+            .where((MapEntry<StationModel, double> entry) => entry.value <= 1000)
             .toList();
 
         list.sort((MapEntry<StationModel, double> a, MapEntry<StationModel, double> b) => a.value.compareTo(b.value));
@@ -114,18 +114,21 @@ class _TemplePhotoListDisplayAlertState extends ConsumerState<TemplePhotoListDis
   Widget displayNearStationList() {
     return Container(
       width: double.infinity,
-      height: 200,
-
-      decoration: BoxDecoration(color: Colors.redAccent.withValues(alpha: 0.1)),
+      height: 100,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(border: Border.all(color: Colors.white)),
       child: SingleChildScrollView(
         child: Column(
           children: nearStationList.map((MapEntry<StationModel, double> e) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(e.key.stationName),
-                Text(e.value.toString()),
-              ],
+            return Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
+              ),
+              padding: const EdgeInsets.all(5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[Text(e.key.stationName), Text('${e.value.toInt()} m')],
+              ),
             );
           }).toList(),
         ),
