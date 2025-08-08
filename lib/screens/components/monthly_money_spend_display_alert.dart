@@ -137,7 +137,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
       switch (flag) {
         case 'before':
           // ignore: avoid_bool_literals_in_conditional_expressions
-          inputDisplay = (diff > 0) ? true : false;
+          inputDisplay = (diff != 0) ? true : false;
         case 'today':
           inputDisplay = true;
       }
