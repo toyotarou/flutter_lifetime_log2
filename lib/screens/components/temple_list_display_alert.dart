@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../models/temple_model.dart';
+import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'temple_photo_list_display_alert.dart';
 
 class TempleListDisplayAlert extends ConsumerStatefulWidget {
-  const TempleListDisplayAlert({super.key, this.temple});
+  const TempleListDisplayAlert({super.key, this.temple, required this.date});
 
+  final String date;
   final TempleModel? temple;
 
   @override
@@ -17,6 +19,8 @@ class TempleListDisplayAlert extends ConsumerStatefulWidget {
 
 class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
     with ControllersMixin<TempleListDisplayAlert> {
+  Utility utility = Utility();
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -80,6 +84,22 @@ class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const SizedBox.shrink(),
+
+                        Text(
+                          utility.getTempleReachTimeFromTemplePhotoList(
+                            date: widget.date,
+                            temple: widget.temple!.templeDataList[i],
+                          ),
+
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+
                     Padding(padding: const EdgeInsets.all(10), child: Text(widget.temple!.templeDataList[i].name)),
 
                     Row(

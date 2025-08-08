@@ -4,6 +4,8 @@ import 'package:latlong2/latlong.dart';
 
 import '../models/bounding_box_info_model.dart';
 import '../models/geoloc_model.dart';
+import '../models/temple_model.dart';
+import '../models/temple_photo_model.dart';
 
 class Utility {
   /// 背景取得
@@ -203,6 +205,33 @@ class Utility {
     }
 
     return totalMonths;
+  }
+
+  ///
+  String getTempleReachTimeFromTemplePhotoList({required String date, required TempleDataModel temple}) {
+    String ret = '-';
+
+    List<String> photoList = <String>[];
+
+    if (temple.templePhotoModelList != null) {
+      for (final TemplePhotoModel element in temple.templePhotoModelList!) {
+        if (element.date == date) {
+          photoList = element.templephotos;
+        }
+      }
+    }
+
+    if (photoList.isNotEmpty) {
+      final String firstPhoto = photoList.first;
+
+      final List<String> exFirstPhoto = firstPhoto.split('/');
+      final List<String> exFirstPhotoLast = exFirstPhoto[exFirstPhoto.length - 1].split('_');
+      final String hour = exFirstPhotoLast[1].substring(0, 2);
+      final String minute = exFirstPhotoLast[1].substring(2, 4);
+      ret = '$hour:$minute';
+    }
+
+    return ret;
   }
 }
 

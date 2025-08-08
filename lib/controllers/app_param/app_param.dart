@@ -10,7 +10,6 @@ import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/temple_model.dart';
-import '../../models/temple_photo_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';

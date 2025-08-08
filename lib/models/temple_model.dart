@@ -21,7 +21,7 @@ class TempleDataModel {
     required this.longitude,
     required this.rank,
     this.count,
-    this.templePhotoModelMap,
+    this.templePhotoModelList,
   });
 
   String name;
@@ -30,7 +30,7 @@ class TempleDataModel {
   String longitude;
   String rank;
   int? count;
-  List<TemplePhotoModel>? templePhotoModelMap;
+  List<TemplePhotoModel>? templePhotoModelList;
 }
 
 /////////////////////////////////////////////////////////////////////////////

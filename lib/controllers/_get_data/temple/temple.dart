@@ -82,6 +82,7 @@ class Temple extends _$Temple {
 
         // ignore: always_specify_types
         final List<String> templephotos = (rawPhotos is List)
+            // ignore: always_specify_types
             ? rawPhotos.map((e) => e.toString()).toList()
             : <String>[];
 
@@ -125,7 +126,7 @@ class Temple extends _$Temple {
               longitude: latlngMap1[templeName]!['longitude']!,
               rank: latlngMap1[templeName]!['rank']!,
               count: (countMap1[templeName] != null) ? countMap1[templeName]!.length : 0,
-              templePhotoModelMap: photoMap1[templeName],
+              templePhotoModelList: photoMap1[templeName],
             ),
           );
         }
@@ -145,7 +146,7 @@ class Temple extends _$Temple {
                   longitude: latlngMap1[element]!['longitude']!,
                   rank: latlngMap1[element]!['rank']!,
                   count: (countMap1[element] != null) ? countMap1[element]!.length : 0,
-                  templePhotoModelMap: photoMap1[element],
+                  templePhotoModelList: photoMap1[element],
                 ),
               );
             }

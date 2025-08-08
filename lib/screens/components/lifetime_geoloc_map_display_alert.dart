@@ -214,7 +214,14 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                               onTap: () {
                                 LifetimeDialog(
                                   context: context,
-                                  widget: TempleListDisplayAlert(temple: widget.temple),
+                                  widget: TempleListDisplayAlert(
+
+
+
+                                      date:widget.date,
+
+
+                                      temple: widget.temple),
 
                                   paddingTop: context.screenSize.height * 0.2,
                                   paddingRight: context.screenSize.width * 0.3,
