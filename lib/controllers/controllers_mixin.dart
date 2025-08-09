@@ -174,11 +174,4 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   ToushiShintaku get toushiShintakuNotifier => ref.read(toushiShintakuProvider.notifier);
 
   //==========================================//
-
-
-
-
-
-
-
 }
