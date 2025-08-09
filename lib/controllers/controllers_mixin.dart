@@ -1,4 +1,3 @@
-// ignore: depend_on_referenced_packages
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '_get_data/geoloc/geoloc.dart';
