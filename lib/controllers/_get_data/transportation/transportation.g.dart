@@ -6,7 +6,7 @@ part of 'transportation.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$transportationHash() => r'237f09b3a8dcaf15578cb170b5eb04864ae76f3c';
+String _$transportationHash() => r'31faa3d63a275f4197684129321fcd690f4d9c63';
 
 /// See also [Transportation].
 @ProviderFor(Transportation)

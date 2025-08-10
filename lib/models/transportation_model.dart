@@ -76,6 +76,7 @@ class StationModel {
     required this.lat,
     required this.lng,
     required this.prefecture,
+    this.trainName,
   });
 
   factory StationModel.fromJson(Map<String, dynamic> json) => StationModel(
@@ -94,6 +95,7 @@ class StationModel {
   String lat;
   String lng;
   String prefecture;
+  String? trainName;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
     'id': id,
@@ -153,6 +155,23 @@ class DupSpotModel {
   final String area;
 
   Map<String, dynamic> toJson() => <String, dynamic>{'id': id, 'name': name, 'area': area};
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+class TrainModel {
+  TrainModel({required this.trainNumber, required this.trainName});
+
+  factory TrainModel.fromJson(Map<String, dynamic> json) {
+    return TrainModel(trainNumber: json['train_number'] as String, trainName: json['train_name'] as String);
+  }
+
+  final String trainNumber;
+  final String trainName;
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{'train_number': trainNumber, 'train_name': trainName};
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -74,6 +74,22 @@ class Transportation extends _$Transportation {
 
       //---------------------------------------------------------------------------//
 
+      final dynamic value5 = await client.post(path: APIPath.getTrain);
+
+      final Map<String, String> trainMap = <String, String>{};
+
+      // ignore: avoid_dynamic_calls
+      for (int i = 0; i < value5['data'].length.toString().toInt(); i++) {
+        // ignore: avoid_dynamic_calls
+        final TrainModel val = TrainModel.fromJson(value5['data'][i] as Map<String, dynamic>);
+
+        trainMap[val.trainNumber] = val.trainName;
+      }
+
+      //---------------------------------------------------------------------------//
+
+      //---------------------------------------------------------------------------//
+
       final List<StationModel> stationList1 = <StationModel>[];
 
       final dynamic value2 = await client.getByPath(path: 'http://49.212.175.205:3000/api/v1/station');
@@ -84,6 +100,8 @@ class Transportation extends _$Transportation {
       for (int i = 0; i < value2.length.toString().toInt(); i++) {
         // ignore: avoid_dynamic_calls
         final StationModel val = StationModel.fromJson(value2[i] as Map<String, dynamic>);
+
+        val.trainName = trainMap[val.trainNumber];
 
         if (dupMap1[val.stationName] != null) {
           if (dupMap1[val.stationName]?[val.prefecture] == null) {

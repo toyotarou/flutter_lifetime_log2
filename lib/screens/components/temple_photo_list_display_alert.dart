@@ -125,9 +125,21 @@ class _TemplePhotoListDisplayAlertState extends ConsumerState<TemplePhotoListDis
                 border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
               ),
               padding: const EdgeInsets.all(5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[Text(e.key.stationName), Text('${e.value.toInt()} m')],
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[Text(e.key.stationName), Text('${e.value.toInt()} m')],
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(e.key.trainName ?? '', style: const TextStyle(fontSize: 10)),
+                      const SizedBox.shrink(),
+                    ],
+                  ),
+                ],
               ),
             );
           }).toList(),

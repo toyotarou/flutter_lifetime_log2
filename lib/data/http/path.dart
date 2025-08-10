@@ -27,6 +27,7 @@ enum APIPath {
   getAllStockData,
   getAllToushiShintakuData,
   getTempleDatePhoto,
+  getTrain,
 }
 
 extension APIPathExtension on APIPath {
@@ -106,6 +107,9 @@ extension APIPathExtension on APIPath {
 
       case APIPath.getTempleDatePhoto:
         return 'getTempleDatePhoto';
+
+      case APIPath.getTrain:
+        return 'getTrain';
     }
   }
 }
