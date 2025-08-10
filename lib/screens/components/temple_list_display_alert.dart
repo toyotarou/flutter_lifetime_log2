@@ -58,83 +58,137 @@ class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
     if (widget.temple != null) {
       for (int i = 0; i < widget.temple!.templeDataList.length; i++) {
         list.add(
-          Stack(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Positioned(
-                top: 3,
-                left: 3,
-                child: Row(
-                  children: <Widget>[
-                    CircleAvatar(
-                      radius: 10,
-                      backgroundColor: const Color(0xFFFBB6CE),
-                      child: CircleAvatar(
-                        radius: 8,
-                        backgroundColor: Colors.white,
-
-                        child: Text((i + 1).toString().padLeft(2, '0'), style: const TextStyle(fontSize: 12)),
-                      ),
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    Text(
-                      widget.temple!.templeDataList[i].rank,
-                      style: const TextStyle(fontSize: 20, color: Color(0xFFFBB6CE)),
-                    ),
-                  ],
-                ),
-              ),
-
               Container(
                 decoration: BoxDecoration(
                   border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
                 ),
                 padding: const EdgeInsets.all(5),
 
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Stack(
                   children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        const SizedBox.shrink(),
+                    Positioned(
+                      top: 3,
+                      left: 3,
+                      child: Row(
+                        children: <Widget>[
+                          CircleAvatar(
+                            radius: 10,
+                            backgroundColor: const Color(0xFFFBB6CE),
+                            child: CircleAvatar(
+                              radius: 8,
+                              backgroundColor: Colors.white,
 
-                        Text(
-                          utility.getTempleReachTimeFromTemplePhotoList(
-                            date: widget.date,
-                            temple: widget.temple!.templeDataList[i],
+                              child: Text((i + 1).toString().padLeft(2, '0'), style: const TextStyle(fontSize: 12)),
+                            ),
                           ),
 
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ],
+                          const SizedBox(width: 10),
+
+                          Text(
+                            widget.temple!.templeDataList[i].rank,
+                            style: const TextStyle(fontSize: 20, color: Color(0xFFFBB6CE)),
+                          ),
+                        ],
+                      ),
                     ),
 
-                    Padding(padding: const EdgeInsets.all(10), child: Text(widget.temple!.templeDataList[i].name)),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Column(
                       children: <Widget>[
-                        const SizedBox.shrink(),
-                        GestureDetector(
-                          onTap: () {
-                            appParamNotifier.setSelectedTemple(temple: widget.temple!.templeDataList[i]);
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            const SizedBox.shrink(),
 
-                            LifetimeDialog(
-                              context: context,
-                              widget: TemplePhotoListDisplayAlert(temple: widget.temple!.templeDataList[i]),
-                              clearBarrierColor: true,
-                            );
-                          },
+                            Text(
+                              utility.getTempleReachTimeFromTemplePhotoList(
+                                date: widget.date,
+                                temple: widget.temple!.templeDataList[i],
+                              ),
 
-                          child: Icon(Icons.photo, color: Colors.white.withValues(alpha: 0.6)),
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+
+                        Padding(padding: const EdgeInsets.all(10), child: Text(widget.temple!.templeDataList[i].name)),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            const SizedBox.shrink(),
+                            GestureDetector(
+                              onTap: () {
+                                appParamNotifier.setSelectedTemple(temple: widget.temple!.templeDataList[i]);
+
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: TemplePhotoListDisplayAlert(temple: widget.temple!.templeDataList[i]),
+                                  clearBarrierColor: true,
+                                );
+                              },
+
+                              child: Icon(Icons.photo, color: Colors.white.withValues(alpha: 0.6)),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
+
+              if (i < widget.temple!.templeDataList.length - 1) ...<Widget>[
+                SizedBox(
+                  width: double.infinity,
+
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_downward)),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              CircleAvatar(
+                                radius: 8,
+                                backgroundColor: const Color(0xFFFBB6CE),
+                                child: CircleAvatar(
+                                  radius: 6,
+                                  backgroundColor: Colors.white,
+
+                                  child: Text((i + 1).toString().padLeft(2, '0'), style: const TextStyle(fontSize: 10)),
+                                ),
+                              ),
+
+                              const SizedBox(width: 5),
+                              const Text('-'),
+                              const SizedBox(width: 5),
+
+                              CircleAvatar(
+                                radius: 8,
+                                backgroundColor: const Color(0xFFFBB6CE),
+                                child: CircleAvatar(
+                                  radius: 6,
+                                  backgroundColor: Colors.white,
+
+                                  child: Text((i + 2).toString().padLeft(2, '0'), style: const TextStyle(fontSize: 10)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox.shrink(),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         );
