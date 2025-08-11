@@ -28,6 +28,7 @@ enum APIPath {
   getAllToushiShintakuData,
   getTempleDatePhoto,
   getTrain,
+  getCreditSummary,
 }
 
 extension APIPathExtension on APIPath {
@@ -110,6 +111,9 @@ extension APIPathExtension on APIPath {
 
       case APIPath.getTrain:
         return 'getTrain';
+
+      case APIPath.getCreditSummary:
+        return 'getCreditSummary';
     }
   }
 }

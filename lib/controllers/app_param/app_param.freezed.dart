@@ -48,6 +48,8 @@ mixin _$AppParamState {
       throw _privateConstructorUsedError;
   Map<String, List<ToushiShintakuModel>> get keepToushiShintakuMap =>
       throw _privateConstructorUsedError;
+  Map<String, List<CreditSummaryModel>> get keepCreditSummaryMap =>
+      throw _privateConstructorUsedError;
 
   ///
   List<StationModel> get keepStationList => throw _privateConstructorUsedError;
@@ -104,6 +106,7 @@ abstract class $AppParamStateCopyWith<$Res> {
       Map<String, GoldModel> keepGoldMap,
       Map<String, List<StockModel>> keepStockMap,
       Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
+      Map<String, List<CreditSummaryModel>> keepCreditSummaryMap,
       List<StationModel> keepStationList,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
@@ -149,6 +152,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? keepGoldMap = null,
     Object? keepStockMap = null,
     Object? keepToushiShintakuMap = null,
+    Object? keepCreditSummaryMap = null,
     Object? keepStationList = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
@@ -230,6 +234,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.keepToushiShintakuMap
           : keepToushiShintakuMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<ToushiShintakuModel>>,
+      keepCreditSummaryMap: null == keepCreditSummaryMap
+          ? _value.keepCreditSummaryMap
+          : keepCreditSummaryMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<CreditSummaryModel>>,
       keepStationList: null == keepStationList
           ? _value.keepStationList
           : keepStationList // ignore: cast_nullable_to_non_nullable
@@ -304,6 +312,7 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       Map<String, GoldModel> keepGoldMap,
       Map<String, List<StockModel>> keepStockMap,
       Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
+      Map<String, List<CreditSummaryModel>> keepCreditSummaryMap,
       List<StationModel> keepStationList,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
@@ -347,6 +356,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? keepGoldMap = null,
     Object? keepStockMap = null,
     Object? keepToushiShintakuMap = null,
+    Object? keepCreditSummaryMap = null,
     Object? keepStationList = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
@@ -428,6 +438,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value._keepToushiShintakuMap
           : keepToushiShintakuMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<ToushiShintakuModel>>,
+      keepCreditSummaryMap: null == keepCreditSummaryMap
+          ? _value._keepCreditSummaryMap
+          : keepCreditSummaryMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<CreditSummaryModel>>,
       keepStationList: null == keepStationList
           ? _value._keepStationList
           : keepStationList // ignore: cast_nullable_to_non_nullable
@@ -511,6 +525,8 @@ class _$AppParamStateImpl implements _AppParamState {
           const <String, List<StockModel>>{},
       final Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap =
           const <String, List<ToushiShintakuModel>>{},
+      final Map<String, List<CreditSummaryModel>> keepCreditSummaryMap =
+          const <String, List<CreditSummaryModel>>{},
       final List<StationModel> keepStationList = const <StationModel>[],
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
@@ -539,6 +555,7 @@ class _$AppParamStateImpl implements _AppParamState {
         _keepGoldMap = keepGoldMap,
         _keepStockMap = keepStockMap,
         _keepToushiShintakuMap = keepToushiShintakuMap,
+        _keepCreditSummaryMap = keepCreditSummaryMap,
         _keepStationList = keepStationList,
         _firstEntries = firstEntries,
         _secondEntries = secondEntries,
@@ -703,6 +720,16 @@ class _$AppParamStateImpl implements _AppParamState {
     return EqualUnmodifiableMapView(_keepToushiShintakuMap);
   }
 
+  final Map<String, List<CreditSummaryModel>> _keepCreditSummaryMap;
+  @override
+  @JsonKey()
+  Map<String, List<CreditSummaryModel>> get keepCreditSummaryMap {
+    if (_keepCreditSummaryMap is EqualUnmodifiableMapView)
+      return _keepCreditSummaryMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_keepCreditSummaryMap);
+  }
+
   ///
   final List<StationModel> _keepStationList;
 
@@ -778,7 +805,7 @@ class _$AppParamStateImpl implements _AppParamState {
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepStockNameMap: $keepStockNameMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepStockNameMap: $keepStockNameMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection)';
   }
 
   @override
@@ -820,6 +847,8 @@ class _$AppParamStateImpl implements _AppParamState {
                 .equals(other._keepStockMap, _keepStockMap) &&
             const DeepCollectionEquality()
                 .equals(other._keepToushiShintakuMap, _keepToushiShintakuMap) &&
+            const DeepCollectionEquality()
+                .equals(other._keepCreditSummaryMap, _keepCreditSummaryMap) &&
             const DeepCollectionEquality()
                 .equals(other._keepStationList, _keepStationList) &&
             const DeepCollectionEquality()
@@ -866,6 +895,7 @@ class _$AppParamStateImpl implements _AppParamState {
         const DeepCollectionEquality().hash(_keepGoldMap),
         const DeepCollectionEquality().hash(_keepStockMap),
         const DeepCollectionEquality().hash(_keepToushiShintakuMap),
+        const DeepCollectionEquality().hash(_keepCreditSummaryMap),
         const DeepCollectionEquality().hash(_keepStationList),
         const DeepCollectionEquality().hash(_firstEntries),
         const DeepCollectionEquality().hash(_secondEntries),
@@ -907,6 +937,7 @@ abstract class _AppParamState implements AppParamState {
       final Map<String, GoldModel> keepGoldMap,
       final Map<String, List<StockModel>> keepStockMap,
       final Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
+      final Map<String, List<CreditSummaryModel>> keepCreditSummaryMap,
       final List<StationModel> keepStationList,
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
@@ -953,6 +984,8 @@ abstract class _AppParamState implements AppParamState {
   Map<String, List<StockModel>> get keepStockMap;
   @override
   Map<String, List<ToushiShintakuModel>> get keepToushiShintakuMap;
+  @override
+  Map<String, List<CreditSummaryModel>> get keepCreditSummaryMap;
 
   ///
   @override

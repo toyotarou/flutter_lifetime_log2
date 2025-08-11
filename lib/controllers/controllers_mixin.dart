@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '_get_data/credit_summary/credit_summary.dart';
 import '_get_data/directions/directions.dart';
 import '_get_data/geoloc/geoloc.dart';
 import '_get_data/gold/gold.dart';
@@ -172,6 +173,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   ToushiShintakuState get toushiShintakuState => ref.watch(toushiShintakuProvider);
 
   ToushiShintaku get toushiShintakuNotifier => ref.read(toushiShintakuProvider.notifier);
+
+  //==========================================//
+
+  CreditSummaryState get creditSummaryState => ref.watch(creditSummaryProvider);
+
+  CreditSummary get creditSummaryNotifier => ref.read(creditSummaryProvider.notifier);
 
   //==========================================//
 

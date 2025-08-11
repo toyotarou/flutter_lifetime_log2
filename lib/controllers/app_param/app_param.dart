@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../models/credit_summary_model.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/gold_model.dart';
 import '../../models/lifetime_model.dart';
@@ -41,6 +42,7 @@ class AppParamState with _$AppParamState {
     @Default(<String, GoldModel>{}) Map<String, GoldModel> keepGoldMap,
     @Default(<String, List<StockModel>>{}) Map<String, List<StockModel>> keepStockMap,
     @Default(<String, List<ToushiShintakuModel>>{}) Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
+    @Default(<String, List<CreditSummaryModel>>{}) Map<String, List<CreditSummaryModel>> keepCreditSummaryMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -135,10 +137,12 @@ class AppParam extends _$AppParam {
   void setKeepToushiShintakuMap({required Map<String, List<ToushiShintakuModel>> map}) =>
       state = state.copyWith(keepToushiShintakuMap: map);
 
-  //===================================================
-
   ///
   void setKeepStationList({required List<StationModel> list}) => state = state.copyWith(keepStationList: list);
+
+  ///
+  void setKeepCreditSummaryMap({required Map<String, List<CreditSummaryModel>> map}) =>
+      state = state.copyWith(keepCreditSummaryMap: map);
 
   //===================================================
 

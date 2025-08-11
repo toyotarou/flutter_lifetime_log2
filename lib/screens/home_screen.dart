@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/controllers_mixin.dart';
 import '../extensions/extensions.dart';
 import '../main.dart';
+import '../models/credit_summary_model.dart';
 import '../models/geoloc_model.dart';
 import '../models/gold_model.dart';
 import '../models/lifetime_model.dart';
@@ -52,8 +53,8 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.goldMap,
     required this.stockMap,
     required this.toushiShintakuMap,
-
     required this.stationList,
+    required this.creditSummaryMap,
   });
 
   final List<String> holidayList;
@@ -73,8 +74,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, GoldModel> goldMap;
   final Map<String, List<StockModel>> stockMap;
   final Map<String, List<ToushiShintakuModel>> toushiShintakuMap;
-
   final List<StationModel> stationList;
+  final Map<String, List<CreditSummaryModel>> creditSummaryMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -108,8 +109,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepGoldMap(map: widget.goldMap);
       appParamNotifier.setKeepStockMap(map: widget.stockMap);
       appParamNotifier.setKeepToushiShintakuMap(map: widget.toushiShintakuMap);
-
       appParamNotifier.setKeepStationList(list: widget.stationList);
+      appParamNotifier.setKeepCreditSummaryMap(map: widget.creditSummaryMap);
     });
 
     return DefaultTabController(
