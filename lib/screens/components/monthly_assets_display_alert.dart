@@ -86,7 +86,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         lastStockSum = 0;
         for (final StockModel element in appParamState.keepStockMap[date.yyyymmdd]!) {
           if (element.jikaHyoukagaku != '-') {
-            lastStockSum += element.jikaHyoukagaku.toInt();
+            lastStockSum += element.jikaHyoukagaku.replaceAll(',', '').toInt();
 
             if (date.yyyymmdd == DateTime.now().yyyymmdd) {
               todayStockExists = true;
