@@ -400,7 +400,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
             ],
           ),
 
-          if (isBeforeDate) ...<Widget>[
+          if (isBeforeDate && price != '') ...<Widget>[
             Row(
               children: <Widget>[
                 Column(
@@ -437,7 +437,11 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
             ),
           ],
 
-          if (!isBeforeDate) ...<Widget>[const SizedBox.shrink()],
+          if (!isBeforeDate || price == '') ...<Widget>[
+            if (!isBeforeDate) ...<Widget>[const SizedBox.shrink()],
+
+            if (price == '') ...<Widget>[const Text('-------------------------')],
+          ],
         ],
       ),
     );
