@@ -44,6 +44,8 @@ dependencies:
   dotted_line: ^3.2.3
   cached_network_image: ^3.4.1
 
+  flutter_dotenv: ^5.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -65,6 +67,7 @@ flutter:
 
   assets:
     - assets/images/
+    - .env
 
 flutter_native_splash:
   image: "assets/images/ic_launcher.png"

@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'controllers/controllers_mixin.dart';
 import 'screens/home_screen.dart';
 
-void main() => runApp(const AppRoot());
+void main() async {
+  await dotenv.load();
+
+  runApp(const AppRoot());
+}
 
 class AppRoot extends StatefulWidget {
   const AppRoot({super.key});

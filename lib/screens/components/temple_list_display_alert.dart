@@ -5,6 +5,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../models/temple_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
+import 'temple_directions_map_alert.dart';
 import 'temple_photo_list_display_alert.dart';
 
 class TempleListDisplayAlert extends ConsumerStatefulWidget {
@@ -151,10 +152,13 @@ class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
                         children: <Widget>[
                           IconButton(
                             onPressed: () {
-                              print(widget.temple!.templeDataList[i].name);
-                              print(widget.temple!.templeDataList[i].address);
-                              print(widget.temple!.templeDataList[i + 1].name);
-                              print(widget.temple!.templeDataList[i + 1].address);
+                              LifetimeDialog(
+                                context: context,
+                                widget: TempleDirectionsMapAlert(
+                                  origin: widget.temple!.templeDataList[i].address,
+                                  destination: widget.temple!.templeDataList[i + 1].address,
+                                ),
+                              );
                             },
                             icon: const Icon(Icons.arrow_downward),
                           ),
