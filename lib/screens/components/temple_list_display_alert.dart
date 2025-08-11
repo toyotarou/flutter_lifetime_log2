@@ -149,7 +149,15 @@ class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
                     children: <Widget>[
                       Row(
                         children: <Widget>[
-                          IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_downward)),
+                          IconButton(
+                            onPressed: () {
+                              print(widget.temple!.templeDataList[i].name);
+                              print(widget.temple!.templeDataList[i].address);
+                              print(widget.temple!.templeDataList[i + 1].name);
+                              print(widget.temple!.templeDataList[i + 1].address);
+                            },
+                            icon: const Icon(Icons.arrow_downward),
+                          ),
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
