@@ -48,6 +48,8 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
 
   List<LatLng> latLngList = <LatLng>[];
 
+  List<Marker> directionGoalMarkerList = <Marker>[];
+
   ///
   @override
   void initState() {
@@ -106,6 +108,8 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
 
     makeMinMaxLatLng();
 
+    makeDirectionGoalMarker();
+
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -134,7 +138,87 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
                   // ignore: always_specify_types
                   PolylineLayer(polylines: makeTransportationPolyline()),
                 ],
+
+                MarkerLayer(markers: directionGoalMarkerList),
               ],
+            ),
+
+            Positioned(
+              top: 5,
+              right: 5,
+              left: 5,
+
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    width: context.screenSize.width,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+
+                    child: DefaultTextStyle(
+                      style: const TextStyle(fontSize: 12),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              CircleAvatar(
+                                radius: 15,
+                                backgroundColor: Colors.redAccent.withValues(alpha: 0.4),
+                                child: const Text('START', style: TextStyle(color: Colors.white, fontSize: 8)),
+                              ),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(widget.fromSpot.name),
+                                    Text(widget.fromSpot.address),
+                                    Text(
+                                      '${widget.fromSpot.lat} / ${widget.fromSpot.lng}',
+
+                                      style: const TextStyle(fontSize: 10),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          Row(
+                            children: <Widget>[
+                              CircleAvatar(
+                                radius: 15,
+                                backgroundColor: Colors.redAccent.withValues(alpha: 0.4),
+                                child: const Text('GOAL', style: TextStyle(color: Colors.white, fontSize: 8)),
+                              ),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                                  children: <Widget>[
+                                    Text(widget.toSpot.name),
+                                    Text(widget.toSpot.address),
+                                    Text(
+                                      '${widget.toSpot.lat} / ${widget.toSpot.lng}',
+                                      style: const TextStyle(fontSize: 10),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
 
             if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
@@ -203,5 +287,30 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
 
     // ignore: always_specify_types
     return <Polyline<Object>>[Polyline(points: latLngList, color: twelveColor[0], strokeWidth: 5)];
+  }
+
+  ///
+  void makeDirectionGoalMarker() {
+    directionGoalMarkerList.clear();
+
+    if (stepLocationList.isNotEmpty) {
+      final List<Color> twelveColor = utility.getTwelveColor();
+
+      final Map<String, Map<String, String>> stepLocationListLast = stepLocationList.last;
+
+      if (stepLocationListLast['end'] != null) {
+        directionGoalMarkerList.add(
+          Marker(
+            point: LatLng(
+              stepLocationListLast['end']!['latitude']!.toDouble(),
+
+              stepLocationListLast['end']!['longitude']!.toDouble(),
+            ),
+
+            child: Icon(Icons.flag, color: twelveColor[0]),
+          ),
+        );
+      }
+    }
   }
 }
