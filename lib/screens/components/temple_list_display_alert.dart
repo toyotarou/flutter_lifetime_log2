@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../models/temple_model.dart';
+import '../../models/transportation_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'temple_directions_map_alert.dart';
@@ -152,15 +153,34 @@ class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
                         children: <Widget>[
                           IconButton(
                             onPressed: () {
+                              appParamNotifier.setSelectedTempleDirection(direction: 'direction_$i');
+
+                              final SpotDataModel fromSpot = SpotDataModel(
+                                name: widget.temple!.templeDataList[i].name,
+                                address: widget.temple!.templeDataList[i].address,
+                                lat: widget.temple!.templeDataList[i].latitude,
+                                lng: widget.temple!.templeDataList[i].longitude,
+                              );
+
+                              final SpotDataModel toSpot = SpotDataModel(
+                                name: widget.temple!.templeDataList[i + 1].name,
+                                address: widget.temple!.templeDataList[i + 1].address,
+                                lat: widget.temple!.templeDataList[i + 1].latitude,
+                                lng: widget.temple!.templeDataList[i + 1].longitude,
+                              );
+
                               LifetimeDialog(
                                 context: context,
-                                widget: TempleDirectionsMapAlert(
-                                  origin: widget.temple!.templeDataList[i].address,
-                                  destination: widget.temple!.templeDataList[i + 1].address,
-                                ),
+                                widget: TempleDirectionsMapAlert(fromSpot: fromSpot, toSpot: toSpot),
                               );
                             },
-                            icon: const Icon(Icons.arrow_downward),
+                            icon: Icon(
+                              Icons.arrow_downward,
+
+                              color: (appParamState.selectedTempleDirection == 'direction_$i')
+                                  ? Colors.yellowAccent
+                                  : Colors.white,
+                            ),
                           ),
 
                           Row(

@@ -63,6 +63,9 @@ class AppParamState with _$AppParamState {
 
     ///
     TempleDataModel? selectedTemple,
+
+    ///
+    @Default('') String selectedTempleDirection,
   }) = _AppParamState;
 }
 
@@ -181,4 +184,8 @@ class AppParam extends _$AppParam {
 
   ///
   void setSelectedTemple({required TempleDataModel temple}) => state = state.copyWith(selectedTemple: temple);
+
+  ///
+  void setSelectedTempleDirection({required String direction}) =>
+      state = state.copyWith(selectedTempleDirection: direction);
 }

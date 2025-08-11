@@ -9,6 +9,8 @@ import '../../models/temple_model.dart';
 import '../../models/temple_photo_model.dart';
 import '../../models/transportation_model.dart';
 import '../../utility/utility.dart';
+import '../parts/lifetime_dialog.dart';
+import 'temple_directions_map_alert.dart';
 
 class TemplePhotoListDisplayAlert extends ConsumerStatefulWidget {
   const TemplePhotoListDisplayAlert({super.key, required this.temple});
@@ -117,34 +119,68 @@ class _TemplePhotoListDisplayAlertState extends ConsumerState<TemplePhotoListDis
       height: 100,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(border: Border.all(color: Colors.white)),
-      child: SingleChildScrollView(
-        child: Column(
-          children: nearStationList.map((MapEntry<StationModel, double> e) {
-            return Container(
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
-              ),
-              padding: const EdgeInsets.all(5),
+      child: (nearStationList.isNotEmpty)
+          ? SingleChildScrollView(
               child: Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[Text(e.key.stationName), Text('${e.value.toInt()} m')],
-                  ),
+                children: nearStationList.map((MapEntry<StationModel, double> e) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
+                    ),
+                    padding: const EdgeInsets.all(5),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Column(
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[Text(e.key.stationName), Text('${e.value.toInt()} m')],
+                              ),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(e.key.trainName ?? '', style: const TextStyle(fontSize: 10)),
-                      const SizedBox.shrink(),
-                    ],
-                  ),
-                ],
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(e.key.trainName ?? '', style: const TextStyle(fontSize: 10)),
+                                  const SizedBox.shrink(),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(width: 20),
+
+                        GestureDetector(
+                          onTap: () {
+                            final SpotDataModel fromSpot = SpotDataModel(
+                              name: e.key.stationName,
+                              address: e.key.address,
+                              lat: e.key.lat,
+                              lng: e.key.lng,
+                            );
+
+                            final SpotDataModel toSpot = SpotDataModel(
+                              name: widget.temple.name,
+                              address: widget.temple.address,
+                              lat: widget.temple.latitude,
+                              lng: widget.temple.longitude,
+                            );
+
+                            LifetimeDialog(
+                              context: context,
+                              widget: TempleDirectionsMapAlert(fromSpot: fromSpot, toSpot: toSpot),
+                            );
+                          },
+                          child: Icon(Icons.stacked_line_chart, color: Colors.white.withValues(alpha: 0.6)),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
               ),
-            );
-          }).toList(),
-        ),
-      ),
+            )
+          : const Text('no exists near station'),
     );
   }
 

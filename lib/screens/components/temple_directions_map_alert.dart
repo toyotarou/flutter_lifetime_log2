@@ -10,14 +10,15 @@ import '../../controllers/_get_data/directions/directions.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/direction_model.dart';
+import '../../models/transportation_model.dart';
 import '../../utility/tile_provider.dart';
 import '../../utility/utility.dart';
 
 class TempleDirectionsMapAlert extends ConsumerStatefulWidget {
-  const TempleDirectionsMapAlert({super.key, required this.origin, required this.destination});
+  const TempleDirectionsMapAlert({super.key, required this.fromSpot, required this.toSpot});
 
-  final String origin;
-  final String destination;
+  final SpotDataModel fromSpot;
+  final SpotDataModel toSpot;
 
   @override
   ConsumerState<TempleDirectionsMapAlert> createState() => _TempleDirectionsMapAlertState();
@@ -55,8 +56,8 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
     // ignore: always_specify_types
     Future(() async {
       await directionsNotifier.fetch(
-        origin: widget.origin,
-        destination: widget.destination,
+        origin: widget.fromSpot.address,
+        destination: widget.toSpot.address,
         apiKey: dotenv.env['GOOGLE_API_KEY']!,
       );
 
@@ -136,40 +137,6 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
               ],
             ),
 
-            // Column(
-            //   children: <Widget>[
-            //     Expanded(
-            //       child: stepLocationList.isEmpty
-            //           ? const Center(child: Text('データ未取得'))
-            //           : ListView.builder(
-            //               itemCount: stepLocationList.length,
-            //               itemBuilder: (BuildContext context, int index) {
-            //                 final Map<String, Map<String, String>> item = stepLocationList[index];
-            //                 final Map<String, String> start = item['start']!;
-            //                 final Map<String, String> end = item['end']!;
-            //
-            //                 return Padding(
-            //                   padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-            //                   child: Column(
-            //                     crossAxisAlignment: CrossAxisAlignment.start,
-            //                     children: <Widget>[
-            //                       Text(
-            //                         '${index + 1}    start    lat: ${start['latitude']}, lng: ${start['longitude']}',
-            //                         style: const TextStyle(fontSize: 14),
-            //                       ),
-            //                       Text(
-            //                         '     end      lat: ${end['latitude']}, lng: ${end['longitude']}',
-            //                         style: const TextStyle(fontSize: 14),
-            //                       ),
-            //                       const Divider(),
-            //                     ],
-            //                   ),
-            //                 );
-            //               },
-            //             ),
-            //     ),
-            //   ],
-            // ),
             if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
           ],
         ),
