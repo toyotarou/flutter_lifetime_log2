@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
+import '../../models/salary_model.dart';
 import '../../utility/utility.dart';
+import '../parts/lifetime_dialog.dart';
+import 'monthly_credit_summary_display_alert.dart';
 
 class MonthlyMoneySpendSummaryAlert extends ConsumerStatefulWidget {
   const MonthlyMoneySpendSummaryAlert({super.key, required this.yearmonth});
@@ -44,7 +47,20 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
                 children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[Text(widget.yearmonth), const SizedBox.shrink()],
+                    children: <Widget>[
+                      Text(widget.yearmonth),
+
+                      ChoiceChip(
+                        label: const Text('増加分除外', style: TextStyle(fontSize: 10)),
+                        backgroundColor: Colors.black.withValues(alpha: 0.1),
+                        selectedColor: Colors.orangeAccent.withValues(alpha: 0.2),
+                        selected: appParamState.isMonthlySpendSummaryMinusJogai,
+                        onSelected: (bool isSelected) {
+                          appParamNotifier.setIsMonthlySpendSummaryMinusJogai(flag: isSelected);
+                        },
+                        showCheckmark: false,
+                      ),
+                    ],
                   ),
 
                   Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
@@ -60,7 +76,7 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
                     children: <Widget>[
                       const SizedBox.shrink(),
-                      Text(monthlySum.toString().toCurrency(), style: const TextStyle(fontSize: 12)),
+                      Text('list total : ${monthlySum.toString().toCurrency()}', style: const TextStyle(fontSize: 12)),
                     ],
                   ),
                   const SizedBox(height: 5),
@@ -103,7 +119,78 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
     appParamState.keepMoneySpendItemMap.forEach((String key, MoneySpendItemModel value) {
       if (moneySpendSummaryMap[value.name] != null) {
-        listSum += moneySpendSummaryMap[value.name]!;
+        final int moneySpendSummary = moneySpendSummaryMap[value.name]!;
+
+        bool flag = true;
+
+        if (appParamState.isMonthlySpendSummaryMinusJogai && moneySpendSummary < 0) {
+          flag = false;
+        }
+
+        if (flag) {
+          listSum += moneySpendSummary;
+
+          list.add(
+            Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+              ),
+              padding: const EdgeInsets.all(5),
+
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                children: <Widget>[
+                  Text(value.name),
+                  Row(
+                    children: <Widget>[
+                      Text(moneySpendSummary.toString().toCurrency()),
+                      SizedBox(
+                        width: 40,
+
+                        child: Container(
+                          alignment: Alignment.topRight,
+                          child: (value.name == 'クレジット')
+                              ? GestureDetector(
+                                  onTap: () {
+                                    LifetimeDialog(
+                                      context: context,
+                                      widget: MonthlyCreditSummaryDisplayAlert(yearmonth: widget.yearmonth),
+                                    );
+                                  },
+                                  child: Icon(Icons.star, color: Colors.white.withValues(alpha: 0.4)),
+                                )
+                              : const Icon(Icons.square_outlined, color: Colors.transparent),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      }
+    });
+
+    ///////////////////////////////////////////////////////////////// salary start
+
+    if (!appParamState.isMonthlySpendSummaryMinusJogai) {
+      List<SalaryModel> salaryModelList = <SalaryModel>[];
+      appParamState.keepSalaryMap.forEach((String key, List<SalaryModel> value) {
+        if ('${key.split('-')[0]}-${key.split('-')[1]}' == widget.yearmonth) {
+          salaryModelList = value;
+        }
+      });
+
+      int salary = 0;
+
+      if (salaryModelList.isNotEmpty) {
+        for (final SalaryModel element in salaryModelList) {
+          salary += element.salary;
+        }
+
+        listSum += salary * -1;
 
         list.add(
           Container(
@@ -115,12 +202,17 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-              children: <Widget>[Text(value.name), Text(moneySpendSummaryMap[value.name].toString().toCurrency())],
+              children: <Widget>[
+                const Text('収入'),
+                Row(children: <Widget>[Text((salary * -1).toString().toCurrency()), const SizedBox(width: 40)]),
+              ],
             ),
           ),
         );
       }
-    });
+    }
+
+    ///////////////////////////////////////////////////////////////// salary end
 
     setState(() => monthlySum = listSum);
 

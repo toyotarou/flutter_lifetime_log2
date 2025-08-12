@@ -68,6 +68,9 @@ class AppParamState with _$AppParamState {
 
     ///
     @Default('') String selectedTempleDirection,
+
+    ///
+    @Default(false) bool isMonthlySpendSummaryMinusJogai,
   }) = _AppParamState;
 }
 
@@ -192,4 +195,8 @@ class AppParam extends _$AppParam {
   ///
   void setSelectedTempleDirection({required String direction}) =>
       state = state.copyWith(selectedTempleDirection: direction);
+
+  ///
+  void setIsMonthlySpendSummaryMinusJogai({required bool flag}) =>
+      state = state.copyWith(isMonthlySpendSummaryMinusJogai: flag);
 }

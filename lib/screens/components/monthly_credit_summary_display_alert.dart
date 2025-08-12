@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/credit_summary_model.dart';
+import '../../models/money_spend_model.dart';
 
 class MonthlyCreditSummaryDisplayAlert extends ConsumerStatefulWidget {
   const MonthlyCreditSummaryDisplayAlert({super.key, required this.yearmonth});
@@ -116,13 +117,13 @@ class _MonthlyCreditSummaryDisplayAlertState extends ConsumerState<MonthlyCredit
     setState(() => monthlyCreditSum = sum);
 
     int sum2 = 0;
-    appParamState.keepMoneySpendMap.forEach((key, value) {
+    appParamState.keepMoneySpendMap.forEach((String key, List<MoneySpendModel> value) {
       if ('${key.split('-')[0]}-${key.split('-')[1]}' == widget.yearmonth) {
-        value.forEach((element) {
+        for (final MoneySpendModel element in value) {
           if (element.item == 'クレジット') {
             sum2 += element.price;
           }
-        });
+        }
       }
     });
 

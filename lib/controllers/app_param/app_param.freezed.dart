@@ -75,6 +75,10 @@ mixin _$AppParamState {
   ///
   String get selectedTempleDirection => throw _privateConstructorUsedError;
 
+  ///
+  bool get isMonthlySpendSummaryMinusJogai =>
+      throw _privateConstructorUsedError;
+
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -117,7 +121,8 @@ abstract class $AppParamStateCopyWith<$Res> {
       List<String> monthlyGeolocMapSelectedDateList,
       int selectedGraphYear,
       TempleDataModel? selectedTemple,
-      String selectedTempleDirection});
+      String selectedTempleDirection,
+      bool isMonthlySpendSummaryMinusJogai});
 }
 
 /// @nodoc
@@ -164,6 +169,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? selectedGraphYear = null,
     Object? selectedTemple = freezed,
     Object? selectedTempleDirection = null,
+    Object? isMonthlySpendSummaryMinusJogai = null,
   }) {
     return _then(_value.copyWith(
       keepHolidayList: null == keepHolidayList
@@ -282,6 +288,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.selectedTempleDirection
           : selectedTempleDirection // ignore: cast_nullable_to_non_nullable
               as String,
+      isMonthlySpendSummaryMinusJogai: null == isMonthlySpendSummaryMinusJogai
+          ? _value.isMonthlySpendSummaryMinusJogai
+          : isMonthlySpendSummaryMinusJogai // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -323,7 +333,8 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       List<String> monthlyGeolocMapSelectedDateList,
       int selectedGraphYear,
       TempleDataModel? selectedTemple,
-      String selectedTempleDirection});
+      String selectedTempleDirection,
+      bool isMonthlySpendSummaryMinusJogai});
 }
 
 /// @nodoc
@@ -368,6 +379,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? selectedGraphYear = null,
     Object? selectedTemple = freezed,
     Object? selectedTempleDirection = null,
+    Object? isMonthlySpendSummaryMinusJogai = null,
   }) {
     return _then(_$AppParamStateImpl(
       keepHolidayList: null == keepHolidayList
@@ -486,6 +498,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value.selectedTempleDirection
           : selectedTempleDirection // ignore: cast_nullable_to_non_nullable
               as String,
+      isMonthlySpendSummaryMinusJogai: null == isMonthlySpendSummaryMinusJogai
+          ? _value.isMonthlySpendSummaryMinusJogai
+          : isMonthlySpendSummaryMinusJogai // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -537,7 +553,8 @@ class _$AppParamStateImpl implements _AppParamState {
       final List<String> monthlyGeolocMapSelectedDateList = const <String>[],
       this.selectedGraphYear = 0,
       this.selectedTemple,
-      this.selectedTempleDirection = ''})
+      this.selectedTempleDirection = '',
+      this.isMonthlySpendSummaryMinusJogai = false})
       : _keepHolidayList = keepHolidayList,
         _keepWalkModelMap = keepWalkModelMap,
         _keepMoneyMap = keepMoneyMap,
@@ -803,9 +820,14 @@ class _$AppParamStateImpl implements _AppParamState {
   @JsonKey()
   final String selectedTempleDirection;
 
+  ///
+  @override
+  @JsonKey()
+  final bool isMonthlySpendSummaryMinusJogai;
+
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepStockNameMap: $keepStockNameMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepStockNameMap: $keepStockNameMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai)';
   }
 
   @override
@@ -872,7 +894,11 @@ class _$AppParamStateImpl implements _AppParamState {
                 other.selectedTemple == selectedTemple) &&
             (identical(
                     other.selectedTempleDirection, selectedTempleDirection) ||
-                other.selectedTempleDirection == selectedTempleDirection));
+                other.selectedTempleDirection == selectedTempleDirection) &&
+            (identical(other.isMonthlySpendSummaryMinusJogai,
+                    isMonthlySpendSummaryMinusJogai) ||
+                other.isMonthlySpendSummaryMinusJogai ==
+                    isMonthlySpendSummaryMinusJogai));
   }
 
   @override
@@ -906,7 +932,8 @@ class _$AppParamStateImpl implements _AppParamState {
         const DeepCollectionEquality().hash(_monthlyGeolocMapSelectedDateList),
         selectedGraphYear,
         selectedTemple,
-        selectedTempleDirection
+        selectedTempleDirection,
+        isMonthlySpendSummaryMinusJogai
       ]);
 
   /// Create a copy of AppParamState
@@ -948,7 +975,8 @@ abstract class _AppParamState implements AppParamState {
       final List<String> monthlyGeolocMapSelectedDateList,
       final int selectedGraphYear,
       final TempleDataModel? selectedTemple,
-      final String selectedTempleDirection}) = _$AppParamStateImpl;
+      final String selectedTempleDirection,
+      final bool isMonthlySpendSummaryMinusJogai}) = _$AppParamStateImpl;
 
   @override
   List<String> get keepHolidayList;
@@ -1020,6 +1048,10 @@ abstract class _AppParamState implements AppParamState {
   ///
   @override
   String get selectedTempleDirection;
+
+  ///
+  @override
+  bool get isMonthlySpendSummaryMinusJogai;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.

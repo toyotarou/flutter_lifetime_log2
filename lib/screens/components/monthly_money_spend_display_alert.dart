@@ -73,7 +73,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
                   children: <Widget>[
                     const SizedBox.shrink(),
-                    Text(monthlySum.toString().toCurrency(), style: const TextStyle(fontSize: 12)),
+                    Text('spend : ${monthlySum.toString().toCurrency()}', style: const TextStyle(fontSize: 12)),
                   ],
                 ),
                 const SizedBox(height: 5),
@@ -89,13 +89,15 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   Widget displayMonthlyMoneySpendList() {
     final List<Widget> list = <Widget>[];
 
-    const int listSum = 0;
+    int listSum = 0;
 
     final int endNum = DateTime(
       widget.yearmonth.split('-')[0].toInt(),
       widget.yearmonth.split('-')[1].toInt() + 1,
       0,
     ).day;
+
+    final List<int> listSumList = <int>[];
 
     for (int i = 1; i <= endNum; i++) {
       final String date = '${widget.yearmonth}-${i.toString().padLeft(2, '0')}';
@@ -115,6 +117,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
       if (appParamState.keepWalkModelMap[date] != null) {
         spend = appParamState.keepWalkModelMap[date]!.spend.replaceAll(',', '').replaceAll('円', '').toInt();
       }
+
+      listSumList.add(spend);
 
       final int diff = spend - sum;
 
@@ -237,6 +241,10 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
           ],
         ),
       );
+    }
+
+    for (final int element in listSumList) {
+      listSum += element;
     }
 
     setState(() => monthlySum = listSum);
