@@ -30,7 +30,7 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
 
       body: SafeArea(
         child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white, fontSize: 12),
 
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -39,7 +39,10 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(widget.yearmonth),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[const Text('クレジット'), Text(widget.yearmonth)],
+                    ),
 
                     ChoiceChip(
                       label: const Text('summary', style: TextStyle(fontSize: 10)),
@@ -65,9 +68,17 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text('spend : ${monthlySpendCreditSum.toString().toCurrency()}'),
-                    Text('credit : ${monthlyCreditSum.toString().toCurrency()}'),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text('credit : ${monthlyCreditSum.toString().toCurrency()}'),
+
+                        const Text('over 10,000', style: TextStyle(color: Colors.orangeAccent, fontSize: 12)),
+                      ],
+                    ),
                   ],
                 ),
               ],
@@ -84,6 +95,8 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
 
     int sum = 0;
     appParamState.keepCreditSummaryMap[widget.yearmonth]?.forEach((CreditSummaryModel element) {
+      final Color listColor = (element.price >= 10000) ? Colors.orangeAccent : Colors.white;
+
       list.add(
         Container(
           decoration: BoxDecoration(
@@ -92,8 +105,9 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
           padding: const EdgeInsets.all(5),
 
           child: DefaultTextStyle(
-            style: const TextStyle(fontSize: 12),
+            style: TextStyle(color: listColor, fontSize: 12),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Expanded(child: Text(element.useDate)),
                 Expanded(

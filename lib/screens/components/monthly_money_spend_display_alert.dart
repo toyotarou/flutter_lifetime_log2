@@ -91,8 +91,6 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   Widget displayMonthlyMoneySpendList() {
     final List<Widget> list = <Widget>[];
 
-    int listSum = 0;
-
     final int endNum = DateTime(
       widget.yearmonth.split('-')[0].toInt(),
       widget.yearmonth.split('-')[1].toInt() + 1,
@@ -245,9 +243,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
       );
     }
 
-    for (final int element in listSumList) {
-      listSum += element;
-    }
+    final int listSum = utility.getListSum<int>(listSumList, (int e) => e);
 
     setState(() => monthlySum = listSum);
 

@@ -256,6 +256,12 @@ class Utility {
       return latDiff <= latRange && lngDiff <= lngRange;
     }).toList();
   }
+
+  ///
+  int getListSum<T>(List<T> list, int Function(T) selector) {
+    // ignore: always_specify_types
+    return list.fold<int>(0, (int sum, element) => sum + selector(element));
+  }
 }
 
 class NavigationService {

@@ -74,11 +74,7 @@ class Money extends _$Money {
             prices.add(exValue[k].toInt());
           }
 
-          int sum = 0;
-
-          for (final int element in prices) {
-            sum += element;
-          }
+          final int sum = utility.getListSum<int>(prices, (int e) => e);
 
           ////////////////////////////////////////////
 

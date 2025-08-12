@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/credit_summary_model.dart';
+import '../../utility/utility.dart';
 
 class MonthlyCreditSummaryAlert extends ConsumerStatefulWidget {
   const MonthlyCreditSummaryAlert({super.key, required this.yearmonth});
@@ -20,6 +21,8 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
 
   int listSum = 0;
 
+  Utility utility = Utility();
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -30,7 +33,7 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
 
       body: SafeArea(
         child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white, fontSize: 12),
 
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -38,7 +41,13 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.yearmonth), const SizedBox.shrink()],
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[const Text('クレジット'), Text(widget.yearmonth)],
+                    ),
+                    const SizedBox.shrink(),
+                  ],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
@@ -49,7 +58,10 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[const SizedBox.shrink(), Text('sum : ${listSum.toString().toCurrency()}')],
+                  children: <Widget>[
+                    const Text('over 30,000', style: TextStyle(color: Colors.orangeAccent, fontSize: 12)),
+                    Text('sum : ${listSum.toString().toCurrency()}'),
+                  ],
                 ),
               ],
             ),
@@ -113,6 +125,8 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
 
           totalMap[key] = sum;
 
+          final Color listColor = (sum >= 30000) ? Colors.orangeAccent : Colors.white;
+
           list.add(
             Container(
               decoration: BoxDecoration(
@@ -120,7 +134,7 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
               ),
               padding: const EdgeInsets.all(5),
               child: DefaultTextStyle(
-                style: const TextStyle(fontSize: 12),
+                style: TextStyle(fontSize: 12, color: listColor),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[Text(key), Text(sum.toString().toCurrency())],
@@ -132,8 +146,7 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
       });
     });
 
-    int total = 0;
-    totalMap.forEach((String key, int value) => total += value);
+    final int total = utility.getListSum<int>(totalMap.values.toList(), (int e) => e);
 
     setState(() => listSum = total);
 

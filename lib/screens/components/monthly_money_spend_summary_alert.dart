@@ -48,10 +48,16 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(widget.yearmonth),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[Text(widget.yearmonth), const Text('使用金額')],
+                      ),
 
                       ChoiceChip(
-                        label: const Text('増加分除外', style: TextStyle(fontSize: 10)),
+                        label: Text(
+                          (appParamState.isMonthlySpendSummaryMinusJogai) ? '増加分除外中' : '増加分除外',
+                          style: const TextStyle(fontSize: 10),
+                        ),
                         backgroundColor: Colors.black.withValues(alpha: 0.1),
                         selectedColor: Colors.orangeAccent.withValues(alpha: 0.2),
                         selected: appParamState.isMonthlySpendSummaryMinusJogai,
@@ -75,7 +81,8 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
                     children: <Widget>[
-                      const SizedBox.shrink(),
+                      const Text('over 30,000', style: TextStyle(color: Colors.orangeAccent, fontSize: 12)),
+
                       Text('list total : ${monthlySum.toString().toCurrency()}', style: const TextStyle(fontSize: 12)),
                     ],
                   ),
@@ -130,6 +137,8 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
         if (flag) {
           listSum += moneySpendSummary;
 
+          final Color listColor = (moneySpendSummary >= 30000) ? Colors.orangeAccent : Colors.white;
+
           list.add(
             Container(
               decoration: BoxDecoration(
@@ -137,35 +146,38 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
               ),
               padding: const EdgeInsets.all(5),
 
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: DefaultTextStyle(
+                style: TextStyle(color: listColor, fontSize: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-                children: <Widget>[
-                  Text(value.name),
-                  Row(
-                    children: <Widget>[
-                      Text(moneySpendSummary.toString().toCurrency()),
-                      SizedBox(
-                        width: 40,
+                  children: <Widget>[
+                    Text(value.name),
+                    Row(
+                      children: <Widget>[
+                        Text(moneySpendSummary.toString().toCurrency()),
+                        SizedBox(
+                          width: 40,
 
-                        child: Container(
-                          alignment: Alignment.topRight,
-                          child: (value.name == 'クレジット' && widget.yearmonth != DateTime.now().yyyymm)
-                              ? GestureDetector(
-                                  onTap: () {
-                                    LifetimeDialog(
-                                      context: context,
-                                      widget: MonthlyCreditDisplayAlert(yearmonth: widget.yearmonth),
-                                    );
-                                  },
-                                  child: Icon(Icons.star, color: Colors.white.withValues(alpha: 0.4)),
-                                )
-                              : const Icon(Icons.square_outlined, color: Colors.transparent),
+                          child: Container(
+                            alignment: Alignment.topRight,
+                            child: (value.name == 'クレジット' && widget.yearmonth != DateTime.now().yyyymm)
+                                ? GestureDetector(
+                                    onTap: () {
+                                      LifetimeDialog(
+                                        context: context,
+                                        widget: MonthlyCreditDisplayAlert(yearmonth: widget.yearmonth),
+                                      );
+                                    },
+                                    child: Icon(Icons.star, color: Colors.white.withValues(alpha: 0.4)),
+                                  )
+                                : const Icon(Icons.square_outlined, color: Colors.transparent),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           );
