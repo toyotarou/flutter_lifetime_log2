@@ -50,10 +50,7 @@ class CreditSummary extends _$CreditSummary {
         }
       });
 
-      return state.copyWith(
-        creditSummaryList: <CreditSummaryModel>[],
-        creditSummaryMap: <String, List<CreditSummaryModel>>{},
-      );
+      return state.copyWith(creditSummaryList: list, creditSummaryMap: map);
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる

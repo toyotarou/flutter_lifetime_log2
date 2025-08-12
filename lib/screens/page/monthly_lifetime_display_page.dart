@@ -10,6 +10,7 @@ import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
 import '../components/money_data_input_alert.dart';
 import '../components/monthly_assets_display_alert.dart';
+import '../components/monthly_credit_summary_display_alert.dart';
 import '../components/monthly_geoloc_map_display_alert.dart';
 import '../components/monthly_lifetime_display_alert.dart';
 import '../components/monthly_money_spend_display_alert.dart';
@@ -129,6 +130,42 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                           Row(
                             children: <Widget>[
+                              GestureDetector(
+                                onTap: () {
+                                  bool flag = false;
+                                  if (appParamState.keepCreditSummaryMap[widget.yearmonth] != null) {
+                                    flag = true;
+                                  }
+
+                                  if (widget.yearmonth == DateTime.now().yyyymm || !flag) {
+                                    // ignore: always_specify_types
+                                    Future.delayed(
+                                      Duration.zero,
+                                      () => error_dialog(
+                                        // ignore: use_build_context_synchronously
+                                        context: context,
+                                        title: '表示できません。',
+                                        content: '今月分のcreditSummaryが存在しません。',
+                                      ),
+                                    );
+
+                                    return;
+                                  }
+
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: MonthlyCreditSummaryDisplayAlert(yearmonth: widget.yearmonth),
+                                  );
+                                },
+                                child: Icon(
+                                  FontAwesomeIcons.creditCard,
+                                  size: 20,
+                                  color: Colors.white.withValues(alpha: 0.3),
+                                ),
+                              ),
+
+                              const SizedBox(width: 20),
+
                               GestureDetector(
                                 onTap: () {
                                   LifetimeDialog(
