@@ -36,7 +36,18 @@ class _MonthlyCreditSummaryDisplayAlertState extends ConsumerState<MonthlyCredit
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.yearmonth), const SizedBox.shrink()],
+                  children: <Widget>[
+                    Text(widget.yearmonth),
+
+                    ChoiceChip(
+                      label: const Text('summary', style: TextStyle(fontSize: 10)),
+                      backgroundColor: Colors.black.withValues(alpha: 0.1),
+                      selectedColor: Colors.greenAccent.withValues(alpha: 0.2),
+                      selected: true,
+                      onSelected: (bool isSelected) {},
+                      showCheckmark: false,
+                    ),
+                  ],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
