@@ -50,6 +50,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                       selectedColor: Colors.greenAccent.withValues(alpha: 0.2),
                       selected: true,
                       onSelected: (bool isSelected) {
+                        appParamNotifier.setIsMonthlySpendSummaryMinusJogai(flag: false);
+
                         LifetimeDialog(
                           context: context,
                           widget: MonthlyMoneySpendSummaryAlert(yearmonth: widget.yearmonth),

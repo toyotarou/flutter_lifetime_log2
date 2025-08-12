@@ -5,18 +5,20 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/credit_summary_model.dart';
 import '../../models/money_spend_model.dart';
+import '../parts/lifetime_dialog.dart';
+import 'monthly_credit_summary_alert.dart';
 
-class MonthlyCreditSummaryDisplayAlert extends ConsumerStatefulWidget {
-  const MonthlyCreditSummaryDisplayAlert({super.key, required this.yearmonth});
+class MonthlyCreditDisplayAlert extends ConsumerStatefulWidget {
+  const MonthlyCreditDisplayAlert({super.key, required this.yearmonth});
 
   final String yearmonth;
 
   @override
-  ConsumerState<MonthlyCreditSummaryDisplayAlert> createState() => _MonthlyCreditSummaryDisplayAlertState();
+  ConsumerState<MonthlyCreditDisplayAlert> createState() => _MonthlyCreditDisplayAlertState();
 }
 
-class _MonthlyCreditSummaryDisplayAlertState extends ConsumerState<MonthlyCreditSummaryDisplayAlert>
-    with ControllersMixin<MonthlyCreditSummaryDisplayAlert> {
+class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplayAlert>
+    with ControllersMixin<MonthlyCreditDisplayAlert> {
   int monthlyCreditSum = 0;
   int monthlySpendCreditSum = 0;
 
@@ -44,7 +46,12 @@ class _MonthlyCreditSummaryDisplayAlertState extends ConsumerState<MonthlyCredit
                       backgroundColor: Colors.black.withValues(alpha: 0.1),
                       selectedColor: Colors.greenAccent.withValues(alpha: 0.2),
                       selected: true,
-                      onSelected: (bool isSelected) {},
+                      onSelected: (bool isSelected) {
+                        LifetimeDialog(
+                          context: context,
+                          widget: MonthlyCreditSummaryAlert(yearmonth: widget.yearmonth),
+                        );
+                      },
                       showCheckmark: false,
                     ),
                   ],

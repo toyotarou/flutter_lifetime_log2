@@ -7,7 +7,7 @@ import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
-import 'monthly_credit_summary_display_alert.dart';
+import 'monthly_credit_display_alert.dart';
 
 class MonthlyMoneySpendSummaryAlert extends ConsumerStatefulWidget {
   const MonthlyMoneySpendSummaryAlert({super.key, required this.yearmonth});
@@ -150,12 +150,12 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
                         child: Container(
                           alignment: Alignment.topRight,
-                          child: (value.name == 'クレジット')
+                          child: (value.name == 'クレジット' && widget.yearmonth != DateTime.now().yyyymm)
                               ? GestureDetector(
                                   onTap: () {
                                     LifetimeDialog(
                                       context: context,
-                                      widget: MonthlyCreditSummaryDisplayAlert(yearmonth: widget.yearmonth),
+                                      widget: MonthlyCreditDisplayAlert(yearmonth: widget.yearmonth),
                                     );
                                   },
                                   child: Icon(Icons.star, color: Colors.white.withValues(alpha: 0.4)),
