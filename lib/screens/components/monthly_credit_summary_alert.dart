@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../extensions/extensions.dart';
+import '../../models/credit_summary_model.dart';
 
 class MonthlyCreditSummaryAlert extends ConsumerStatefulWidget {
   const MonthlyCreditSummaryAlert({super.key, required this.yearmonth});
@@ -14,21 +16,15 @@ class MonthlyCreditSummaryAlert extends ConsumerStatefulWidget {
 
 class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummaryAlert>
     with ControllersMixin<MonthlyCreditSummaryAlert> {
-  Map<String, List<int>> creditSummaryMap = {};
+  Map<String, List<int>> creditSummaryMap = <String, List<int>>{};
 
-  ///
-  @override
-  void initState() {
-    super.initState();
-
-    appParamState.keepCreditSummaryMap[widget.yearmonth]?.forEach((element) {
-      (creditSummaryMap[element.item] ??= <int>[]).add(element.price);
-    });
-  }
+  int listSum = 0;
 
   ///
   @override
   Widget build(BuildContext context) {
+    makeCreditSummaryMap();
+
     return Scaffold(
       backgroundColor: Colors.transparent,
 
@@ -42,12 +38,19 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.yearmonth), SizedBox.shrink()],
+                  children: <Widget>[Text(widget.yearmonth), const SizedBox.shrink()],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
                 Expanded(child: displayCreditSummaryList()),
+
+                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[const SizedBox.shrink(), Text('sum : ${listSum.toString().toCurrency()}')],
+                ),
               ],
             ),
           ),
@@ -57,8 +60,82 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
   }
 
   ///
+  List<String> getCreditItemList() {
+    final List<String> ret = <String>[];
+
+    const String str = '''
+    楽天キャッシュ
+    食費
+    交通費
+    交際費
+    支払い
+    遊興費
+    教育費
+    設備費
+    投資
+    ジム会費
+    ふるさと納税
+    衣料費
+    雑費
+    美容費
+    医療費
+    水道光熱費
+    通信費
+    不明
+    ''';
+
+    final List<String> exStr = str.split('\n');
+
+    for (final String element in exStr) {
+      if (element != '') {
+        ret.add(element.trim());
+      }
+    }
+
+    return ret;
+  }
+
+  ///
   Widget displayCreditSummaryList() {
+    listSum = 0;
+
     final List<Widget> list = <Widget>[];
+
+    final Map<String, int> totalMap = <String, int>{};
+
+    getCreditItemList().forEach((String element2) {
+      creditSummaryMap.forEach((String key, List<int> value) {
+        if (element2 == key) {
+          int sum = 0;
+          for (final int element in value) {
+            sum += element;
+          }
+
+          totalMap[key] = sum;
+
+          list.add(
+            Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+              ),
+              padding: const EdgeInsets.all(5),
+              child: DefaultTextStyle(
+                style: const TextStyle(fontSize: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[Text(key), Text(sum.toString().toCurrency())],
+                ),
+              ),
+            ),
+          );
+        }
+      });
+    });
+
+    int total = 0;
+    totalMap.forEach((String key, int value) => total += value);
+
+    setState(() => listSum = total);
 
     return CustomScrollView(
       slivers: <Widget>[
@@ -70,5 +147,12 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
         ),
       ],
     );
+  }
+
+  ///
+  void makeCreditSummaryMap() {
+    appParamState.keepCreditSummaryMap[widget.yearmonth]?.forEach((CreditSummaryModel element) {
+      (creditSummaryMap[element.item] ??= <int>[]).add(element.price);
+    });
   }
 }
