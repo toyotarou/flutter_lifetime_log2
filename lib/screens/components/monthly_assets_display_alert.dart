@@ -8,7 +8,9 @@ import '../../extensions/extensions.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../../utility/utility.dart';
+import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
+import 'monthly_assets_graph_alert.dart';
 import 'stock_data_input_alert.dart';
 
 class MonthlyAssetsDisplayAlert extends ConsumerStatefulWidget {
@@ -26,6 +28,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
   bool todayStockExists = false;
 
+  Map<int, int> monthlyGraphAssetsMap = <int, int>{};
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -42,7 +46,38 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.yearmonth), const SizedBox.shrink()],
+                  children: <Widget>[
+                    Text(widget.yearmonth),
+
+                    GestureDetector(
+                      onTap: () {
+                        if (DateTime.now().day == 1) {
+                          // ignore: always_specify_types
+                          Future.delayed(
+                            Duration.zero,
+                            () => error_dialog(
+                              // ignore: use_build_context_synchronously
+                              context: context,
+                              title: '表示できません。',
+                              content: 'データが1日分しかないため、assets graphが表示できません。',
+                            ),
+                          );
+
+                          return;
+                        }
+
+                        LifetimeDialog(
+                          context: context,
+                          widget: MonthlyAssetsGraphAlert(
+                            yearmonth: widget.yearmonth,
+
+                            monthlyGraphAssetsMap: monthlyGraphAssetsMap,
+                          ),
+                        );
+                      },
+                      child: const Icon(Icons.graphic_eq),
+                    ),
+                  ],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
@@ -179,6 +214,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
       final int total = items.fold(0, (int sum, int value) => sum + value);
       //-----------------------------------------//
+
+      if (isBeforeDate) {
+        monthlyGraphAssetsMap[i] = total;
+      }
 
       //-----------------------------------------//
       final Map<String, dynamic>? monthlyAssetsBefore = monthlyAssetsMap[beforeDate.yyyymmdd];
