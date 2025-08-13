@@ -7,7 +7,7 @@ import '../../models/transportation_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'temple_directions_map_alert.dart';
-import 'temple_photo_list_display_alert.dart';
+import 'temple_photo_list_alert.dart';
 
 class TempleListDisplayAlert extends ConsumerStatefulWidget {
   const TempleListDisplayAlert({super.key, this.temple, required this.date});
@@ -127,7 +127,7 @@ class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
 
                                 LifetimeDialog(
                                   context: context,
-                                  widget: TemplePhotoListDisplayAlert(temple: widget.temple!.templeDataList[i]),
+                                  widget: TemplePhotoListAlert(temple: widget.temple!.templeDataList[i]),
                                   clearBarrierColor: true,
                                 );
                               },

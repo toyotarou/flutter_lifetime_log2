@@ -11,18 +11,19 @@ import '../../models/transportation_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'temple_directions_map_alert.dart';
+import 'temple_photo_display_alert.dart';
 
-class TemplePhotoListDisplayAlert extends ConsumerStatefulWidget {
-  const TemplePhotoListDisplayAlert({super.key, required this.temple});
+class TemplePhotoListAlert extends ConsumerStatefulWidget {
+  const TemplePhotoListAlert({super.key, required this.temple});
 
   final TempleDataModel temple;
 
   @override
-  ConsumerState<TemplePhotoListDisplayAlert> createState() => _TemplePhotoListDisplayAlertState();
+  ConsumerState<TemplePhotoListAlert> createState() => _TemplePhotoListAlertState();
 }
 
-class _TemplePhotoListDisplayAlertState extends ConsumerState<TemplePhotoListDisplayAlert>
-    with ControllersMixin<TemplePhotoListDisplayAlert> {
+class _TemplePhotoListAlertState extends ConsumerState<TemplePhotoListAlert>
+    with ControllersMixin<TemplePhotoListAlert> {
   Utility utility = Utility();
 
   List<MapEntry<StationModel, double>> nearStationList = <MapEntry<StationModel, double>>[];
@@ -193,13 +194,25 @@ class _TemplePhotoListDisplayAlertState extends ConsumerState<TemplePhotoListDis
         final List<Widget> list2 = <Widget>[];
         for (final String element2 in element.templephotos) {
           list2.add(
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              width: 90,
-              child: CachedNetworkImage(
-                imageUrl: element2,
-                placeholder: (BuildContext context, String url) => Image.asset('assets/images/no_image.png'),
-                errorWidget: (BuildContext context, String url, Object error) => const Icon(Icons.error),
+            GestureDetector(
+              onTap: () {
+                LifetimeDialog(
+                  context: context,
+                  widget: TemplePhotoDisplayAlert(imageUrl: element2),
+
+                  paddingTop: context.screenSize.height * 0.1,
+                  paddingBottom: context.screenSize.height * 0.1,
+                );
+              },
+
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                width: 90,
+                child: CachedNetworkImage(
+                  imageUrl: element2,
+                  placeholder: (BuildContext context, String url) => Image.asset('assets/images/no_image.png'),
+                  errorWidget: (BuildContext context, String url, Object error) => const Icon(Icons.error),
+                ),
               ),
             ),
           );
