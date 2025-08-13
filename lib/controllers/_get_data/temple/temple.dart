@@ -5,7 +5,6 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/temple_model.dart';
-import '../../../models/temple_photo_model.dart';
 import '../../../utility/utility.dart';
 
 part 'temple.freezed.dart';

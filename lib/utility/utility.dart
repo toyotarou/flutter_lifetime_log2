@@ -8,7 +8,6 @@ import '../extensions/extensions.dart';
 import '../models/bounding_box_info_model.dart';
 import '../models/geoloc_model.dart';
 import '../models/temple_model.dart';
-import '../models/temple_photo_model.dart';
 import '../models/transportation_model.dart';
 
 class Utility {

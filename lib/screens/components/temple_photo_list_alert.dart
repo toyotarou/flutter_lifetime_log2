@@ -6,7 +6,6 @@ import 'package:latlong2/latlong.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/temple_model.dart';
-import '../../models/temple_photo_model.dart';
 import '../../models/transportation_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';

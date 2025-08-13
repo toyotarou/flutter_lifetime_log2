@@ -5,6 +5,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
 import '../../utility/utility.dart';
+import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 import 'temple_directions_map_alert.dart';
 import 'temple_photo_list_alert.dart';
@@ -123,6 +124,32 @@ class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
                             const SizedBox.shrink(),
                             GestureDetector(
                               onTap: () {
+                                bool flag = false;
+
+                                if (widget.temple!.templeDataList[i].templePhotoModelList != null) {
+                                  for (final TemplePhotoModel element
+                                      in widget.temple!.templeDataList[i].templePhotoModelList!) {
+                                    if (element.date == widget.date) {
+                                      flag = true;
+                                    }
+                                  }
+                                }
+
+                                if (!flag) {
+                                  // ignore: always_specify_types
+                                  Future.delayed(
+                                    Duration.zero,
+                                    () => error_dialog(
+                                      // ignore: use_build_context_synchronously
+                                      context: context,
+                                      title: '表示できません。',
+                                      content: '当日分の画像がありません。',
+                                    ),
+                                  );
+
+                                  return;
+                                }
+
                                 appParamNotifier.setSelectedTemple(temple: widget.temple!.templeDataList[i]);
 
                                 LifetimeDialog(
