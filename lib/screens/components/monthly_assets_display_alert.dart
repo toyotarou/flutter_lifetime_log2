@@ -14,10 +14,16 @@ import 'monthly_assets_graph_alert.dart';
 import 'stock_data_input_alert.dart';
 
 class MonthlyAssetsDisplayAlert extends ConsumerStatefulWidget {
-  const MonthlyAssetsDisplayAlert({super.key, required this.yearmonth, required this.nenkinKikinDataList});
+  const MonthlyAssetsDisplayAlert({
+    super.key,
+    required this.yearmonth,
+    required this.nenkinKikinDataList,
+    required this.insuranceDataList,
+  });
 
   final String yearmonth;
   final List<Map<String, String>> nenkinKikinDataList;
+  final List<Map<String, String>> insuranceDataList;
 
   @override
   ConsumerState<MonthlyAssetsDisplayAlert> createState() => _MonthlyAssetsDisplayAlertState();
@@ -104,8 +110,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       0,
     ).add(const Duration(days: 10 * -1));
 
-    final DateTime checkStart = DateTime(2023, 01, 27);
-
     int lastGoldSum = 0;
     int lastStockSum = 0;
     int lastToushiShintakuSum = 0;
@@ -140,7 +144,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         }
       }
 
-      final int insurancePassedMonths = utility.elapsedMonthsByCutoff(start: checkStart, end: date) + 102;
+      final int insurancePassedMonths = getInsurancePassedMonths(date: date) + 102;
       lastInsuranceSum = insurancePassedMonths * (55880 * 0.7).toInt();
 
       final int nenkinKikinPassedMonths = getNenkinKikinPassedMonths(date: date) + 32;
@@ -414,6 +418,27 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   }
 
   ///
+  int getInsurancePassedMonths({required DateTime date}) {
+    int ret = 0;
+
+    for (int i = 0; i < widget.insuranceDataList.length; i++) {
+      if (widget.insuranceDataList[i]['date'] != null) {
+        final DateTime listDate = DateTime(
+          widget.insuranceDataList[i]['date']!.split('-')[0].toInt(),
+          widget.insuranceDataList[i]['date']!.split('-')[1].toInt(),
+          widget.insuranceDataList[i]['date']!.split('-')[2].toInt(),
+        );
+
+        if (!listDate.isAfter(date)) {
+          ret = i;
+        }
+      }
+    }
+
+    return ret;
+  }
+
+  ///
   int getNenkinKikinPassedMonths({required DateTime date}) {
     int ret = 0;
 
@@ -425,7 +450,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           widget.nenkinKikinDataList[i]['date']!.split('-')[2].toInt(),
         );
 
-        if (listDate.isBefore(date)) {
+        if (!listDate.isAfter(date)) {
           ret = i;
         }
       }

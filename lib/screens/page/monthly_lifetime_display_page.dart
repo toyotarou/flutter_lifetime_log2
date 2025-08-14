@@ -32,6 +32,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     with ControllersMixin<MonthlyLifetimeDisplayPage> {
   Utility utility = Utility();
 
+  List<Map<String, String>> insuranceDataList = <Map<String, String>>[];
+
   List<Map<String, String>> nenkinKikinDataList = <Map<String, String>>[];
 
   ///
@@ -140,6 +142,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                     context: context,
                                     widget: MonthlyAssetsDisplayAlert(
                                       yearmonth: widget.yearmonth,
+                                      insuranceDataList: insuranceDataList,
                                       nenkinKikinDataList: nenkinKikinDataList,
                                     ),
                                   );
@@ -179,10 +182,15 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
   ///
   void makeNenkinKikinDataList() {
+    insuranceDataList.clear();
     nenkinKikinDataList.clear();
 
     appParamState.keepMoneySpendMap.forEach((String key, List<MoneySpendModel> value) {
       for (final MoneySpendModel element in value) {
+        if (element.price == 55880) {
+          insuranceDataList.add(<String, String>{'date': key, 'price': element.price.toString()});
+        }
+
         if (element.item == '国民年金基金') {
           nenkinKikinDataList.add(<String, String>{'date': key, 'price': element.price.toString()});
         }

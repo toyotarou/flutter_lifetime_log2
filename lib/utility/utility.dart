@@ -183,34 +183,6 @@ class Utility {
   }
 
   ///
-  int elapsedMonthsByCutoff({required DateTime start, required DateTime end}) {
-    if (end.isBefore(start)) {
-      return 0;
-    }
-
-    final int yearDiff = end.year - start.year;
-    final int monthDiff = end.month - start.month;
-    int totalMonths = yearDiff * 12 + monthDiff;
-
-    final DateTime cutoffThisMonth = DateTime(end.year, end.month, start.day);
-
-    final bool checkA =
-        (cutoffThisMonth.weekday == DateTime.saturday || cutoffThisMonth.weekday == DateTime.sunday) &&
-        end.isBefore(DateTime(end.year, end.month, start.day + 1));
-
-    final bool checkB =
-        cutoffThisMonth.weekday != DateTime.saturday &&
-        cutoffThisMonth.weekday != DateTime.sunday &&
-        end.day < start.day;
-
-    if (checkA || checkB) {
-      totalMonths -= 1;
-    }
-
-    return totalMonths;
-  }
-
-  ///
   String getTempleReachTimeFromTemplePhotoList({required String date, required TempleDataModel temple}) {
     String ret = '-';
 
