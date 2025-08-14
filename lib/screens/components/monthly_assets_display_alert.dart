@@ -14,9 +14,10 @@ import 'monthly_assets_graph_alert.dart';
 import 'stock_data_input_alert.dart';
 
 class MonthlyAssetsDisplayAlert extends ConsumerStatefulWidget {
-  const MonthlyAssetsDisplayAlert({super.key, required this.yearmonth});
+  const MonthlyAssetsDisplayAlert({super.key, required this.yearmonth, required this.nenkinKikinDataList});
 
   final String yearmonth;
+  final List<Map<String, String>> nenkinKikinDataList;
 
   @override
   ConsumerState<MonthlyAssetsDisplayAlert> createState() => _MonthlyAssetsDisplayAlertState();
@@ -139,8 +140,11 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         }
       }
 
-      final int passedMonths = utility.elapsedMonthsByCutoff(start: checkStart, end: date) + 102;
-      lastInsuranceSum = passedMonths * (55880 * 0.7).toInt();
+      final int insurancePassedMonths = utility.elapsedMonthsByCutoff(start: checkStart, end: date) + 102;
+      lastInsuranceSum = insurancePassedMonths * (55880 * 0.7).toInt();
+
+      final int nenkinKikinPassedMonths = getNenkinKikinPassedMonths(date: date) + 32;
+      final int nenkinKikinSum = nenkinKikinPassedMonths * (26625 * 0.7).toInt();
 
       if (date.isBefore(DateTime.now())) {
         monthlyAssetsMap[date.yyyymmdd] = <String, int>{
@@ -148,7 +152,9 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           'stock': lastStockSum,
           'toushiShintaku': lastToushiShintakuSum,
           'insurance': lastInsuranceSum,
-          'passedMonths': passedMonths,
+          'insurancePassedMonths': insurancePassedMonths,
+          'nenkinKikin': nenkinKikinSum,
+          'nenkinKikinPassedMonths': nenkinKikinPassedMonths,
         };
       }
     }
@@ -164,7 +170,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
       final String money = appParamState.keepMoneyMap[date]?.sum ?? '';
 
-      final List<String> keys = <String>['gold', 'stock', 'toushiShintaku', 'insurance'];
+      final List<String> keys = <String>['gold', 'stock', 'toushiShintaku', 'insurance', 'nenkinKikin'];
 
       final String gold = (monthlyAssetsMap[date] != null) ? monthlyAssetsMap[date]!['gold'].toString() : '';
       final String stock = (monthlyAssetsMap[date] != null) ? monthlyAssetsMap[date]!['stock'].toString() : '';
@@ -172,6 +178,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           ? monthlyAssetsMap[date]!['toushiShintaku'].toString()
           : '';
       final String insurance = (monthlyAssetsMap[date] != null) ? monthlyAssetsMap[date]!['insurance'].toString() : '';
+
+      final String nenkinKikin = (monthlyAssetsMap[date] != null)
+          ? monthlyAssetsMap[date]!['nenkinKikin'].toString()
+          : '';
 
       final bool isBeforeDate = DateTime(
         date.split('-')[0].toInt(),
@@ -193,8 +203,12 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
       final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
 
-      final String passedMonths = (monthlyAssetsMap[date] != null)
-          ? monthlyAssetsMap[date]!['passedMonths'].toString()
+      final String insurancePassedMonths = (monthlyAssetsMap[date] != null)
+          ? monthlyAssetsMap[date]!['insurancePassedMonths'].toString()
+          : '';
+
+      final String nenkinKikinPassedMonths = (monthlyAssetsMap[date] != null)
+          ? monthlyAssetsMap[date]!['nenkinKikinPassedMonths'].toString()
           : '';
 
       if (date == DateTime.now().yyyymmdd) {
@@ -252,7 +266,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
                 padding: const EdgeInsets.all(5),
 
-                height: context.screenSize.height * 0.15,
+                height: context.screenSize.height * 0.2,
 
                 child: Column(
                   children: <Widget>[
@@ -363,8 +377,17 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                       priceDisplayParts(
                         date: date,
                         isBeforeDate: isBeforeDate,
-                        title: isBeforeDate ? 'insurance ($passedMonths)' : 'insurance',
+                        title: isBeforeDate ? 'insurance ($insurancePassedMonths)' : 'insurance',
                         price: insurance,
+                        buttonDisp: false,
+                        beforeData: beforeData,
+                      ),
+
+                      priceDisplayParts(
+                        date: date,
+                        isBeforeDate: isBeforeDate,
+                        title: isBeforeDate ? 'nenkinKikin ($nenkinKikinPassedMonths)' : 'nenkinKikin',
+                        price: nenkinKikin,
                         buttonDisp: false,
                         beforeData: beforeData,
                       ),
@@ -388,6 +411,26 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         ),
       ],
     );
+  }
+
+  ///
+  int getNenkinKikinPassedMonths({required DateTime date}) {
+    int ret = 0;
+
+    for (int i = 0; i < widget.nenkinKikinDataList.length; i++) {
+      if (widget.nenkinKikinDataList[i]['date'] != null) {
+        final DateTime listDate = DateTime(
+          widget.nenkinKikinDataList[i]['date']!.split('-')[0].toInt(),
+          widget.nenkinKikinDataList[i]['date']!.split('-')[1].toInt(),
+          widget.nenkinKikinDataList[i]['date']!.split('-')[2].toInt(),
+        );
+
+        if (listDate.isBefore(date)) {
+          ret = i;
+        }
+      }
+    }
+    return ret;
   }
 
   ///

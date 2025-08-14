@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
 import '../../utility/utility.dart';
 import '../components/lifetime_geoloc_map_display_alert.dart';
@@ -31,9 +32,13 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     with ControllersMixin<MonthlyLifetimeDisplayPage> {
   Utility utility = Utility();
 
+  List<Map<String, String>> nenkinKikinDataList = <Map<String, String>>[];
+
   ///
   @override
   Widget build(BuildContext context) {
+    makeNenkinKikinDataList();
+
     return Scaffold(
       backgroundColor: Colors.transparent,
 
@@ -133,7 +138,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                 onTap: () {
                                   LifetimeDialog(
                                     context: context,
-                                    widget: MonthlyAssetsDisplayAlert(yearmonth: widget.yearmonth),
+                                    widget: MonthlyAssetsDisplayAlert(
+                                      yearmonth: widget.yearmonth,
+                                      nenkinKikinDataList: nenkinKikinDataList,
+                                    ),
                                   );
                                 },
                                 child: Icon(FontAwesomeIcons.sun, size: 20, color: Colors.white.withValues(alpha: 0.3)),
@@ -167,6 +175,19 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
         ),
       ),
     );
+  }
+
+  ///
+  void makeNenkinKikinDataList() {
+    nenkinKikinDataList.clear();
+
+    appParamState.keepMoneySpendMap.forEach((String key, List<MoneySpendModel> value) {
+      for (final MoneySpendModel element in value) {
+        if (element.item == '国民年金基金') {
+          nenkinKikinDataList.add(<String, String>{'date': key, 'price': element.price.toString()});
+        }
+      }
+    });
   }
 
   ///
