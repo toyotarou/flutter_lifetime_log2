@@ -227,6 +227,30 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
         constrainedBoxHeight = context.screenSize.height / 15;
       }
 
+      //////////////////////////////////////////////////////////////////////
+      final DateTime beforeDate = DateTime(
+        widget.yearmonth.split('-')[0].toInt(),
+        widget.yearmonth.split('-')[1].toInt(),
+        i,
+      ).add(const Duration(days: -1));
+
+      String dateSum = '';
+      if (appParamState.keepMoneyMap[date] != null) {
+        dateSum = appParamState.keepMoneyMap[date]!.sum;
+      }
+
+      String beforeSum = '';
+      if (appParamState.keepMoneyMap[beforeDate.yyyymmdd] != null) {
+        beforeSum = appParamState.keepMoneyMap[beforeDate.yyyymmdd]!.sum;
+      }
+
+      int sumDiff = 0;
+
+      if (beforeSum != '' && dateSum != '') {
+        sumDiff = beforeSum.toInt() - dateSum.toInt();
+      }
+      //////////////////////////////////////////////////////////////////////
+
       list.add(
         Card(
           margin:
@@ -546,7 +570,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                       ? (appParamState.keepWalkModelMap[date]!.spend == '0')
                                                             ? '0 円'
                                                             : appParamState.keepWalkModelMap[date]!.spend
-                                                      : '',
+                                                      : '${sumDiff.toString().toCurrency()} 円',
                                                 ),
                                               ),
                                             ],
