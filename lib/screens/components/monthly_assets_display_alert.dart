@@ -10,6 +10,7 @@ import '../../models/toushi_shintaku_model.dart';
 import '../../utility/utility.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
+import 'assets_detail_display_alert.dart';
 import 'monthly_assets_graph_alert.dart';
 import 'stock_data_input_alert.dart';
 
@@ -503,7 +504,29 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
               const SizedBox(width: 10),
 
-              Text(title),
+              if (<String>['stock', 'toushiShintaku', 'gold'].contains(title))
+                TextButton(
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    foregroundColor: Colors.white,
+                  ),
+
+                  onPressed: () {
+                    LifetimeDialog(
+                      context: context,
+                      widget: AssetsDetailDisplayAlert(date: date, title: title),
+                    );
+                  },
+                  child: Text(
+                    title,
+
+                    style: const TextStyle(color: Colors.white, fontSize: 12, decoration: TextDecoration.underline),
+                  ),
+                )
+              else
+                Text(title),
             ],
           ),
 
