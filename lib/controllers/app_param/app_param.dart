@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../models/credit_summary_model.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/gold_model.dart';
+import '../../models/invest_model.dart';
 import '../../models/lifetime_model.dart';
 import '../../models/money_model.dart';
 import '../../models/money_spend_model.dart';
@@ -42,6 +43,8 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<StockModel>>{}) Map<String, List<StockModel>> keepStockMap,
     @Default(<String, List<ToushiShintakuModel>>{}) Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
     @Default(<String, List<CreditSummaryModel>>{}) Map<String, List<CreditSummaryModel>> keepCreditSummaryMap,
+    @Default(<String, List<InvestNameModel>>{}) Map<String, List<InvestNameModel>> keepInvestNamesMap,
+    @Default(<int, List<InvestRecordModel>>{}) Map<int, List<InvestRecordModel>> keepInvestRecordMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -141,6 +144,14 @@ class AppParam extends _$AppParam {
   ///
   void setKeepCreditSummaryMap({required Map<String, List<CreditSummaryModel>> map}) =>
       state = state.copyWith(keepCreditSummaryMap: map);
+
+  ///
+  void setKeepInvestNamesMap({required Map<String, List<InvestNameModel>> map}) =>
+      state = state.copyWith(keepInvestNamesMap: map);
+
+  ///
+  void setKeepInvestRecordMap({required Map<int, List<InvestRecordModel>> map}) =>
+      state = state.copyWith(keepInvestRecordMap: map);
 
   //===================================================
 

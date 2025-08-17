@@ -7,6 +7,7 @@ import '../main.dart';
 import '../models/credit_summary_model.dart';
 import '../models/geoloc_model.dart';
 import '../models/gold_model.dart';
+import '../models/invest_model.dart';
 import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
@@ -54,6 +55,8 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.toushiShintakuMap,
     required this.stationList,
     required this.creditSummaryMap,
+    required this.investNamesMap,
+    required this.investRecordsMap,
   });
 
   final List<String> holidayList;
@@ -74,6 +77,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<ToushiShintakuModel>> toushiShintakuMap;
   final List<StationModel> stationList;
   final Map<String, List<CreditSummaryModel>> creditSummaryMap;
+  final Map<String, List<InvestNameModel>> investNamesMap;
+  final Map<int, List<InvestRecordModel>> investRecordsMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -108,6 +113,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepToushiShintakuMap(map: widget.toushiShintakuMap);
       appParamNotifier.setKeepStationList(list: widget.stationList);
       appParamNotifier.setKeepCreditSummaryMap(map: widget.creditSummaryMap);
+      appParamNotifier.setKeepInvestNamesMap(map: widget.investNamesMap);
+      appParamNotifier.setKeepInvestRecordMap(map: widget.investRecordsMap);
     });
 
     return DefaultTabController(

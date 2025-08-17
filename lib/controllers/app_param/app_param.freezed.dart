@@ -48,6 +48,10 @@ mixin _$AppParamState {
       throw _privateConstructorUsedError;
   Map<String, List<CreditSummaryModel>> get keepCreditSummaryMap =>
       throw _privateConstructorUsedError;
+  Map<String, List<InvestNameModel>> get keepInvestNamesMap =>
+      throw _privateConstructorUsedError;
+  Map<int, List<InvestRecordModel>> get keepInvestRecordMap =>
+      throw _privateConstructorUsedError;
 
   ///
   List<StationModel> get keepStationList => throw _privateConstructorUsedError;
@@ -108,6 +112,8 @@ abstract class $AppParamStateCopyWith<$Res> {
       Map<String, List<StockModel>> keepStockMap,
       Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
       Map<String, List<CreditSummaryModel>> keepCreditSummaryMap,
+      Map<String, List<InvestNameModel>> keepInvestNamesMap,
+      Map<int, List<InvestRecordModel>> keepInvestRecordMap,
       List<StationModel> keepStationList,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
@@ -154,6 +160,8 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? keepStockMap = null,
     Object? keepToushiShintakuMap = null,
     Object? keepCreditSummaryMap = null,
+    Object? keepInvestNamesMap = null,
+    Object? keepInvestRecordMap = null,
     Object? keepStationList = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
@@ -236,6 +244,14 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.keepCreditSummaryMap
           : keepCreditSummaryMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<CreditSummaryModel>>,
+      keepInvestNamesMap: null == keepInvestNamesMap
+          ? _value.keepInvestNamesMap
+          : keepInvestNamesMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<InvestNameModel>>,
+      keepInvestRecordMap: null == keepInvestRecordMap
+          ? _value.keepInvestRecordMap
+          : keepInvestRecordMap // ignore: cast_nullable_to_non_nullable
+              as Map<int, List<InvestRecordModel>>,
       keepStationList: null == keepStationList
           ? _value.keepStationList
           : keepStationList // ignore: cast_nullable_to_non_nullable
@@ -314,6 +330,8 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       Map<String, List<StockModel>> keepStockMap,
       Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
       Map<String, List<CreditSummaryModel>> keepCreditSummaryMap,
+      Map<String, List<InvestNameModel>> keepInvestNamesMap,
+      Map<int, List<InvestRecordModel>> keepInvestRecordMap,
       List<StationModel> keepStationList,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
@@ -358,6 +376,8 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? keepStockMap = null,
     Object? keepToushiShintakuMap = null,
     Object? keepCreditSummaryMap = null,
+    Object? keepInvestNamesMap = null,
+    Object? keepInvestRecordMap = null,
     Object? keepStationList = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
@@ -440,6 +460,14 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value._keepCreditSummaryMap
           : keepCreditSummaryMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<CreditSummaryModel>>,
+      keepInvestNamesMap: null == keepInvestNamesMap
+          ? _value._keepInvestNamesMap
+          : keepInvestNamesMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<InvestNameModel>>,
+      keepInvestRecordMap: null == keepInvestRecordMap
+          ? _value._keepInvestRecordMap
+          : keepInvestRecordMap // ignore: cast_nullable_to_non_nullable
+              as Map<int, List<InvestRecordModel>>,
       keepStationList: null == keepStationList
           ? _value._keepStationList
           : keepStationList // ignore: cast_nullable_to_non_nullable
@@ -527,6 +555,10 @@ class _$AppParamStateImpl implements _AppParamState {
           const <String, List<ToushiShintakuModel>>{},
       final Map<String, List<CreditSummaryModel>> keepCreditSummaryMap =
           const <String, List<CreditSummaryModel>>{},
+      final Map<String, List<InvestNameModel>> keepInvestNamesMap =
+          const <String, List<InvestNameModel>>{},
+      final Map<int, List<InvestRecordModel>> keepInvestRecordMap =
+          const <int, List<InvestRecordModel>>{},
       final List<StationModel> keepStationList = const <StationModel>[],
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
@@ -556,6 +588,8 @@ class _$AppParamStateImpl implements _AppParamState {
         _keepStockMap = keepStockMap,
         _keepToushiShintakuMap = keepToushiShintakuMap,
         _keepCreditSummaryMap = keepCreditSummaryMap,
+        _keepInvestNamesMap = keepInvestNamesMap,
+        _keepInvestRecordMap = keepInvestRecordMap,
         _keepStationList = keepStationList,
         _firstEntries = firstEntries,
         _secondEntries = secondEntries,
@@ -721,6 +755,26 @@ class _$AppParamStateImpl implements _AppParamState {
     return EqualUnmodifiableMapView(_keepCreditSummaryMap);
   }
 
+  final Map<String, List<InvestNameModel>> _keepInvestNamesMap;
+  @override
+  @JsonKey()
+  Map<String, List<InvestNameModel>> get keepInvestNamesMap {
+    if (_keepInvestNamesMap is EqualUnmodifiableMapView)
+      return _keepInvestNamesMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_keepInvestNamesMap);
+  }
+
+  final Map<int, List<InvestRecordModel>> _keepInvestRecordMap;
+  @override
+  @JsonKey()
+  Map<int, List<InvestRecordModel>> get keepInvestRecordMap {
+    if (_keepInvestRecordMap is EqualUnmodifiableMapView)
+      return _keepInvestRecordMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_keepInvestRecordMap);
+  }
+
   ///
   final List<StationModel> _keepStationList;
 
@@ -801,7 +855,7 @@ class _$AppParamStateImpl implements _AppParamState {
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepInvestNamesMap: $keepInvestNamesMap, keepInvestRecordMap: $keepInvestRecordMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai)';
   }
 
   @override
@@ -843,6 +897,10 @@ class _$AppParamStateImpl implements _AppParamState {
                 .equals(other._keepToushiShintakuMap, _keepToushiShintakuMap) &&
             const DeepCollectionEquality()
                 .equals(other._keepCreditSummaryMap, _keepCreditSummaryMap) &&
+            const DeepCollectionEquality()
+                .equals(other._keepInvestNamesMap, _keepInvestNamesMap) &&
+            const DeepCollectionEquality()
+                .equals(other._keepInvestRecordMap, _keepInvestRecordMap) &&
             const DeepCollectionEquality()
                 .equals(other._keepStationList, _keepStationList) &&
             const DeepCollectionEquality()
@@ -893,6 +951,8 @@ class _$AppParamStateImpl implements _AppParamState {
         const DeepCollectionEquality().hash(_keepStockMap),
         const DeepCollectionEquality().hash(_keepToushiShintakuMap),
         const DeepCollectionEquality().hash(_keepCreditSummaryMap),
+        const DeepCollectionEquality().hash(_keepInvestNamesMap),
+        const DeepCollectionEquality().hash(_keepInvestRecordMap),
         const DeepCollectionEquality().hash(_keepStationList),
         const DeepCollectionEquality().hash(_firstEntries),
         const DeepCollectionEquality().hash(_secondEntries),
@@ -935,6 +995,8 @@ abstract class _AppParamState implements AppParamState {
       final Map<String, List<StockModel>> keepStockMap,
       final Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
       final Map<String, List<CreditSummaryModel>> keepCreditSummaryMap,
+      final Map<String, List<InvestNameModel>> keepInvestNamesMap,
+      final Map<int, List<InvestRecordModel>> keepInvestRecordMap,
       final List<StationModel> keepStationList,
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
@@ -982,6 +1044,10 @@ abstract class _AppParamState implements AppParamState {
   Map<String, List<ToushiShintakuModel>> get keepToushiShintakuMap;
   @override
   Map<String, List<CreditSummaryModel>> get keepCreditSummaryMap;
+  @override
+  Map<String, List<InvestNameModel>> get keepInvestNamesMap;
+  @override
+  Map<int, List<InvestRecordModel>> get keepInvestRecordMap;
 
   ///
   @override

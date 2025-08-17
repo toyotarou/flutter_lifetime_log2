@@ -6,7 +6,7 @@ part of 'invest_records.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$investRecordsHash() => r'b757302a5b5dd17229375e32cdcfd69e567e935f';
+String _$investRecordsHash() => r'c8952bb574dfac53ec7ab8fe50c7e78d82ad8ae9';
 
 /// See also [InvestRecords].
 @ProviderFor(InvestRecords)

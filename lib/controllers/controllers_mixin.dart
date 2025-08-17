@@ -5,6 +5,8 @@ import '_get_data/directions/directions.dart';
 import '_get_data/geoloc/geoloc.dart';
 import '_get_data/gold/gold.dart';
 import '_get_data/holiday/holiday.dart';
+import '_get_data/invest_names/invest_names.dart';
+import '_get_data/invest_records/invest_records.dart';
 import '_get_data/lifetime/lifetime.dart';
 import '_get_data/lifetime_item/lifetime_item.dart';
 import '_get_data/money/money.dart';
@@ -172,6 +174,18 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   CreditSummaryState get creditSummaryState => ref.watch(creditSummaryProvider);
 
   CreditSummary get creditSummaryNotifier => ref.read(creditSummaryProvider.notifier);
+
+  //==========================================//
+
+  InvestNamesState get investNamesState => ref.watch(investNamesProvider);
+
+  InvestNames get investNamesNotifier => ref.read(investNamesProvider.notifier);
+
+  //==========================================//
+
+  InvestRecordsState get investRecordsState => ref.watch(investRecordsProvider);
+
+  InvestRecords get investRecordsNotifier => ref.read(investRecordsProvider.notifier);
 
   //==========================================//
 
