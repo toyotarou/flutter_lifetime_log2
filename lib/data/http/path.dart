@@ -21,7 +21,6 @@ enum APIPath {
   getAllWeather,
   getMoneySpendItem,
   getAllBenefit,
-  getStockName,
   insertDailyStockData,
   getgolddata,
   getAllStockData,
@@ -29,6 +28,8 @@ enum APIPath {
   getTempleDatePhoto,
   getTrain,
   getCreditSummary,
+  getAllInvestNames,
+  getAllInvestRecords,
 }
 
 extension APIPathExtension on APIPath {
@@ -95,8 +96,6 @@ extension APIPathExtension on APIPath {
       case APIPath.getAllBenefit:
         return 'getAllBenefit';
 
-      case APIPath.getStockName:
-        return 'getStockName';
       case APIPath.insertDailyStockData:
         return 'insertDailyStockData';
       case APIPath.getgolddata:
@@ -114,6 +113,10 @@ extension APIPathExtension on APIPath {
 
       case APIPath.getCreditSummary:
         return 'getCreditSummary';
+      case APIPath.getAllInvestNames:
+        return 'getAllInvestNames';
+      case APIPath.getAllInvestRecords:
+        return 'getAllInvestRecords';
     }
   }
 }

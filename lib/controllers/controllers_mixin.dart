@@ -12,7 +12,6 @@ import '_get_data/money_spend/money_spend.dart';
 import '_get_data/money_spend_item/money_spend_item.dart';
 import '_get_data/salary/salary.dart';
 import '_get_data/stock/stock.dart';
-import '_get_data/stock_name/stock_name.dart';
 import '_get_data/temple/temple.dart';
 import '_get_data/toushi_shintaku/toushi_shintaku.dart';
 import '_get_data/transportation/transportation.dart';
@@ -143,12 +142,6 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   SalaryState get salaryState => ref.watch(salaryProvider);
 
   Salary get salaryNotifier => ref.read(salaryProvider.notifier);
-
-  //==========================================//
-
-  StockNameState get stockNameState => ref.watch(stockNameProvider);
-
-  StockName get stockNameNotifier => ref.read(stockNameProvider.notifier);
 
   //==========================================//
 

@@ -49,7 +49,6 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.weatherMap,
     required this.moneySpendItemMap,
     required this.salaryMap,
-    required this.stockNameMap,
     required this.goldMap,
     required this.stockMap,
     required this.toushiShintakuMap,
@@ -70,7 +69,6 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, WeatherModel> weatherMap;
   final Map<String, MoneySpendItemModel> moneySpendItemMap;
   final Map<String, List<SalaryModel>> salaryMap;
-  final Map<String, Map<String, String>> stockNameMap;
   final Map<String, GoldModel> goldMap;
   final Map<String, List<StockModel>> stockMap;
   final Map<String, List<ToushiShintakuModel>> toushiShintakuMap;
@@ -105,7 +103,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepWeatherMap(map: widget.weatherMap);
       appParamNotifier.setKeepMoneySpendItemMap(map: widget.moneySpendItemMap);
       appParamNotifier.setKeepSalaryMap(map: widget.salaryMap);
-      appParamNotifier.setKeepStockNameMap(map: widget.stockNameMap);
       appParamNotifier.setKeepGoldMap(map: widget.goldMap);
       appParamNotifier.setKeepStockMap(map: widget.stockMap);
       appParamNotifier.setKeepToushiShintakuMap(map: widget.toushiShintakuMap);
