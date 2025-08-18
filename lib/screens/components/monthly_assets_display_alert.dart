@@ -10,7 +10,7 @@ import '../../models/toushi_shintaku_model.dart';
 import '../../utility/utility.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
-import 'assets_detail_display_alert.dart';
+import 'assets_detail_graph_alert.dart';
 import 'monthly_assets_graph_alert.dart';
 import 'stock_data_input_alert.dart';
 
@@ -516,7 +516,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   onPressed: () {
                     LifetimeDialog(
                       context: context,
-                      widget: AssetsDetailDisplayAlert(date: date, title: title),
+                      widget: AssetsDetailGraphAlert(date: date, title: title),
                     );
                   },
                   child: Text(

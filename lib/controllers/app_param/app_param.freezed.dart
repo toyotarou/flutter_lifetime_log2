@@ -80,6 +80,8 @@ mixin _$AppParamState {
   ///
   bool get isMonthlySpendSummaryMinusJogai =>
       throw _privateConstructorUsedError;
+  InvestNameModel? get selectedGraphInvestNameModel =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
@@ -125,7 +127,8 @@ abstract class $AppParamStateCopyWith<$Res> {
       int selectedGraphYear,
       TempleDataModel? selectedTemple,
       String selectedTempleDirection,
-      bool isMonthlySpendSummaryMinusJogai});
+      bool isMonthlySpendSummaryMinusJogai,
+      InvestNameModel? selectedGraphInvestNameModel});
 }
 
 /// @nodoc
@@ -174,6 +177,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? selectedTemple = freezed,
     Object? selectedTempleDirection = null,
     Object? isMonthlySpendSummaryMinusJogai = null,
+    Object? selectedGraphInvestNameModel = freezed,
   }) {
     return _then(_value.copyWith(
       keepHolidayList: null == keepHolidayList
@@ -300,6 +304,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.isMonthlySpendSummaryMinusJogai
           : isMonthlySpendSummaryMinusJogai // ignore: cast_nullable_to_non_nullable
               as bool,
+      selectedGraphInvestNameModel: freezed == selectedGraphInvestNameModel
+          ? _value.selectedGraphInvestNameModel
+          : selectedGraphInvestNameModel // ignore: cast_nullable_to_non_nullable
+              as InvestNameModel?,
     ) as $Val);
   }
 }
@@ -343,7 +351,8 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       int selectedGraphYear,
       TempleDataModel? selectedTemple,
       String selectedTempleDirection,
-      bool isMonthlySpendSummaryMinusJogai});
+      bool isMonthlySpendSummaryMinusJogai,
+      InvestNameModel? selectedGraphInvestNameModel});
 }
 
 /// @nodoc
@@ -390,6 +399,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? selectedTemple = freezed,
     Object? selectedTempleDirection = null,
     Object? isMonthlySpendSummaryMinusJogai = null,
+    Object? selectedGraphInvestNameModel = freezed,
   }) {
     return _then(_$AppParamStateImpl(
       keepHolidayList: null == keepHolidayList
@@ -516,6 +526,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value.isMonthlySpendSummaryMinusJogai
           : isMonthlySpendSummaryMinusJogai // ignore: cast_nullable_to_non_nullable
               as bool,
+      selectedGraphInvestNameModel: freezed == selectedGraphInvestNameModel
+          ? _value.selectedGraphInvestNameModel
+          : selectedGraphInvestNameModel // ignore: cast_nullable_to_non_nullable
+              as InvestNameModel?,
     ));
   }
 }
@@ -570,7 +584,8 @@ class _$AppParamStateImpl implements _AppParamState {
       this.selectedGraphYear = 0,
       this.selectedTemple,
       this.selectedTempleDirection = '',
-      this.isMonthlySpendSummaryMinusJogai = false})
+      this.isMonthlySpendSummaryMinusJogai = false,
+      this.selectedGraphInvestNameModel})
       : _keepHolidayList = keepHolidayList,
         _keepWalkModelMap = keepWalkModelMap,
         _keepMoneyMap = keepMoneyMap,
@@ -852,10 +867,12 @@ class _$AppParamStateImpl implements _AppParamState {
   @override
   @JsonKey()
   final bool isMonthlySpendSummaryMinusJogai;
+  @override
+  final InvestNameModel? selectedGraphInvestNameModel;
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepInvestNamesMap: $keepInvestNamesMap, keepInvestRecordMap: $keepInvestRecordMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepInvestNamesMap: $keepInvestNamesMap, keepInvestRecordMap: $keepInvestRecordMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, selectedGraphInvestNameModel: $selectedGraphInvestNameModel)';
   }
 
   @override
@@ -928,7 +945,11 @@ class _$AppParamStateImpl implements _AppParamState {
             (identical(other.isMonthlySpendSummaryMinusJogai,
                     isMonthlySpendSummaryMinusJogai) ||
                 other.isMonthlySpendSummaryMinusJogai ==
-                    isMonthlySpendSummaryMinusJogai));
+                    isMonthlySpendSummaryMinusJogai) &&
+            (identical(other.selectedGraphInvestNameModel,
+                    selectedGraphInvestNameModel) ||
+                other.selectedGraphInvestNameModel ==
+                    selectedGraphInvestNameModel));
   }
 
   @override
@@ -964,7 +985,8 @@ class _$AppParamStateImpl implements _AppParamState {
         selectedGraphYear,
         selectedTemple,
         selectedTempleDirection,
-        isMonthlySpendSummaryMinusJogai
+        isMonthlySpendSummaryMinusJogai,
+        selectedGraphInvestNameModel
       ]);
 
   /// Create a copy of AppParamState
@@ -978,37 +1000,39 @@ class _$AppParamStateImpl implements _AppParamState {
 
 abstract class _AppParamState implements AppParamState {
   const factory _AppParamState(
-      {final List<String> keepHolidayList,
-      final Map<String, WalkModel> keepWalkModelMap,
-      final Map<String, MoneyModel> keepMoneyMap,
-      final List<LifetimeItemModel> keepLifetimeItemList,
-      final Map<String, List<GeolocModel>> keepGeolocMap,
-      final Map<String, TempleModel> keepTempleMap,
-      final Map<String, TransportationModel> keepTransportationMap,
-      final Map<String, List<MoneySpendModel>> keepMoneySpendMap,
-      final Map<String, WorkTimeModel> keepWorkTimeMap,
-      final Map<String, Map<String, String>> keepWorkTimeDateMap,
-      final Map<String, WeatherModel> keepWeatherMap,
-      final Map<String, MoneySpendItemModel> keepMoneySpendItemMap,
-      final Map<String, List<SalaryModel>> keepSalaryMap,
-      final Map<String, GoldModel> keepGoldMap,
-      final Map<String, List<StockModel>> keepStockMap,
-      final Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
-      final Map<String, List<CreditSummaryModel>> keepCreditSummaryMap,
-      final Map<String, List<InvestNameModel>> keepInvestNamesMap,
-      final Map<int, List<InvestRecordModel>> keepInvestRecordMap,
-      final List<StationModel> keepStationList,
-      final List<OverlayEntry>? firstEntries,
-      final List<OverlayEntry>? secondEntries,
-      final Offset? overlayPosition,
-      final double currentZoom,
-      final int currentPaddingIndex,
-      final String selectedYearMonth,
-      final List<String> monthlyGeolocMapSelectedDateList,
-      final int selectedGraphYear,
-      final TempleDataModel? selectedTemple,
-      final String selectedTempleDirection,
-      final bool isMonthlySpendSummaryMinusJogai}) = _$AppParamStateImpl;
+          {final List<String> keepHolidayList,
+          final Map<String, WalkModel> keepWalkModelMap,
+          final Map<String, MoneyModel> keepMoneyMap,
+          final List<LifetimeItemModel> keepLifetimeItemList,
+          final Map<String, List<GeolocModel>> keepGeolocMap,
+          final Map<String, TempleModel> keepTempleMap,
+          final Map<String, TransportationModel> keepTransportationMap,
+          final Map<String, List<MoneySpendModel>> keepMoneySpendMap,
+          final Map<String, WorkTimeModel> keepWorkTimeMap,
+          final Map<String, Map<String, String>> keepWorkTimeDateMap,
+          final Map<String, WeatherModel> keepWeatherMap,
+          final Map<String, MoneySpendItemModel> keepMoneySpendItemMap,
+          final Map<String, List<SalaryModel>> keepSalaryMap,
+          final Map<String, GoldModel> keepGoldMap,
+          final Map<String, List<StockModel>> keepStockMap,
+          final Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
+          final Map<String, List<CreditSummaryModel>> keepCreditSummaryMap,
+          final Map<String, List<InvestNameModel>> keepInvestNamesMap,
+          final Map<int, List<InvestRecordModel>> keepInvestRecordMap,
+          final List<StationModel> keepStationList,
+          final List<OverlayEntry>? firstEntries,
+          final List<OverlayEntry>? secondEntries,
+          final Offset? overlayPosition,
+          final double currentZoom,
+          final int currentPaddingIndex,
+          final String selectedYearMonth,
+          final List<String> monthlyGeolocMapSelectedDateList,
+          final int selectedGraphYear,
+          final TempleDataModel? selectedTemple,
+          final String selectedTempleDirection,
+          final bool isMonthlySpendSummaryMinusJogai,
+          final InvestNameModel? selectedGraphInvestNameModel}) =
+      _$AppParamStateImpl;
 
   @override
   List<String> get keepHolidayList;
@@ -1086,6 +1110,8 @@ abstract class _AppParamState implements AppParamState {
   ///
   @override
   bool get isMonthlySpendSummaryMinusJogai;
+  @override
+  InvestNameModel? get selectedGraphInvestNameModel;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.

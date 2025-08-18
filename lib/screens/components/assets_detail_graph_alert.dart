@@ -9,18 +9,18 @@ import '../../extensions/extensions.dart';
 import '../../models/invest_model.dart';
 import '../../utility/utility.dart';
 
-class AssetsDetailDisplayAlert extends ConsumerStatefulWidget {
-  const AssetsDetailDisplayAlert({super.key, required this.date, required this.title});
+class AssetsDetailGraphAlert extends ConsumerStatefulWidget {
+  const AssetsDetailGraphAlert({super.key, required this.date, required this.title});
 
   final String date;
   final String title;
 
   @override
-  ConsumerState<AssetsDetailDisplayAlert> createState() => _AssetsDetailDisplayAlertState();
+  ConsumerState<AssetsDetailGraphAlert> createState() => _AssetsDetailGraphAlertState();
 }
 
-class _AssetsDetailDisplayAlertState extends ConsumerState<AssetsDetailDisplayAlert>
-    with ControllersMixin<AssetsDetailDisplayAlert> {
+class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
+    with ControllersMixin<AssetsDetailGraphAlert> {
   List<List<FlSpot>> flspotsList = <List<FlSpot>>[];
 
   LineChartData graphData = LineChartData();
@@ -56,10 +56,24 @@ class _AssetsDetailDisplayAlertState extends ConsumerState<AssetsDetailDisplayAl
 
                 Expanded(child: displayAssetsNameList()),
 
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    const SizedBox.shrink(),
+                    GestureDetector(
+                      onTap: () {
+                        appParamNotifier.setSelectedGraphInvestNameModel();
+                      },
+
+                      child: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
                 SizedBox(
-                  height: (widget.title == 'stock') ? 540 : 400,
+                  height: (widget.title == 'stock') ? 500 : 400,
                   child: Stack(children: <Widget>[LineChart(graphData2), LineChart(graphData)]),
                 ),
               ],
@@ -85,9 +99,19 @@ class _AssetsDetailDisplayAlertState extends ConsumerState<AssetsDetailDisplayAl
       ?..sort((InvestNameModel a, InvestNameModel b) => a.frame.compareTo(b.frame))
       ..sort((InvestNameModel a, InvestNameModel b) => a.relationalId.compareTo(b.relationalId))
       ..forEach((InvestNameModel element) {
-        appParamState.keepInvestRecordMap[element.relationalId]?.forEach((InvestRecordModel element2) {
-          dateList.add(element2.date);
-        });
+        bool flag = true;
+
+        if (appParamState.selectedGraphInvestNameModel != null) {
+          if (appParamState.selectedGraphInvestNameModel != element) {
+            flag = false;
+          }
+        }
+
+        if (flag) {
+          appParamState.keepInvestRecordMap[element.relationalId]?.forEach((InvestRecordModel element2) {
+            dateList.add(element2.date);
+          });
+        }
       });
 
     dateList = dateList.toSet().toList();
@@ -112,18 +136,28 @@ class _AssetsDetailDisplayAlertState extends ConsumerState<AssetsDetailDisplayAl
       ?..sort((InvestNameModel a, InvestNameModel b) => a.frame.compareTo(b.frame))
       ..sort((InvestNameModel a, InvestNameModel b) => a.dealNumber.compareTo(b.dealNumber))
       ..forEach((InvestNameModel element) {
-        final List<FlSpot> flspots = <FlSpot>[];
-        appParamState.keepInvestRecordMap[element.relationalId]?.forEach((InvestRecordModel element2) {
-          final int pos = dateList.indexWhere((String element) => element == element2.date);
+        bool flag = true;
 
-          flspots.add(FlSpot(pos.toDouble(), (element2.price - element2.cost).toDouble()));
+        if (appParamState.selectedGraphInvestNameModel != null) {
+          if (appParamState.selectedGraphInvestNameModel != element) {
+            flag = false;
+          }
+        }
 
-          list.add(element2.price - element2.cost);
+        if (flag) {
+          final List<FlSpot> flspots = <FlSpot>[];
+          appParamState.keepInvestRecordMap[element.relationalId]?.forEach((InvestRecordModel element2) {
+            final int pos = dateList.indexWhere((String element) => element == element2.date);
 
-          (dateMaxValueMapData[pos] ??= <int>[]).add(element2.price - element2.cost);
-        });
+            flspots.add(FlSpot(pos.toDouble(), (element2.price - element2.cost).toDouble()));
 
-        flspotsList.add(flspots);
+            list.add(element2.price - element2.cost);
+
+            (dateMaxValueMapData[pos] ??= <int>[]).add(element2.price - element2.cost);
+          });
+
+          flspotsList.add(flspots);
+        }
       });
 
     if (list.isNotEmpty) {
@@ -213,7 +247,9 @@ class _AssetsDetailDisplayAlertState extends ConsumerState<AssetsDetailDisplayAl
               spots: flspotsList[i],
               barWidth: 1,
               isStrokeCapRound: true,
-              color: twelveColor[i % 12],
+              color: (appParamState.selectedGraphInvestNameModel != null)
+                  ? Colors.white.withValues(alpha: 0.5)
+                  : twelveColor[i % 12],
 
               dotData: const FlDotData(show: false),
             ),
@@ -322,7 +358,15 @@ class _AssetsDetailDisplayAlertState extends ConsumerState<AssetsDetailDisplayAl
 
               child: Row(
                 children: <Widget>[
-                  CircleAvatar(radius: 15, backgroundColor: twelveColor[i % 12].withValues(alpha: 0.3)),
+                  GestureDetector(
+                    onTap: () => appParamNotifier.setSelectedGraphInvestNameModel(investNameModel: element),
+                    child: CircleAvatar(
+                      radius: 15,
+                      backgroundColor: (appParamState.selectedGraphInvestNameModel == element)
+                          ? Colors.white.withValues(alpha: 0.5)
+                          : twelveColor[i % 12].withValues(alpha: 0.3),
+                    ),
+                  ),
 
                   const SizedBox(width: 20),
 
