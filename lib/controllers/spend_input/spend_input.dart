@@ -65,38 +65,19 @@ class SpendInput extends _$SpendInput {
   }
 
   ///
-  Future<void> insertDataDaily({required Map<String, dynamic> insertData}) async {
+  Future<void> insertSpend({
+    required List<Map<String, dynamic>> insertDataDaily,
+    required List<Map<String, dynamic>> insertDataCredit,
+  }) async {
     final HttpClient client = ref.read(httpClientProvider);
 
-    // ignore: always_specify_types
-    await client
-        .post(
-          path: APIPath.insertDailySpend,
-          body: <String, String>{'record': '${insertData['date']}|${insertData['koumoku']}|${insertData['price']}'},
-        )
-        // ignore: always_specify_types
-        .then((value) {})
-        // ignore: always_specify_types
-        .catchError((error, _) {
-          utility.showError('予期せぬエラーが発生しました');
-        });
-  }
-
-  ///
-  Future<void> insertDataCredit({required Map<String, dynamic> insertData}) async {
-    final HttpClient client = ref.read(httpClientProvider);
+    final Map<String, dynamic> uploadData = <String, dynamic>{};
+    uploadData['insertDataDaily'] = insertDataDaily;
+    uploadData['insertDataCredit'] = insertDataCredit;
 
     // ignore: always_specify_types
-    await client
-        .post(
-          path: APIPath.insertCredit,
-          body: <String, String>{'record': '${insertData['date']}|${insertData['item']}|${insertData['price']}'},
-        )
-        // ignore: always_specify_types
-        .then((value) {})
-        // ignore: always_specify_types
-        .catchError((error, _) {
-          utility.showError('予期せぬエラーが発生しました');
-        });
+    await client.post(path: APIPath.insertSpend, body: uploadData).then((value) {}).catchError((error, _) {
+      utility.showError('予期せぬエラーが発生しました');
+    });
   }
 }

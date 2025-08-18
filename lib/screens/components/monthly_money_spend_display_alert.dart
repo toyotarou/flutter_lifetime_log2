@@ -138,12 +138,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
         flag = 'today';
       }
 
-      switch (flag) {
-        case 'before':
-          // ignore: avoid_bool_literals_in_conditional_expressions
-          inputDisplay = (diff != 0) ? true : false;
-        case 'today':
-          inputDisplay = true;
+      if (flag == 'before' || flag == 'today') {
+        inputDisplay = true;
       }
       /////////////////////////////////////////////////
 
@@ -181,7 +177,12 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                             widget: SpendDateInputAlert(date: date),
                           );
                         },
-                        child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.4)),
+                        child: Icon(
+                          Icons.input,
+                          color: (diff != 0)
+                              ? Colors.greenAccent.withValues(alpha: 0.4)
+                              : Colors.white.withValues(alpha: 0.4),
+                        ),
                       )
                     else
                       const Icon(Icons.square_outlined, color: Colors.transparent),

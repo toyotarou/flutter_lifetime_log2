@@ -15,8 +15,8 @@ enum APIPath {
   updateBankMoney,
   getAllDailySpend,
   getAllCredit,
-  insertDailySpend,
-  insertCredit,
+  // insertDailySpend,
+  // insertCredit,
   worktimesummary,
   getAllWeather,
   getMoneySpendItem,
@@ -30,6 +30,7 @@ enum APIPath {
   getCreditSummary,
   getAllInvestNames,
   getAllInvestRecords,
+  insertSpend,
 }
 
 extension APIPathExtension on APIPath {
@@ -79,10 +80,10 @@ extension APIPathExtension on APIPath {
       case APIPath.getAllCredit:
         return 'getAllCredit';
 
-      case APIPath.insertDailySpend:
-        return 'insertDailySpend';
-      case APIPath.insertCredit:
-        return 'insertCredit';
+      // case APIPath.insertDailySpend:
+      //   return 'insertDailySpend';
+      // case APIPath.insertCredit:
+      //   return 'insertCredit';
 
       case APIPath.worktimesummary:
         return 'worktimesummary';
@@ -117,6 +118,9 @@ extension APIPathExtension on APIPath {
         return 'getAllInvestNames';
       case APIPath.getAllInvestRecords:
         return 'getAllInvestRecords';
+
+      case APIPath.insertSpend:
+        return 'insertSpend';
     }
   }
 }

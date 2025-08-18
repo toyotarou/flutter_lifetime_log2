@@ -26,8 +26,6 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
 
   List<FocusNode> focusNodeList = <FocusNode>[];
 
-  bool _isLoading = false;
-
   ///
   @override
   void initState() {
@@ -49,44 +47,38 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
     return Scaffold(
       backgroundColor: Colors.transparent,
 
-      body: Stack(
-        children: <Widget>[
-          SafeArea(
-            child: DefaultTextStyle(
-              style: const TextStyle(color: Colors.white),
+      body: SafeArea(
+        child: DefaultTextStyle(
+          style: const TextStyle(color: Colors.white),
 
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(widget.date),
+                    Text(widget.date),
 
-                        ElevatedButton(
-                          onPressed: () {
-                            _inputSpendData();
-                          },
+                    ElevatedButton(
+                      onPressed: () {
+                        _inputSpendData();
+                      },
 
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
 
-                          child: const Text('input'),
-                        ),
-                      ],
+                      child: const Text('input'),
                     ),
-
-                    Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-                    Expanded(child: _displayInputParts()),
                   ],
                 ),
-              ),
+
+                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                Expanded(child: _displayInputParts()),
+              ],
             ),
           ),
-
-          if (_isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
-        ],
+        ),
       ),
     );
   }
@@ -264,27 +256,9 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
       return;
     }
 
-    setState(() => _isLoading = true);
-
-    if (insertDataDaily.isNotEmpty) {
-      // ignore: avoid_function_literals_in_foreach_calls
-      insertDataDaily.forEach((Map<String, dynamic> element) async {
-        await spendInputNotifier.insertDataDaily(insertData: element);
-      });
-    }
-
-    if (insertDataCredit.isNotEmpty) {
-      // ignore: avoid_function_literals_in_foreach_calls
-      insertDataCredit.forEach((Map<String, dynamic> element) async {
-        await spendInputNotifier.insertDataCredit(insertData: element);
-      });
-    }
-
     // ignore: always_specify_types
-    Future.delayed(const Duration(seconds: 5), () {
+    spendInputNotifier.insertSpend(insertDataDaily: insertDataDaily, insertDataCredit: insertDataCredit).then((value) {
       if (mounted) {
-        setState(() => _isLoading = false);
-
         context.findAncestorStateOfType<AppRootState>()?.restartApp();
       }
     });
