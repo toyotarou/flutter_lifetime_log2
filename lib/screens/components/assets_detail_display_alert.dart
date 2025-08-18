@@ -106,33 +106,38 @@ class _AssetsDetailDisplayAlertState extends ConsumerState<AssetsDetailDisplayAl
 
     final List<int> list = <int>[];
 
+    final Map<int, List<int>> dateMaxValueMapData = <int, List<int>>{};
+
     appParamState.keepInvestNamesMap[roopTitle]
       ?..sort((InvestNameModel a, InvestNameModel b) => a.frame.compareTo(b.frame))
-      ..sort((InvestNameModel a, InvestNameModel b) => a.relationalId.compareTo(b.relationalId))
+      ..sort((InvestNameModel a, InvestNameModel b) => a.dealNumber.compareTo(b.dealNumber))
       ..forEach((InvestNameModel element) {
         final List<FlSpot> flspots = <FlSpot>[];
         appParamState.keepInvestRecordMap[element.relationalId]?.forEach((InvestRecordModel element2) {
-          flspots.add(
-            FlSpot(
-              dateList.indexWhere((String element) => element == element2.date).toDouble(),
-              element2.price.toDouble(),
-            ),
-          );
+          final int pos = dateList.indexWhere((String element) => element == element2.date);
 
-          list.add(element2.price);
+          flspots.add(FlSpot(pos.toDouble(), (element2.price - element2.cost).toDouble()));
+
+          list.add(element2.price - element2.cost);
+
+          (dateMaxValueMapData[pos] ??= <int>[]).add(element2.price - element2.cost);
         });
 
         flspotsList.add(flspots);
       });
 
     if (list.isNotEmpty) {
-      final int warisuu = (widget.title == 'stock') ? 10000 : 500000;
+      final int warisuu = (widget.title == 'stock') ? 10000 : 50000;
 
       final int minValue = list.reduce(min);
       final int maxValue = list.reduce(max);
 
       graphMin = ((minValue / warisuu).floor()) * warisuu;
       graphMax = ((maxValue / warisuu).ceil()) * warisuu;
+
+      final Map<int, int> dateMaxValueMap = <int, int>{};
+
+      dateMaxValueMapData.forEach((int key, List<int> value) => dateMaxValueMap[key] = value.reduce(max));
 
       final List<Color> twelveColor = utility.getTwelveColor();
 
@@ -151,6 +156,8 @@ class _AssetsDetailDisplayAlertState extends ConsumerState<AssetsDetailDisplayAl
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
               final List<LineTooltipItem> list = <LineTooltipItem>[];
 
+              final List<String> toolTipDisplayValue = <String>[];
+
               for (final LineBarSpot element in touchedSpots) {
                 final TextStyle textStyle = TextStyle(
                   color: element.bar.gradient?.colors.first ?? element.bar.color ?? Colors.blueGrey,
@@ -160,9 +167,18 @@ class _AssetsDetailDisplayAlertState extends ConsumerState<AssetsDetailDisplayAl
 
                 final String date = dateList[element.x.toInt()];
 
-                final String price = element.y.round().toString().split('.')[0].toCurrency();
+                final int? maxPrice = dateMaxValueMap[element.x.toInt()];
+                if (element.y.toInt() == maxPrice) {
+                  toolTipDisplayValue.add(date);
+                }
 
-                list.add(LineTooltipItem('$date\n$price', textStyle, textAlign: TextAlign.end));
+                final String price = element.y.toInt().toString().toCurrency();
+
+                toolTipDisplayValue.add(price);
+
+                list.add(LineTooltipItem(toolTipDisplayValue.join('\n'), textStyle, textAlign: TextAlign.end));
+
+                toolTipDisplayValue.clear();
               }
 
               return list;
@@ -286,20 +302,43 @@ class _AssetsDetailDisplayAlertState extends ConsumerState<AssetsDetailDisplayAl
       roopTitle = 'shintaku';
     }
 
+    int i = 0;
+
+    final List<Color> twelveColor = utility.getTwelveColor();
+
     appParamState.keepInvestNamesMap[roopTitle]
       ?..sort((InvestNameModel a, InvestNameModel b) => a.frame.compareTo(b.frame))
-      ..sort((InvestNameModel a, InvestNameModel b) => a.relationalId.compareTo(b.relationalId))
+      ..sort((InvestNameModel a, InvestNameModel b) => a.dealNumber.compareTo(b.dealNumber))
       ..forEach((InvestNameModel element) {
         list.add(
           DefaultTextStyle(
             style: const TextStyle(fontSize: 12),
 
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[Text(element.frame), Text(element.name)],
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+              ),
+              padding: const EdgeInsets.all(5),
+
+              child: Row(
+                children: <Widget>[
+                  CircleAvatar(radius: 15, backgroundColor: twelveColor[i % 12].withValues(alpha: 0.3)),
+
+                  const SizedBox(width: 20),
+
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[Text(element.frame), Text(element.name)],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
+
+        i++;
       });
 
     return CustomScrollView(
