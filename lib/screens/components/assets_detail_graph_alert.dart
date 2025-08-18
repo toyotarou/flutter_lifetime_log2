@@ -8,6 +8,8 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/invest_model.dart';
 import '../../utility/utility.dart';
+import '../parts/lifetime_dialog.dart';
+import 'assets_detail_list_alert.dart';
 
 class AssetsDetailGraphAlert extends ConsumerStatefulWidget {
   const AssetsDetailGraphAlert({super.key, required this.date, required this.title});
@@ -433,7 +435,16 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
                     const SizedBox(width: 20),
 
-                    Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
+                    GestureDetector(
+                      onTap: () {
+                        LifetimeDialog(
+                          context: context,
+                          widget: AssetsDetailListAlert(data: element),
+                        );
+                      },
+
+                      child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
+                    ),
                   ],
                 ),
               ),
