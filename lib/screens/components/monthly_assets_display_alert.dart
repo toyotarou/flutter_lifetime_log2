@@ -514,6 +514,21 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   ),
 
                   onPressed: () {
+                    if (appParamState.keepInvestNamesMap.isEmpty || appParamState.keepInvestRecordMap.isEmpty) {
+                      // ignore: always_specify_types
+                      Future.delayed(
+                        Duration.zero,
+                        () => error_dialog(
+                          // ignore: use_build_context_synchronously
+                          context: context,
+                          title: '表示できません。',
+                          content: '投資情報が作成されていません。',
+                        ),
+                      );
+
+                      return;
+                    }
+
                     LifetimeDialog(
                       context: context,
                       widget: AssetsDetailGraphAlert(date: date, title: title),

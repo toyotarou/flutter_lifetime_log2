@@ -74,6 +74,21 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                               GestureDetector(
                                 onTap: () {
+                                  if (appParamState.keepMoneySpendItemMap.isEmpty) {
+                                    // ignore: always_specify_types
+                                    Future.delayed(
+                                      Duration.zero,
+                                      () => error_dialog(
+                                        // ignore: use_build_context_synchronously
+                                        context: context,
+                                        title: '表示できません。',
+                                        content: 'appParamState.keepMoneySpendItemMapが作成されていません。',
+                                      ),
+                                    );
+
+                                    return;
+                                  }
+
                                   LifetimeDialog(
                                     context: context,
                                     widget: MonthlyMoneySpendDisplayAlert(yearmonth: widget.yearmonth),
@@ -138,6 +153,23 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                             children: <Widget>[
                               GestureDetector(
                                 onTap: () {
+                                  if (appParamState.keepGoldMap.isEmpty ||
+                                      appParamState.keepStockMap.isEmpty ||
+                                      appParamState.keepToushiShintakuMap.isEmpty) {
+                                    // ignore: always_specify_types
+                                    Future.delayed(
+                                      Duration.zero,
+                                      () => error_dialog(
+                                        // ignore: use_build_context_synchronously
+                                        context: context,
+                                        title: '表示できません。',
+                                        content: '資産情報が作成されていません。',
+                                      ),
+                                    );
+
+                                    return;
+                                  }
+
                                   LifetimeDialog(
                                     context: context,
                                     widget: MonthlyAssetsDisplayAlert(
@@ -154,6 +186,21 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                               GestureDetector(
                                 onTap: () {
+                                  if (appParamState.keepWorkTimeMap.isEmpty) {
+                                    // ignore: always_specify_types
+                                    Future.delayed(
+                                      Duration.zero,
+                                      () => error_dialog(
+                                        // ignore: use_build_context_synchronously
+                                        context: context,
+                                        title: '表示できません。',
+                                        content: 'appParamState.keepWorkTimeMapが作成されていません。',
+                                      ),
+                                    );
+
+                                    return;
+                                  }
+
                                   LifetimeDialog(
                                     context: context,
                                     widget: MonthlyWorkTimeDisplayAlert(yearmonth: widget.yearmonth),
@@ -415,6 +462,21 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                           children: <Widget>[
                                             GestureDetector(
                                               onTap: () {
+                                                if (appParamState.keepLifetimeItemList.isEmpty) {
+                                                  // ignore: always_specify_types
+                                                  Future.delayed(
+                                                    Duration.zero,
+                                                    () => error_dialog(
+                                                      // ignore: use_build_context_synchronously
+                                                      context: context,
+                                                      title: '表示できません。',
+                                                      content: 'appParamState.keepLifetimeItemListが作成されていません。',
+                                                    ),
+                                                  );
+
+                                                  return;
+                                                }
+
                                                 LifetimeDialog(
                                                   context: context,
                                                   widget: LifetimeInputAlert(

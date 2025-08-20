@@ -6,6 +6,7 @@ import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
 import '../../utility/utility.dart';
+import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 import 'monthly_credit_display_alert.dart';
 
@@ -166,6 +167,21 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
                                       ? const Text('未入力', style: TextStyle(color: Colors.greenAccent, fontSize: 8))
                                       : GestureDetector(
                                           onTap: () {
+                                            if (appParamState.keepCreditSummaryMap.isEmpty) {
+                                              // ignore: always_specify_types
+                                              Future.delayed(
+                                                Duration.zero,
+                                                () => error_dialog(
+                                                  // ignore: use_build_context_synchronously
+                                                  context: context,
+                                                  title: '表示できません。',
+                                                  content: 'appParamState.keepCreditSummaryMapが作成されていません。',
+                                                ),
+                                              );
+
+                                              return;
+                                            }
+
                                             LifetimeDialog(
                                               context: context,
                                               widget: MonthlyCreditDisplayAlert(yearmonth: widget.yearmonth),
