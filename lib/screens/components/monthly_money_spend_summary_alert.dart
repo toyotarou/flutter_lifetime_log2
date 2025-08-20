@@ -161,16 +161,18 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
                           child: Container(
                             alignment: Alignment.topRight,
-                            child: (value.name == 'クレジット' && widget.yearmonth != DateTime.now().yyyymm)
-                                ? GestureDetector(
-                                    onTap: () {
-                                      LifetimeDialog(
-                                        context: context,
-                                        widget: MonthlyCreditDisplayAlert(yearmonth: widget.yearmonth),
-                                      );
-                                    },
-                                    child: Icon(Icons.star, color: Colors.white.withValues(alpha: 0.4)),
-                                  )
+                            child: (value.name == 'クレジット')
+                                ? (widget.yearmonth == DateTime.now().yyyymm)
+                                      ? const Text('未入力', style: TextStyle(color: Colors.greenAccent, fontSize: 8))
+                                      : GestureDetector(
+                                          onTap: () {
+                                            LifetimeDialog(
+                                              context: context,
+                                              widget: MonthlyCreditDisplayAlert(yearmonth: widget.yearmonth),
+                                            );
+                                          },
+                                          child: Icon(Icons.star, color: Colors.white.withValues(alpha: 0.4)),
+                                        )
                                 : const Icon(Icons.square_outlined, color: Colors.transparent),
                           ),
                         ),

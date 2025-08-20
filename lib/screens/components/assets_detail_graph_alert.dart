@@ -33,6 +33,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
   Utility utility = Utility();
 
+  String lastAssetsDate = '';
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -78,7 +80,18 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
                 SizedBox(
                   height: (widget.title == 'gold') ? context.screenSize.height * 0.7 : context.screenSize.height * 0.5,
-                  child: Stack(children: <Widget>[LineChart(graphData2), LineChart(graphData)]),
+                  child: Stack(
+                    children: <Widget>[
+                      LineChart(graphData2),
+                      LineChart(graphData),
+
+                      Positioned(
+                        top: 5,
+                        right: 5,
+                        child: Text('last date: $lastAssetsDate', style: const TextStyle(color: Colors.greenAccent)),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -142,6 +155,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
     final Map<int, List<int>> dateMaxValueMapData = <int, List<int>>{};
 
+    String lastDate = '';
+
     if (widget.title == 'gold') {
       final List<FlSpot> flspots = <FlSpot>[];
       appParamState.keepInvestRecordMap[0]?.forEach((InvestRecordModel element2) {
@@ -152,6 +167,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         list.add(element2.price - element2.cost);
 
         (dateMaxValueMapData[pos] ??= <int>[]).add(element2.price - element2.cost);
+
+        lastDate = element2.date;
       });
 
       flspotsList.add(flspots);
@@ -183,12 +200,18 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
               list.add(element2.price - element2.cost);
 
               (dateMaxValueMapData[pos] ??= <int>[]).add(element2.price - element2.cost);
+
+              lastDate = element2.date;
             });
 
             flspotsList.add(flspots);
           }
         });
     }
+
+    setState(() {
+      lastAssetsDate = lastDate;
+    });
 
     if (list.isNotEmpty) {
       final int warisuu = (widget.title == 'stock') ? 10000 : 50000;
