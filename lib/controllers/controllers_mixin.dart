@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '_get_data/credit_summary/credit_summary.dart';
 import '_get_data/directions/directions.dart';
+import '_get_data/fund/fund.dart';
 import '_get_data/geoloc/geoloc.dart';
 import '_get_data/gold/gold.dart';
 import '_get_data/holiday/holiday.dart';
@@ -186,6 +187,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   InvestRecordsState get investRecordsState => ref.watch(investRecordsProvider);
 
   InvestRecords get investRecordsNotifier => ref.read(investRecordsProvider.notifier);
+
+  //==========================================//
+
+  FundState get fundState => ref.watch(fundProvider);
+
+  Fund get fundNotifier => ref.read(fundProvider.notifier);
 
   //==========================================//
 

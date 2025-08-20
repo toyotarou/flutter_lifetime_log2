@@ -514,7 +514,9 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   ),
 
                   onPressed: () {
-                    if (appParamState.keepInvestNamesMap.isEmpty || appParamState.keepInvestRecordMap.isEmpty) {
+                    if (appParamState.keepInvestNamesMap.isEmpty ||
+                        appParamState.keepInvestRecordMap.isEmpty ||
+                        appParamState.keepFundRelationMap.isEmpty) {
                       // ignore: always_specify_types
                       Future.delayed(
                         Duration.zero,

@@ -5,6 +5,7 @@ import '../controllers/controllers_mixin.dart';
 import '../extensions/extensions.dart';
 import '../main.dart';
 import '../models/credit_summary_model.dart';
+import '../models/fund_model.dart';
 import '../models/geoloc_model.dart';
 import '../models/gold_model.dart';
 import '../models/invest_model.dart';
@@ -57,6 +58,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.creditSummaryMap,
     required this.investNamesMap,
     required this.investRecordsMap,
+    required this.fundRelationMap,
   });
 
   final List<String> holidayList;
@@ -79,6 +81,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<CreditSummaryModel>> creditSummaryMap;
   final Map<String, List<InvestNameModel>> investNamesMap;
   final Map<int, List<InvestRecordModel>> investRecordsMap;
+  final Map<int, List<FundModel>> fundRelationMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -115,6 +118,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepCreditSummaryMap(map: widget.creditSummaryMap);
       appParamNotifier.setKeepInvestNamesMap(map: widget.investNamesMap);
       appParamNotifier.setKeepInvestRecordMap(map: widget.investRecordsMap);
+      appParamNotifier.setKeepFundRelationMap(map: widget.fundRelationMap);
     });
 
     return DefaultTabController(

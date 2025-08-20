@@ -69,6 +69,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     creditSummaryNotifier.getAllCreditSummaryData();
     investNamesNotifier.getAllInvestNamesData();
     investRecordsNotifier.getAllInvestRecordsData();
+    fundNotifier.getAllFundData();
   }
 
   ///
@@ -110,6 +111,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           creditSummaryMap: creditSummaryState.creditSummaryMap,
           investNamesMap: investNamesState.investNamesMap,
           investRecordsMap: investRecordsState.investRecordMap,
+          fundRelationMap: fundState.fundRelationMap,
         ),
       ),
     );

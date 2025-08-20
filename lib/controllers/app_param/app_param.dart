@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../models/credit_summary_model.dart';
+import '../../models/fund_model.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/gold_model.dart';
 import '../../models/invest_model.dart';
@@ -45,6 +46,7 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<CreditSummaryModel>>{}) Map<String, List<CreditSummaryModel>> keepCreditSummaryMap,
     @Default(<String, List<InvestNameModel>>{}) Map<String, List<InvestNameModel>> keepInvestNamesMap,
     @Default(<int, List<InvestRecordModel>>{}) Map<int, List<InvestRecordModel>> keepInvestRecordMap,
+    @Default(<int, List<FundModel>>{}) Map<int, List<FundModel>> keepFundRelationMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -154,6 +156,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepInvestRecordMap({required Map<int, List<InvestRecordModel>> map}) =>
       state = state.copyWith(keepInvestRecordMap: map);
+
+  ///
+  void setKeepFundRelationMap({required Map<int, List<FundModel>> map}) =>
+      state = state.copyWith(keepFundRelationMap: map);
 
   //===================================================
 
