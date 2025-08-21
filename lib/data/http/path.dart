@@ -26,8 +26,6 @@ enum APIPath {
   getTempleDatePhoto,
   getTrain,
   getCreditSummary,
-  getAllInvestNames,
-  getAllInvestRecords,
   insertSpend,
   getFund,
 }
@@ -108,10 +106,6 @@ extension APIPathExtension on APIPath {
 
       case APIPath.getCreditSummary:
         return 'getCreditSummary';
-      case APIPath.getAllInvestNames:
-        return 'getAllInvestNames';
-      case APIPath.getAllInvestRecords:
-        return 'getAllInvestRecords';
 
       case APIPath.insertSpend:
         return 'insertSpend';

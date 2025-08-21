@@ -67,8 +67,6 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     stockNotifier.getAllStockData();
     toushiShintakuNotifier.getAllToushiShintakuData();
     creditSummaryNotifier.getAllCreditSummaryData();
-    investNamesNotifier.getAllInvestNamesData();
-    investRecordsNotifier.getAllInvestRecordsData();
     fundNotifier.getAllFundData();
   }
 
@@ -109,8 +107,6 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           toushiShintakuMap: toushiShintakuState.toushiShintakuMap,
           stationList: transportationState.stationList,
           creditSummaryMap: creditSummaryState.creditSummaryMap,
-          investNamesMap: investNamesState.investNamesMap,
-          investRecordsMap: investRecordsState.investRecordMap,
           fundRelationMap: fundState.fundRelationMap,
         ),
       ),

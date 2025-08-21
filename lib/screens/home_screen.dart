@@ -56,8 +56,6 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.toushiShintakuMap,
     required this.stationList,
     required this.creditSummaryMap,
-    required this.investNamesMap,
-    required this.investRecordsMap,
     required this.fundRelationMap,
   });
 
@@ -79,8 +77,6 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<ToushiShintakuModel>> toushiShintakuMap;
   final List<StationModel> stationList;
   final Map<String, List<CreditSummaryModel>> creditSummaryMap;
-  final Map<String, List<InvestNameModel>> investNamesMap;
-  final Map<int, List<InvestRecordModel>> investRecordsMap;
   final Map<int, List<FundModel>> fundRelationMap;
 
   @override
@@ -116,8 +112,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepToushiShintakuMap(map: widget.toushiShintakuMap);
       appParamNotifier.setKeepStationList(list: widget.stationList);
       appParamNotifier.setKeepCreditSummaryMap(map: widget.creditSummaryMap);
-      appParamNotifier.setKeepInvestNamesMap(map: widget.investNamesMap);
-      appParamNotifier.setKeepInvestRecordMap(map: widget.investRecordsMap);
       appParamNotifier.setKeepFundRelationMap(map: widget.fundRelationMap);
     });
 

@@ -7,6 +7,8 @@ class ToushiShintakuModel {
     required this.name,
     required this.shutokuSougaku,
     required this.jikaHyoukagaku,
+    required this.relationalId,
+    required this.hoyuuSuuryou,
   });
 
   /// JSON → Model
@@ -19,6 +21,8 @@ class ToushiShintakuModel {
       name: json['name'] as String,
       shutokuSougaku: json['shutoku_sougaku'] as String,
       jikaHyoukagaku: json['jika_hyoukagaku'] as String,
+      relationalId: json['relational_id'] as int,
+      hoyuuSuuryou: json['hoyuu_suuryou'] as int,
     );
   }
 
@@ -29,6 +33,8 @@ class ToushiShintakuModel {
   final String name;
   final String shutokuSougaku;
   final String jikaHyoukagaku;
+  final int relationalId;
+  final int hoyuuSuuryou;
 
   /// Model → JSON
   Map<String, dynamic> toJson() {
@@ -40,6 +46,8 @@ class ToushiShintakuModel {
       'name': name,
       'shutoku_sougaku': shutokuSougaku,
       'jika_hyoukagaku': jikaHyoukagaku,
+      'relational_id': relationalId,
+      'hoyuu_suuryou': hoyuuSuuryou,
     };
   }
 }
