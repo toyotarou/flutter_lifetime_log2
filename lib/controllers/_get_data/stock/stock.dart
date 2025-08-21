@@ -16,6 +16,7 @@ class StockState with _$StockState {
   const factory StockState({
     @Default(<StockModel>[]) List<StockModel> stockList,
     @Default(<String, List<StockModel>>{}) Map<String, List<StockModel>> stockMap,
+    @Default(<String, List<StockModel>>{}) Map<String, List<StockModel>> stockTickerMap,
   }) = _StockState;
 }
 
@@ -36,6 +37,7 @@ class Stock extends _$Stock {
     try {
       final List<StockModel> list = <StockModel>[];
       final Map<String, List<StockModel>> map = <String, List<StockModel>>{};
+      Map<String, List<StockModel>> map2 = {};
 
       // ignore: always_specify_types
       await client.post(path: APIPath.getAllStockData).then((value) {
@@ -47,10 +49,12 @@ class Stock extends _$Stock {
           list.add(val);
 
           (map['${val.year}-${val.month}-${val.day}'] ??= <StockModel>[]).add(val);
+
+          (map2[val.ticker] ??= <StockModel>[]).add(val);
         }
       });
 
-      return state.copyWith(stockList: list, stockMap: map);
+      return state.copyWith(stockList: list, stockMap: map, stockTickerMap: map2);
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる

@@ -20,6 +20,8 @@ mixin _$ToushiShintakuState {
       throw _privateConstructorUsedError;
   Map<String, List<ToushiShintakuModel>> get toushiShintakuMap =>
       throw _privateConstructorUsedError;
+  Map<int, List<ToushiShintakuModel>> get toushiShintakuRelationalMap =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of ToushiShintakuState
   /// with the given fields replaced by the non-null parameter values.
@@ -36,7 +38,8 @@ abstract class $ToushiShintakuStateCopyWith<$Res> {
   @useResult
   $Res call(
       {List<ToushiShintakuModel> toushiShintakuList,
-      Map<String, List<ToushiShintakuModel>> toushiShintakuMap});
+      Map<String, List<ToushiShintakuModel>> toushiShintakuMap,
+      Map<int, List<ToushiShintakuModel>> toushiShintakuRelationalMap});
 }
 
 /// @nodoc
@@ -56,6 +59,7 @@ class _$ToushiShintakuStateCopyWithImpl<$Res, $Val extends ToushiShintakuState>
   $Res call({
     Object? toushiShintakuList = null,
     Object? toushiShintakuMap = null,
+    Object? toushiShintakuRelationalMap = null,
   }) {
     return _then(_value.copyWith(
       toushiShintakuList: null == toushiShintakuList
@@ -66,6 +70,10 @@ class _$ToushiShintakuStateCopyWithImpl<$Res, $Val extends ToushiShintakuState>
           ? _value.toushiShintakuMap
           : toushiShintakuMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<ToushiShintakuModel>>,
+      toushiShintakuRelationalMap: null == toushiShintakuRelationalMap
+          ? _value.toushiShintakuRelationalMap
+          : toushiShintakuRelationalMap // ignore: cast_nullable_to_non_nullable
+              as Map<int, List<ToushiShintakuModel>>,
     ) as $Val);
   }
 }
@@ -80,7 +88,8 @@ abstract class _$$ToushiShintakuStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {List<ToushiShintakuModel> toushiShintakuList,
-      Map<String, List<ToushiShintakuModel>> toushiShintakuMap});
+      Map<String, List<ToushiShintakuModel>> toushiShintakuMap,
+      Map<int, List<ToushiShintakuModel>> toushiShintakuRelationalMap});
 }
 
 /// @nodoc
@@ -98,6 +107,7 @@ class __$$ToushiShintakuStateImplCopyWithImpl<$Res>
   $Res call({
     Object? toushiShintakuList = null,
     Object? toushiShintakuMap = null,
+    Object? toushiShintakuRelationalMap = null,
   }) {
     return _then(_$ToushiShintakuStateImpl(
       toushiShintakuList: null == toushiShintakuList
@@ -108,6 +118,10 @@ class __$$ToushiShintakuStateImplCopyWithImpl<$Res>
           ? _value._toushiShintakuMap
           : toushiShintakuMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<ToushiShintakuModel>>,
+      toushiShintakuRelationalMap: null == toushiShintakuRelationalMap
+          ? _value._toushiShintakuRelationalMap
+          : toushiShintakuRelationalMap // ignore: cast_nullable_to_non_nullable
+              as Map<int, List<ToushiShintakuModel>>,
     ));
   }
 }
@@ -119,9 +133,12 @@ class _$ToushiShintakuStateImpl implements _ToushiShintakuState {
       {final List<ToushiShintakuModel> toushiShintakuList =
           const <ToushiShintakuModel>[],
       final Map<String, List<ToushiShintakuModel>> toushiShintakuMap =
-          const <String, List<ToushiShintakuModel>>{}})
+          const <String, List<ToushiShintakuModel>>{},
+      final Map<int, List<ToushiShintakuModel>> toushiShintakuRelationalMap =
+          const <int, List<ToushiShintakuModel>>{}})
       : _toushiShintakuList = toushiShintakuList,
-        _toushiShintakuMap = toushiShintakuMap;
+        _toushiShintakuMap = toushiShintakuMap,
+        _toushiShintakuRelationalMap = toushiShintakuRelationalMap;
 
   final List<ToushiShintakuModel> _toushiShintakuList;
   @override
@@ -143,9 +160,19 @@ class _$ToushiShintakuStateImpl implements _ToushiShintakuState {
     return EqualUnmodifiableMapView(_toushiShintakuMap);
   }
 
+  final Map<int, List<ToushiShintakuModel>> _toushiShintakuRelationalMap;
+  @override
+  @JsonKey()
+  Map<int, List<ToushiShintakuModel>> get toushiShintakuRelationalMap {
+    if (_toushiShintakuRelationalMap is EqualUnmodifiableMapView)
+      return _toushiShintakuRelationalMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_toushiShintakuRelationalMap);
+  }
+
   @override
   String toString() {
-    return 'ToushiShintakuState(toushiShintakuList: $toushiShintakuList, toushiShintakuMap: $toushiShintakuMap)';
+    return 'ToushiShintakuState(toushiShintakuList: $toushiShintakuList, toushiShintakuMap: $toushiShintakuMap, toushiShintakuRelationalMap: $toushiShintakuRelationalMap)';
   }
 
   @override
@@ -156,14 +183,18 @@ class _$ToushiShintakuStateImpl implements _ToushiShintakuState {
             const DeepCollectionEquality()
                 .equals(other._toushiShintakuList, _toushiShintakuList) &&
             const DeepCollectionEquality()
-                .equals(other._toushiShintakuMap, _toushiShintakuMap));
+                .equals(other._toushiShintakuMap, _toushiShintakuMap) &&
+            const DeepCollectionEquality().equals(
+                other._toushiShintakuRelationalMap,
+                _toushiShintakuRelationalMap));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_toushiShintakuList),
-      const DeepCollectionEquality().hash(_toushiShintakuMap));
+      const DeepCollectionEquality().hash(_toushiShintakuMap),
+      const DeepCollectionEquality().hash(_toushiShintakuRelationalMap));
 
   /// Create a copy of ToushiShintakuState
   /// with the given fields replaced by the non-null parameter values.
@@ -177,14 +208,17 @@ class _$ToushiShintakuStateImpl implements _ToushiShintakuState {
 
 abstract class _ToushiShintakuState implements ToushiShintakuState {
   const factory _ToushiShintakuState(
-          {final List<ToushiShintakuModel> toushiShintakuList,
-          final Map<String, List<ToushiShintakuModel>> toushiShintakuMap}) =
-      _$ToushiShintakuStateImpl;
+      {final List<ToushiShintakuModel> toushiShintakuList,
+      final Map<String, List<ToushiShintakuModel>> toushiShintakuMap,
+      final Map<int, List<ToushiShintakuModel>>
+          toushiShintakuRelationalMap}) = _$ToushiShintakuStateImpl;
 
   @override
   List<ToushiShintakuModel> get toushiShintakuList;
   @override
   Map<String, List<ToushiShintakuModel>> get toushiShintakuMap;
+  @override
+  Map<int, List<ToushiShintakuModel>> get toushiShintakuRelationalMap;
 
   /// Create a copy of ToushiShintakuState
   /// with the given fields replaced by the non-null parameter values.

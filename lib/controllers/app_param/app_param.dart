@@ -45,6 +45,8 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<ToushiShintakuModel>>{}) Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
     @Default(<String, List<CreditSummaryModel>>{}) Map<String, List<CreditSummaryModel>> keepCreditSummaryMap,
     @Default(<int, List<FundModel>>{}) Map<int, List<FundModel>> keepFundRelationMap,
+    @Default(<String, List<StockModel>>{}) Map<String, List<StockModel>> keepStockTickerMap,
+    @Default(<int, List<ToushiShintakuModel>>{}) Map<int, List<ToushiShintakuModel>> keepToushiShintakuRelationalMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -148,6 +150,14 @@ class AppParam extends _$AppParam {
   ///
   void setKeepFundRelationMap({required Map<int, List<FundModel>> map}) =>
       state = state.copyWith(keepFundRelationMap: map);
+
+  ///
+  void setKeepStockTickerMap({required Map<String, List<StockModel>> map}) =>
+      state = state.copyWith(keepStockTickerMap: map);
+
+  ///
+  void setKeepToushiShintakuRelationalMap({required Map<int, List<ToushiShintakuModel>> map}) =>
+      state = state.copyWith(keepToushiShintakuRelationalMap: map);
 
   //===================================================
 

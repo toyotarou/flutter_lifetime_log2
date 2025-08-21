@@ -288,100 +288,121 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         }
 
       case 'stock':
-        appParamState.keepStockMap.forEach((String key, List<StockModel> value) {
-          final List<FlSpot> flspots = <FlSpot>[];
-          for (final StockModel element in value) {
-            if (int.tryParse(element.jikaHyoukagaku.replaceAll(',', '')) != null &&
-                double.tryParse(element.heikinShutokuKagaku) != null) {
-              final int pos = dateList.indexWhere(
-                (String element2) => element2 == '${element.year}-${element.month}-${element.day}',
-              );
+        flspotsList.clear();
 
-              final double onedata =
-                  element.jikaHyoukagaku.replaceAll(',', '').toInt() -
-                  (element.hoyuuSuuryou * element.heikinShutokuKagaku.toDouble());
+        /*
 
-              flspots.add(FlSpot(pos.toDouble(), onedata));
 
-              list.add(onedata.toInt());
 
-              (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
+      appParamState.keepInvestNamesMap[roopTitle]
+        ?..sort((InvestNameModel a, InvestNameModel b) => a.frame.compareTo(b.frame))
+        ..sort((InvestNameModel a, InvestNameModel b) => a.dealNumber.compareTo(b.dealNumber))
+        ..forEach((InvestNameModel element) {
+          bool flag = true;
 
-              lastDate = '${element.year}-${element.month}-${element.day}';
+          if (appParamState.selectedGraphInvestNameModel != null) {
+            if (appParamState.selectedGraphInvestNameModel != element) {
+              flag = false;
             }
           }
 
-          if (flspots.isNotEmpty) {
+          if (flag) {
+            final List<FlSpot> flspots = <FlSpot>[];
+            appParamState.keepInvestRecordMap[element.relationalId]?.forEach((InvestRecordModel element2) {
+              final int pos = dateList.indexWhere((String element) => element == element2.date);
+
+              flspots.add(FlSpot(pos.toDouble(), (element2.price - element2.cost).toDouble()));
+
+              list.add(element2.price - element2.cost);
+
+              (dateMaxValueMapData[pos] ??= <int>[]).add(element2.price - element2.cost);
+
+              lastDate = element2.date;
+            });
+
             flspotsList.add(flspots);
           }
         });
+
+
+
+        */
+
+        //
+        // appParamState.keepStockMap.forEach((String key, List<StockModel> value) {
+        //   final List<FlSpot> flspots = <FlSpot>[];
+        //
+        //   for (final StockModel element in value) {
+        //     if (int.tryParse(element.jikaHyoukagaku.replaceAll(',', '')) != null &&
+        //         double.tryParse(element.heikinShutokuKagaku.replaceAll(',', '')) != null) {
+        //       final int pos = dateList.indexWhere(
+        //         (String element2) => element2 == '${element.year}-${element.month}-${element.day}',
+        //       );
+        //
+        //       final double onedata =
+        //           element.jikaHyoukagaku.replaceAll(',', '').toInt() -
+        //           (element.hoyuuSuuryou * element.heikinShutokuKagaku.replaceAll(',', '').toDouble());
+        //
+        //       flspots.add(FlSpot(pos.toDouble(), onedata));
+        //
+        //       list.add(onedata.toInt());
+        //
+        //       (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
+        //
+        //       lastDate = '${element.year}-${element.month}-${element.day}';
+        //     }
+        //   }
+        //
+        //   if (flspots.isNotEmpty) {
+        //     flspotsList.add(flspots);
+        //   }
+        // });
+        //
+        //
+        //
+
+        break;
 
       case 'toushiShintaku':
-        appParamState.keepToushiShintakuMap.forEach((String key, List<ToushiShintakuModel> value) {
-          final List<FlSpot> flspots = <FlSpot>[];
-          for (final ToushiShintakuModel element in value) {
-            if (int.tryParse(
-                      element.jikaHyoukagaku.replaceAll(',', '').replaceAll(',', '').replaceAll('円', '').trim(),
-                    ) !=
-                    null &&
-                int.tryParse(element.shutokuSougaku) != null) {
-              final int pos = dateList.indexWhere(
-                (String element2) => element2 == '${element.year}-${element.month}-${element.day}',
-              );
+        flspotsList.clear();
 
-              final double onedata =
-                  (element.jikaHyoukagaku.replaceAll(',', '').replaceAll(',', '').replaceAll('円', '').trim().toInt() -
-                          element.shutokuSougaku.toInt())
-                      .toDouble();
+        // appParamState.keepToushiShintakuMap.forEach((String key, List<ToushiShintakuModel> value) {
+        //   final List<FlSpot> flspots = <FlSpot>[];
+        //   for (final ToushiShintakuModel element in value) {
+        //     if (int.tryParse(
+        //               element.jikaHyoukagaku.replaceAll(',', '').replaceAll(',', '').replaceAll('円', '').trim(),
+        //             ) !=
+        //             null &&
+        //         int.tryParse(element.shutokuSougaku) != null) {
+        //       final int pos = dateList.indexWhere(
+        //         (String element2) => element2 == '${element.year}-${element.month}-${element.day}',
+        //       );
+        //
+        //       final double onedata =
+        //           (element.jikaHyoukagaku.replaceAll(',', '').replaceAll(',', '').replaceAll('円', '').trim().toInt() -
+        //                   element.shutokuSougaku.toInt())
+        //               .toDouble();
+        //
+        //       flspots.add(FlSpot(pos.toDouble(), onedata));
+        //
+        //       list.add(onedata.toInt());
+        //
+        //       (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
+        //
+        //       lastDate = '${element.year}-${element.month}-${element.day}';
+        //     }
+        //   }
+        //
+        //   if (flspots.isNotEmpty) {
+        //     flspotsList.add(flspots);
+        //   }
+        // });
+        //
+        //
+        //
 
-              flspots.add(FlSpot(pos.toDouble(), onedata));
-
-              list.add(onedata.toInt());
-
-              (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
-
-              lastDate = '${element.year}-${element.month}-${element.day}';
-            }
-          }
-
-          if (flspots.isNotEmpty) {
-            flspotsList.add(flspots);
-          }
-        });
+        break;
     }
-
-    /*
-      if (appParamState.keepGoldMap[date.yyyymmdd] != null &&
-          appParamState.keepGoldMap[date.yyyymmdd]!.goldValue != '-') {
-        lastGoldSum = appParamState.keepGoldMap[date.yyyymmdd]!.goldValue.toString().toInt();
-      }
-
-          if (appParamState.keepStockMap[date.yyyymmdd] != null) {
-        lastStockSum = 0;
-        for (final StockModel element in appParamState.keepStockMap[date.yyyymmdd]!) {
-          if (element.jikaHyoukagaku != '-') {
-            lastStockSum += element.jikaHyoukagaku.replaceAll(',', '').toInt();
-
-            if (date.yyyymmdd == DateTime.now().yyyymmdd) {
-              todayStockExists = true;
-            }
-          }
-        }
-      }
-
-      if (appParamState.keepToushiShintakuMap[date.yyyymmdd] != null) {
-        lastToushiShintakuSum = 0;
-        for (final ToushiShintakuModel element in appParamState.keepToushiShintakuMap[date.yyyymmdd]!) {
-          if (element.jikaHyoukagaku != '-') {
-            lastToushiShintakuSum += element.jikaHyoukagaku.replaceAll(',', '').replaceAll('円', '').trim().toInt();
-          }
-        }
-      }
-
-
-
-
-    */
 
     setState(() {
       lastAssetsDate = lastDate;

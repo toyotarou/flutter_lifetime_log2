@@ -16,6 +16,7 @@ class ToushiShintakuState with _$ToushiShintakuState {
   const factory ToushiShintakuState({
     @Default(<ToushiShintakuModel>[]) List<ToushiShintakuModel> toushiShintakuList,
     @Default(<String, List<ToushiShintakuModel>>{}) Map<String, List<ToushiShintakuModel>> toushiShintakuMap,
+    @Default(<int, List<ToushiShintakuModel>>{}) Map<int, List<ToushiShintakuModel>> toushiShintakuRelationalMap,
   }) = _ToushiShintakuState;
 }
 
@@ -36,6 +37,7 @@ class ToushiShintaku extends _$ToushiShintaku {
     try {
       final List<ToushiShintakuModel> list = <ToushiShintakuModel>[];
       final Map<String, List<ToushiShintakuModel>> map = <String, List<ToushiShintakuModel>>{};
+      final Map<int, List<ToushiShintakuModel>> map2 = <int, List<ToushiShintakuModel>>{};
 
       // ignore: always_specify_types
       await client.post(path: APIPath.getAllToushiShintakuData).then((value) {
@@ -47,10 +49,12 @@ class ToushiShintaku extends _$ToushiShintaku {
           list.add(val);
 
           (map['${val.year}-${val.month}-${val.day}'] ??= <ToushiShintakuModel>[]).add(val);
+
+          (map2[val.relationalId] ??= <ToushiShintakuModel>[]).add(val);
         }
       });
 
-      return state.copyWith(toushiShintakuList: list, toushiShintakuMap: map);
+      return state.copyWith(toushiShintakuList: list, toushiShintakuMap: map, toushiShintakuRelationalMap: map2);
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる

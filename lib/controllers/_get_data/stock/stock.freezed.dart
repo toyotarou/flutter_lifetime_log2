@@ -19,6 +19,8 @@ mixin _$StockState {
   List<StockModel> get stockList => throw _privateConstructorUsedError;
   Map<String, List<StockModel>> get stockMap =>
       throw _privateConstructorUsedError;
+  Map<String, List<StockModel>> get stockTickerMap =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of StockState
   /// with the given fields replaced by the non-null parameter values.
@@ -34,7 +36,9 @@ abstract class $StockStateCopyWith<$Res> {
       _$StockStateCopyWithImpl<$Res, StockState>;
   @useResult
   $Res call(
-      {List<StockModel> stockList, Map<String, List<StockModel>> stockMap});
+      {List<StockModel> stockList,
+      Map<String, List<StockModel>> stockMap,
+      Map<String, List<StockModel>> stockTickerMap});
 }
 
 /// @nodoc
@@ -54,6 +58,7 @@ class _$StockStateCopyWithImpl<$Res, $Val extends StockState>
   $Res call({
     Object? stockList = null,
     Object? stockMap = null,
+    Object? stockTickerMap = null,
   }) {
     return _then(_value.copyWith(
       stockList: null == stockList
@@ -63,6 +68,10 @@ class _$StockStateCopyWithImpl<$Res, $Val extends StockState>
       stockMap: null == stockMap
           ? _value.stockMap
           : stockMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<StockModel>>,
+      stockTickerMap: null == stockTickerMap
+          ? _value.stockTickerMap
+          : stockTickerMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<StockModel>>,
     ) as $Val);
   }
@@ -77,7 +86,9 @@ abstract class _$$StockStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<StockModel> stockList, Map<String, List<StockModel>> stockMap});
+      {List<StockModel> stockList,
+      Map<String, List<StockModel>> stockMap,
+      Map<String, List<StockModel>> stockTickerMap});
 }
 
 /// @nodoc
@@ -95,6 +106,7 @@ class __$$StockStateImplCopyWithImpl<$Res>
   $Res call({
     Object? stockList = null,
     Object? stockMap = null,
+    Object? stockTickerMap = null,
   }) {
     return _then(_$StockStateImpl(
       stockList: null == stockList
@@ -104,6 +116,10 @@ class __$$StockStateImplCopyWithImpl<$Res>
       stockMap: null == stockMap
           ? _value._stockMap
           : stockMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<StockModel>>,
+      stockTickerMap: null == stockTickerMap
+          ? _value._stockTickerMap
+          : stockTickerMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<StockModel>>,
     ));
   }
@@ -115,9 +131,12 @@ class _$StockStateImpl implements _StockState {
   const _$StockStateImpl(
       {final List<StockModel> stockList = const <StockModel>[],
       final Map<String, List<StockModel>> stockMap =
+          const <String, List<StockModel>>{},
+      final Map<String, List<StockModel>> stockTickerMap =
           const <String, List<StockModel>>{}})
       : _stockList = stockList,
-        _stockMap = stockMap;
+        _stockMap = stockMap,
+        _stockTickerMap = stockTickerMap;
 
   final List<StockModel> _stockList;
   @override
@@ -137,9 +156,18 @@ class _$StockStateImpl implements _StockState {
     return EqualUnmodifiableMapView(_stockMap);
   }
 
+  final Map<String, List<StockModel>> _stockTickerMap;
+  @override
+  @JsonKey()
+  Map<String, List<StockModel>> get stockTickerMap {
+    if (_stockTickerMap is EqualUnmodifiableMapView) return _stockTickerMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_stockTickerMap);
+  }
+
   @override
   String toString() {
-    return 'StockState(stockList: $stockList, stockMap: $stockMap)';
+    return 'StockState(stockList: $stockList, stockMap: $stockMap, stockTickerMap: $stockTickerMap)';
   }
 
   @override
@@ -149,14 +177,17 @@ class _$StockStateImpl implements _StockState {
             other is _$StockStateImpl &&
             const DeepCollectionEquality()
                 .equals(other._stockList, _stockList) &&
-            const DeepCollectionEquality().equals(other._stockMap, _stockMap));
+            const DeepCollectionEquality().equals(other._stockMap, _stockMap) &&
+            const DeepCollectionEquality()
+                .equals(other._stockTickerMap, _stockTickerMap));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_stockList),
-      const DeepCollectionEquality().hash(_stockMap));
+      const DeepCollectionEquality().hash(_stockMap),
+      const DeepCollectionEquality().hash(_stockTickerMap));
 
   /// Create a copy of StockState
   /// with the given fields replaced by the non-null parameter values.
@@ -170,12 +201,15 @@ class _$StockStateImpl implements _StockState {
 abstract class _StockState implements StockState {
   const factory _StockState(
       {final List<StockModel> stockList,
-      final Map<String, List<StockModel>> stockMap}) = _$StockStateImpl;
+      final Map<String, List<StockModel>> stockMap,
+      final Map<String, List<StockModel>> stockTickerMap}) = _$StockStateImpl;
 
   @override
   List<StockModel> get stockList;
   @override
   Map<String, List<StockModel>> get stockMap;
+  @override
+  Map<String, List<StockModel>> get stockTickerMap;
 
   /// Create a copy of StockState
   /// with the given fields replaced by the non-null parameter values.
