@@ -7,12 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/gold_model.dart';
-import '../../models/invest_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../../utility/utility.dart';
-import '../parts/lifetime_dialog.dart';
-import 'assets_detail_list_alert.dart';
 
 class AssetsDetailGraphAlert extends ConsumerStatefulWidget {
   const AssetsDetailGraphAlert({super.key, required this.date, required this.title});
@@ -104,133 +101,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
     List<String> dateList = <String>[];
 
-    /*
-
-
-
-
-
-
-
-
-    @Default(<String, GoldModel>{}) Map<String, GoldModel> keepGoldMap,
-    @Default(<String, List<StockModel>>{}) Map<String, List<StockModel>> keepStockMap,
-    @Default(<String, List<ToushiShintakuModel>>{}) Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
-
-
-
-          map['${val.year}-${val.month}-${val.day}'] = val;
-  GoldModel({
-    required this.year,
-    required this.month,
-    required this.day,
-    required this.goldTanka,
-    required this.upDown,
-    required this.diff,
-    required this.gramNum,
-    required this.totalGram,
-    required this.goldValue,
-    required this.goldPrice,
-    required this.payPrice,
-  });
-
-
-          (map['${val.year}-${val.month}-${val.day}'] ??= <StockModel>[]).add(val);
-  StockModel({
-    required this.id,
-    required this.year,
-    required this.month,
-    required this.day,
-    required this.ticker,
-    required this.name,
-    required this.hoyuuSuuryou,
-    required this.heikinShutokuKagaku,
-    required this.jikaHyoukagaku,
-  });
-
-
-          (map['${val.year}-${val.month}-${val.day}'] ??= <ToushiShintakuModel>[]).add(val);
-  ToushiShintakuModel({
-    required this.id,
-    required this.year,
-    required this.month,
-    required this.day,
-    required this.name,
-    required this.shutokuSougaku,
-    required this.jikaHyoukagaku,
-    required this.relationalId,
-    required this.hoyuuSuuryou,
-  });
-
-
-
-
-
-
-
-  FundModel({required this.name, required this.relationalId, required this.record});
-  FundRecordModel({
-    required this.date,
-    required this.basePrice,
-    required this.compareFront,
-    required this.yearlyReturn,
-    required this.flag,
-  });
-
-
-
-          (map2[val.relationalId.toInt()] ??= <FundModel>[]).add(val);
-
-    @Default(<int, List<FundModel>>{}) Map<int, List<FundModel>> keepFundRelationMap,
-
-
-
-
-
-
-
-
-
-
-    if (widget.title == 'gold') {
-      appParamState.keepInvestRecordMap[0]?.forEach((InvestRecordModel element2) {
-        dateList.add(element2.date);
-      });
-    } else {
-      String roopTitle = widget.title;
-      if (widget.title == 'toushiShintaku') {
-        roopTitle = 'shintaku';
-      }
-
-      appParamState.keepInvestNamesMap[roopTitle]
-        ?..sort((InvestNameModel a, InvestNameModel b) => a.frame.compareTo(b.frame))
-        ..sort((InvestNameModel a, InvestNameModel b) => a.relationalId.compareTo(b.relationalId))
-        ..forEach((InvestNameModel element) {
-                                                      bool flag = true;
-
-                                                      if (appParamState.selectedGraphInvestNameModel != null) {
-                                                        if (appParamState.selectedGraphInvestNameModel != element) {
-                                                          flag = false;
-                                                        }
-                                                      }
-
-                                                      if (flag) {
-                                                        appParamState.keepInvestRecordMap[element.relationalId]?.forEach((InvestRecordModel element2) {
-                                                          dateList.add(element2.date);
-                                                        });
-                                                      }
-        });
-    }
-
-
-
-
-
-
-
-
-    */
-
     switch (widget.title) {
       case 'gold':
         appParamState.keepGoldMap.forEach((String key, GoldModel value) => dateList.add(key));
@@ -290,118 +160,81 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
       case 'stock':
         flspotsList.clear();
 
-        /*
+        for (final String element in <String>['EPI', 'INFY', 'JMIA']) {
+          final List<FlSpot> flspots = <FlSpot>[];
+          appParamState.keepStockTickerMap[element]?.forEach((StockModel element2) {
+            if (int.tryParse(element2.jikaHyoukagaku.replaceAll(',', '')) != null &&
+                double.tryParse(element2.heikinShutokuKagaku.replaceAll(',', '')) != null) {
+              final int pos = dateList.indexWhere(
+                (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
+              );
 
+              final double onedata =
+                  element2.jikaHyoukagaku.replaceAll(',', '').toInt() -
+                  (element2.hoyuuSuuryou * element2.heikinShutokuKagaku.replaceAll(',', '').toDouble());
 
+              flspots.add(FlSpot(pos.toDouble(), onedata));
 
-      appParamState.keepInvestNamesMap[roopTitle]
-        ?..sort((InvestNameModel a, InvestNameModel b) => a.frame.compareTo(b.frame))
-        ..sort((InvestNameModel a, InvestNameModel b) => a.dealNumber.compareTo(b.dealNumber))
-        ..forEach((InvestNameModel element) {
-          bool flag = true;
+              list.add(onedata.toInt());
 
-          if (appParamState.selectedGraphInvestNameModel != null) {
-            if (appParamState.selectedGraphInvestNameModel != element) {
-              flag = false;
+              (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
+
+              lastDate = '${element2.year}-${element2.month}-${element2.day}';
             }
-          }
+          });
 
-          if (flag) {
-            final List<FlSpot> flspots = <FlSpot>[];
-            appParamState.keepInvestRecordMap[element.relationalId]?.forEach((InvestRecordModel element2) {
-              final int pos = dateList.indexWhere((String element) => element == element2.date);
-
-              flspots.add(FlSpot(pos.toDouble(), (element2.price - element2.cost).toDouble()));
-
-              list.add(element2.price - element2.cost);
-
-              (dateMaxValueMapData[pos] ??= <int>[]).add(element2.price - element2.cost);
-
-              lastDate = element2.date;
-            });
-
+          if (flspots.isNotEmpty) {
             flspotsList.add(flspots);
           }
-        });
-
-
-
-        */
-
-        //
-        // appParamState.keepStockMap.forEach((String key, List<StockModel> value) {
-        //   final List<FlSpot> flspots = <FlSpot>[];
-        //
-        //   for (final StockModel element in value) {
-        //     if (int.tryParse(element.jikaHyoukagaku.replaceAll(',', '')) != null &&
-        //         double.tryParse(element.heikinShutokuKagaku.replaceAll(',', '')) != null) {
-        //       final int pos = dateList.indexWhere(
-        //         (String element2) => element2 == '${element.year}-${element.month}-${element.day}',
-        //       );
-        //
-        //       final double onedata =
-        //           element.jikaHyoukagaku.replaceAll(',', '').toInt() -
-        //           (element.hoyuuSuuryou * element.heikinShutokuKagaku.replaceAll(',', '').toDouble());
-        //
-        //       flspots.add(FlSpot(pos.toDouble(), onedata));
-        //
-        //       list.add(onedata.toInt());
-        //
-        //       (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
-        //
-        //       lastDate = '${element.year}-${element.month}-${element.day}';
-        //     }
-        //   }
-        //
-        //   if (flspots.isNotEmpty) {
-        //     flspotsList.add(flspots);
-        //   }
-        // });
-        //
-        //
-        //
-
-        break;
+        }
 
       case 'toushiShintaku':
         flspotsList.clear();
 
-        // appParamState.keepToushiShintakuMap.forEach((String key, List<ToushiShintakuModel> value) {
-        //   final List<FlSpot> flspots = <FlSpot>[];
-        //   for (final ToushiShintakuModel element in value) {
-        //     if (int.tryParse(
-        //               element.jikaHyoukagaku.replaceAll(',', '').replaceAll(',', '').replaceAll('円', '').trim(),
-        //             ) !=
-        //             null &&
-        //         int.tryParse(element.shutokuSougaku) != null) {
-        //       final int pos = dateList.indexWhere(
-        //         (String element2) => element2 == '${element.year}-${element.month}-${element.day}',
-        //       );
-        //
-        //       final double onedata =
-        //           (element.jikaHyoukagaku.replaceAll(',', '').replaceAll(',', '').replaceAll('円', '').trim().toInt() -
-        //                   element.shutokuSougaku.toInt())
-        //               .toDouble();
-        //
-        //       flspots.add(FlSpot(pos.toDouble(), onedata));
-        //
-        //       list.add(onedata.toInt());
-        //
-        //       (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
-        //
-        //       lastDate = '${element.year}-${element.month}-${element.day}';
-        //     }
-        //   }
-        //
-        //   if (flspots.isNotEmpty) {
-        //     flspotsList.add(flspots);
-        //   }
-        // });
-        //
-        //
-        //
+        final List<int> relationalIdList = <int>[];
 
-        break;
+        appParamState.keepToushiShintakuRelationalMap.forEach((int key, List<ToushiShintakuModel> value) {
+          relationalIdList.add(key);
+        });
+
+        relationalIdList
+          ..sort((int a, int b) => a.compareTo(b))
+          ..forEach((int element) {
+            final List<FlSpot> flspots = <FlSpot>[];
+            appParamState.keepToushiShintakuRelationalMap[element]?.forEach((ToushiShintakuModel element2) {
+              if (int.tryParse(
+                        element2.jikaHyoukagaku.replaceAll(',', '').replaceAll(',', '').replaceAll('円', '').trim(),
+                      ) !=
+                      null &&
+                  int.tryParse(element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim()) != null) {
+                final int pos = dateList.indexWhere(
+                  (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
+                );
+
+                final double onedata =
+                    (element2.jikaHyoukagaku
+                                .replaceAll(',', '')
+                                .replaceAll(',', '')
+                                .replaceAll('円', '')
+                                .trim()
+                                .toInt() -
+                            element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim().toInt())
+                        .toDouble();
+
+                flspots.add(FlSpot(pos.toDouble(), onedata));
+
+                list.add(onedata.toInt());
+
+                (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
+
+                lastDate = '${element2.year}-${element2.month}-${element2.day}';
+              }
+            });
+
+            if (flspots.isNotEmpty) {
+              flspotsList.add(flspots);
+            }
+          });
     }
 
     setState(() {
@@ -500,12 +333,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
               barWidth: 1,
               isStrokeCapRound: true,
 
-              // color: (appParamState.selectedGraphInvestNameModel != null || widget.title == 'gold')
-              //     ? Colors.white.withValues(alpha: 0.5)
-              //     : twelveColor[i % 12],
-              //
-              //
-              //
+              color: (widget.title == 'gold') ? Colors.white.withValues(alpha: 0.5) : twelveColor[i % 12],
+
               dotData: const FlDotData(show: false),
             ),
         ],
@@ -592,8 +421,86 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
     final List<Color> twelveColor = utility.getTwelveColor();
 
-    /*
+    switch (widget.title) {
+      case 'gold':
+        break;
+      case 'stock':
+        Map<String, int> lastDiffMap = {};
 
+        for (final String element in <String>['EPI', 'INFY', 'JMIA']) {
+          double onedata = 0;
+
+          appParamState.keepStockTickerMap[element]?.forEach((StockModel element2) {
+            if (int.tryParse(element2.jikaHyoukagaku.replaceAll(',', '')) != null &&
+                double.tryParse(element2.heikinShutokuKagaku.replaceAll(',', '')) != null) {
+              onedata =
+                  element2.jikaHyoukagaku.replaceAll(',', '').toInt() -
+                  (element2.hoyuuSuuryou * element2.heikinShutokuKagaku.replaceAll(',', '').toDouble());
+            }
+          });
+
+          lastDiffMap[element] = onedata.toInt();
+        }
+
+        final List<String> tickerList = <String>[];
+        for (final String element in <String>['EPI', 'INFY', 'JMIA']) {
+          appParamState.keepStockTickerMap[element]?.forEach((StockModel element2) {
+            if (!tickerList.contains(element2.ticker)) {
+              list.add(
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                  ),
+                  padding: const EdgeInsets.all(5),
+
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {},
+                        child: CircleAvatar(radius: 15, backgroundColor: twelveColor[i % 12].withValues(alpha: 0.3)),
+                      ),
+
+                      const SizedBox(width: 20),
+
+                      Expanded(
+                        child: DefaultTextStyle(
+                          style: TextStyle(fontSize: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [Text(element2.name), Text((lastDiffMap[element] ?? 0).toString().toCurrency())],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 20),
+
+                      GestureDetector(
+                        onTap: () {
+                          // LifetimeDialog(
+                          //   context: context,
+                          //   widget: AssetsDetailListAlert(data: element),
+                          // );
+                        },
+
+                        child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            tickerList.add(element2.ticker);
+          });
+
+          i++;
+        }
+
+      case 'toushiShintaku':
+        break;
+    }
+
+    /*
 
 
 
@@ -610,74 +517,77 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         ?..sort((InvestNameModel a, InvestNameModel b) => a.frame.compareTo(b.frame))
         ..sort((InvestNameModel a, InvestNameModel b) => a.dealNumber.compareTo(b.dealNumber))
         ..forEach((InvestNameModel element) {
-          int lastDiff = 0;
 
-          if (appParamState.keepInvestRecordMap[element.relationalId] != null) {
-            final InvestRecordModel last = appParamState.keepInvestRecordMap[element.relationalId]!.last;
 
-            lastDiff = last.price - last.cost;
-          }
 
-          list.add(
-            DefaultTextStyle(
-              style: const TextStyle(fontSize: 12),
+                            int lastDiff = 0;
 
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                ),
-                padding: const EdgeInsets.all(5),
+                            if (appParamState.keepInvestRecordMap[element.relationalId] != null) {
+                              final InvestRecordModel last = appParamState.keepInvestRecordMap[element.relationalId]!.last;
 
-                child: Row(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () => appParamNotifier.setSelectedGraphInvestNameModel(investNameModel: element),
-                      child: CircleAvatar(
-                        radius: 15,
-                        backgroundColor: (appParamState.selectedGraphInvestNameModel == element)
-                            ? Colors.white.withValues(alpha: 0.5)
-                            : twelveColor[i % 12].withValues(alpha: 0.3),
-                      ),
-                    ),
+                              lastDiff = last.price - last.cost;
+                            }
 
-                    const SizedBox(width: 20),
+                            list.add(
+                              DefaultTextStyle(
+                                style: const TextStyle(fontSize: 12),
 
-                    Expanded(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 70),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                                  ),
+                                  padding: const EdgeInsets.all(5),
 
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(element.frame),
-                            Text(element.name),
+                                  child: Row(
+                                    children: <Widget>[
+                                      GestureDetector(
+                                        onTap: () => appParamNotifier.setSelectedGraphInvestNameModel(investNameModel: element),
+                                        child: CircleAvatar(
+                                          radius: 15,
+                                          backgroundColor: (appParamState.selectedGraphInvestNameModel == element)
+                                              ? Colors.white.withValues(alpha: 0.5)
+                                              : twelveColor[i % 12].withValues(alpha: 0.3),
+                                        ),
+                                      ),
 
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[const SizedBox.shrink(), Text(lastDiff.toString().toCurrency())],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                                      const SizedBox(width: 20),
 
-                    const SizedBox(width: 20),
+                                      Expanded(
+                                        child: ConstrainedBox(
+                                          constraints: const BoxConstraints(minHeight: 70),
 
-                    GestureDetector(
-                      onTap: () {
-                        LifetimeDialog(
-                          context: context,
-                          widget: AssetsDetailListAlert(data: element),
-                        );
-                      },
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text(element.frame),
+                                              Text(element.name),
 
-                      child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: <Widget>[const SizedBox.shrink(), Text(lastDiff.toString().toCurrency())],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(width: 20),
+
+                                      GestureDetector(
+                                        onTap: () {
+                                          LifetimeDialog(
+                                            context: context,
+                                            widget: AssetsDetailListAlert(data: element),
+                                          );
+                                        },
+
+                                        child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
 
           i++;
         });
