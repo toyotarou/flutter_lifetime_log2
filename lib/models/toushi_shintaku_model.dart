@@ -1,3 +1,5 @@
+import '../extensions/extensions.dart';
+
 class ToushiShintakuModel {
   ToushiShintakuModel({
     required this.id,
@@ -21,8 +23,8 @@ class ToushiShintakuModel {
       name: json['name'] as String,
       shutokuSougaku: json['shutoku_sougaku'] as String,
       jikaHyoukagaku: json['jika_hyoukagaku'] as String,
-      relationalId: json['relational_id'] as int,
-      hoyuuSuuryou: json['hoyuu_suuryou'] as int,
+      relationalId: json['relational_id'].toString().toInt(),
+      hoyuuSuuryou: json['hoyuu_suuryou'].toString().toInt(),
     );
   }
 

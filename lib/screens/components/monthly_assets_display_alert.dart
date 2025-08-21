@@ -530,13 +530,11 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                     //
                     //   return;
                     // }
-                    //
-                    // LifetimeDialog(
-                    //   context: context,
-                    //   widget: AssetsDetailGraphAlert(date: date, title: title),
-                    // );
-                    //
-                    //
+
+                    LifetimeDialog(
+                      context: context,
+                      widget: AssetsDetailGraphAlert(date: date, title: title),
+                    );
                   },
                   child: Text(
                     title,

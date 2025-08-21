@@ -73,8 +73,6 @@ class AppParamState with _$AppParamState {
 
     ///
     @Default(false) bool isMonthlySpendSummaryMinusJogai,
-
-    InvestNameModel? selectedGraphInvestNameModel,
   }) = _AppParamState;
 }
 
@@ -203,8 +201,4 @@ class AppParam extends _$AppParam {
   ///
   void setIsMonthlySpendSummaryMinusJogai({required bool flag}) =>
       state = state.copyWith(isMonthlySpendSummaryMinusJogai: flag);
-
-  ///
-  void setSelectedGraphInvestNameModel({InvestNameModel? investNameModel}) =>
-      state = state.copyWith(selectedGraphInvestNameModel: investNameModel);
 }
