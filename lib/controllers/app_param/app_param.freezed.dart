@@ -82,6 +82,7 @@ mixin _$AppParamState {
   ///
   bool get isMonthlySpendSummaryMinusJogai =>
       throw _privateConstructorUsedError;
+  String get selectedToushiGraphItemName => throw _privateConstructorUsedError;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
@@ -128,7 +129,8 @@ abstract class $AppParamStateCopyWith<$Res> {
       int selectedGraphYear,
       TempleDataModel? selectedTemple,
       String selectedTempleDirection,
-      bool isMonthlySpendSummaryMinusJogai});
+      bool isMonthlySpendSummaryMinusJogai,
+      String selectedToushiGraphItemName});
 }
 
 /// @nodoc
@@ -178,6 +180,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? selectedTemple = freezed,
     Object? selectedTempleDirection = null,
     Object? isMonthlySpendSummaryMinusJogai = null,
+    Object? selectedToushiGraphItemName = null,
   }) {
     return _then(_value.copyWith(
       keepHolidayList: null == keepHolidayList
@@ -308,6 +311,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.isMonthlySpendSummaryMinusJogai
           : isMonthlySpendSummaryMinusJogai // ignore: cast_nullable_to_non_nullable
               as bool,
+      selectedToushiGraphItemName: null == selectedToushiGraphItemName
+          ? _value.selectedToushiGraphItemName
+          : selectedToushiGraphItemName // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -352,7 +359,8 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       int selectedGraphYear,
       TempleDataModel? selectedTemple,
       String selectedTempleDirection,
-      bool isMonthlySpendSummaryMinusJogai});
+      bool isMonthlySpendSummaryMinusJogai,
+      String selectedToushiGraphItemName});
 }
 
 /// @nodoc
@@ -400,6 +408,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? selectedTemple = freezed,
     Object? selectedTempleDirection = null,
     Object? isMonthlySpendSummaryMinusJogai = null,
+    Object? selectedToushiGraphItemName = null,
   }) {
     return _then(_$AppParamStateImpl(
       keepHolidayList: null == keepHolidayList
@@ -530,6 +539,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value.isMonthlySpendSummaryMinusJogai
           : isMonthlySpendSummaryMinusJogai // ignore: cast_nullable_to_non_nullable
               as bool,
+      selectedToushiGraphItemName: null == selectedToushiGraphItemName
+          ? _value.selectedToushiGraphItemName
+          : selectedToushiGraphItemName // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -586,7 +599,8 @@ class _$AppParamStateImpl implements _AppParamState {
       this.selectedGraphYear = 0,
       this.selectedTemple,
       this.selectedTempleDirection = '',
-      this.isMonthlySpendSummaryMinusJogai = false})
+      this.isMonthlySpendSummaryMinusJogai = false,
+      this.selectedToushiGraphItemName = ''})
       : _keepHolidayList = keepHolidayList,
         _keepWalkModelMap = keepWalkModelMap,
         _keepMoneyMap = keepMoneyMap,
@@ -879,10 +893,13 @@ class _$AppParamStateImpl implements _AppParamState {
   @override
   @JsonKey()
   final bool isMonthlySpendSummaryMinusJogai;
+  @override
+  @JsonKey()
+  final String selectedToushiGraphItemName;
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, selectedToushiGraphItemName: $selectedToushiGraphItemName)';
   }
 
   @override
@@ -958,7 +975,11 @@ class _$AppParamStateImpl implements _AppParamState {
             (identical(other.isMonthlySpendSummaryMinusJogai,
                     isMonthlySpendSummaryMinusJogai) ||
                 other.isMonthlySpendSummaryMinusJogai ==
-                    isMonthlySpendSummaryMinusJogai));
+                    isMonthlySpendSummaryMinusJogai) &&
+            (identical(other.selectedToushiGraphItemName,
+                    selectedToushiGraphItemName) ||
+                other.selectedToushiGraphItemName ==
+                    selectedToushiGraphItemName));
   }
 
   @override
@@ -995,7 +1016,8 @@ class _$AppParamStateImpl implements _AppParamState {
         selectedGraphYear,
         selectedTemple,
         selectedTempleDirection,
-        isMonthlySpendSummaryMinusJogai
+        isMonthlySpendSummaryMinusJogai,
+        selectedToushiGraphItemName
       ]);
 
   /// Create a copy of AppParamState
@@ -1040,7 +1062,8 @@ abstract class _AppParamState implements AppParamState {
       final int selectedGraphYear,
       final TempleDataModel? selectedTemple,
       final String selectedTempleDirection,
-      final bool isMonthlySpendSummaryMinusJogai}) = _$AppParamStateImpl;
+      final bool isMonthlySpendSummaryMinusJogai,
+      final String selectedToushiGraphItemName}) = _$AppParamStateImpl;
 
   @override
   List<String> get keepHolidayList;
@@ -1120,6 +1143,8 @@ abstract class _AppParamState implements AppParamState {
   ///
   @override
   bool get isMonthlySpendSummaryMinusJogai;
+  @override
+  String get selectedToushiGraphItemName;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.

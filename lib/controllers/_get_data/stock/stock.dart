@@ -37,7 +37,7 @@ class Stock extends _$Stock {
     try {
       final List<StockModel> list = <StockModel>[];
       final Map<String, List<StockModel>> map = <String, List<StockModel>>{};
-      Map<String, List<StockModel>> map2 = {};
+      final Map<String, List<StockModel>> map2 = <String, List<StockModel>>{};
 
       // ignore: always_specify_types
       await client.post(path: APIPath.getAllStockData).then((value) {

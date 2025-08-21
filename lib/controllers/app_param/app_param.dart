@@ -74,6 +74,8 @@ class AppParamState with _$AppParamState {
 
     ///
     @Default(false) bool isMonthlySpendSummaryMinusJogai,
+
+    @Default('') String selectedToushiGraphItemName,
   }) = _AppParamState;
 }
 
@@ -210,4 +212,8 @@ class AppParam extends _$AppParam {
   ///
   void setIsMonthlySpendSummaryMinusJogai({required bool flag}) =>
       state = state.copyWith(isMonthlySpendSummaryMinusJogai: flag);
+
+  ///
+  void setSelectedToushiGraphItemName({required String name}) =>
+      state = state.copyWith(selectedToushiGraphItemName: name);
 }

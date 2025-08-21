@@ -65,7 +65,12 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       const SizedBox.shrink(),
-                      GestureDetector(onTap: () {}, child: const Icon(Icons.close)),
+                      GestureDetector(
+                        onTap: () {
+                          appParamNotifier.setSelectedToushiGraphItemName(name: '');
+                        },
+                        child: const Icon(Icons.close),
+                      ),
                     ],
                   ),
 
@@ -202,24 +207,20 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           ..forEach((int element) {
             final List<FlSpot> flspots = <FlSpot>[];
             appParamState.keepToushiShintakuRelationalMap[element]?.forEach((ToushiShintakuModel element2) {
-              if (int.tryParse(
-                        element2.jikaHyoukagaku.replaceAll(',', '').replaceAll(',', '').replaceAll('円', '').trim(),
-                      ) !=
-                      null &&
-                  int.tryParse(element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim()) != null) {
+              final String jikaHyoukagaku = element2.jikaHyoukagaku
+                  .replaceAll(',', '')
+                  .replaceAll(',', '')
+                  .replaceAll('円', '')
+                  .trim();
+
+              final String shutokuSougaku = element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim();
+
+              if (int.tryParse(jikaHyoukagaku) != null && int.tryParse(shutokuSougaku) != null) {
                 final int pos = dateList.indexWhere(
                   (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
                 );
 
-                final double onedata =
-                    (element2.jikaHyoukagaku
-                                .replaceAll(',', '')
-                                .replaceAll(',', '')
-                                .replaceAll('円', '')
-                                .trim()
-                                .toInt() -
-                            element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim().toInt())
-                        .toDouble();
+                final double onedata = (jikaHyoukagaku.toInt() - shutokuSougaku.toInt()).toDouble();
 
                 flspots.add(FlSpot(pos.toDouble(), onedata));
 
@@ -425,17 +426,18 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
       case 'gold':
         break;
       case 'stock':
-        Map<String, int> lastDiffMap = {};
+        final Map<String, int> lastDiffMap = <String, int>{};
 
         for (final String element in <String>['EPI', 'INFY', 'JMIA']) {
           double onedata = 0;
 
           appParamState.keepStockTickerMap[element]?.forEach((StockModel element2) {
-            if (int.tryParse(element2.jikaHyoukagaku.replaceAll(',', '')) != null &&
-                double.tryParse(element2.heikinShutokuKagaku.replaceAll(',', '')) != null) {
-              onedata =
-                  element2.jikaHyoukagaku.replaceAll(',', '').toInt() -
-                  (element2.hoyuuSuuryou * element2.heikinShutokuKagaku.replaceAll(',', '').toDouble());
+            final String jikaHyoukagaku = element2.jikaHyoukagaku.replaceAll(',', '');
+
+            final String heikinShutokuKagaku = element2.heikinShutokuKagaku.replaceAll(',', '');
+
+            if (int.tryParse(jikaHyoukagaku) != null && double.tryParse(heikinShutokuKagaku) != null) {
+              onedata = jikaHyoukagaku.toInt() - (element2.hoyuuSuuryou * heikinShutokuKagaku.toDouble());
             }
           });
 
@@ -454,9 +456,11 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                   padding: const EdgeInsets.all(5),
 
                   child: Row(
-                    children: [
+                    children: <Widget>[
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          appParamNotifier.setSelectedToushiGraphItemName(name: element2.name);
+                        },
                         child: CircleAvatar(radius: 15, backgroundColor: twelveColor[i % 12].withValues(alpha: 0.3)),
                       ),
 
@@ -464,10 +468,13 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
                       Expanded(
                         child: DefaultTextStyle(
-                          style: TextStyle(fontSize: 12),
+                          style: const TextStyle(fontSize: 12),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [Text(element2.name), Text((lastDiffMap[element] ?? 0).toString().toCurrency())],
+                            children: <Widget>[
+                              Text(element2.name),
+                              Text((lastDiffMap[element] ?? 0).toString().toCurrency()),
+                            ],
                           ),
                         ),
                       ),
@@ -497,110 +504,97 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         }
 
       case 'toushiShintaku':
-        break;
-    }
+        final List<int> relationalIdList = <int>[];
 
-    /*
-
-
-
-
-
-    if (widget.title == 'gold') {
-    } else {
-      String roopTitle = widget.title;
-      if (widget.title == 'toushiShintaku') {
-        roopTitle = 'shintaku';
-      }
-
-      appParamState.keepInvestNamesMap[roopTitle]
-        ?..sort((InvestNameModel a, InvestNameModel b) => a.frame.compareTo(b.frame))
-        ..sort((InvestNameModel a, InvestNameModel b) => a.dealNumber.compareTo(b.dealNumber))
-        ..forEach((InvestNameModel element) {
-
-
-
-                            int lastDiff = 0;
-
-                            if (appParamState.keepInvestRecordMap[element.relationalId] != null) {
-                              final InvestRecordModel last = appParamState.keepInvestRecordMap[element.relationalId]!.last;
-
-                              lastDiff = last.price - last.cost;
-                            }
-
-                            list.add(
-                              DefaultTextStyle(
-                                style: const TextStyle(fontSize: 12),
-
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                                  ),
-                                  padding: const EdgeInsets.all(5),
-
-                                  child: Row(
-                                    children: <Widget>[
-                                      GestureDetector(
-                                        onTap: () => appParamNotifier.setSelectedGraphInvestNameModel(investNameModel: element),
-                                        child: CircleAvatar(
-                                          radius: 15,
-                                          backgroundColor: (appParamState.selectedGraphInvestNameModel == element)
-                                              ? Colors.white.withValues(alpha: 0.5)
-                                              : twelveColor[i % 12].withValues(alpha: 0.3),
-                                        ),
-                                      ),
-
-                                      const SizedBox(width: 20),
-
-                                      Expanded(
-                                        child: ConstrainedBox(
-                                          constraints: const BoxConstraints(minHeight: 70),
-
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text(element.frame),
-                                              Text(element.name),
-
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: <Widget>[const SizedBox.shrink(), Text(lastDiff.toString().toCurrency())],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-
-                                      const SizedBox(width: 20),
-
-                                      GestureDetector(
-                                        onTap: () {
-                                          LifetimeDialog(
-                                            context: context,
-                                            widget: AssetsDetailListAlert(data: element),
-                                          );
-                                        },
-
-                                        child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-
-          i++;
+        appParamState.keepToushiShintakuRelationalMap.forEach((int key, List<ToushiShintakuModel> value) {
+          relationalIdList.add(key);
         });
+
+        final Map<int, int> lastDiffMap = <int, int>{};
+
+        relationalIdList
+          ..sort((int a, int b) => a.compareTo(b))
+          ..forEach((int element) {
+            double onedata = 0;
+
+            appParamState.keepToushiShintakuRelationalMap[element]?.forEach((ToushiShintakuModel element2) {
+              final String jikaHyoukagaku = element2.jikaHyoukagaku
+                  .replaceAll(',', '')
+                  .replaceAll(',', '')
+                  .replaceAll('円', '')
+                  .trim();
+
+              final String shutokuSougaku = element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim();
+
+              if (int.tryParse(jikaHyoukagaku) != null && int.tryParse(shutokuSougaku) != null) {
+                onedata = (jikaHyoukagaku.toInt() - shutokuSougaku.toInt()).toDouble();
+              }
+            });
+
+            lastDiffMap[element] = onedata.toInt();
+          });
+
+        final List<int> relIdList = <int>[];
+        relationalIdList
+          ..sort((int a, int b) => a.compareTo(b))
+          ..forEach((int element) {
+            appParamState.keepToushiShintakuRelationalMap[element]?.forEach((ToushiShintakuModel element2) {
+              if (!relIdList.contains(element2.relationalId)) {
+                list.add(
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                    ),
+                    padding: const EdgeInsets.all(5),
+
+                    child: Row(
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            appParamNotifier.setSelectedToushiGraphItemName(name: element2.name);
+                          },
+                          child: CircleAvatar(radius: 15, backgroundColor: twelveColor[i % 12].withValues(alpha: 0.3)),
+                        ),
+
+                        const SizedBox(width: 20),
+
+                        Expanded(
+                          child: DefaultTextStyle(
+                            style: const TextStyle(fontSize: 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(element2.name),
+                                Text((lastDiffMap[element] ?? 0).toString().toCurrency()),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 20),
+
+                        GestureDetector(
+                          onTap: () {
+                            // LifetimeDialog(
+                            //   context: context,
+                            //   widget: AssetsDetailListAlert(data: element),
+                            // );
+                          },
+
+                          child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+
+              relIdList.add(element2.relationalId);
+            });
+
+            i++;
+          });
     }
-
-
-
-
-
-
-
-
-    */
 
     return CustomScrollView(
       slivers: <Widget>[

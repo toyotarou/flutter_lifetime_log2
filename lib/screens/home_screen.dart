@@ -8,7 +8,6 @@ import '../models/credit_summary_model.dart';
 import '../models/fund_model.dart';
 import '../models/geoloc_model.dart';
 import '../models/gold_model.dart';
-import '../models/invest_model.dart';
 import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
