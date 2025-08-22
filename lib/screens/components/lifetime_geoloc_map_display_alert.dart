@@ -61,6 +61,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   List<Marker> templeMarkerList = <Marker>[];
 
+  final double _baseZoom = 13.0;
+
   ///
   @override
   void initState() {
@@ -124,6 +126,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               MarkerLayer(markers: transportationGoalMarkerList),
 
               MarkerLayer(markers: templeMarkerList),
+
+              MarkerLayer(markers: displayTimeMarkerList),
             ],
           ),
 
@@ -472,16 +476,44 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeDisplayTimeMarker() {
     displayTimeMarkerList.clear();
 
-    final List<GeolocModel> list = <GeolocModel>[];
+    final double scaleFactor = (currentZoom != null) ? currentZoom! / _baseZoom : 1;
 
     String keepHour = '';
     widget.geolocList
-      ?..sort((a, b) => a.time.compareTo(b.time))
+      ?..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time))
       ..forEach((GeolocModel element) {
         if (keepHour != element.time.split(':')[0]) {
-          print(element.time);
+          displayTimeMarkerList.add(
+            Marker(
+              point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
 
-          list.add(element);
+              width: 120,
+              height: 40,
+
+              child: GestureDetector(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                  children: <Widget>[
+                    SizedBox(width: 50 * scaleFactor),
+
+                    Icon(Icons.location_on, size: 30 * scaleFactor, color: Colors.redAccent),
+
+                    Container(
+                      decoration: const BoxDecoration(color: Colors.redAccent),
+                      width: 35 * scaleFactor,
+                      child: Text(
+                        '${element.time.split(':')[0]}:${element.time.split(':')[1]}',
+
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
         }
 
         keepHour = element.time.split(':')[0];
