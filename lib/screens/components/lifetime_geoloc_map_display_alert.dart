@@ -53,15 +53,12 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   double currentZoomEightTeen = 18;
 
   List<Marker> markerList = <Marker>[];
-  List<Marker> displayTimeMarkerList = <Marker>[];
 
   Utility utility = Utility();
 
   List<Marker> transportationGoalMarkerList = <Marker>[];
 
   List<Marker> templeMarkerList = <Marker>[];
-
-  final double _baseZoom = 13.0;
 
   ///
   @override
@@ -86,8 +83,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     makeMinMaxLatLng();
 
     makeMarker();
-
-    makeDisplayTimeMarker();
 
     makeTransportationGoalMarker();
 
@@ -126,8 +121,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               MarkerLayer(markers: transportationGoalMarkerList),
 
               MarkerLayer(markers: templeMarkerList),
-
-              MarkerLayer(markers: displayTimeMarkerList),
             ],
           ),
 
@@ -470,53 +463,5 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         );
       }
     }
-  }
-
-  ///
-  void makeDisplayTimeMarker() {
-    displayTimeMarkerList.clear();
-
-    final double scaleFactor = (currentZoom != null) ? currentZoom! / _baseZoom : 1;
-
-    String keepHour = '';
-    widget.geolocList
-      ?..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time))
-      ..forEach((GeolocModel element) {
-        if (keepHour != element.time.split(':')[0]) {
-          displayTimeMarkerList.add(
-            Marker(
-              point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-
-              width: 120,
-              height: 40,
-
-              child: GestureDetector(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-
-                  children: <Widget>[
-                    SizedBox(width: 50 * scaleFactor),
-
-                    Icon(Icons.location_on, size: 30 * scaleFactor, color: Colors.redAccent),
-
-                    Container(
-                      decoration: const BoxDecoration(color: Colors.redAccent),
-                      width: 35 * scaleFactor,
-                      child: Text(
-                        '${element.time.split(':')[0]}:${element.time.split(':')[1]}',
-
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }
-
-        keepHour = element.time.split(':')[0];
-      });
   }
 }
