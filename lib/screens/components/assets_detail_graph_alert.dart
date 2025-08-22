@@ -37,7 +37,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
   String lastAssetsDate = '';
 
-  List<Color> twentyFourColor = [];
+  List<Color> twentyFourColor = <Color>[];
 
   ///
   @override

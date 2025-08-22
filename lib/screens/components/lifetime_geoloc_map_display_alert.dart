@@ -60,7 +60,15 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   List<Marker> templeMarkerList = <Marker>[];
 
-  List<Color> twentyFourColor = [];
+  List<Color> twentyFourColor = <Color>[];
+
+  double currentZoom2 = 13.0;
+
+  final double baseZoom2 = 13.0;
+
+  final double timeContainerWidth = 40;
+
+  List<Marker> displayTimeMarkerList = <Marker>[];
 
   ///
   @override
@@ -71,6 +79,34 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() => isLoading = true);
+
+      if (widget.geolocList != null) {
+        final LatLngBounds bounds = LatLngBounds.fromPoints(
+          widget.geolocList!
+              .map((GeolocModel marker) => LatLng(marker.latitude.toDouble(), marker.longitude.toDouble()))
+              .toList(),
+        );
+
+        final double latDiff = (bounds.north - bounds.south).abs();
+
+        final double lngDiff = (bounds.east - bounds.west).abs();
+
+        final double maxDiff = latDiff > lngDiff ? latDiff : lngDiff;
+
+        double zoom;
+
+        if (maxDiff < 0.1) {
+          zoom = 15;
+        } else if (maxDiff < 1) {
+          zoom = 12;
+        } else if (maxDiff < 5) {
+          zoom = 10;
+        } else {
+          zoom = 5;
+        }
+
+        setState(() => currentZoom2 = zoom);
+      }
 
       // ignore: always_specify_types
       Future.delayed(const Duration(seconds: 2), () {
@@ -91,6 +127,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     makeTransportationGoalMarker();
 
     makeTempleMarker();
+
+    makeDisplayTimeMarker();
 
     return Scaffold(
       body: Stack(
@@ -125,6 +163,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               MarkerLayer(markers: transportationGoalMarkerList),
 
               MarkerLayer(markers: templeMarkerList),
+
+              MarkerLayer(markers: displayTimeMarkerList),
             ],
           ),
 
@@ -239,6 +279,67 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         ],
       ),
     );
+  }
+
+  ///
+  void makeDisplayTimeMarker() {
+    final double scaleFactor = currentZoom2 / baseZoom2;
+
+    displayTimeMarkerList.clear();
+
+    String keepTime = '';
+    widget.geolocList
+      ?..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time))
+      ..forEach((GeolocModel element) {
+        if (keepTime != element.time.split(':')[0]) {
+          displayTimeMarkerList.add(
+            Marker(
+              point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
+              width: (30 + 8 + timeContainerWidth + timeContainerWidth) * scaleFactor,
+              height: 40,
+
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+
+                children: <Widget>[
+                  SizedBox(width: timeContainerWidth),
+
+                  Icon(Icons.location_on, size: 30 * scaleFactor, color: Colors.red),
+
+                  Container(
+                    width: timeContainerWidth * scaleFactor,
+
+                    height: 20 * scaleFactor,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black54),
+                      color: Colors.white,
+                    ),
+
+                    padding: const EdgeInsets.all(1),
+
+                    child: DefaultTextStyle(
+                      style: const TextStyle(fontSize: 10, color: Colors.redAccent),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            '${element.time.split(':')[0]}:${element.time.split(':')[1]}',
+
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        keepTime = element.time.split(':')[0];
+      });
   }
 
   ///

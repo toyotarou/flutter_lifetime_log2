@@ -50,7 +50,7 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
 
   List<Marker> directionGoalMarkerList = <Marker>[];
 
-  List<Color> twentyFourColor = [];
+  List<Color> twentyFourColor = <Color>[];
 
   ///
   @override
