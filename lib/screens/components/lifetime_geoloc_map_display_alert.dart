@@ -53,6 +53,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   double currentZoomEightTeen = 18;
 
   List<Marker> markerList = <Marker>[];
+  List<Marker> displayTimeMarkerList = <Marker>[];
 
   Utility utility = Utility();
 
@@ -83,6 +84,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     makeMinMaxLatLng();
 
     makeMarker();
+
+    makeDisplayTimeMarker();
 
     makeTransportationGoalMarker();
 
@@ -463,5 +466,25 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         );
       }
     }
+  }
+
+  ///
+  void makeDisplayTimeMarker() {
+    displayTimeMarkerList.clear();
+
+    final List<GeolocModel> list = <GeolocModel>[];
+
+    String keepHour = '';
+    widget.geolocList
+      ?..sort((a, b) => a.time.compareTo(b.time))
+      ..forEach((GeolocModel element) {
+        if (keepHour != element.time.split(':')[0]) {
+          print(element.time);
+
+          list.add(element);
+        }
+
+        keepHour = element.time.split(':')[0];
+      });
   }
 }
