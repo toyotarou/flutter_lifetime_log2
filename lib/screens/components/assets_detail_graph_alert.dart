@@ -37,6 +37,16 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
   String lastAssetsDate = '';
 
+  List<Color> twentyFourColor = [];
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+
+    twentyFourColor = utility.getTwentyFourColor();
+  }
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -303,8 +313,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
       dateMaxValueMapData.forEach((int key, List<int> value) => dateMaxValueMap[key] = value.reduce(max));
 
-      final List<Color> twelveColor = utility.getTwelveColor();
-
       graphData = LineChartData(
         ///
         minX: 1,
@@ -384,7 +392,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
               color: (widget.title == 'gold' || appParamState.selectedToushiGraphItemName != '')
                   ? Colors.white.withValues(alpha: 0.5)
-                  : twelveColor[i % 12],
+                  : twentyFourColor[i % 24],
 
               dotData: const FlDotData(show: false),
             ),
@@ -470,8 +478,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
     int i = 0;
 
-    final List<Color> twelveColor = utility.getTwelveColor();
-
     switch (widget.title) {
       case 'gold':
         break;
@@ -524,7 +530,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                             radius: 15,
                             backgroundColor: (appParamState.selectedToushiGraphItemName == element2.ticker)
                                 ? Colors.white.withValues(alpha: 0.4)
-                                : twelveColor[i % 12].withValues(alpha: 0.3),
+                                : twentyFourColor[i % 24].withValues(alpha: 0.3),
                           ),
                         ),
 
@@ -647,7 +653,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                               backgroundColor:
                                   (appParamState.selectedToushiGraphItemName == element2.relationalId.toString())
                                   ? Colors.white.withValues(alpha: 0.4)
-                                  : twelveColor[i % 12].withValues(alpha: 0.3),
+                                  : twentyFourColor[i % 24].withValues(alpha: 0.3),
                             ),
                           ),
 

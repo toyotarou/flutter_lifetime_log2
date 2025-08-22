@@ -93,20 +93,32 @@ class Utility {
   }
 
   ///
-  List<Color> getTwelveColor() {
+  List<Color> getTwentyFourColor() {
     return <Color>[
-      const Color(0xffdb2f20),
-      const Color(0xffefa43a),
-      const Color(0xfffdf551),
-      const Color(0xffa6c63d),
-      const Color(0xff439638),
-      const Color(0xff469c9e),
-      const Color(0xff48a0e1),
-      const Color(0xff3070b1),
-      const Color(0xff020c75),
-      const Color(0xff931c7a),
-      const Color(0xffdc2f81),
-      const Color(0xffdb2f5c),
+      const Color(0xFFFF0000), // 赤
+      const Color(0xFFFF4000),
+      const Color(0xFFFF8000),
+      const Color(0xFFFFBF00),
+      const Color(0xFFFFFF00), // 黄
+      const Color(0xFFBFFF00),
+      const Color(0xFF80FF00),
+      const Color(0xFF40FF00),
+      const Color(0xFF00FF00), // 緑
+      const Color(0xFF00FF40),
+      const Color(0xFF00FF80),
+      const Color(0xFF00FFBF),
+      const Color(0xFF00FFFF), // シアン
+      const Color(0xFF00BFFF),
+      const Color(0xFF0080FF),
+      const Color(0xFF0040FF),
+      const Color(0xFF0000FF), // 青
+      const Color(0xFF4000FF),
+      const Color(0xFF8000FF),
+      const Color(0xFFBF00FF),
+      const Color(0xFFFF00FF), // マゼンタ
+      const Color(0xFFFF00BF),
+      const Color(0xFFFF0080),
+      const Color(0xFFFF0040),
     ];
   }
 

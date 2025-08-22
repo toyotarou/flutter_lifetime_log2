@@ -60,10 +60,14 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   List<Marker> templeMarkerList = <Marker>[];
 
+  List<Color> twentyFourColor = [];
+
   ///
   @override
   void initState() {
     super.initState();
+
+    twentyFourColor = utility.getTwentyFourColor();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() => isLoading = true);
@@ -389,8 +393,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   ///
   // ignore: always_specify_types
   List<Polyline> makeTransportationPolyline() {
-    final List<Color> twelveColor = utility.getTwelveColor();
-
     return <Polyline<Object>>[
       for (int i = 0; i < widget.transportation!.spotDataModelListMap.length; i++)
         // ignore: always_specify_types
@@ -398,7 +400,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           points: widget.transportation!.spotDataModelListMap[i]!
               .map((SpotDataModel t) => LatLng(t.lat.toDouble(), t.lng.toDouble()))
               .toList(),
-          color: (widget.transportation!.oufuku) ? twelveColor[0] : twelveColor[i],
+          color: (widget.transportation!.oufuku) ? twentyFourColor[0] : twentyFourColor[i % 24],
           strokeWidth: 5,
         ),
     ];
@@ -408,8 +410,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeTransportationGoalMarker() {
     transportationGoalMarkerList.clear();
 
-    final List<Color> twelveColor = utility.getTwelveColor();
-
     if (widget.transportation != null && widget.transportation!.spotDataModelListMap.isNotEmpty) {
       for (int i = 0; i < widget.transportation!.spotDataModelListMap.length; i++) {
         final SpotDataModel lastValue = widget.transportation!.spotDataModelListMap[i]!.last;
@@ -417,7 +417,10 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         transportationGoalMarkerList.add(
           Marker(
             point: LatLng(lastValue.lat.toDouble(), lastValue.lng.toDouble()),
-            child: Icon(Icons.flag, color: (widget.transportation!.oufuku) ? twelveColor[0] : twelveColor[i]),
+            child: Icon(
+              Icons.flag,
+              color: (widget.transportation!.oufuku) ? twentyFourColor[0] : twentyFourColor[i % 24],
+            ),
           ),
         );
       }
