@@ -12,6 +12,7 @@ import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/temple_model.dart';
+import '../../models/time_place_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
@@ -46,6 +47,7 @@ class AppParamState with _$AppParamState {
     @Default(<int, List<FundModel>>{}) Map<int, List<FundModel>> keepFundRelationMap,
     @Default(<String, List<StockModel>>{}) Map<String, List<StockModel>> keepStockTickerMap,
     @Default(<int, List<ToushiShintakuModel>>{}) Map<int, List<ToushiShintakuModel>> keepToushiShintakuRelationalMap,
+    @Default(<String, List<TimePlaceModel>>{}) Map<String, List<TimePlaceModel>> keepTimePlaceMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -159,6 +161,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepToushiShintakuRelationalMap({required Map<int, List<ToushiShintakuModel>> map}) =>
       state = state.copyWith(keepToushiShintakuRelationalMap: map);
+
+  ///
+  void setKeepTimePlaceMap({required Map<String, List<TimePlaceModel>> map}) =>
+      state = state.copyWith(keepTimePlaceMap: map);
 
   //===================================================
 

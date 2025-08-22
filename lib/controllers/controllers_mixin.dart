@@ -14,6 +14,7 @@ import '_get_data/money_spend_item/money_spend_item.dart';
 import '_get_data/salary/salary.dart';
 import '_get_data/stock/stock.dart';
 import '_get_data/temple/temple.dart';
+import '_get_data/time_place/time_place.dart';
 import '_get_data/toushi_shintaku/toushi_shintaku.dart';
 import '_get_data/transportation/transportation.dart';
 import '_get_data/walk/walk.dart';
@@ -179,6 +180,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   FundState get fundState => ref.watch(fundProvider);
 
   Fund get fundNotifier => ref.read(fundProvider.notifier);
+
+  //==========================================//
+
+  TimePlaceState get timePlaceState => ref.watch(timePlaceProvider);
+
+  TimePlace get timePlaceNotifier => ref.read(timePlaceProvider.notifier);
 
   //==========================================//
 

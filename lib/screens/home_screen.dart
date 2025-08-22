@@ -14,6 +14,7 @@ import '../models/money_spend_model.dart';
 import '../models/salary_model.dart';
 import '../models/stock_model.dart';
 import '../models/temple_model.dart';
+import '../models/time_place_model.dart';
 import '../models/toushi_shintaku_model.dart';
 import '../models/transportation_model.dart';
 import '../models/walk_model.dart';
@@ -58,6 +59,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.fundRelationMap,
     required this.stockTickerMap,
     required this.toushiShintakuRelationalMap,
+    required this.timePlaceMap,
   });
 
   final List<String> holidayList;
@@ -81,6 +83,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<int, List<FundModel>> fundRelationMap;
   final Map<String, List<StockModel>> stockTickerMap;
   final Map<int, List<ToushiShintakuModel>> toushiShintakuRelationalMap;
+  final Map<String, List<TimePlaceModel>> timePlaceMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -118,6 +121,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepFundRelationMap(map: widget.fundRelationMap);
       appParamNotifier.setKeepStockTickerMap(map: widget.stockTickerMap);
       appParamNotifier.setKeepToushiShintakuRelationalMap(map: widget.toushiShintakuRelationalMap);
+      appParamNotifier.setKeepTimePlaceMap(map: widget.timePlaceMap);
     });
 
     return DefaultTabController(
