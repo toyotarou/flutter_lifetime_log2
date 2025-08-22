@@ -28,6 +28,7 @@ enum APIPath {
   getCreditSummary,
   insertSpend,
   getFund,
+  getAllTimePlaceRecord,
 }
 
 extension APIPathExtension on APIPath {
@@ -111,6 +112,9 @@ extension APIPathExtension on APIPath {
         return 'insertSpend';
       case APIPath.getFund:
         return 'getFund';
+
+      case APIPath.getAllTimePlaceRecord:
+        return 'getAllTimePlaceRecord';
     }
   }
 }

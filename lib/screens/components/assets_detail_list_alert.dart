@@ -56,7 +56,7 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
 
     switch (widget.title) {
       case 'stock':
-        var lastCost = 0;
+        int lastCost = 0;
         appParamState.keepStockTickerMap[widget.item]?.forEach((StockModel element) {
           final String jikaHyoukagaku = element.jikaHyoukagaku.replaceAll(',', '');
           final String heikinShutokuKagaku = element.heikinShutokuKagaku.replaceAll(',', '');
@@ -113,7 +113,7 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
         });
 
       case 'toushiShintaku':
-        var lastCost = 0;
+        int lastCost = 0;
         appParamState.keepToushiShintakuRelationalMap[widget.item.toInt()]?.forEach((ToushiShintakuModel element) {
           final String jikaHyoukagaku = element.jikaHyoukagaku
               .replaceAll(',', '')
