@@ -524,7 +524,11 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   child: Text(
                     title,
 
-                    style: const TextStyle(color: Colors.white, fontSize: 12, decoration: TextDecoration.underline),
+                    style: TextStyle(
+                      color: isBeforeDate ? Colors.white : Colors.white.withValues(alpha: 0.3),
+                      fontSize: 12,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 )
               else
