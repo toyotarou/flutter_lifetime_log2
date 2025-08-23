@@ -95,30 +95,30 @@ class Utility {
   ///
   List<Color> getTwentyFourColor() {
     return <Color>[
-      const Color(0xFFFF0000), // 赤
-      const Color(0xFFFF4000),
-      const Color(0xFFFF8000),
-      const Color(0xFFFFBF00),
-      const Color(0xFFFFFF00), // 黄
-      const Color(0xFFBFFF00),
-      const Color(0xFF80FF00),
-      const Color(0xFF40FF00),
-      const Color(0xFF00FF00), // 緑
-      const Color(0xFF00FF40),
-      const Color(0xFF00FF80),
-      const Color(0xFF00FFBF),
-      const Color(0xFF00FFFF), // シアン
-      const Color(0xFF00BFFF),
-      const Color(0xFF0080FF),
-      const Color(0xFF0040FF),
-      const Color(0xFF0000FF), // 青
-      const Color(0xFF4000FF),
-      const Color(0xFF8000FF),
-      const Color(0xFFBF00FF),
-      const Color(0xFFFF00FF), // マゼンタ
-      const Color(0xFFFF00BF),
-      const Color(0xFFFF0080),
-      const Color(0xFFFF0040),
+      const Color(0xFFE53935), // 赤 (100%)
+      const Color(0xFF1E88E5), // 青 (100%)
+      const Color(0xFF43A047), // 緑 (100%)
+      const Color(0xFFFFA726), // オレンジ (100%)
+      const Color(0xFF8E24AA), // 紫 (100%)
+      const Color(0xFF00ACC1), // シアン (100%)
+      const Color(0xFFFDD835), // 黄 (100%)
+      const Color(0xFF6D4C41), // 茶 (100%)
+      const Color(0xFFD81B60), // ピンク (100%)
+      const Color(0xFF3949AB), // インディゴ (100%)
+      const Color(0xFF00897B), // ティール (100%)
+      const Color(0xCCFF7043), // 明るいオレンジ (80%)
+      const Color(0xFF7CB342), // ライムグリーン (100%)
+      const Color(0xFF5E35B1), // ディープパープル (100%)
+      const Color(0xCC26C6DA), // ライトシアン (80%)
+      const Color(0xCCFFEE58), // 明るい黄 (80%)
+      const Color(0xFFBDBDBD), // グレー (100%)
+      const Color(0xCCEF5350), // 明るい赤 (80%)
+      const Color(0xCC42A5F5), // 明るい青 (80%)
+      const Color(0xCC66BB6A), // 明るい緑 (80%)
+      const Color(0x99FFB74D), // 明るいオレンジ (60%)
+      const Color(0xCCAB47BC), // 明るい紫 (80%)
+      const Color(0xCC26A69A), // 明るいティール (80%)
+      const Color(0xCCFF8A65), // サーモン (80%)
     ];
   }
 

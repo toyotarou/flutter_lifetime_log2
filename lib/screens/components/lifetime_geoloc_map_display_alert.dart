@@ -15,6 +15,7 @@ import '../../utility/tile_provider.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'temple_list_display_alert.dart';
+import 'time_place_display_alert.dart';
 
 class LifetimeGeolocMapDisplayAlert extends ConsumerStatefulWidget {
   const LifetimeGeolocMapDisplayAlert({
@@ -471,6 +472,14 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       setState(() => currentZoom = newZoom);
 
       appParamNotifier.setCurrentZoom(zoom: newZoom);
+
+      LifetimeDialog(
+        context: context,
+        widget: TimePlaceDisplayAlert(date: widget.date),
+        paddingTop: context.screenSize.height * 0.7,
+
+        clearBarrierColor: true,
+      );
     }
   }
 

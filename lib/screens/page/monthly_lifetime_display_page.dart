@@ -708,6 +708,23 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                       ],
                     ),
                   ),
+
+                  Positioned(
+                    top: 45,
+                    left: 70,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white.withValues(alpha: 0.1),
+                      radius: 14,
+
+                      child: Text(
+                        (appParamState.keepTimePlaceMap[date] != null)
+                            ? appParamState.keepTimePlaceMap[date]!.length.toString()
+                            : '',
+
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
