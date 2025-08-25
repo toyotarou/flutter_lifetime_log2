@@ -23,7 +23,9 @@ class ToushiShintakuModel {
       name: json['name'] as String,
       shutokuSougaku: json['shutoku_sougaku'] as String,
       jikaHyoukagaku: json['jika_hyoukagaku'] as String,
-      relationalId: json['relational_id'].toString().toInt(),
+      relationalId: (json['relational_id'] != null && json['relational_id'] != '')
+          ? json['relational_id'].toString().toInt()
+          : 0,
       hoyuuSuuryou: json['hoyuu_suuryou'].toString().toInt(),
     );
   }

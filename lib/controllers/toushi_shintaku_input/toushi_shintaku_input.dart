@@ -1,0 +1,58 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../data/http/client.dart';
+import '../../data/http/path.dart';
+import '../../utility/utility.dart';
+
+part 'toushi_shintaku_input.freezed.dart';
+
+part 'toushi_shintaku_input.g.dart';
+
+@freezed
+class ToushiShintakuInputState with _$ToushiShintakuInputState {
+  const factory ToushiShintakuInputState({
+    @Default(<int>[]) List<int> updateIdList,
+    @Default(<int, int>{}) Map<int, int> toushiShintakuRelationalIdMap,
+  }) = _ToushiShintakuInputState;
+}
+
+@Riverpod(keepAlive: true)
+class ToushiShintakuInput extends _$ToushiShintakuInput {
+  final Utility utility = Utility();
+
+  ///
+  @override
+  ToushiShintakuInputState build() => const ToushiShintakuInputState();
+
+  ///
+  void setDefaultValue({required Map<int, int> map}) => state = state.copyWith(toushiShintakuRelationalIdMap: map);
+
+  ///
+  void setInputValue({required int id, required int relationalId}) {
+    final Map<int, int> map = <int, int>{...state.toushiShintakuRelationalIdMap};
+    map[id] = relationalId;
+
+    final List<int> list = <int>[...state.updateIdList];
+    list.add(id);
+
+    state = state.copyWith(toushiShintakuRelationalIdMap: map, updateIdList: list);
+  }
+
+  ///
+  Future<void> updateToushiShintakuRelationId({required Map<String, int> updateData}) async {
+    final HttpClient client = ref.read(httpClientProvider);
+
+    final Map<String, dynamic> uploadData = <String, dynamic>{};
+    uploadData['updateData'] = updateData;
+
+    // ignore: always_specify_types
+    await client.post(path: APIPath.updateToushiShintakuRelationalId, body: uploadData).then((value) {}).catchError((
+      // ignore: always_specify_types
+      error,
+      _,
+    ) {
+      utility.showError('予期せぬエラーが発生しました');
+    });
+  }
+}

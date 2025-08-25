@@ -13,6 +13,7 @@ import '../parts/lifetime_dialog.dart';
 import 'assets_detail_graph_alert.dart';
 import 'monthly_assets_graph_alert.dart';
 import 'stock_data_input_alert.dart';
+import 'toushi_shintaku_data_update_alert.dart';
 
 class MonthlyAssetsDisplayAlert extends ConsumerStatefulWidget {
   const MonthlyAssetsDisplayAlert({
@@ -366,7 +367,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                         isBeforeDate: isBeforeDate,
                         title: 'toushiShintaku',
                         price: toushiShintaku,
-                        buttonDisp: false,
+                        buttonDisp: true,
                         beforeData: beforeData,
                       ),
 
@@ -487,6 +488,29 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       ),
     );
 
+    final GestureDetector toushiShintakuUpdateButton = GestureDetector(
+      onTap: () {
+        final Map<int, int> map = <int, int>{};
+
+        appParamState.keepToushiShintakuMap[date]?.forEach((ToushiShintakuModel elememt) {
+          map[elememt.id] = elememt.relationalId;
+        });
+
+        toushiShintakuInputNotifier.setDefaultValue(map: map);
+
+        LifetimeDialog(
+          context: context,
+          widget: ToushiShintakuDataUpdateAlert(date: date, toushiShintakuRelationalIdMap: map),
+        );
+      },
+      child: Icon(
+        Icons.input,
+        color: (date == DateTime.now().yyyymmdd && !todayStockExists)
+            ? Colors.greenAccent.withValues(alpha: 0.3)
+            : Colors.white.withValues(alpha: 0.3),
+      ),
+    );
+
     return Container(
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
@@ -497,8 +521,14 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         children: <Widget>[
           Row(
             children: <Widget>[
-              if (buttonDisp && youbi != 'Saturday' && youbi != 'Sunday' && isBeforeDate)
+              if (buttonDisp && youbi != 'Saturday' && youbi != 'Sunday' && isBeforeDate && exTitle[0] == 'stock')
                 stockInputButton
+              else if (buttonDisp &&
+                  youbi != 'Saturday' &&
+                  youbi != 'Sunday' &&
+                  isBeforeDate &&
+                  exTitle[0] == 'toushiShintaku')
+                toushiShintakuUpdateButton
               else
                 const Icon(Icons.square_outlined, color: Colors.transparent),
 

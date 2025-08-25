@@ -29,6 +29,7 @@ enum APIPath {
   insertSpend,
   getFund,
   getAllTimePlaceRecord,
+  updateToushiShintakuRelationalId,
 }
 
 extension APIPathExtension on APIPath {
@@ -115,6 +116,9 @@ extension APIPathExtension on APIPath {
 
       case APIPath.getAllTimePlaceRecord:
         return 'getAllTimePlaceRecord';
+
+      case APIPath.updateToushiShintakuRelationalId:
+        return 'updateToushiShintakuRelationalId';
     }
   }
 }

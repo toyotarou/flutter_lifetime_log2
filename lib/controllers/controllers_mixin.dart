@@ -28,6 +28,7 @@ import 'lifetime_input/lifetime_input.dart';
 import 'money_input/money_input.dart';
 import 'spend_input/spend_input.dart';
 import 'stock_input/stock_input.dart';
+import 'toushi_shintaku_input/toushi_shintaku_input.dart';
 import 'walk_input/walk_input.dart';
 
 mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
@@ -186,6 +187,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   TimePlaceState get timePlaceState => ref.watch(timePlaceProvider);
 
   TimePlace get timePlaceNotifier => ref.read(timePlaceProvider.notifier);
+
+  //==========================================//
+
+  ToushiShintakuInputState get toushiShintakuInputState => ref.watch(toushiShintakuInputProvider);
+
+  ToushiShintakuInput get toushiShintakuInputNotifier => ref.read(toushiShintakuInputProvider.notifier);
 
   //==========================================//
 
