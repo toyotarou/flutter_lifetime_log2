@@ -39,6 +39,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
   Map<int, int> monthlyGraphAssetsMap = <int, int>{};
 
+  bool todayToushiShintakuRelationalIdBlankExists = false;
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -142,6 +144,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         for (final ToushiShintakuModel element in appParamState.keepToushiShintakuMap[date.yyyymmdd]!) {
           if (element.jikaHyoukagaku != '-') {
             lastToushiShintakuSum += element.jikaHyoukagaku.replaceAll(',', '').replaceAll('円', '').trim().toInt();
+          }
+
+          if (element.relationalId == 0) {
+            todayToushiShintakuRelationalIdBlankExists = true;
           }
         }
       }
@@ -492,8 +498,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       onTap: () {
         final Map<int, int> map = <int, int>{};
 
-        appParamState.keepToushiShintakuMap[date]?.forEach((ToushiShintakuModel elememt) {
-          map[elememt.id] = elememt.relationalId;
+        appParamState.keepToushiShintakuMap[date]?.forEach((ToushiShintakuModel element) {
+          map[element.id] = element.relationalId;
         });
 
         toushiShintakuInputNotifier.setDefaultValue(map: map);
@@ -505,7 +511,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       },
       child: Icon(
         Icons.input,
-        color: (date == DateTime.now().yyyymmdd && !todayStockExists)
+        color: (date == DateTime.now().yyyymmdd && todayToushiShintakuRelationalIdBlankExists)
             ? Colors.greenAccent.withValues(alpha: 0.3)
             : Colors.white.withValues(alpha: 0.3),
       ),

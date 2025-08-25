@@ -181,7 +181,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
     }
 
     // ignore: always_specify_types
-    toushiShintakuInputNotifier.updateToushiShintakuRelationId(updateData: updateData).then((value) {
+    toushiShintakuInputNotifier.updateToushiShintakuRelationalId(updateData: updateData).then((value) {
       if (mounted) {
         context.findAncestorStateOfType<AppRootState>()?.restartApp();
       }

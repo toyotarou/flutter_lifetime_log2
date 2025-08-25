@@ -40,7 +40,7 @@ class ToushiShintakuInput extends _$ToushiShintakuInput {
   }
 
   ///
-  Future<void> updateToushiShintakuRelationId({required Map<String, int> updateData}) async {
+  Future<void> updateToushiShintakuRelationalId({required Map<String, int> updateData}) async {
     final HttpClient client = ref.read(httpClientProvider);
 
     final Map<String, dynamic> uploadData = <String, dynamic>{};
