@@ -131,7 +131,14 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
 
                   const SizedBox(width: 10),
 
-                  Expanded(child: Text(element.name, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                  Expanded(
+                    child: Text(
+                      element.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: (element.relationalId == 0) ? Colors.yellowAccent : Colors.white),
+                    ),
+                  ),
                 ],
               ),
             ),
