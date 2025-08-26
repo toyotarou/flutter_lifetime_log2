@@ -78,6 +78,8 @@ class AppParamState with _$AppParamState {
     @Default(false) bool isMonthlySpendSummaryMinusJogai,
 
     @Default('') String selectedToushiGraphItemName,
+
+    @Default('') String yearlyAllSpendSelectedYear,
   }) = _AppParamState;
 }
 
@@ -222,4 +224,8 @@ class AppParam extends _$AppParam {
   ///
   void setSelectedToushiGraphItemName({required String name}) =>
       state = state.copyWith(selectedToushiGraphItemName: name);
+
+  ///
+  void setYearlyAllSpendSelectedYear({required String year}) =>
+      state = state.copyWith(yearlyAllSpendSelectedYear: year);
 }
