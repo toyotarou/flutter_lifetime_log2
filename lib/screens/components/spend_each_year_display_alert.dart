@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -55,6 +56,73 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
                 Expanded(child: displaySpendEachYearList()),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                Row(
+                  children: <Widget>[
+                    const Expanded(flex: 2, child: SizedBox.shrink()),
+
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.topRight,
+
+                        child: GestureDetector(
+                          onTap: () {
+                            appParamNotifier.setYearlyAllSpendSelectedPrice(price: '');
+                          },
+                          child: Text(
+                            '-',
+
+                            style: TextStyle(
+                              color: (appParamState.yearlyAllSpendSelectedPrice == '')
+                                  ? Colors.yellowAccent
+                                  : Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.topRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            appParamNotifier.setYearlyAllSpendSelectedPrice(price: '10000');
+                          },
+                          child: Text(
+                            '10000',
+
+                            style: TextStyle(
+                              color: (appParamState.yearlyAllSpendSelectedPrice == '10000')
+                                  ? Colors.yellowAccent
+                                  : Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.topRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            appParamNotifier.setYearlyAllSpendSelectedPrice(price: '30000');
+                          },
+                          child: Text(
+                            '30000',
+
+                            style: TextStyle(
+                              color: (appParamState.yearlyAllSpendSelectedPrice == '30000')
+                                  ? Colors.yellowAccent
+                                  : Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 5),
 
                 SizedBox(height: 450, child: displayYearlyAllSpend()),
               ],
@@ -219,33 +287,43 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
     sortedByKey.forEach((String key, List<MoneySpendModel> value) {
       if (appParamState.yearlyAllSpendSelectedYear == key.split('-')[0]) {
         for (final MoneySpendModel element in value) {
-          list.add(
-            Container(
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-              ),
-              padding: const EdgeInsets.all(5),
+          bool flag = true;
 
-              child: DefaultTextStyle(
-                style: const TextStyle(fontSize: 12),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(child: Text(element.date)),
-                    Expanded(child: Text(element.item)),
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.topRight,
-                        child: Text(
-                          element.price.toString().toCurrency(),
-                          style: TextStyle(color: (element.price >= 30000) ? Colors.orangeAccent : Colors.white),
+          if (appParamState.yearlyAllSpendSelectedPrice != '') {
+            if (element.price < appParamState.yearlyAllSpendSelectedPrice.toInt()) {
+              flag = false;
+            }
+          }
+
+          if (flag) {
+            list.add(
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                ),
+                padding: const EdgeInsets.all(5),
+
+                child: DefaultTextStyle(
+                  style: const TextStyle(fontSize: 12),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(child: Text(element.date)),
+                      Expanded(child: Text(element.item)),
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.topRight,
+                          child: Text(
+                            element.price.toString().toCurrency(),
+                            style: TextStyle(color: (element.price >= 30000) ? Colors.orangeAccent : Colors.white),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
+            );
+          }
         }
       }
     });
