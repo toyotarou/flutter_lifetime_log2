@@ -15,6 +15,8 @@ class SpendEachYearDisplayAlert extends ConsumerStatefulWidget {
 
 class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplayAlert>
     with ControllersMixin<SpendEachYearDisplayAlert> {
+  final AutoScrollController autoScrollController = AutoScrollController();
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -68,6 +70,7 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
                         child: GestureDetector(
                           onTap: () {
                             appParamNotifier.setYearlyAllSpendSelectedPrice(price: '');
+                            autoScrollController.scrollToIndex(0);
                           },
                           child: Text(
                             '-',
@@ -87,6 +90,7 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
                         child: GestureDetector(
                           onTap: () {
                             appParamNotifier.setYearlyAllSpendSelectedPrice(price: '10000');
+                            autoScrollController.scrollToIndex(0);
                           },
                           child: Text(
                             '10000',
@@ -106,6 +110,7 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
                         child: GestureDetector(
                           onTap: () {
                             appParamNotifier.setYearlyAllSpendSelectedPrice(price: '30000');
+                            autoScrollController.scrollToIndex(0);
                           },
                           child: Text(
                             '30000',
@@ -245,8 +250,17 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
                 const SizedBox(width: 20),
 
                 GestureDetector(
-                  onTap: () => appParamNotifier.setYearlyAllSpendSelectedYear(year: key.toString()),
-                  child: Icon(Icons.info_outline, color: Colors.white.withValues(alpha: 0.4)),
+                  onTap: () {
+                    appParamNotifier.setYearlyAllSpendSelectedYear(year: key.toString());
+
+                    autoScrollController.scrollToIndex(0);
+                  },
+                  child: Icon(
+                    Icons.info_outline,
+                    color: (appParamState.yearlyAllSpendSelectedYear == key.toString())
+                        ? Colors.yellowAccent.withValues(alpha: 0.4)
+                        : Colors.white.withValues(alpha: 0.4),
+                  ),
                 ),
               ],
             ),
@@ -284,6 +298,7 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
       ),
     );
 
+    int i = 0;
     sortedByKey.forEach((String key, List<MoneySpendModel> value) {
       if (appParamState.yearlyAllSpendSelectedYear == key.split('-')[0]) {
         for (final MoneySpendModel element in value) {
@@ -297,38 +312,48 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
 
           if (flag) {
             list.add(
-              Container(
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                ),
-                padding: const EdgeInsets.all(5),
+              AutoScrollTag(
+                // ignore: always_specify_types
+                key: ValueKey(i),
+                index: i,
+                controller: autoScrollController,
 
-                child: DefaultTextStyle(
-                  style: const TextStyle(fontSize: 12),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(child: Text(element.date)),
-                      Expanded(child: Text(element.item)),
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.topRight,
-                          child: Text(
-                            element.price.toString().toCurrency(),
-                            style: TextStyle(color: (element.price >= 30000) ? Colors.orangeAccent : Colors.white),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                  ),
+                  padding: const EdgeInsets.all(5),
+
+                  child: DefaultTextStyle(
+                    style: const TextStyle(fontSize: 12),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(child: Text(element.date)),
+                        Expanded(child: Text(element.item)),
+                        Expanded(
+                          child: Container(
+                            alignment: Alignment.topRight,
+                            child: Text(
+                              element.price.toString().toCurrency(),
+                              style: TextStyle(color: (element.price >= 30000) ? Colors.orangeAccent : Colors.white),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             );
           }
         }
+
+        i++;
       }
     });
 
     return CustomScrollView(
+      controller: autoScrollController,
       slivers: <Widget>[
         SliverList(
           delegate: SliverChildBuilderDelegate(
