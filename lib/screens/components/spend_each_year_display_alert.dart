@@ -129,7 +129,7 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
 
                 const SizedBox(height: 5),
 
-                SizedBox(height: 450, child: displayYearlyAllSpend()),
+                SizedBox(height: 350, child: displayYearlyAllSpend()),
               ],
             ),
           ),
