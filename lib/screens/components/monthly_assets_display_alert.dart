@@ -507,20 +507,20 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         //---------------------------------------------------------------//
 
         //---------------------------------------------------------------//
+        final List<String> list = <String>[];
+
         final List<MapEntry<String, List<ToushiShintakuModel>>> sortedByKey =
             appParamState.keepToushiShintakuMap.entries.toList()..sort(
               (MapEntry<String, List<ToushiShintakuModel>> a, MapEntry<String, List<ToushiShintakuModel>> b) =>
                   a.key.compareTo(b.key),
             );
 
-        final MapEntry<String, List<ToushiShintakuModel>> last = sortedByKey.last;
+        final MapEntry<String, List<ToushiShintakuModel>> referenceData = sortedByKey[sortedByKey.length - 2];
 
-        last.value.sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
+        referenceData.value.sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
 
-        final List<String> list = <String>[];
-
-        for (int i = 0; i < last.value.length; i++) {
-          list.add(last.value[i].relationalId.toString());
+        for (int i = 0; i < referenceData.value.length; i++) {
+          list.add(referenceData.value[i].relationalId.toString());
         }
         //---------------------------------------------------------------//
 

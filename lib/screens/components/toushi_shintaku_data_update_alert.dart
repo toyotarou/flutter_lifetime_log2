@@ -66,14 +66,32 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                   children: <Widget>[
                     Text(widget.date),
 
-                    ElevatedButton(
-                      onPressed: () {
-                        updateData();
-                      },
+                    Row(
+                      children: <Widget>[
+                        ElevatedButton(
+                          onPressed: () {
+                            for (int i = 0; i < widget.toushiShintakuHintTextList.length; i++) {
+                              tecs[i].text = widget.toushiShintakuHintTextList[i];
+                            }
+                          },
 
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
 
-                      child: const Text('input'),
+                          child: const Text('反映'),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        ElevatedButton(
+                          onPressed: () {
+                            updateData();
+                          },
+
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+
+                          child: const Text('input'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -125,6 +143,11 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                         contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                         border: InputBorder.none,
                         hintText: widget.toushiShintakuHintTextList[i],
+                        hintStyle: const TextStyle(
+                          color: Colors.yellowAccent,
+                          fontSize: 10,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
 
                       onChanged: (String value) {
