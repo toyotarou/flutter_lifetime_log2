@@ -507,7 +507,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         //---------------------------------------------------------------//
 
         //---------------------------------------------------------------//
-        final List<String> list = <String>[];
+        final List<int> list = <int>[];
+        final List<String> list2 = <String>[];
 
         final List<MapEntry<String, List<ToushiShintakuModel>>> sortedByKey =
             appParamState.keepToushiShintakuMap.entries.toList()..sort(
@@ -520,7 +521,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         referenceData.value.sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
 
         for (int i = 0; i < referenceData.value.length; i++) {
-          list.add(referenceData.value[i].relationalId.toString());
+          list.add(referenceData.value[i].id);
+          list2.add(referenceData.value[i].relationalId.toString());
         }
         //---------------------------------------------------------------//
 
@@ -529,7 +531,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           widget: ToushiShintakuDataUpdateAlert(
             date: date,
             toushiShintakuRelationalIdMap: map,
-            toushiShintakuHintTextList: list,
+            toushiShintakuIdList: list,
+            toushiShintakuHintTextList: list2,
           ),
         );
       },

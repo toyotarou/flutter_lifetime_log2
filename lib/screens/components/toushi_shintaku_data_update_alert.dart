@@ -12,12 +12,14 @@ class ToushiShintakuDataUpdateAlert extends ConsumerStatefulWidget {
     super.key,
     required this.date,
     required this.toushiShintakuRelationalIdMap,
+    required this.toushiShintakuIdList,
     required this.toushiShintakuHintTextList,
   });
 
   final String date;
   final Map<int, int> toushiShintakuRelationalIdMap;
   final List<String> toushiShintakuHintTextList;
+  final List<int> toushiShintakuIdList;
 
   @override
   ConsumerState<ToushiShintakuDataUpdateAlert> createState() => _ToushiShintakuDataUpdateAlertState();
@@ -69,8 +71,13 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                     Row(
                       children: <Widget>[
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             for (int i = 0; i < widget.toushiShintakuHintTextList.length; i++) {
+                              await toushiShintakuInputNotifier.setInputValue(
+                                id: widget.toushiShintakuIdList[i],
+                                relationalId: widget.toushiShintakuHintTextList[i].toInt(),
+                              );
+
                               tecs[i].text = widget.toushiShintakuHintTextList[i];
                             }
                           },
