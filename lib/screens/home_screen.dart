@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/controllers_mixin.dart';
 import '../extensions/extensions.dart';
 import '../main.dart';
+import '../models/amazon_purchase_model.dart';
 import '../models/credit_summary_model.dart';
 import '../models/fund_model.dart';
 import '../models/geoloc_model.dart';
@@ -61,6 +62,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.stockTickerMap,
     required this.toushiShintakuRelationalMap,
     required this.timePlaceMap,
+    required this.amazonPurchaseMap,
   });
 
   final List<String> holidayList;
@@ -85,6 +87,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<StockModel>> stockTickerMap;
   final Map<int, List<ToushiShintakuModel>> toushiShintakuRelationalMap;
   final Map<String, List<TimePlaceModel>> timePlaceMap;
+  final Map<String, List<AmazonPurchaseModel>> amazonPurchaseMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -123,6 +126,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepStockTickerMap(map: widget.stockTickerMap);
       appParamNotifier.setKeepToushiShintakuRelationalMap(map: widget.toushiShintakuRelationalMap);
       appParamNotifier.setKeepTimePlaceMap(map: widget.timePlaceMap);
+      appParamNotifier.setKeepAmazonPurchaseMap(map: widget.amazonPurchaseMap);
     });
 
     return DefaultTabController(

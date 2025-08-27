@@ -30,6 +30,7 @@ enum APIPath {
   getFund,
   getAllTimePlaceRecord,
   updateToushiShintakuRelationalId,
+  getAmazonData,
 }
 
 extension APIPathExtension on APIPath {
@@ -119,6 +120,9 @@ extension APIPathExtension on APIPath {
 
       case APIPath.updateToushiShintakuRelationalId:
         return 'updateToushiShintakuRelationalId';
+
+      case APIPath.getAmazonData:
+        return 'getAmazonData';
     }
   }
 }

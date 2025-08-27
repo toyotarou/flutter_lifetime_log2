@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../models/amazon_purchase_model.dart';
 import '../../models/credit_summary_model.dart';
 import '../../models/fund_model.dart';
 import '../../models/geoloc_model.dart';
@@ -48,6 +49,7 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<StockModel>>{}) Map<String, List<StockModel>> keepStockTickerMap,
     @Default(<int, List<ToushiShintakuModel>>{}) Map<int, List<ToushiShintakuModel>> keepToushiShintakuRelationalMap,
     @Default(<String, List<TimePlaceModel>>{}) Map<String, List<TimePlaceModel>> keepTimePlaceMap,
+    @Default(<String, List<AmazonPurchaseModel>>{}) Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -169,6 +171,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepTimePlaceMap({required Map<String, List<TimePlaceModel>> map}) =>
       state = state.copyWith(keepTimePlaceMap: map);
+
+  ///
+  void setKeepAmazonPurchaseMap({required Map<String, List<AmazonPurchaseModel>> map}) =>
+      state = state.copyWith(keepAmazonPurchaseMap: map);
 
   //===================================================
 

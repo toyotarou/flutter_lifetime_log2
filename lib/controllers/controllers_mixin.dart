@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '_get_data/amazon_purchase/amazon_purchase.dart';
 import '_get_data/credit_summary/credit_summary.dart';
 import '_get_data/directions/directions.dart';
 import '_get_data/fund/fund.dart';
@@ -196,6 +197,11 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   //==========================================//
 
+  AmazonPurchaseState get amazonPurchaseState => ref.watch(amazonPurchaseProvider);
+
+  AmazonPurchase get amazonPurchaseNotifier => ref.read(amazonPurchaseProvider.notifier);
+
+  //==========================================//
   Directions get directionsNotifier => ref.read(directionsProvider.notifier);
 
   //==========================================//
