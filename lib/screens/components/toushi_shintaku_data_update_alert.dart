@@ -8,10 +8,16 @@ import '../../models/toushi_shintaku_model.dart';
 import '../parts/error_dialog.dart';
 
 class ToushiShintakuDataUpdateAlert extends ConsumerStatefulWidget {
-  const ToushiShintakuDataUpdateAlert({super.key, required this.date, required this.toushiShintakuRelationalIdMap});
+  const ToushiShintakuDataUpdateAlert({
+    super.key,
+    required this.date,
+    required this.toushiShintakuRelationalIdMap,
+    required this.toushiShintakuHintTextList,
+  });
 
   final String date;
   final Map<int, int> toushiShintakuRelationalIdMap;
+  final List<String> toushiShintakuHintTextList;
 
   @override
   ConsumerState<ToushiShintakuDataUpdateAlert> createState() => _ToushiShintakuDataUpdateAlertState();
@@ -19,7 +25,7 @@ class ToushiShintakuDataUpdateAlert extends ConsumerStatefulWidget {
 
 class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDataUpdateAlert>
     with ControllersMixin<ToushiShintakuDataUpdateAlert> {
-  final List<TextEditingController> tecs = <TextEditingController>[];
+  List<TextEditingController> tecs = <TextEditingController>[];
 
   List<FocusNode> focusNodeList = <FocusNode>[];
 
@@ -114,10 +120,11 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
 
                       keyboardType: TextInputType.number,
                       controller: tecs[i],
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         filled: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                         border: InputBorder.none,
+                        hintText: widget.toushiShintakuHintTextList[i],
                       ),
 
                       onChanged: (String value) {

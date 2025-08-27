@@ -32,7 +32,11 @@ class _TimePlaceDisplayAlertState extends ConsumerState<TimePlaceDisplayAlert>
               style: const TextStyle(fontSize: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[Expanded(child: _displayTimePlaceList())],
+                children: <Widget>[
+                  Divider(thickness: 5, color: Colors.white.withValues(alpha: 0.4)),
+
+                  Expanded(child: _displayTimePlaceList()),
+                ],
               ),
             ),
           ),

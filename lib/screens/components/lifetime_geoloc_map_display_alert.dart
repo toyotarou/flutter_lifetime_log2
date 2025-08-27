@@ -473,13 +473,14 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
       appParamNotifier.setCurrentZoom(zoom: newZoom);
 
-      LifetimeDialog(
-        context: context,
-        widget: TimePlaceDisplayAlert(date: widget.date),
-        paddingTop: context.screenSize.height * 0.7,
-
-        clearBarrierColor: true,
-      );
+      if (appParamState.keepTimePlaceMap[widget.date] != null) {
+        LifetimeDialog(
+          context: context,
+          widget: TimePlaceDisplayAlert(date: widget.date),
+          paddingTop: context.screenSize.height * 0.65,
+          clearBarrierColor: true,
+        );
+      }
     }
   }
 

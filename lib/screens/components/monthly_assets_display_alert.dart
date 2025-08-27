@@ -496,6 +496,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
     final GestureDetector toushiShintakuUpdateButton = GestureDetector(
       onTap: () {
+        //---------------------------------------------------------------//
         final Map<int, int> map = <int, int>{};
 
         appParamState.keepToushiShintakuMap[date]?.forEach((ToushiShintakuModel element) {
@@ -503,10 +504,33 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         });
 
         toushiShintakuInputNotifier.setDefaultValue(map: map);
+        //---------------------------------------------------------------//
+
+        //---------------------------------------------------------------//
+        final List<MapEntry<String, List<ToushiShintakuModel>>> sortedByKey =
+            appParamState.keepToushiShintakuMap.entries.toList()..sort(
+              (MapEntry<String, List<ToushiShintakuModel>> a, MapEntry<String, List<ToushiShintakuModel>> b) =>
+                  a.key.compareTo(b.key),
+            );
+
+        final MapEntry<String, List<ToushiShintakuModel>> last = sortedByKey.last;
+
+        last.value.sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
+
+        final List<String> list = <String>[];
+
+        for (int i = 0; i < last.value.length; i++) {
+          list.add(last.value[i].relationalId.toString());
+        }
+        //---------------------------------------------------------------//
 
         LifetimeDialog(
           context: context,
-          widget: ToushiShintakuDataUpdateAlert(date: date, toushiShintakuRelationalIdMap: map),
+          widget: ToushiShintakuDataUpdateAlert(
+            date: date,
+            toushiShintakuRelationalIdMap: map,
+            toushiShintakuHintTextList: list,
+          ),
         );
       },
       child: Icon(
