@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
-import '../../extensions/extensions.dart';
 import '../../main.dart';
 import '../../models/lifetime_model.dart';
 import '../parts/error_dialog.dart';
