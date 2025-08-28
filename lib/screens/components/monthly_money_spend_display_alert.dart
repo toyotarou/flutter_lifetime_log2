@@ -1,6 +1,7 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -150,6 +151,14 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
       list.add(
         Stack(
           children: <Widget>[
+            if (appParamState.keepAmazonPurchaseMap[date] != null) ...<Widget>[
+              Positioned(
+                right: 30,
+                bottom: 5,
+                child: Icon(FontAwesomeIcons.amazon, color: Colors.white.withValues(alpha: 0.4)),
+              ),
+            ],
+
             if (date == DateTime.now().yyyymmdd) ...<Widget>[
               const Positioned(
                 left: 3,

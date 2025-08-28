@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../controllers/controllers_mixin.dart';
 import '../extensions/extensions.dart';
@@ -22,6 +23,7 @@ import '../models/walk_model.dart';
 import '../models/weather_model.dart';
 import '../models/work_time_model.dart';
 import '../utility/utility.dart';
+import 'components/amazon_purchase_list_alert.dart';
 import 'components/bank_data_input_alert.dart';
 import 'components/money_in_possession_display_alert.dart';
 import 'components/salary_list_alert.dart';
@@ -246,6 +248,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                     Icon(Icons.ac_unit),
                     SizedBox(width: 20),
                     Expanded(child: Text('spend each year')),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+              const SizedBox(height: 30),
+
+              GestureDetector(
+                onTap: () => LifetimeDialog(context: context, widget: const AmazonPurchaseListAlert()),
+                child: const Row(
+                  children: <Widget>[
+                    Icon(FontAwesomeIcons.amazon),
+                    SizedBox(width: 20),
+                    Expanded(child: Text('amazon purchase list')),
                   ],
                 ),
               ),
