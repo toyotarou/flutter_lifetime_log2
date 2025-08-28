@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-///
 extension ContextEx on BuildContext {
   TextTheme get textTheme => Theme.of(this).textTheme;
 
@@ -16,7 +15,6 @@ extension ContextEx on BuildContext {
   }
 }
 
-///
 extension DateTimeEx on DateTime {
   String get yyyymmdd {
     final DateFormat outputFormat = DateFormat('yyyy-MM-dd');
@@ -52,9 +50,35 @@ extension DateTimeEx on DateTime {
     final DateFormat outputFormat = DateFormat('EEEE');
     return outputFormat.format(this);
   }
-}
 
-///
+  // ===== ここから追記：日付比較を“日単位”で扱うためのヘルパ =====
+
+  /// 時刻を切り捨てた "日付のみ"（00:00:00）を返す
+  DateTime get dateOnly => DateTime(year, month, day);
+
+  /// 同じ日付か（時刻は無視）
+  bool isSameDate(DateTime other) => dateOnly.isAtSameMomentAs(other.dateOnly);
+
+  /// 厳密に「前の日付」か（<、同日は含まない）
+  bool isBeforeDate(DateTime other) => dateOnly.isBefore(other.dateOnly);
+
+  /// 厳密に「後の日付」か（>、同日は含まない）
+  bool isAfterDate(DateTime other) => dateOnly.isAfter(other.dateOnly);
+
+  /// 「前または同じ日付」か（<=）
+  bool isBeforeOrSameDate(DateTime other) => isBeforeDate(other) || isSameDate(other);
+
+  /// 「後または同じ日付」か（>=）
+  bool isAfterOrSameDate(DateTime other) => isAfterDate(other) || isSameDate(other);
+
+  /// 範囲内かどうか（閉区間: start <= this <= end）
+  bool isBetweenDatesInclusive(DateTime start, DateTime end) => isAfterOrSameDate(start) && isBeforeOrSameDate(end);
+
+  /// 範囲内かどうか（開区間: start < this < end）
+  bool isBetweenDatesExclusive(DateTime start, DateTime end) => isAfterDate(start) && isBeforeDate(end);
+
+  // ===== 追記ここまで =====
+}
 
 const int _fullLengthCode = 65248;
 
