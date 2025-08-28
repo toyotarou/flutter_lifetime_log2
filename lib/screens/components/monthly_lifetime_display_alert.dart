@@ -84,7 +84,7 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
           value.hour23,
         ];
 
-        final String youbi = '$key 00:00:00'.toDateTime().youbiStr;
+        final String youbi = DateTime.parse(key).youbiStr;
 
         final Color headColor =
             (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(key))

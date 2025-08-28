@@ -41,7 +41,7 @@ mixin MonthlyGeolocMapDateListMixin on ConsumerState<MonthlyGeolocMapDateListWid
                   child: Column(
                     children: appParamState.keepGeolocMap.entries.map((MapEntry<String, List<GeolocModel>> e) {
                       if ('${e.key.split('-')[0]}-${e.key.split('-')[1]}' == appParamState.selectedYearMonth) {
-                        final String youbi = '${e.key} 00:00:00'.toDateTime().youbiStr;
+                        final String youbi = DateTime.parse(e.key).youbiStr;
 
                         Color containerColor =
                             (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(e.key))

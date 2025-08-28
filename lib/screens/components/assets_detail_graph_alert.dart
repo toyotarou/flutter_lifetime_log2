@@ -116,11 +116,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
   void setChartData() {
     flspotsList.clear();
 
-    var widgetDateTime = DateTime(
-      widget.date.split('-')[0].toInt(),
-      widget.date.split('-')[1].toInt(),
-      widget.date.split('-')[2].toInt(),
-    );
+    final DateTime widgetDateTime = DateTime.parse(widget.date);
 
     List<String> dateList = <String>[];
 

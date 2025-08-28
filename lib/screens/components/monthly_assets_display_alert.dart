@@ -158,7 +158,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       final int nenkinKikinPassedMonths = countPaidUpTo(data: widget.nenkinKikinDataList, date: date) + 32;
       final int nenkinKikinSum = nenkinKikinPassedMonths * (26625 * 0.7).toInt();
 
-      if (date.isBefore(DateTime.now())) {
+      if (date.isBeforeOrSameDate(DateTime.now())) {
         monthlyAssetsMap[date.yyyymmdd] = <String, int>{
           'gold': lastGoldSum,
           'stock': lastStockSum,
@@ -195,11 +195,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           ? monthlyAssetsMap[date]!['nenkinKikin'].toString()
           : '';
 
-      final bool isBeforeDate = DateTime(
-        date.split('-')[0].toInt(),
-        date.split('-')[1].toInt(),
-        date.split('-')[2].toInt(),
-      ).isBefore(DateTime.now());
+      final bool isBeforeDate = DateTime.parse(date).isBeforeOrSameDate(DateTime.now());
 
       final DateTime beforeDate = DateTime(
         date.split('-')[0].toInt(),
@@ -451,7 +447,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   }) {
     final List<String> exTitle = title.split('(');
 
-    final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
+    final String youbi = DateTime.parse(date).youbiStr;
 
     final GestureDetector stockInputButton = GestureDetector(
       onTap: () {

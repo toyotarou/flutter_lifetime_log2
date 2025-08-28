@@ -190,21 +190,11 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
     for (final LifetimeItemModel element in appParamState.keepLifetimeItemList) {
       bool flag = true;
 
-      if (element.item == '俳句会' &&
-          DateTime(
-            widget.date.split('-')[0].toInt(),
-            widget.date.split('-')[1].toInt(),
-            widget.date.split('-')[2].toInt(),
-          ).isAfter(DateTime(2023, 10, 21))) {
+      if (element.item == '俳句会' && DateTime.parse(widget.date).isAfter(DateTime(2023, 10, 21))) {
         flag = false;
       }
 
-      if (element.item == '自宅' &&
-          DateTime(
-            widget.date.split('-')[0].toInt(),
-            widget.date.split('-')[1].toInt(),
-            widget.date.split('-')[2].toInt(),
-          ).isAfter(DateTime(2024, 2, 10))) {
+      if (element.item == '自宅' && DateTime.parse(widget.date).isAfter(DateTime(2024, 2, 10))) {
         flag = false;
       }
 

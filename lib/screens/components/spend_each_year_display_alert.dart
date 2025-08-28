@@ -173,20 +173,15 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
       if (eachYearStartEndDate[key] != null) {
         dispTerm = '${eachYearStartEndDate[key]!['start']} - ${eachYearStartEndDate[key]!['end']}';
 
-        dateDiff =
-            DateTime(
-                  eachYearStartEndDate[key]!['end']!.split('-')[0].toInt(),
-                  eachYearStartEndDate[key]!['end']!.split('-')[1].toInt(),
-                  eachYearStartEndDate[key]!['end']!.split('-')[2].toInt(),
-                )
-                .difference(
-                  DateTime(
-                    eachYearStartEndDate[key]!['start']!.split('-')[0].toInt(),
-                    eachYearStartEndDate[key]!['start']!.split('-')[1].toInt(),
-                    eachYearStartEndDate[key]!['start']!.split('-')[2].toInt() - 1,
-                  ),
-                )
-                .inDays;
+        dateDiff = DateTime.parse(eachYearStartEndDate[key]!['end']!)
+            .difference(
+              DateTime(
+                eachYearStartEndDate[key]!['start']!.split('-')[0].toInt(),
+                eachYearStartEndDate[key]!['start']!.split('-')[1].toInt(),
+                eachYearStartEndDate[key]!['start']!.split('-')[2].toInt() - 1,
+              ),
+            )
+            .inDays;
 
         perDay = (value / dateDiff).toInt();
 

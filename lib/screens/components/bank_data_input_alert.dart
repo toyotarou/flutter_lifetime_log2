@@ -424,17 +424,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
 
       for (final String element in bankInputState.inputDateList) {
         if (element != '') {
-          if (DateTime(
-            element.split('-')[0].toInt(),
-            element.split('-')[1].toInt(),
-            element.split('-')[2].toInt(),
-          ).isAfter(
-            DateTime(
-              lastMoney.key.split('-')[0].toInt(),
-              lastMoney.key.split('-')[1].toInt(),
-              lastMoney.key.split('-')[2].toInt(),
-            ),
-          )) {
+          if (DateTime.parse(element).isAfter(DateTime.parse(lastMoney.key))) {
             errFlg = true;
           }
         }

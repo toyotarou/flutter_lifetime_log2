@@ -123,26 +123,12 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
       final int diff = spend - sum;
 
-      /////////////////////////////////////////////////
-      bool inputDisplay = false;
-
-      String flag = '';
-      if (DateTime(
-        date.split('-')[0].toInt(),
-        date.split('-')[1].toInt(),
-        date.split('-')[2].toInt(),
-      ).isBefore(DateTime.now())) {
-        flag = 'before';
-      }
-
-      if (date == DateTime.now().yyyymmdd) {
-        flag = 'today';
-      }
-
-      if (flag == 'before' || flag == 'today') {
+      bool inputDisplay;
+      if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) {
         inputDisplay = true;
+      } else {
+        inputDisplay = false;
       }
-      /////////////////////////////////////////////////
 
       if (date == DateTime.now().yyyymmdd) {
         list.add(const DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3));

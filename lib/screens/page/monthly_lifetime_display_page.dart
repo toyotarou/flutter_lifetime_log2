@@ -264,13 +264,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
       double constrainedBoxHeight = context.screenSize.height / 6;
 
-      if (DateTime(
-        date.split('-')[0].toInt(),
-        date.split('-')[1].toInt(),
-        date.split('-')[2].toInt(),
-      ).isAfter(DateTime.now())) {
+      if (DateTime.parse(date).isAfter(DateTime.now())) {
         cardColor = Colors.transparent;
-
         constrainedBoxHeight = context.screenSize.height / 15;
       }
 
@@ -300,12 +295,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
       list.add(
         Card(
-          margin:
-              (DateTime(
-                date.split('-')[0].toInt(),
-                date.split('-')[1].toInt(),
-                date.split('-')[2].toInt(),
-              ).isBefore(DateTime.now()))
+          margin: (DateTime.parse(date).isBeforeOrSameDate(DateTime.now()))
               ? null
               : EdgeInsets.only(right: context.screenSize.width * 0.5),
 
@@ -337,11 +327,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                     ),
                   ],
 
-                  if (DateTime(
-                    date.split('-')[0].toInt(),
-                    date.split('-')[1].toInt(),
-                    date.split('-')[2].toInt(),
-                  ).isBefore(DateTime.now())) ...<Widget>[
+                  if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
                     Positioned(
                       bottom: 10,
                       left: 10,
@@ -450,11 +436,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                         ],
                                       ),
 
-                                      if (DateTime(
-                                        date.split('-')[0].toInt(),
-                                        date.split('-')[1].toInt(),
-                                        date.split('-')[2].toInt(),
-                                      ).isBefore(DateTime.now())) ...<Widget>[
+                                      if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
                                         const SizedBox(height: 10),
 
                                         Row(
