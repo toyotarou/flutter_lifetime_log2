@@ -152,10 +152,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         }
       }
 
-      final int insurancePassedMonths = getInsurancePassedMonths(date: date) + 102;
+      final int insurancePassedMonths = countPaidUpTo(data: widget.insuranceDataList, date: date) + 102;
       lastInsuranceSum = insurancePassedMonths * (55880 * 0.7).toInt();
 
-      final int nenkinKikinPassedMonths = getNenkinKikinPassedMonths(date: date) + 32;
+      final int nenkinKikinPassedMonths = countPaidUpTo(data: widget.nenkinKikinDataList, date: date) + 32;
       final int nenkinKikinSum = nenkinKikinPassedMonths * (26625 * 0.7).toInt();
 
       if (date.isBefore(DateTime.now())) {
@@ -426,44 +426,18 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   }
 
   ///
-  int getInsurancePassedMonths({required DateTime date}) {
-    int ret = 0;
+  int countPaidUpTo({required List<Map<String, dynamic>> data, required DateTime date, String dateKey = 'date'}) {
+    final DateTime target = DateTime(date.year, date.month, date.day);
 
-    for (int i = 0; i < widget.insuranceDataList.length; i++) {
-      if (widget.insuranceDataList[i]['date'] != null) {
-        final DateTime listDate = DateTime(
-          widget.insuranceDataList[i]['date']!.split('-')[0].toInt(),
-          widget.insuranceDataList[i]['date']!.split('-')[1].toInt(),
-          widget.insuranceDataList[i]['date']!.split('-')[2].toInt(),
-        );
+    final List<DateTime> dates =
+        data
+            .where((Map<String, dynamic> e) => e[dateKey] != null)
+            .map((Map<String, dynamic> e) => DateTime.parse(e[dateKey] as String))
+            .map((DateTime d) => DateTime(d.year, d.month, d.day))
+            .toList()
+          ..sort();
 
-        if (!listDate.isAfter(date)) {
-          ret = i;
-        }
-      }
-    }
-
-    return ret;
-  }
-
-  ///
-  int getNenkinKikinPassedMonths({required DateTime date}) {
-    int ret = 0;
-
-    for (int i = 0; i < widget.nenkinKikinDataList.length; i++) {
-      if (widget.nenkinKikinDataList[i]['date'] != null) {
-        final DateTime listDate = DateTime(
-          widget.nenkinKikinDataList[i]['date']!.split('-')[0].toInt(),
-          widget.nenkinKikinDataList[i]['date']!.split('-')[1].toInt(),
-          widget.nenkinKikinDataList[i]['date']!.split('-')[2].toInt(),
-        );
-
-        if (!listDate.isAfter(date)) {
-          ret = i;
-        }
-      }
-    }
-    return ret;
+    return dates.where((DateTime d) => !d.isAfter(target)).length;
   }
 
   ///
