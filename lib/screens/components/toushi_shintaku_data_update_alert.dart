@@ -12,14 +12,12 @@ class ToushiShintakuDataUpdateAlert extends ConsumerStatefulWidget {
     super.key,
     required this.date,
     required this.toushiShintakuRelationalIdMap,
-    required this.toushiShintakuIdList,
     required this.toushiShintakuHintTextList,
   });
 
   final String date;
   final Map<int, int> toushiShintakuRelationalIdMap;
-  final List<String> toushiShintakuHintTextList;
-  final List<int> toushiShintakuIdList;
+  final List<int> toushiShintakuHintTextList;
 
   @override
   ConsumerState<ToushiShintakuDataUpdateAlert> createState() => _ToushiShintakuDataUpdateAlertState();
@@ -74,11 +72,11 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                           onPressed: () async {
                             for (int i = 0; i < widget.toushiShintakuHintTextList.length; i++) {
                               await toushiShintakuInputNotifier.setInputValue(
-                                id: widget.toushiShintakuIdList[i],
-                                relationalId: widget.toushiShintakuHintTextList[i].toInt(),
+                                pos: i,
+                                relationalId: widget.toushiShintakuHintTextList[i],
                               );
 
-                              tecs[i].text = widget.toushiShintakuHintTextList[i];
+                              tecs[i].text = widget.toushiShintakuHintTextList[i].toString();
                             }
                           },
 
@@ -149,7 +147,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                         filled: true,
                         contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                         border: InputBorder.none,
-                        hintText: widget.toushiShintakuHintTextList[i],
+                        hintText: widget.toushiShintakuHintTextList[i].toString(),
                         hintStyle: const TextStyle(
                           color: Colors.yellowAccent,
                           fontSize: 10,
@@ -158,7 +156,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                       ),
 
                       onChanged: (String value) {
-                        toushiShintakuInputNotifier.setInputValue(id: element.id, relationalId: value.toInt());
+                        toushiShintakuInputNotifier.setInputValue(pos: i, relationalId: value.toInt());
                       },
 
                       onTapOutside: (PointerDownEvent event) => FocusManager.instance.primaryFocus?.unfocus(),
@@ -199,17 +197,19 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
 
   ///
   Future<void> updateData() async {
-    final List<int> updateIdList = toushiShintakuInputState.updateIdList.toSet().toList();
+    bool errFlg = false;
 
     final Map<String, int> updateData = <String, int>{};
 
-    for (final int element in updateIdList) {
-      if (toushiShintakuInputState.toushiShintakuRelationalIdMap[element] != null) {
-        updateData[element.toString()] = toushiShintakuInputState.toushiShintakuRelationalIdMap[element]!;
-      }
-    }
+    toushiShintakuInputState.toushiShintakuRelationalIdMap.forEach((int key, int value) {
+      updateData[key.toString()] = value;
 
-    if (updateData.isEmpty) {
+      if (value == 0) {
+        errFlg = true;
+      }
+    });
+
+    if (updateData.isEmpty || errFlg) {
       // ignore: always_specify_types
       Future.delayed(
         Duration.zero,

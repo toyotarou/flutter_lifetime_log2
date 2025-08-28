@@ -470,34 +470,62 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
     final GestureDetector toushiShintakuUpdateButton = GestureDetector(
       onTap: () {
+        if (appParamState.keepToushiShintakuMap[date] == null) {
+          // ignore: always_specify_types
+          Future.delayed(
+            Duration.zero,
+            () => error_dialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              title: '登録できません。',
+              content: '値を正しく入力してください。',
+            ),
+          );
+
+          return;
+        }
+
         //---------------------------------------------------------------//
         final Map<int, int> map = <int, int>{};
 
-        appParamState.keepToushiShintakuMap[date]?.forEach((ToushiShintakuModel element) {
+        for (final ToushiShintakuModel element in appParamState.keepToushiShintakuMap[date]!) {
           map[element.id] = element.relationalId;
-        });
+        }
 
         toushiShintakuInputNotifier.setDefaultValue(map: map);
         //---------------------------------------------------------------//
 
         //---------------------------------------------------------------//
-        final List<int> list = <int>[];
-        final List<String> list2 = <String>[];
-
         final List<MapEntry<String, List<ToushiShintakuModel>>> sortedByKey =
             appParamState.keepToushiShintakuMap.entries.toList()..sort(
               (MapEntry<String, List<ToushiShintakuModel>> a, MapEntry<String, List<ToushiShintakuModel>> b) =>
                   a.key.compareTo(b.key),
             );
 
-        final MapEntry<String, List<ToushiShintakuModel>> referenceData = sortedByKey[sortedByKey.length - 2];
+        List<int> idList = <int>[];
+        List<int> list = <int>[];
 
-        referenceData.value.sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
+        for (int j = 0; j < 7; j++) {
+          idList = <int>[];
+          list = <int>[];
 
-        for (int i = 0; i < referenceData.value.length; i++) {
-          list.add(referenceData.value[i].id);
-          list2.add(referenceData.value[i].relationalId.toString());
+          final MapEntry<String, List<ToushiShintakuModel>> referenceData = sortedByKey[sortedByKey.length - (j + 1)];
+
+          referenceData.value.sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
+
+          for (int i = 0; i < referenceData.value.length; i++) {
+            idList.add(referenceData.value[i].id);
+
+            if (referenceData.value[i].relationalId != 0) {
+              list.add(referenceData.value[i].relationalId);
+            }
+          }
+
+          if (idList.length == list.length) {
+            break;
+          }
         }
+
         //---------------------------------------------------------------//
 
         LifetimeDialog(
@@ -505,8 +533,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           widget: ToushiShintakuDataUpdateAlert(
             date: date,
             toushiShintakuRelationalIdMap: map,
-            toushiShintakuIdList: list,
-            toushiShintakuHintTextList: list2,
+            toushiShintakuHintTextList: list,
           ),
         );
       },
