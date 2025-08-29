@@ -82,6 +82,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                       GestureDetector(
                         onTap: () {
                           appParamNotifier.setSelectedToushiGraphItemName(name: '');
+
+                          appParamNotifier.setSelectedToushiGraphYear(year: '');
                         },
                         child: const Icon(Icons.close),
                       ),
@@ -141,7 +143,9 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
             onTap: () => appParamNotifier.setSelectedToushiGraphYear(year: e),
             child: CircleAvatar(
               radius: 15,
-              backgroundColor: Colors.black.withValues(alpha: 0.6),
+              backgroundColor: (appParamState.selectedToushiGraphYear == e)
+                  ? Colors.yellowAccent.withValues(alpha: 0.6)
+                  : Colors.black.withValues(alpha: 0.6),
               child: Text(e, style: const TextStyle(fontSize: 10)),
             ),
           ),
@@ -196,9 +200,9 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                   }
                 }
 
-                if (flag2) {}
-
-                dateList.add('${element.year}-${element.month}-${element.day}');
+                if (flag2) {
+                  dateList.add('${element.year}-${element.month}-${element.day}');
+                }
               }
             }
           }
@@ -225,9 +229,9 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                   }
                 }
 
-                if (flag2) {}
-
-                dateList.add('${element.year}-${element.month}-${element.day}');
+                if (flag2) {
+                  dateList.add('${element.year}-${element.month}-${element.day}');
+                }
               }
             }
           }
@@ -611,11 +615,15 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           String date = '';
 
           appParamState.keepStockTickerMap[element]?.forEach((StockModel element2) {
-            final String jikaHyoukagaku = element2.jikaHyoukagaku.replaceAll(',', '');
-            final String heikinShutokuKagaku = element2.heikinShutokuKagaku.replaceAll(',', '');
-            if (int.tryParse(jikaHyoukagaku) != null && double.tryParse(heikinShutokuKagaku) != null) {
-              diff = jikaHyoukagaku.toDouble().toInt() - element2.hoyuuSuuryou * heikinShutokuKagaku.toDouble();
-              date = '${element2.year}-${element2.month}-${element2.day}';
+            const bool flag = true;
+
+            if (flag) {
+              final String jikaHyoukagaku = element2.jikaHyoukagaku.replaceAll(',', '');
+              final String heikinShutokuKagaku = element2.heikinShutokuKagaku.replaceAll(',', '');
+              if (int.tryParse(jikaHyoukagaku) != null && double.tryParse(heikinShutokuKagaku) != null) {
+                diff = jikaHyoukagaku.toDouble().toInt() - element2.hoyuuSuuryou * heikinShutokuKagaku.toDouble();
+                date = '${element2.year}-${element2.month}-${element2.day}';
+              }
             }
           });
 
@@ -627,128 +635,10 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         for (final String element in <String>['EPI', 'INFY', 'JMIA']) {
           String name = '';
           appParamState.keepStockTickerMap[element]?.forEach((StockModel element2) {
-            if (!tickerList.contains(element2.ticker)) {
-              if (element2.name != '') {
-                name = element2.name;
-              }
+            const bool flag = true;
 
-              list.add(
-                ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: context.screenSize.height / 15),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                    ),
-                    padding: const EdgeInsets.all(5),
-
-                    child: Row(
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            appParamNotifier.setSelectedToushiGraphItemName(name: element2.ticker);
-                          },
-                          child: CircleAvatar(
-                            radius: 15,
-                            backgroundColor: (appParamState.selectedToushiGraphItemName == element2.ticker)
-                                ? Colors.white.withValues(alpha: 0.4)
-                                : twentyFourColor[i % 24].withValues(alpha: 0.3),
-                          ),
-                        ),
-
-                        const SizedBox(width: 20),
-
-                        Expanded(
-                          child: DefaultTextStyle(
-                            style: const TextStyle(fontSize: 12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(element2.name),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    const SizedBox.shrink(),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Text((lastDiffMap[element] ?? 0).toString().toCurrency()),
-                                        Text(lastDateMap[element] ?? ''),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 20),
-
-                        GestureDetector(
-                          onTap: () {
-                            LifetimeDialog(
-                              context: context,
-                              widget: AssetsDetailListAlert(title: widget.title, item: element2.ticker, name: name),
-                            );
-                          },
-
-                          child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }
-
-            tickerList.add(element2.ticker);
-          });
-
-          i++;
-        }
-
-      case 'toushiShintaku':
-        final List<int> relationalIdList = <int>[];
-
-        appParamState.keepToushiShintakuRelationalMap.forEach((int key, List<ToushiShintakuModel> value) {
-          relationalIdList.add(key);
-        });
-
-        final Map<int, int> lastDiffMap = <int, int>{};
-        final Map<int, String> lastDateMap = <int, String>{};
-
-        relationalIdList
-          ..sort((int a, int b) => a.compareTo(b))
-          ..forEach((int element) {
-            double diff = 0;
-            String date = '';
-
-            appParamState.keepToushiShintakuRelationalMap[element]?.forEach((ToushiShintakuModel element2) {
-              final String jikaHyoukagaku = element2.jikaHyoukagaku
-                  .replaceAll(',', '')
-                  .replaceAll(',', '')
-                  .replaceAll('円', '')
-                  .trim();
-
-              final String shutokuSougaku = element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim();
-
-              if (int.tryParse(jikaHyoukagaku) != null && int.tryParse(shutokuSougaku) != null) {
-                diff = jikaHyoukagaku.toDouble().toInt() - shutokuSougaku.toInt().toDouble();
-                date = '${element2.year}-${element2.month}-${element2.day}';
-              }
-            });
-
-            lastDiffMap[element] = diff.toInt();
-            lastDateMap[element] = date;
-          });
-
-        final List<int> relIdList = <int>[];
-        relationalIdList
-          ..sort((int a, int b) => a.compareTo(b))
-          ..forEach((int element) {
-            String name = '';
-            appParamState.keepToushiShintakuRelationalMap[element]?.forEach((ToushiShintakuModel element2) {
-              if (!relIdList.contains(element2.relationalId)) {
+            if (flag) {
+              if (!tickerList.contains(element2.ticker)) {
                 if (element2.name != '') {
                   name = element2.name;
                 }
@@ -766,13 +656,11 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                         children: <Widget>[
                           GestureDetector(
                             onTap: () {
-                              appParamNotifier.setSelectedToushiGraphItemName(name: element2.relationalId.toString());
+                              appParamNotifier.setSelectedToushiGraphItemName(name: element2.ticker);
                             },
                             child: CircleAvatar(
                               radius: 15,
-
-                              backgroundColor:
-                                  (appParamState.selectedToushiGraphItemName == element2.relationalId.toString())
+                              backgroundColor: (appParamState.selectedToushiGraphItemName == element2.ticker)
                                   ? Colors.white.withValues(alpha: 0.4)
                                   : twentyFourColor[i % 24].withValues(alpha: 0.3),
                             ),
@@ -811,11 +699,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                             onTap: () {
                               LifetimeDialog(
                                 context: context,
-                                widget: AssetsDetailListAlert(
-                                  title: widget.title,
-                                  item: element2.relationalId.toString(),
-                                  name: name,
-                                ),
+                                widget: AssetsDetailListAlert(title: widget.title, item: element2.ticker, name: name),
                               );
                             },
 
@@ -828,7 +712,143 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                 );
               }
 
-              relIdList.add(element2.relationalId);
+              tickerList.add(element2.ticker);
+            }
+          });
+
+          i++;
+        }
+
+      case 'toushiShintaku':
+        final List<int> relationalIdList = <int>[];
+
+        appParamState.keepToushiShintakuRelationalMap.forEach((int key, List<ToushiShintakuModel> value) {
+          relationalIdList.add(key);
+        });
+
+        final Map<int, int> lastDiffMap = <int, int>{};
+        final Map<int, String> lastDateMap = <int, String>{};
+
+        relationalIdList
+          ..sort((int a, int b) => a.compareTo(b))
+          ..forEach((int element) {
+            double diff = 0;
+            String date = '';
+
+            appParamState.keepToushiShintakuRelationalMap[element]?.forEach((ToushiShintakuModel element2) {
+              const bool flag = true;
+
+              if (flag) {
+                final String jikaHyoukagaku = element2.jikaHyoukagaku
+                    .replaceAll(',', '')
+                    .replaceAll(',', '')
+                    .replaceAll('円', '')
+                    .trim();
+
+                final String shutokuSougaku = element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim();
+
+                if (int.tryParse(jikaHyoukagaku) != null && int.tryParse(shutokuSougaku) != null) {
+                  diff = jikaHyoukagaku.toDouble().toInt() - shutokuSougaku.toInt().toDouble();
+                  date = '${element2.year}-${element2.month}-${element2.day}';
+                }
+              }
+            });
+
+            lastDiffMap[element] = diff.toInt();
+            lastDateMap[element] = date;
+          });
+
+        final List<int> relIdList = <int>[];
+        relationalIdList
+          ..sort((int a, int b) => a.compareTo(b))
+          ..forEach((int element) {
+            String name = '';
+            appParamState.keepToushiShintakuRelationalMap[element]?.forEach((ToushiShintakuModel element2) {
+              const bool flag = true;
+
+              if (flag) {
+                if (!relIdList.contains(element2.relationalId)) {
+                  if (element2.name != '') {
+                    name = element2.name;
+                  }
+
+                  list.add(
+                    ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: context.screenSize.height / 15),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                        ),
+                        padding: const EdgeInsets.all(5),
+
+                        child: Row(
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () {
+                                appParamNotifier.setSelectedToushiGraphItemName(name: element2.relationalId.toString());
+                              },
+                              child: CircleAvatar(
+                                radius: 15,
+
+                                backgroundColor:
+                                    (appParamState.selectedToushiGraphItemName == element2.relationalId.toString())
+                                    ? Colors.white.withValues(alpha: 0.4)
+                                    : twentyFourColor[i % 24].withValues(alpha: 0.3),
+                              ),
+                            ),
+
+                            const SizedBox(width: 20),
+
+                            Expanded(
+                              child: DefaultTextStyle(
+                                style: const TextStyle(fontSize: 12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(element2.name),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        const SizedBox.shrink(),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Text((lastDiffMap[element] ?? 0).toString().toCurrency()),
+                                            Text(lastDateMap[element] ?? ''),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(width: 20),
+
+                            GestureDetector(
+                              onTap: () {
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: AssetsDetailListAlert(
+                                    title: widget.title,
+                                    item: element2.relationalId.toString(),
+                                    name: name,
+                                  ),
+                                );
+                              },
+
+                              child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                relIdList.add(element2.relationalId);
+              }
             });
 
             i++;
