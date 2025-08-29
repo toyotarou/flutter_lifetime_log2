@@ -115,9 +115,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                               ],
                             ),
 
-                            if (appParamState.selectedToushiGraphItemName != '') ...<Widget>[
-                              selectedToushiGraphYearParts(),
-                            ],
+                            selectedToushiGraphYearParts(),
                           ],
                         ),
                       ),
@@ -134,32 +132,45 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
   ///
   Widget selectedToushiGraphYearParts() {
+    if (widget.title == 'stock' || widget.title == 'toushiShintaku') {
+      if (appParamState.selectedToushiGraphItemName == '') {
+        return const SizedBox.shrink();
+      }
+    }
+
     final List<String> yList = toushiGraphSelectYearList.toSet().toList();
 
     yList.sort();
 
     final List<String> yearList = <String>['', ...yList];
 
-    return Row(
-      children: yearList.map((String e) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          child: GestureDetector(
-            onTap: () {
-              appParamNotifier.setSelectedToushiGraphYear(year: e);
-            },
-            child: CircleAvatar(
-              radius: 15,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const SizedBox(height: 10),
 
-              backgroundColor: (appParamState.selectedToushiGraphYear == e)
-                  ? Colors.yellowAccent.withValues(alpha: 0.8)
-                  : Colors.black.withValues(alpha: 0.8),
+        Row(
+          children: yearList.map((String e) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: GestureDetector(
+                onTap: () {
+                  appParamNotifier.setSelectedToushiGraphYear(year: e);
+                },
+                child: CircleAvatar(
+                  radius: 15,
 
-              child: Text(e, style: const TextStyle(fontSize: 10)),
-            ),
-          ),
-        );
-      }).toList(),
+                  backgroundColor: (appParamState.selectedToushiGraphYear == e)
+                      ? Colors.yellowAccent.withValues(alpha: 0.8)
+                      : Colors.black.withValues(alpha: 0.8),
+
+                  child: Text(e, style: const TextStyle(fontSize: 10)),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
