@@ -39,6 +39,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
   List<Color> twentyFourColor = <Color>[];
 
+  List<String> graphYearList = <String>[];
+
   ///
   @override
   void initState() {
@@ -99,7 +101,20 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                       Positioned(
                         top: 5,
                         right: 5,
-                        child: Text('last date: $lastAssetsDate', style: const TextStyle(color: Colors.greenAccent)),
+                        left: 5,
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                const SizedBox.shrink(),
+                                Text('last date: $lastAssetsDate', style: const TextStyle(color: Colors.greenAccent)),
+                              ],
+                            ),
+
+                            displayGraphYearSelectParts(),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -109,6 +124,29 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           ),
         ),
       ),
+    );
+  }
+
+  ///
+  Widget displayGraphYearSelectParts() {
+    final List<String> yearList = graphYearList.toSet().toList();
+
+    yearList.sort((String a, String b) => a.compareTo(b));
+
+    return Row(
+      children: yearList.map((String e) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: GestureDetector(
+            onTap: () => appParamNotifier.setSelectedToushiGraphYear(year: e),
+            child: CircleAvatar(
+              radius: 15,
+              backgroundColor: Colors.black.withValues(alpha: 0.6),
+              child: Text(e, style: const TextStyle(fontSize: 10)),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -204,6 +242,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
               (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
 
               lastDate = key;
+
+              graphYearList.add(value.year);
             }
           }
         });
@@ -250,6 +290,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                   (dateMaxValueMapData[pos] ??= <int>[]).add(diff.toInt());
 
                   lastDate = '${element2.year}-${element2.month}-${element2.day}';
+
+                  graphYearList.add(element2.year);
                 }
               }
             }
@@ -310,6 +352,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                     (dateMaxValueMapData[pos] ??= <int>[]).add(diff.toInt());
 
                     lastDate = '${element2.year}-${element2.month}-${element2.day}';
+
+                    graphYearList.add(element2.year);
                   }
                 }
               }

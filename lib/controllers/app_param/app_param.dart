@@ -84,6 +84,8 @@ class AppParamState with _$AppParamState {
     @Default('') String yearlyAllSpendSelectedYear,
 
     @Default('') String yearlyAllSpendSelectedPrice,
+
+    @Default('') String selectedToushiGraphYear,
   }) = _AppParamState;
 }
 
@@ -240,4 +242,7 @@ class AppParam extends _$AppParam {
   ///
   void setYearlyAllSpendSelectedPrice({required String price}) =>
       state = state.copyWith(yearlyAllSpendSelectedPrice: price);
+
+  ///
+  void setSelectedToushiGraphYear({required String year}) => state = state.copyWith(selectedToushiGraphYear: year);
 }

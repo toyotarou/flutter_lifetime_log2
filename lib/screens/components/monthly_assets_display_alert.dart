@@ -612,6 +612,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   onPressed: () {
                     appParamNotifier.setSelectedToushiGraphItemName(name: '');
 
+                    appParamNotifier.setSelectedToushiGraphYear(year: '');
+
                     LifetimeDialog(
                       context: context,
                       widget: AssetsDetailGraphAlert(date: date, title: title),
