@@ -162,7 +162,17 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
       case 'gold':
         appParamState.keepGoldMap.forEach((String key, GoldModel value) {
           if (!DateTime(value.year.toInt(), value.month.toInt(), value.day.toInt()).isAfter(widgetDateTime)) {
-            dateList.add(key);
+            bool flag = true;
+
+            if (appParamState.selectedToushiGraphYear != '') {
+              if (appParamState.selectedToushiGraphYear != value.year) {
+                flag = false;
+              }
+            }
+
+            if (flag) {
+              dateList.add(key);
+            }
           }
         });
       case 'stock':
@@ -178,6 +188,16 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           if (flag) {
             for (final StockModel element in value) {
               if (!DateTime(element.year.toInt(), element.month.toInt(), element.day.toInt()).isAfter(widgetDateTime)) {
+                bool flag2 = true;
+
+                if (appParamState.selectedToushiGraphYear != '') {
+                  if (appParamState.selectedToushiGraphYear != element.year) {
+                    flag2 = false;
+                  }
+                }
+
+                if (flag2) {}
+
                 dateList.add('${element.year}-${element.month}-${element.day}');
               }
             }
@@ -197,6 +217,16 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           if (flag) {
             for (final ToushiShintakuModel element in value) {
               if (!DateTime(element.year.toInt(), element.month.toInt(), element.day.toInt()).isAfter(widgetDateTime)) {
+                bool flag2 = true;
+
+                if (appParamState.selectedToushiGraphYear != '') {
+                  if (appParamState.selectedToushiGraphYear != element.year) {
+                    flag2 = false;
+                  }
+                }
+
+                if (flag2) {}
+
                 dateList.add('${element.year}-${element.month}-${element.day}');
               }
             }
@@ -230,20 +260,30 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         appParamState.keepGoldMap.forEach((String key, GoldModel value) {
           if (int.tryParse(value.goldValue.toString()) != null && int.tryParse(value.payPrice.toString()) != null) {
             if (!DateTime(value.year.toInt(), value.month.toInt(), value.day.toInt()).isAfter(widgetDateTime)) {
-              final int pos = dateList.indexWhere((String element2) => element2 == key);
+              bool flag = true;
 
-              final double onedata = (value.goldValue.toString().toInt() - value.payPrice.toString().toInt())
-                  .toDouble();
+              if (appParamState.selectedToushiGraphYear != '') {
+                if (appParamState.selectedToushiGraphYear != value.year) {
+                  flag = false;
+                }
+              }
 
-              flspots.add(FlSpot(pos.toDouble(), onedata));
+              if (flag) {
+                final int pos = dateList.indexWhere((String element2) => element2 == key);
 
-              list.add(onedata.toInt());
+                final double onedata = (value.goldValue.toString().toInt() - value.payPrice.toString().toInt())
+                    .toDouble();
 
-              (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
+                flspots.add(FlSpot(pos.toDouble(), onedata));
 
-              lastDate = key;
+                list.add(onedata.toInt());
 
-              graphYearList.add(value.year);
+                (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
+
+                lastDate = key;
+
+                graphYearList.add(value.year);
+              }
             }
           }
         });
@@ -267,6 +307,12 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
               if (appParamState.selectedToushiGraphItemName != '') {
                 if (appParamState.selectedToushiGraphItemName != element2.ticker) {
+                  flag = false;
+                }
+              }
+
+              if (appParamState.selectedToushiGraphYear != '') {
+                if (appParamState.selectedToushiGraphYear != element2.year) {
                   flag = false;
                 }
               }
@@ -325,6 +371,12 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
                 if (appParamState.selectedToushiGraphItemName != '') {
                   if (appParamState.selectedToushiGraphItemName != element2.relationalId.toString()) {
+                    flag = false;
+                  }
+                }
+
+                if (appParamState.selectedToushiGraphYear != '') {
+                  if (appParamState.selectedToushiGraphYear != element2.year) {
                     flag = false;
                   }
                 }
