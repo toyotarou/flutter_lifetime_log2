@@ -39,6 +39,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
   List<Color> twentyFourColor = <Color>[];
 
+  List<String> toushiGraphSelectYearList = <String>[];
+
   ///
   @override
   void initState() {
@@ -80,6 +82,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                       GestureDetector(
                         onTap: () {
                           appParamNotifier.setSelectedToushiGraphItemName(name: '');
+
+                          appParamNotifier.setSelectedToushiGraphYear(year: '');
                         },
                         child: const Icon(Icons.close),
                       ),
@@ -99,7 +103,23 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                       Positioned(
                         top: 5,
                         right: 5,
-                        child: Text('last date: $lastAssetsDate', style: const TextStyle(color: Colors.greenAccent)),
+                        left: 5,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                const SizedBox.shrink(),
+                                Text('last date: $lastAssetsDate', style: const TextStyle(color: Colors.greenAccent)),
+                              ],
+                            ),
+
+                            if (appParamState.selectedToushiGraphItemName != '') ...<Widget>[
+                              selectedToushiGraphYearParts(),
+                            ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -113,6 +133,37 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
   }
 
   ///
+  Widget selectedToushiGraphYearParts() {
+    final List<String> yList = toushiGraphSelectYearList.toSet().toList();
+
+    yList.sort();
+
+    final List<String> yearList = <String>['', ...yList];
+
+    return Row(
+      children: yearList.map((String e) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: GestureDetector(
+            onTap: () {
+              appParamNotifier.setSelectedToushiGraphYear(year: e);
+            },
+            child: CircleAvatar(
+              radius: 15,
+
+              backgroundColor: (appParamState.selectedToushiGraphYear == e)
+                  ? Colors.yellowAccent.withValues(alpha: 0.8)
+                  : Colors.black.withValues(alpha: 0.8),
+
+              child: Text(e, style: const TextStyle(fontSize: 10)),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  ///
   void setChartData() {
     flspotsList.clear();
 
@@ -120,7 +171,11 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
     switch (widget.title) {
       case 'gold':
-        appParamState.keepGoldMap.forEach((String key, GoldModel value) => dateList.add(key));
+        appParamState.keepGoldMap.forEach((String key, GoldModel value) {
+          dateList.add(key);
+
+          toushiGraphSelectYearList.add(value.year);
+        });
       case 'stock':
         appParamState.keepStockTickerMap.forEach((String key, List<StockModel> value) {
           bool flag = true;
@@ -134,6 +189,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           if (flag) {
             for (final StockModel element in value) {
               dateList.add('${element.year}-${element.month}-${element.day}');
+
+              toushiGraphSelectYearList.add(element.year);
             }
           }
         });
@@ -151,6 +208,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           if (flag) {
             for (final ToushiShintakuModel element in value) {
               dateList.add('${element.year}-${element.month}-${element.day}');
+
+              toushiGraphSelectYearList.add(element.year);
             }
           }
         });
