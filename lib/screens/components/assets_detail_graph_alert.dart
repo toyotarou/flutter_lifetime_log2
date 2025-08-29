@@ -39,8 +39,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
   List<Color> twentyFourColor = <Color>[];
 
-  List<String> graphYearList = <String>[];
-
   ///
   @override
   void initState() {
@@ -82,8 +80,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                       GestureDetector(
                         onTap: () {
                           appParamNotifier.setSelectedToushiGraphItemName(name: '');
-
-                          appParamNotifier.setSelectedToushiGraphYear(year: '');
                         },
                         child: const Icon(Icons.close),
                       ),
@@ -103,20 +99,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                       Positioned(
                         top: 5,
                         right: 5,
-                        left: 5,
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                const SizedBox.shrink(),
-                                Text('last date: $lastAssetsDate', style: const TextStyle(color: Colors.greenAccent)),
-                              ],
-                            ),
-
-                            displayGraphYearSelectParts(),
-                          ],
-                        ),
+                        child: Text('last date: $lastAssetsDate', style: const TextStyle(color: Colors.greenAccent)),
                       ),
                     ],
                   ),
@@ -130,55 +113,14 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
   }
 
   ///
-  Widget displayGraphYearSelectParts() {
-    final List<String> yearList = graphYearList.toSet().toList();
-
-    yearList.sort((String a, String b) => a.compareTo(b));
-
-    return Row(
-      children: yearList.map((String e) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          child: GestureDetector(
-            onTap: () => appParamNotifier.setSelectedToushiGraphYear(year: e),
-            child: CircleAvatar(
-              radius: 15,
-              backgroundColor: (appParamState.selectedToushiGraphYear == e)
-                  ? Colors.yellowAccent.withValues(alpha: 0.6)
-                  : Colors.black.withValues(alpha: 0.6),
-              child: Text(e, style: const TextStyle(fontSize: 10)),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  ///
   void setChartData() {
     flspotsList.clear();
-
-    final DateTime widgetDateTime = DateTime.parse(widget.date);
 
     List<String> dateList = <String>[];
 
     switch (widget.title) {
       case 'gold':
-        appParamState.keepGoldMap.forEach((String key, GoldModel value) {
-          if (!DateTime(value.year.toInt(), value.month.toInt(), value.day.toInt()).isAfter(widgetDateTime)) {
-            bool flag = true;
-
-            if (appParamState.selectedToushiGraphYear != '') {
-              if (appParamState.selectedToushiGraphYear != value.year) {
-                flag = false;
-              }
-            }
-
-            if (flag) {
-              dateList.add(key);
-            }
-          }
-        });
+        appParamState.keepGoldMap.forEach((String key, GoldModel value) => dateList.add(key));
       case 'stock':
         appParamState.keepStockTickerMap.forEach((String key, List<StockModel> value) {
           bool flag = true;
@@ -191,19 +133,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
           if (flag) {
             for (final StockModel element in value) {
-              if (!DateTime(element.year.toInt(), element.month.toInt(), element.day.toInt()).isAfter(widgetDateTime)) {
-                bool flag2 = true;
-
-                if (appParamState.selectedToushiGraphYear != '') {
-                  if (appParamState.selectedToushiGraphYear != element.year) {
-                    flag2 = false;
-                  }
-                }
-
-                if (flag2) {
-                  dateList.add('${element.year}-${element.month}-${element.day}');
-                }
-              }
+              dateList.add('${element.year}-${element.month}-${element.day}');
             }
           }
         });
@@ -220,19 +150,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
           if (flag) {
             for (final ToushiShintakuModel element in value) {
-              if (!DateTime(element.year.toInt(), element.month.toInt(), element.day.toInt()).isAfter(widgetDateTime)) {
-                bool flag2 = true;
-
-                if (appParamState.selectedToushiGraphYear != '') {
-                  if (appParamState.selectedToushiGraphYear != element.year) {
-                    flag2 = false;
-                  }
-                }
-
-                if (flag2) {
-                  dateList.add('${element.year}-${element.month}-${element.day}');
-                }
-              }
+              dateList.add('${element.year}-${element.month}-${element.day}');
             }
           }
         });
@@ -263,32 +181,17 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         final List<FlSpot> flspots = <FlSpot>[];
         appParamState.keepGoldMap.forEach((String key, GoldModel value) {
           if (int.tryParse(value.goldValue.toString()) != null && int.tryParse(value.payPrice.toString()) != null) {
-            if (!DateTime(value.year.toInt(), value.month.toInt(), value.day.toInt()).isAfter(widgetDateTime)) {
-              bool flag = true;
+            final int pos = dateList.indexWhere((String element2) => element2 == key);
 
-              if (appParamState.selectedToushiGraphYear != '') {
-                if (appParamState.selectedToushiGraphYear != value.year) {
-                  flag = false;
-                }
-              }
+            final double onedata = (value.goldValue.toString().toInt() - value.payPrice.toString().toInt()).toDouble();
 
-              if (flag) {
-                final int pos = dateList.indexWhere((String element2) => element2 == key);
+            flspots.add(FlSpot(pos.toDouble(), onedata));
 
-                final double onedata = (value.goldValue.toString().toInt() - value.payPrice.toString().toInt())
-                    .toDouble();
+            list.add(onedata.toInt());
 
-                flspots.add(FlSpot(pos.toDouble(), onedata));
+            (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
 
-                list.add(onedata.toInt());
-
-                (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
-
-                lastDate = key;
-
-                graphYearList.add(value.year);
-              }
-            }
+            lastDate = key;
           }
         });
 
@@ -302,47 +205,33 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         for (final String element in <String>['EPI', 'INFY', 'JMIA']) {
           final List<FlSpot> flspots = <FlSpot>[];
           appParamState.keepStockTickerMap[element]?.forEach((StockModel element2) {
-            if (!DateTime(
-              element2.year.toInt(),
-              element2.month.toInt(),
-              element2.day.toInt(),
-            ).isAfter(widgetDateTime)) {
-              bool flag = true;
+            bool flag = true;
 
-              if (appParamState.selectedToushiGraphItemName != '') {
-                if (appParamState.selectedToushiGraphItemName != element2.ticker) {
-                  flag = false;
-                }
+            if (appParamState.selectedToushiGraphItemName != '') {
+              if (appParamState.selectedToushiGraphItemName != element2.ticker) {
+                flag = false;
               }
+            }
 
-              if (appParamState.selectedToushiGraphYear != '') {
-                if (appParamState.selectedToushiGraphYear != element2.year) {
-                  flag = false;
-                }
-              }
+            if (flag) {
+              final String jikaHyoukagaku = element2.jikaHyoukagaku.replaceAll(',', '');
 
-              if (flag) {
-                final String jikaHyoukagaku = element2.jikaHyoukagaku.replaceAll(',', '');
+              final String heikinShutokuKagaku = element2.heikinShutokuKagaku.replaceAll(',', '');
 
-                final String heikinShutokuKagaku = element2.heikinShutokuKagaku.replaceAll(',', '');
+              if (int.tryParse(jikaHyoukagaku) != null && double.tryParse(heikinShutokuKagaku) != null) {
+                final int pos = dateList.indexWhere(
+                  (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
+                );
 
-                if (int.tryParse(jikaHyoukagaku) != null && double.tryParse(heikinShutokuKagaku) != null) {
-                  final int pos = dateList.indexWhere(
-                    (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
-                  );
+                final double diff = jikaHyoukagaku.toInt() - (element2.hoyuuSuuryou * heikinShutokuKagaku.toDouble());
 
-                  final double diff = jikaHyoukagaku.toInt() - (element2.hoyuuSuuryou * heikinShutokuKagaku.toDouble());
+                flspots.add(FlSpot(pos.toDouble(), diff));
 
-                  flspots.add(FlSpot(pos.toDouble(), diff));
+                list.add(diff.toInt());
 
-                  list.add(diff.toInt());
+                (dateMaxValueMapData[pos] ??= <int>[]).add(diff.toInt());
 
-                  (dateMaxValueMapData[pos] ??= <int>[]).add(diff.toInt());
-
-                  lastDate = '${element2.year}-${element2.month}-${element2.day}';
-
-                  graphYearList.add(element2.year);
-                }
+                lastDate = '${element2.year}-${element2.month}-${element2.day}';
               }
             }
           });
@@ -366,51 +255,37 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           ..forEach((int element) {
             final List<FlSpot> flspots = <FlSpot>[];
             appParamState.keepToushiShintakuRelationalMap[element]?.forEach((ToushiShintakuModel element2) {
-              if (!DateTime(
-                element2.year.toInt(),
-                element2.month.toInt(),
-                element2.day.toInt(),
-              ).isAfter(widgetDateTime)) {
-                bool flag = true;
+              bool flag = true;
 
-                if (appParamState.selectedToushiGraphItemName != '') {
-                  if (appParamState.selectedToushiGraphItemName != element2.relationalId.toString()) {
-                    flag = false;
-                  }
+              if (appParamState.selectedToushiGraphItemName != '') {
+                if (appParamState.selectedToushiGraphItemName != element2.relationalId.toString()) {
+                  flag = false;
                 }
+              }
 
-                if (appParamState.selectedToushiGraphYear != '') {
-                  if (appParamState.selectedToushiGraphYear != element2.year) {
-                    flag = false;
-                  }
-                }
+              if (flag) {
+                final String jikaHyoukagaku = element2.jikaHyoukagaku
+                    .replaceAll(',', '')
+                    .replaceAll(',', '')
+                    .replaceAll('円', '')
+                    .trim();
 
-                if (flag) {
-                  final String jikaHyoukagaku = element2.jikaHyoukagaku
-                      .replaceAll(',', '')
-                      .replaceAll(',', '')
-                      .replaceAll('円', '')
-                      .trim();
+                final String shutokuSougaku = element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim();
 
-                  final String shutokuSougaku = element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim();
+                if (int.tryParse(jikaHyoukagaku) != null && int.tryParse(shutokuSougaku) != null) {
+                  final int pos = dateList.indexWhere(
+                    (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
+                  );
 
-                  if (int.tryParse(jikaHyoukagaku) != null && int.tryParse(shutokuSougaku) != null) {
-                    final int pos = dateList.indexWhere(
-                      (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
-                    );
+                  final double diff = (jikaHyoukagaku.toInt() - shutokuSougaku.toInt()).toDouble();
 
-                    final double diff = (jikaHyoukagaku.toInt() - shutokuSougaku.toInt()).toDouble();
+                  flspots.add(FlSpot(pos.toDouble(), diff));
 
-                    flspots.add(FlSpot(pos.toDouble(), diff));
+                  list.add(diff.toInt());
 
-                    list.add(diff.toInt());
+                  (dateMaxValueMapData[pos] ??= <int>[]).add(diff.toInt());
 
-                    (dateMaxValueMapData[pos] ??= <int>[]).add(diff.toInt());
-
-                    lastDate = '${element2.year}-${element2.month}-${element2.day}';
-
-                    graphYearList.add(element2.year);
-                  }
+                  lastDate = '${element2.year}-${element2.month}-${element2.day}';
                 }
               }
             });
