@@ -149,26 +149,29 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
       children: <Widget>[
         const SizedBox(height: 10),
 
-        Row(
-          children: yearList.map((String e) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: GestureDetector(
-                onTap: () {
-                  appParamNotifier.setSelectedToushiGraphYear(year: e);
-                },
-                child: CircleAvatar(
-                  radius: 15,
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: yearList.map((String e) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: GestureDetector(
+                  onTap: () {
+                    appParamNotifier.setSelectedToushiGraphYear(year: e);
+                  },
+                  child: CircleAvatar(
+                    radius: 15,
 
-                  backgroundColor: (appParamState.selectedToushiGraphYear == e)
-                      ? Colors.yellowAccent.withValues(alpha: 0.8)
-                      : Colors.black.withValues(alpha: 0.8),
+                    backgroundColor: (appParamState.selectedToushiGraphYear == e)
+                        ? Colors.yellowAccent.withValues(alpha: 0.8)
+                        : Colors.black.withValues(alpha: 0.8),
 
-                  child: Text(e, style: const TextStyle(fontSize: 10)),
+                    child: Text(e, style: const TextStyle(fontSize: 10)),
+                  ),
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );
@@ -183,7 +186,17 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
     switch (widget.title) {
       case 'gold':
         appParamState.keepGoldMap.forEach((String key, GoldModel value) {
-          dateList.add(key);
+          bool flag = true;
+
+          if (appParamState.selectedToushiGraphYear != '') {
+            if (appParamState.selectedToushiGraphYear != value.year) {
+              flag = false;
+            }
+          }
+
+          if (flag) {
+            dateList.add(key);
+          }
 
           toushiGraphSelectYearList.add(value.year);
         });
@@ -199,7 +212,16 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
           if (flag) {
             for (final StockModel element in value) {
-              dateList.add('${element.year}-${element.month}-${element.day}');
+              bool flag2 = true;
+              if (appParamState.selectedToushiGraphYear != '') {
+                if (appParamState.selectedToushiGraphYear != element.year) {
+                  flag2 = false;
+                }
+              }
+
+              if (flag2) {
+                dateList.add('${element.year}-${element.month}-${element.day}');
+              }
 
               toushiGraphSelectYearList.add(element.year);
             }
@@ -218,7 +240,16 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
           if (flag) {
             for (final ToushiShintakuModel element in value) {
-              dateList.add('${element.year}-${element.month}-${element.day}');
+              bool flag2 = true;
+              if (appParamState.selectedToushiGraphYear != '') {
+                if (appParamState.selectedToushiGraphYear != element.year) {
+                  flag2 = false;
+                }
+              }
+
+              if (flag2) {
+                dateList.add('${element.year}-${element.month}-${element.day}');
+              }
 
               toushiGraphSelectYearList.add(element.year);
             }
@@ -250,18 +281,29 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
       case 'gold':
         final List<FlSpot> flspots = <FlSpot>[];
         appParamState.keepGoldMap.forEach((String key, GoldModel value) {
-          if (int.tryParse(value.goldValue.toString()) != null && int.tryParse(value.payPrice.toString()) != null) {
-            final int pos = dateList.indexWhere((String element2) => element2 == key);
+          bool flag = true;
 
-            final double onedata = (value.goldValue.toString().toInt() - value.payPrice.toString().toInt()).toDouble();
+          if (appParamState.selectedToushiGraphYear != '') {
+            if (appParamState.selectedToushiGraphYear != value.year) {
+              flag = false;
+            }
+          }
 
-            flspots.add(FlSpot(pos.toDouble(), onedata));
+          if (flag) {
+            if (int.tryParse(value.goldValue.toString()) != null && int.tryParse(value.payPrice.toString()) != null) {
+              final int pos = dateList.indexWhere((String element2) => element2 == key);
 
-            list.add(onedata.toInt());
+              final double onedata = (value.goldValue.toString().toInt() - value.payPrice.toString().toInt())
+                  .toDouble();
 
-            (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
+              flspots.add(FlSpot(pos.toDouble(), onedata));
 
-            lastDate = key;
+              list.add(onedata.toInt());
+
+              (dateMaxValueMapData[pos] ??= <int>[]).add(onedata.toInt());
+
+              lastDate = key;
+            }
           }
         });
 
@@ -279,6 +321,12 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
             if (appParamState.selectedToushiGraphItemName != '') {
               if (appParamState.selectedToushiGraphItemName != element2.ticker) {
+                flag = false;
+              }
+            }
+
+            if (appParamState.selectedToushiGraphYear != '') {
+              if (appParamState.selectedToushiGraphYear != element2.year) {
                 flag = false;
               }
             }
@@ -329,6 +377,12 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
               if (appParamState.selectedToushiGraphItemName != '') {
                 if (appParamState.selectedToushiGraphItemName != element2.relationalId.toString()) {
+                  flag = false;
+                }
+              }
+
+              if (appParamState.selectedToushiGraphYear != '') {
+                if (appParamState.selectedToushiGraphYear != element2.year) {
                   flag = false;
                 }
               }
