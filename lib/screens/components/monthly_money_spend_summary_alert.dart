@@ -131,7 +131,7 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
         bool flag = true;
 
-        if (appParamState.isMonthlySpendSummaryMinusJogai && moneySpendSummary < 0) {
+        if (appParamState.isMonthlySpendSummaryMinusJogai && moneySpendSummary <= 0) {
           flag = false;
         }
 

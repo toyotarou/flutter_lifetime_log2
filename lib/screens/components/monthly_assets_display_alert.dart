@@ -87,7 +87,9 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
                         GestureDetector(
                           onTap: () {
-                            if (DateTime.now().day == 1) {
+                            if (DateTime.now().year.toString() == widget.yearmonth.split('-')[0] &&
+                                DateTime.now().month.toString() == widget.yearmonth.split('-')[1] &&
+                                DateTime.now().day == 1) {
                               // ignore: always_specify_types
                               Future.delayed(
                                 Duration.zero,
