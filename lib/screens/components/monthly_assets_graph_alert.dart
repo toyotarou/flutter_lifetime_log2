@@ -56,13 +56,27 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
     final List<int> list = <int>[];
     final List<String> dateList = <String>[];
 
+    int lastTotal = 0;
+
     widget.monthlyGraphAssetsMap.forEach((int key, int value) {
       _flspots.add(FlSpot(key.toString().toDouble(), value.toString().toDouble()));
 
       list.add(value);
 
       dateList.add('${widget.yearmonth}-${key.toString().padLeft(2, '0')}');
+
+      if (value > 0) {
+        lastTotal = value;
+      }
     });
+
+    final List<String> exLastDate = dateList.last.split('-');
+    final int lastDateMonthLastDay = DateTime(exLastDate[0].toInt(), exLastDate[1].toInt() + 1, 0).day;
+    for (int i = list.length + 1; i <= (lastDateMonthLastDay - exLastDate[2].toInt()) + list.length; i++) {
+      _flspots.add(FlSpot(i.toDouble(), lastTotal.toDouble()));
+
+      dateList.add('${widget.yearmonth}-${i.toString().padLeft(2, '0')}');
+    }
 
     if (list.isNotEmpty) {
       const int warisuu = 500000;
@@ -96,7 +110,13 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
 
                 final String date = dateList[element.x.toInt() - 1];
 
-                list.add(LineTooltipItem('$date\n$price', textStyle, textAlign: TextAlign.end));
+                final String youbi = DateTime(
+                  date.split('-')[0].toInt(),
+                  date.split('-')[1].toInt(),
+                  date.split('-')[2].toInt(),
+                ).youbiStr.substring(0, 3);
+
+                list.add(LineTooltipItem('$date($youbi)\n$price', textStyle, textAlign: TextAlign.end));
               }
 
               return list;
@@ -104,7 +124,31 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
           ),
         ),
 
-        gridData: const FlGridData(verticalInterval: 1),
+        ///
+        gridData: FlGridData(
+          verticalInterval: 1,
+          getDrawingHorizontalLine: (double value) {
+            return FlLine(
+              color: (value == 0.0) ? Colors.greenAccent.withOpacity(0.8) : Colors.white.withOpacity(0.2),
+              strokeWidth: 1,
+            );
+          },
+          getDrawingVerticalLine: (double value) {
+            final String youbi = DateTime(
+              widget.yearmonth.split('-')[0].toInt(),
+              widget.yearmonth.split('-')[1].toInt(),
+            ).add(Duration(days: value.toInt() - 1)).youbiStr;
+
+            return FlLine(
+              color: (value.toInt() == DateTime.now().day)
+                  ? const Color(0xFFFBB6CE).withOpacity(0.3)
+                  : (youbi == 'Sunday')
+                  ? Colors.yellowAccent.withOpacity(0.3)
+                  : Colors.transparent,
+              strokeWidth: (value.toInt() == DateTime.now().day) ? 3 : 1,
+            );
+          },
+        ),
 
         titlesData: const FlTitlesData(show: false),
 
