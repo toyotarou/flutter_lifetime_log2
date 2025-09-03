@@ -148,7 +148,12 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                   : (youbi == 'Sunday')
                   ? Colors.yellowAccent.withOpacity(0.3)
                   : Colors.transparent,
-              strokeWidth: (value.toInt() == DateTime.now().day) ? 3 : 1,
+              strokeWidth:
+                  (widget.yearmonth.split('-')[0] == DateTime.now().year.toString() &&
+                      widget.yearmonth.split('-')[1] == DateTime.now().month.toString().padLeft(2, '0') &&
+                      value.toInt() == DateTime.now().day)
+                  ? 3
+                  : 1,
             );
           },
         ),
