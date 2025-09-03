@@ -189,11 +189,16 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
       if (date.isBeforeOrSameDate(DateTime.now())) {
         monthlyAssetsMap[date.yyyymmdd] = <String, int>{
-          'gold': lastGoldSum,
-          'stock': lastStockSum,
-          'toushiShintaku': lastToushiShintakuSum,
+          ///
+          'gold': (lastGoldSum * 0.8).toInt(),
+          'stock': (lastStockSum * 0.8).toInt(),
+          'toushiShintaku': (lastToushiShintakuSum * 0.8).toInt(),
+
+          ///
           'insurance': lastInsuranceSum,
           'insurancePassedMonths': insurancePassedMonths,
+
+          ///
           'nenkinKikin': nenkinKikinSum,
           'nenkinKikinPassedMonths': nenkinKikinPassedMonths,
         };
