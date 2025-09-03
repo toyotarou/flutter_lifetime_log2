@@ -33,7 +33,7 @@ class _TimePlaceDisplayAlertState extends ConsumerState<TimePlaceDisplayAlert>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Divider(thickness: 5, color: Colors.white.withValues(alpha: 0.4)),
+                  Divider(thickness: 5, color: Colors.greenAccent.withValues(alpha: 0.4)),
 
                   Expanded(child: _displayTimePlaceList()),
                 ],

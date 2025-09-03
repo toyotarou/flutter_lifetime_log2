@@ -140,7 +140,10 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
             ).add(Duration(days: value.toInt() - 1)).youbiStr;
 
             return FlLine(
-              color: (value.toInt() == DateTime.now().day)
+              color:
+                  (widget.yearmonth.split('-')[0] == DateTime.now().year.toString() &&
+                      widget.yearmonth.split('-')[1] == DateTime.now().month.toString().padLeft(2, '0') &&
+                      value.toInt() == DateTime.now().day)
                   ? const Color(0xFFFBB6CE).withOpacity(0.3)
                   : (youbi == 'Sunday')
                   ? Colors.yellowAccent.withOpacity(0.3)
