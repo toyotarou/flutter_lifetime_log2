@@ -3,21 +3,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
-import '../../main.dart';
 import '../../models/toushi_shintaku_model.dart';
-import '../parts/error_dialog.dart';
+import '../parts/lifetime_dialog.dart';
+import 'toushi_shintaku_data_search_alert.dart';
 
 class ToushiShintakuDataUpdateAlert extends ConsumerStatefulWidget {
   const ToushiShintakuDataUpdateAlert({
     super.key,
     required this.date,
-    required this.toushiShintakuRelationalIdMap,
-    required this.toushiShintakuHintTextList,
+
+    required this.toushiShintakuNameRelationalIdMap,
+    this.referenceData,
+    required this.todayData,
   });
 
   final String date;
-  final Map<int, int> toushiShintakuRelationalIdMap;
-  final List<int> toushiShintakuHintTextList;
+
+  final Map<String, List<int>> toushiShintakuNameRelationalIdMap;
+  final MapEntry<String, List<ToushiShintakuModel>>? referenceData;
+  final List<ToushiShintakuModel> todayData;
 
   @override
   ConsumerState<ToushiShintakuDataUpdateAlert> createState() => _ToushiShintakuDataUpdateAlertState();
@@ -36,11 +40,6 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
 
     for (int i = 0; i < 20; i++) {
       tecs.add(TextEditingController(text: ''));
-    }
-
-    for (int i = 0; i < widget.toushiShintakuRelationalIdMap.entries.length; i++) {
-      final List<MapEntry<int, int>> entries = widget.toushiShintakuRelationalIdMap.entries.toList();
-      tecs[i].text = (entries[i].value != 0) ? entries[i].value.toString() : '';
     }
 
     // ignore: always_specify_types
@@ -66,37 +65,14 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                   children: <Widget>[
                     Text(widget.date),
 
-                    Row(
-                      children: <Widget>[
-                        ElevatedButton(
-                          onPressed: () async {
-                            for (int i = 0; i < widget.toushiShintakuHintTextList.length; i++) {
-                              await toushiShintakuInputNotifier.setInputValue(
-                                pos: i,
-                                relationalId: widget.toushiShintakuHintTextList[i],
-                              );
+                    ElevatedButton(
+                      onPressed: () {
+                        //                            updateData();
+                      },
 
-                              tecs[i].text = widget.toushiShintakuHintTextList[i].toString();
-                            }
-                          },
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
 
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-
-                          child: const Text('反映'),
-                        ),
-
-                        const SizedBox(width: 10),
-
-                        ElevatedButton(
-                          onPressed: () {
-                            updateData();
-                          },
-
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-
-                          child: const Text('input'),
-                        ),
-                      ],
+                      child: const Text('input'),
                     ),
                   ],
                 ),
@@ -116,72 +92,103 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
   Widget displayDateToushiShintakuList() {
     final List<Widget> list = <Widget>[];
 
-    int i = 0;
-    appParamState.keepToushiShintakuMap[widget.date]
-      ?..sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id))
-      ..forEach((ToushiShintakuModel element) {
-        list.add(
-          Container(
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-            ),
-            padding: const EdgeInsets.all(5),
+    if (widget.todayData.isNotEmpty) {
+      for (int i = 0; i < 20; i++) {
+        if (i < widget.todayData.length) {
+          if (widget.toushiShintakuNameRelationalIdMap[widget.todayData[i].name] != null &&
+              widget.toushiShintakuNameRelationalIdMap[widget.todayData[i].name]!.length == 1) {
+            tecs[i].text = widget.toushiShintakuNameRelationalIdMap[widget.todayData[i].name]![0].toString();
+          }
 
-            child: DefaultTextStyle(
-              style: const TextStyle(fontSize: 12),
-              child: Row(
-                children: <Widget>[
-                  Text(element.id.toString()),
+          list.add(
+            Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+              ),
+              padding: const EdgeInsets.all(5),
 
-                  const SizedBox(width: 10),
+              child: DefaultTextStyle(
+                style: const TextStyle(fontSize: 12),
+                child: Row(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 40,
 
-                  SizedBox(
-                    width: 40,
+                      child: TextField(
+                        style: const TextStyle(fontSize: 12),
 
-                    child: TextField(
-                      style: const TextStyle(fontSize: 12),
-
-                      keyboardType: TextInputType.number,
-                      controller: tecs[i],
-                      decoration: InputDecoration(
-                        filled: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                        border: InputBorder.none,
-                        hintText: widget.toushiShintakuHintTextList[i].toString(),
-                        hintStyle: const TextStyle(
-                          color: Colors.yellowAccent,
-                          fontSize: 10,
-                          fontStyle: FontStyle.italic,
+                        keyboardType: TextInputType.number,
+                        controller: tecs[i],
+                        decoration: const InputDecoration(
+                          filled: true,
+                          contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                          border: InputBorder.none,
                         ),
+
+                        onChanged: (String value) {
+                          toushiShintakuInputNotifier.setInputValue(pos: i, relationalId: value.toInt());
+                        },
+
+                        onTapOutside: (PointerDownEvent event) => FocusManager.instance.primaryFocus?.unfocus(),
+                        focusNode: focusNodeList[i],
                       ),
-
-                      onChanged: (String value) {
-                        toushiShintakuInputNotifier.setInputValue(pos: i, relationalId: value.toInt());
-                      },
-
-                      onTapOutside: (PointerDownEvent event) => FocusManager.instance.primaryFocus?.unfocus(),
-                      focusNode: focusNodeList[i],
                     ),
-                  ),
 
-                  const SizedBox(width: 10),
+                    const SizedBox(width: 10),
 
-                  Expanded(
-                    child: Text(
-                      element.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: (element.relationalId == 0) ? Colors.yellowAccent : Colors.white),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            widget.todayData[i].name,
+
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: (tecs[i].text != '') ? Colors.white : Colors.yellowAccent),
+                          ),
+
+                          const SizedBox(height: 5),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(widget.todayData[i].shutokuSougaku.replaceAll('円', '').trim()),
+
+                              GestureDetector(
+                                onTap: () {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: ToushiShintakuDataSearchAlert(
+                                      pos: i,
+
+                                      name: widget.todayData[i].name,
+
+                                      shutokuSougaku: widget.todayData[i].shutokuSougaku.replaceAll('円', '').trim(),
+
+                                      referenceData: widget.referenceData,
+                                    ),
+
+                                    paddingLeft: context.screenSize.width * 0.3,
+                                    clearBarrierColor: true,
+                                  );
+                                },
+
+                                child: Icon(Icons.search, color: Colors.white.withValues(alpha: 0.6)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-
-        i++;
-      });
+          );
+        }
+      }
+    }
 
     return CustomScrollView(
       slivers: <Widget>[
@@ -193,42 +200,5 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
         ),
       ],
     );
-  }
-
-  ///
-  Future<void> updateData() async {
-    bool errFlg = false;
-
-    final Map<String, int> updateData = <String, int>{};
-
-    toushiShintakuInputState.toushiShintakuRelationalIdMap.forEach((int key, int value) {
-      updateData[key.toString()] = value;
-
-      if (value == 0) {
-        errFlg = true;
-      }
-    });
-
-    if (updateData.isEmpty || errFlg) {
-      // ignore: always_specify_types
-      Future.delayed(
-        Duration.zero,
-        () => error_dialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          title: '登録できません。',
-          content: '値を正しく入力してください。',
-        ),
-      );
-
-      return;
-    }
-
-    // ignore: always_specify_types
-    toushiShintakuInputNotifier.updateToushiShintakuRelationalId(updateData: updateData).then((value) {
-      if (mounted) {
-        context.findAncestorStateOfType<AppRootState>()?.restartApp();
-      }
-    });
   }
 }

@@ -524,17 +524,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           return;
         }
 
-        //---------------------------------------------------------------//
-        final Map<int, int> map = <int, int>{};
-
-        for (final ToushiShintakuModel element in appParamState.keepToushiShintakuMap[date]!) {
-          map[element.id] = element.relationalId;
-        }
-
-        toushiShintakuInputNotifier.setDefaultValue(map: map);
-        //---------------------------------------------------------------//
-
-        //---------------------------------------------------------------//
         final List<MapEntry<String, List<ToushiShintakuModel>>> sortedByKey =
             appParamState.keepToushiShintakuMap.entries.toList()..sort(
               (MapEntry<String, List<ToushiShintakuModel>> a, MapEntry<String, List<ToushiShintakuModel>> b) =>
@@ -544,35 +533,54 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         List<int> idList = <int>[];
         List<int> list = <int>[];
 
+        MapEntry<String, List<ToushiShintakuModel>>? referenceData;
+
         for (int j = 0; j < 7; j++) {
           idList = <int>[];
           list = <int>[];
 
-          final MapEntry<String, List<ToushiShintakuModel>> referenceData = sortedByKey[sortedByKey.length - (j + 1)];
+          final MapEntry<String, List<ToushiShintakuModel>> getData = sortedByKey[sortedByKey.length - (j + 1)];
 
-          referenceData.value.sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
+          getData.value.sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
 
-          for (int i = 0; i < referenceData.value.length; i++) {
-            idList.add(referenceData.value[i].id);
+          for (int i = 0; i < getData.value.length; i++) {
+            idList.add(getData.value[i].id);
 
-            if (referenceData.value[i].relationalId != 0) {
-              list.add(referenceData.value[i].relationalId);
+            if (getData.value[i].relationalId != 0) {
+              list.add(getData.value[i].relationalId);
             }
           }
 
           if (idList.length == list.length) {
+            referenceData = getData;
+
             break;
           }
         }
 
-        //---------------------------------------------------------------//
+        final Map<String, List<int>> toushiShintakuNameRelationalIdMap = <String, List<int>>{};
+
+        if (referenceData != null) {
+          for (final ToushiShintakuModel element in referenceData.value) {
+            (toushiShintakuNameRelationalIdMap[element.name] ??= <int>[]).add(element.relationalId);
+          }
+        }
+
+        List<ToushiShintakuModel> sortedData = <ToushiShintakuModel>[];
+
+        if (appParamState.keepToushiShintakuMap[date] != null) {
+          sortedData = appParamState.keepToushiShintakuMap[date]!
+            ..sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
+        }
 
         LifetimeDialog(
           context: context,
           widget: ToushiShintakuDataUpdateAlert(
             date: date,
-            toushiShintakuRelationalIdMap: map,
-            toushiShintakuHintTextList: list,
+            referenceData: referenceData,
+
+            todayData: (appParamState.keepToushiShintakuMap[date] != null) ? sortedData : <ToushiShintakuModel>[],
+            toushiShintakuNameRelationalIdMap: toushiShintakuNameRelationalIdMap,
           ),
         );
       },
