@@ -16,8 +16,13 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ToushiShintakuInputState {
-  List<int> get updateIdList => throw _privateConstructorUsedError;
-  Map<int, int> get toushiShintakuRelationalIdMap =>
+//
+//
+//
+// @Default(<int, int>{}) Map<int, int> toushiShintakuRelationalIdMap
+//
+//
+  List<Map<int, int>> get relationalIdMapList =>
       throw _privateConstructorUsedError;
 
   /// Create a copy of ToushiShintakuInputState
@@ -33,8 +38,7 @@ abstract class $ToushiShintakuInputStateCopyWith<$Res> {
           $Res Function(ToushiShintakuInputState) then) =
       _$ToushiShintakuInputStateCopyWithImpl<$Res, ToushiShintakuInputState>;
   @useResult
-  $Res call(
-      {List<int> updateIdList, Map<int, int> toushiShintakuRelationalIdMap});
+  $Res call({List<Map<int, int>> relationalIdMapList});
 }
 
 /// @nodoc
@@ -53,18 +57,13 @@ class _$ToushiShintakuInputStateCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? updateIdList = null,
-    Object? toushiShintakuRelationalIdMap = null,
+    Object? relationalIdMapList = null,
   }) {
     return _then(_value.copyWith(
-      updateIdList: null == updateIdList
-          ? _value.updateIdList
-          : updateIdList // ignore: cast_nullable_to_non_nullable
-              as List<int>,
-      toushiShintakuRelationalIdMap: null == toushiShintakuRelationalIdMap
-          ? _value.toushiShintakuRelationalIdMap
-          : toushiShintakuRelationalIdMap // ignore: cast_nullable_to_non_nullable
-              as Map<int, int>,
+      relationalIdMapList: null == relationalIdMapList
+          ? _value.relationalIdMapList
+          : relationalIdMapList // ignore: cast_nullable_to_non_nullable
+              as List<Map<int, int>>,
     ) as $Val);
   }
 }
@@ -78,8 +77,7 @@ abstract class _$$ToushiShintakuInputStateImplCopyWith<$Res>
       __$$ToushiShintakuInputStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {List<int> updateIdList, Map<int, int> toushiShintakuRelationalIdMap});
+  $Res call({List<Map<int, int>> relationalIdMapList});
 }
 
 /// @nodoc
@@ -97,18 +95,13 @@ class __$$ToushiShintakuInputStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? updateIdList = null,
-    Object? toushiShintakuRelationalIdMap = null,
+    Object? relationalIdMapList = null,
   }) {
     return _then(_$ToushiShintakuInputStateImpl(
-      updateIdList: null == updateIdList
-          ? _value._updateIdList
-          : updateIdList // ignore: cast_nullable_to_non_nullable
-              as List<int>,
-      toushiShintakuRelationalIdMap: null == toushiShintakuRelationalIdMap
-          ? _value._toushiShintakuRelationalIdMap
-          : toushiShintakuRelationalIdMap // ignore: cast_nullable_to_non_nullable
-              as Map<int, int>,
+      relationalIdMapList: null == relationalIdMapList
+          ? _value._relationalIdMapList
+          : relationalIdMapList // ignore: cast_nullable_to_non_nullable
+              as List<Map<int, int>>,
     ));
   }
 }
@@ -117,33 +110,34 @@ class __$$ToushiShintakuInputStateImplCopyWithImpl<$Res>
 
 class _$ToushiShintakuInputStateImpl implements _ToushiShintakuInputState {
   const _$ToushiShintakuInputStateImpl(
-      {final List<int> updateIdList = const <int>[],
-      final Map<int, int> toushiShintakuRelationalIdMap = const <int, int>{}})
-      : _updateIdList = updateIdList,
-        _toushiShintakuRelationalIdMap = toushiShintakuRelationalIdMap;
+      {final List<Map<int, int>> relationalIdMapList = const []})
+      : _relationalIdMapList = relationalIdMapList;
 
-  final List<int> _updateIdList;
+//
+//
+//
+// @Default(<int, int>{}) Map<int, int> toushiShintakuRelationalIdMap
+//
+//
+  final List<Map<int, int>> _relationalIdMapList;
+//
+//
+//
+// @Default(<int, int>{}) Map<int, int> toushiShintakuRelationalIdMap
+//
+//
   @override
   @JsonKey()
-  List<int> get updateIdList {
-    if (_updateIdList is EqualUnmodifiableListView) return _updateIdList;
+  List<Map<int, int>> get relationalIdMapList {
+    if (_relationalIdMapList is EqualUnmodifiableListView)
+      return _relationalIdMapList;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_updateIdList);
-  }
-
-  final Map<int, int> _toushiShintakuRelationalIdMap;
-  @override
-  @JsonKey()
-  Map<int, int> get toushiShintakuRelationalIdMap {
-    if (_toushiShintakuRelationalIdMap is EqualUnmodifiableMapView)
-      return _toushiShintakuRelationalIdMap;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_toushiShintakuRelationalIdMap);
+    return EqualUnmodifiableListView(_relationalIdMapList);
   }
 
   @override
   String toString() {
-    return 'ToushiShintakuInputState(updateIdList: $updateIdList, toushiShintakuRelationalIdMap: $toushiShintakuRelationalIdMap)';
+    return 'ToushiShintakuInputState(relationalIdMapList: $relationalIdMapList)';
   }
 
   @override
@@ -152,17 +146,12 @@ class _$ToushiShintakuInputStateImpl implements _ToushiShintakuInputState {
         (other.runtimeType == runtimeType &&
             other is _$ToushiShintakuInputStateImpl &&
             const DeepCollectionEquality()
-                .equals(other._updateIdList, _updateIdList) &&
-            const DeepCollectionEquality().equals(
-                other._toushiShintakuRelationalIdMap,
-                _toushiShintakuRelationalIdMap));
+                .equals(other._relationalIdMapList, _relationalIdMapList));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(_updateIdList),
-      const DeepCollectionEquality().hash(_toushiShintakuRelationalIdMap));
+      runtimeType, const DeepCollectionEquality().hash(_relationalIdMapList));
 
   /// Create a copy of ToushiShintakuInputState
   /// with the given fields replaced by the non-null parameter values.
@@ -176,14 +165,17 @@ class _$ToushiShintakuInputStateImpl implements _ToushiShintakuInputState {
 
 abstract class _ToushiShintakuInputState implements ToushiShintakuInputState {
   const factory _ToushiShintakuInputState(
-          {final List<int> updateIdList,
-          final Map<int, int> toushiShintakuRelationalIdMap}) =
+          {final List<Map<int, int>> relationalIdMapList}) =
       _$ToushiShintakuInputStateImpl;
 
+//
+//
+//
+// @Default(<int, int>{}) Map<int, int> toushiShintakuRelationalIdMap
+//
+//
   @override
-  List<int> get updateIdList;
-  @override
-  Map<int, int> get toushiShintakuRelationalIdMap;
+  List<Map<int, int>> get relationalIdMapList;
 
   /// Create a copy of ToushiShintakuInputState
   /// with the given fields replaced by the non-null parameter values.

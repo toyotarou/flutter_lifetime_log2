@@ -12,9 +12,11 @@ class ToushiShintakuDataSearchAlert extends ConsumerStatefulWidget {
     required this.name,
     required this.shutokuSougaku,
     this.referenceData,
+    required this.date,
   });
 
   final int pos;
+  final String date;
   final String name;
   final String shutokuSougaku;
   final MapEntry<String, List<ToushiShintakuModel>>? referenceData;
@@ -65,7 +67,7 @@ class _ToushiShintakuDataSearchAlertState extends ConsumerState<ToushiShintakuDa
   Widget displayToushiShintakuNameRelationalIdList() {
     final List<Widget> list = <Widget>[];
 
-    if (widget.referenceData != null && widget.referenceData?.value != null) {
+    if (widget.referenceData != null) {
       final List<ToushiShintakuModel> sortedData = widget.referenceData!.value
         ..sort(
           (ToushiShintakuModel a, ToushiShintakuModel b) => a.shutokuSougaku
@@ -78,28 +80,54 @@ class _ToushiShintakuDataSearchAlertState extends ConsumerState<ToushiShintakuDa
 
       for (final ToushiShintakuModel element in sortedData) {
         list.add(
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 5),
-            padding: const EdgeInsets.all(5),
+          GestureDetector(
+            onTap: () {
+              if (widget.referenceData != null) {
+                for (final ToushiShintakuModel element2 in widget.referenceData!.value) {
+                  if (element2.shutokuSougaku.replaceAll('円', '').trim() == widget.shutokuSougaku) {
+                    if (element2.name == widget.name) {
+                      print(element.name);
+                      print(element.id);
+                      print(element2.relationalId);
 
-            decoration: BoxDecoration(
-              color: (element.shutokuSougaku.replaceAll('円', '').trim() == widget.shutokuSougaku)
-                  ? Colors.yellowAccent.withValues(alpha: 0.1)
-                  : Colors.black.withValues(alpha: 0.3),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(element.name),
+                      toushiShintakuInputNotifier.setInputValue(
+                        pos: widget.pos,
+                        relationalId: element2.relationalId,
+                        id: element.id,
+                      );
 
-                const SizedBox(height: 5),
+                      Navigator.pop(context);
+                    }
+                  }
+                }
+              }
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              padding: const EdgeInsets.all(5),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              decoration: BoxDecoration(
+                color: (element.shutokuSougaku.replaceAll('円', '').trim() == widget.shutokuSougaku)
+                    ? Colors.yellowAccent.withValues(alpha: 0.1)
+                    : Colors.black.withValues(alpha: 0.3),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(element.name),
 
-                  children: <Widget>[const SizedBox.shrink(), Text(element.shutokuSougaku.replaceAll('円', '').trim())],
-                ),
-              ],
+                  const SizedBox(height: 5),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                    children: <Widget>[
+                      const SizedBox.shrink(),
+                      Text(element.shutokuSougaku.replaceAll('円', '').trim()),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );

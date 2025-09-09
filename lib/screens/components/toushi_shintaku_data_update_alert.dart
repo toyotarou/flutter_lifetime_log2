@@ -67,7 +67,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
 
                     ElevatedButton(
                       onPressed: () {
-                        //                            updateData();
+                        updateData();
                       },
 
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
@@ -95,10 +95,32 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
     if (widget.todayData.isNotEmpty) {
       for (int i = 0; i < 20; i++) {
         if (i < widget.todayData.length) {
-          if (widget.toushiShintakuNameRelationalIdMap[widget.todayData[i].name] != null &&
-              widget.toushiShintakuNameRelationalIdMap[widget.todayData[i].name]!.length == 1) {
-            tecs[i].text = widget.toushiShintakuNameRelationalIdMap[widget.todayData[i].name]![0].toString();
+          final List<int>? relationalIdOnReference = widget.toushiShintakuNameRelationalIdMap[widget.todayData[i].name];
+
+          if (relationalIdOnReference != null && relationalIdOnReference.length == 1) {
+            tecs[i].text = relationalIdOnReference[0].toString();
+
+            // ignore: always_specify_types
+            Future(() {
+              toushiShintakuInputNotifier.setInputValue(
+                pos: i,
+                id: widget.todayData[i].id,
+                relationalId: relationalIdOnReference[0],
+              );
+            });
           }
+
+          //----------------------------------------------//
+
+          String searchResultRelationId = '';
+
+          for (final Map<int, int> element in toushiShintakuInputState.relationalIdMapList) {
+            if (element[widget.todayData[i].id] != null) {
+              searchResultRelationId = element[widget.todayData[i].id].toString();
+            }
+          }
+
+          //----------------------------------------------//
 
           list.add(
             Container(
@@ -125,8 +147,12 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                           border: InputBorder.none,
                         ),
 
-                        onChanged: (String value) {
-                          toushiShintakuInputNotifier.setInputValue(pos: i, relationalId: value.toInt());
+                        onChanged: (String value) async {
+                          await toushiShintakuInputNotifier.setInputValue(
+                            pos: i,
+                            id: widget.todayData[i].id,
+                            relationalId: value.toInt(),
+                          );
                         },
 
                         onTapOutside: (PointerDownEvent event) => FocusManager.instance.primaryFocus?.unfocus(),
@@ -155,26 +181,38 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                             children: <Widget>[
                               Text(widget.todayData[i].shutokuSougaku.replaceAll('円', '').trim()),
 
-                              GestureDetector(
-                                onTap: () {
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: ToushiShintakuDataSearchAlert(
-                                      pos: i,
-
-                                      name: widget.todayData[i].name,
-
-                                      shutokuSougaku: widget.todayData[i].shutokuSougaku.replaceAll('円', '').trim(),
-
-                                      referenceData: widget.referenceData,
+                              Row(
+                                children: <Widget>[
+                                  SizedBox(
+                                    width: 50,
+                                    child: Text(
+                                      searchResultRelationId,
+                                      style: const TextStyle(color: Colors.orangeAccent),
                                     ),
+                                  ),
 
-                                    paddingLeft: context.screenSize.width * 0.3,
-                                    clearBarrierColor: true,
-                                  );
-                                },
+                                  GestureDetector(
+                                    onTap: () {
+                                      LifetimeDialog(
+                                        context: context,
+                                        widget: ToushiShintakuDataSearchAlert(
+                                          pos: i,
+                                          date: widget.date,
+                                          name: widget.todayData[i].name,
 
-                                child: Icon(Icons.search, color: Colors.white.withValues(alpha: 0.6)),
+                                          shutokuSougaku: widget.todayData[i].shutokuSougaku.replaceAll('円', '').trim(),
+
+                                          referenceData: widget.referenceData,
+                                        ),
+
+                                        paddingLeft: context.screenSize.width * 0.3,
+                                        clearBarrierColor: true,
+                                      );
+                                    },
+
+                                    child: Icon(Icons.search, color: Colors.white.withValues(alpha: 0.6)),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -200,5 +238,10 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
         ),
       ],
     );
+  }
+
+  ///
+  Future<void> updateData() async {
+    print(toushiShintakuInputState.relationalIdMapList);
   }
 }
