@@ -33,6 +33,8 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
   final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
   final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
 
+  List<int> shutokuSougakuNotMatchIdList = <int>[];
+
   ///
   @override
   void initState() {
@@ -123,17 +125,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                            widget.todayData[i].name,
-
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: (toushiShintakuInputState.relationalIdList[i] == '')
-                                  ? Colors.yellowAccent
-                                  : Colors.white,
-                            ),
-                          ),
+                          Text(widget.todayData[i].name, maxLines: 1, overflow: TextOverflow.ellipsis),
 
                           const SizedBox(height: 5),
 
@@ -153,7 +145,9 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                                   );
                                 },
 
-                                child: Icon(Icons.search, color: Colors.white.withValues(alpha: 0.6)),
+                                child: (toushiShintakuInputState.relationalIdList[i] != '')
+                                    ? const Icon(Icons.square_outlined, color: Colors.transparent)
+                                    : Icon(Icons.search, color: Colors.yellowAccent.withValues(alpha: 0.6)),
                               ),
                             ],
                           ),
@@ -246,6 +240,8 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
   }) {
     final List<Widget> list = <Widget>[];
 
+    final List<int> list2 = <int>[];
+
     if (widget.referenceData != null) {
       final List<ToushiShintakuModel> sortedData = widget.referenceData!.value
         ..sort(
@@ -258,13 +254,29 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
         );
 
       for (final ToushiShintakuModel element in sortedData) {
+        if (element.name == name) {
+          if (element.shutokuSougaku.replaceAll('円', '').trim() != shutokuSougaku) {
+            list2.add(element.id);
+          }
+        }
+
         list.add(
           GestureDetector(
             onTap: () {
               if (widget.referenceData != null) {
                 for (final ToushiShintakuModel element2 in widget.referenceData!.value) {
-                  if (element2.shutokuSougaku.replaceAll('円', '').trim() == shutokuSougaku) {
-                    if (element2.name == name) {
+                  if (element2.name == name) {
+                    bool flag = false;
+
+                    if (shutokuSougakuNotMatchIdList.contains(element.id)) {
+                      flag = true;
+                    } else {
+                      if (element2.shutokuSougaku.replaceAll('円', '').trim() == shutokuSougaku) {
+                        flag = true;
+                      }
+                    }
+
+                    if (flag) {
                       toushiShintakuInputNotifier.setInputValue(
                         pos: pos,
                         relationalId: element2.relationalId,
@@ -306,6 +318,8 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
         );
       }
     }
+
+    setState(() => shutokuSougakuNotMatchIdList = list2);
 
     return CustomScrollView(
       slivers: <Widget>[

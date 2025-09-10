@@ -584,6 +584,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
             todayData: (appParamState.keepToushiShintakuMap[date] != null) ? sortedData : <ToushiShintakuModel>[],
             toushiShintakuNameRelationalIdMap: toushiShintakuNameRelationalIdMap,
           ),
+
+          executeFunctionWhenDialogClose: true,
+          ref: ref,
+          from: 'ToushiShintakuDataUpdateAlert',
         );
       },
       child: Icon(

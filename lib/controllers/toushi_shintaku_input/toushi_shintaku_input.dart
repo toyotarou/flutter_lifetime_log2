@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../data/http/client.dart';
+import '../../data/http/path.dart';
 import '../../utility/utility.dart';
 
 part 'toushi_shintaku_input.freezed.dart';
@@ -11,7 +13,7 @@ part 'toushi_shintaku_input.g.dart';
 class ToushiShintakuInputState with _$ToushiShintakuInputState {
   const factory ToushiShintakuInputState({
     @Default(<String>[]) List<String> relationalIdList,
-    @Default(<Map<int, int>>[]) List<Map<int, int>> relationalIdMapList,
+    @Default(<Map<String, int>>[]) List<Map<String, int>> relationalIdMapList,
   }) = _ToushiShintakuInputState;
 }
 
@@ -23,7 +25,7 @@ class ToushiShintakuInput extends _$ToushiShintakuInput {
   @override
   ToushiShintakuInputState build() {
     // ignore: always_specify_types
-    final List<Map<int, int>> list = List.generate(20, (int index) => <int, int>{0: 0});
+    final List<Map<String, int>> list = List.generate(20, (int index) => <String, int>{'': 0});
     // ignore: always_specify_types
     final List<String> list2 = List.generate(20, (int index) => '');
 
@@ -40,8 +42,8 @@ class ToushiShintakuInput extends _$ToushiShintakuInput {
 
   ///
   Future<void> setInputValue({required int pos, required int relationalId, required int id}) async {
-    final List<Map<int, int>> list = <Map<int, int>>[...state.relationalIdMapList];
-    final Map<int, int> map = <int, int>{id: relationalId};
+    final List<Map<String, int>> list = <Map<String, int>>[...state.relationalIdMapList];
+    final Map<String, int> map = <String, int>{id.toString(): relationalId};
     list[pos] = map;
 
     final List<String> list2 = <String>[...state.relationalIdList];
@@ -50,25 +52,20 @@ class ToushiShintakuInput extends _$ToushiShintakuInput {
     state = state.copyWith(relationalIdMapList: list, relationalIdList: list2);
   }
 
-  // ///
-  // Future<void> updateToushiShintakuRelationalId({required Map<String, int> updateData}) async {
-  //   final HttpClient client = ref.read(httpClientProvider);
-  //
-  //   final Map<String, dynamic> uploadData = <String, dynamic>{};
-  //   uploadData['updateData'] = updateData;
-  //
-  //   // ignore: always_specify_types
-  //   await client.post(path: APIPath.updateToushiShintakuRelationalId, body: uploadData).then((value) {}).catchError((
-  //     // ignore: always_specify_types
-  //     error,
-  //     _,
-  //   ) {
-  //     utility.showError('予期せぬエラーが発生しました');
-  //   });
-  // }
-  //
-  //
-  //
-  //
-  //
+  ///
+  Future<void> updateToushiShintakuRelationalId({required Map<String, int> updateData}) async {
+    final HttpClient client = ref.read(httpClientProvider);
+
+    final Map<String, dynamic> uploadData = <String, dynamic>{};
+    uploadData['updateData'] = updateData;
+
+    // ignore: always_specify_types
+    await client.post(path: APIPath.updateToushiShintakuRelationalId, body: uploadData).then((value) {}).catchError((
+      // ignore: always_specify_types
+      error,
+      _,
+    ) {
+      utility.showError('予期せぬエラーが発生しました');
+    });
+  }
 }

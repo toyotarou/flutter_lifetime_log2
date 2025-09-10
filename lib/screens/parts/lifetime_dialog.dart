@@ -38,7 +38,9 @@ Future<void> LifetimeDialog({
     // ignore: use_if_null_to_convert_nulls_to_bools
     if (executeFunctionWhenDialogClose == true) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (from == 'MoneyDataInputAlert' || from == 'MonthlyGeolocMapDisplayAlert') {
+        if (from == 'MoneyDataInputAlert' ||
+            from == 'MonthlyGeolocMapDisplayAlert' ||
+            from == 'ToushiShintakuDataUpdateAlert') {
           if (ref != null) {
             closeAllOverlays(ref: ref);
           }
