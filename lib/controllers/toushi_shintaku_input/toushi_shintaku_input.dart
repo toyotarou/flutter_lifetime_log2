@@ -11,10 +11,8 @@ part 'toushi_shintaku_input.g.dart';
 
 @freezed
 class ToushiShintakuInputState with _$ToushiShintakuInputState {
-  const factory ToushiShintakuInputState({
-    @Default(<String>[]) List<String> relationalIdList,
-    @Default(<Map<String, int>>[]) List<Map<String, int>> relationalIdMapList,
-  }) = _ToushiShintakuInputState;
+  const factory ToushiShintakuInputState({@Default(<String, int>{}) Map<String, int> relationalIdMap}) =
+      _ToushiShintakuInputState;
 }
 
 @Riverpod(keepAlive: true)
@@ -23,33 +21,13 @@ class ToushiShintakuInput extends _$ToushiShintakuInput {
 
   ///
   @override
-  ToushiShintakuInputState build() {
-    // ignore: always_specify_types
-    final List<Map<String, int>> list = List.generate(20, (int index) => <String, int>{'': 0});
-    // ignore: always_specify_types
-    final List<String> list2 = List.generate(20, (int index) => '');
-
-    return ToushiShintakuInputState(relationalIdMapList: list, relationalIdList: list2);
-  }
+  ToushiShintakuInputState build() => const ToushiShintakuInputState();
 
   ///
-  void clearRelationalIdList() {
-    // ignore: always_specify_types
-    final List<String> list2 = List.generate(20, (int index) => '');
-
-    state = state.copyWith(relationalIdList: list2);
-  }
-
-  ///
-  Future<void> setInputValue({required int pos, required int relationalId, required int id}) async {
-    final List<Map<String, int>> list = <Map<String, int>>[...state.relationalIdMapList];
-    final Map<String, int> map = <String, int>{id.toString(): relationalId};
-    list[pos] = map;
-
-    final List<String> list2 = <String>[...state.relationalIdList];
-    list2[pos] = relationalId.toString();
-
-    state = state.copyWith(relationalIdMapList: list, relationalIdList: list2);
+  Future<void> setInputValue({required int relationalId, required int id}) async {
+    final Map<String, int> map = <String, int>{...state.relationalIdMap};
+    map[id.toString()] = relationalId;
+    state = state.copyWith(relationalIdMap: map);
   }
 
   ///

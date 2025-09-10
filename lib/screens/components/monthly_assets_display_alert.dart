@@ -524,65 +524,61 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           return;
         }
 
-        final List<MapEntry<String, List<ToushiShintakuModel>>> sortedByKey =
+        ///////////////////////////////////////////////////////////////////// s
+
+        MapEntry<String, List<ToushiShintakuModel>>? referenceDataMapEntry;
+
+        List<int> idList = <int>[];
+        List<int> relationalIdList = <int>[];
+
+        final List<MapEntry<String, List<ToushiShintakuModel>>> toushiShintakuMapSortedByKey =
             appParamState.keepToushiShintakuMap.entries.toList()..sort(
               (MapEntry<String, List<ToushiShintakuModel>> a, MapEntry<String, List<ToushiShintakuModel>> b) =>
                   a.key.compareTo(b.key),
             );
 
-        List<int> idList = <int>[];
-        List<int> list = <int>[];
-
-        MapEntry<String, List<ToushiShintakuModel>>? referenceData;
-
         for (int j = 0; j < 7; j++) {
           idList = <int>[];
-          list = <int>[];
+          relationalIdList = <int>[];
 
-          final MapEntry<String, List<ToushiShintakuModel>> getData = sortedByKey[sortedByKey.length - (j + 1)];
+          final int index = toushiShintakuMapSortedByKey.length - (j + 1);
 
-          getData.value.sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
+          final MapEntry<String, List<ToushiShintakuModel>> reverseDayData = toushiShintakuMapSortedByKey[index];
 
-          for (int i = 0; i < getData.value.length; i++) {
-            idList.add(getData.value[i].id);
+          reverseDayData.value.sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
 
-            if (getData.value[i].relationalId != 0) {
-              list.add(getData.value[i].relationalId);
+          for (int i = 0; i < reverseDayData.value.length; i++) {
+            idList.add(reverseDayData.value[i].id);
+
+            if (reverseDayData.value[i].relationalId != 0) {
+              relationalIdList.add(reverseDayData.value[i].relationalId);
             }
           }
 
-          if (idList.length == list.length) {
-            referenceData = getData;
+          if (idList.length == relationalIdList.length) {
+            referenceDataMapEntry = reverseDayData;
 
             break;
           }
         }
 
-        final Map<String, List<int>> toushiShintakuNameRelationalIdMap = <String, List<int>>{};
+        print(referenceDataMapEntry);
 
-        if (referenceData != null) {
-          for (final ToushiShintakuModel element in referenceData.value) {
-            (toushiShintakuNameRelationalIdMap[element.name] ??= <int>[]).add(element.relationalId);
-          }
-        }
+        ///////////////////////////////////////////////////////////////////// e
 
-        List<ToushiShintakuModel> sortedData = <ToushiShintakuModel>[];
+        List<ToushiShintakuModel> todayDataList = <ToushiShintakuModel>[];
 
         if (appParamState.keepToushiShintakuMap[date] != null) {
-          sortedData = appParamState.keepToushiShintakuMap[date]!
+          todayDataList = appParamState.keepToushiShintakuMap[date]!
             ..sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
         }
-
-        toushiShintakuInputNotifier.clearRelationalIdList();
 
         LifetimeDialog(
           context: context,
           widget: ToushiShintakuDataUpdateAlert(
             date: date,
-            referenceData: referenceData,
-
-            todayData: (appParamState.keepToushiShintakuMap[date] != null) ? sortedData : <ToushiShintakuModel>[],
-            toushiShintakuNameRelationalIdMap: toushiShintakuNameRelationalIdMap,
+            todayDataList: todayDataList,
+            referenceDataMapEntry: referenceDataMapEntry,
           ),
 
           executeFunctionWhenDialogClose: true,
