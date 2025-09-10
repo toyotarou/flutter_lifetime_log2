@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../main.dart';
 import '../../models/toushi_shintaku_model.dart';
+import '../parts/error_dialog.dart';
 import '../parts/lifetime_log_overlay.dart';
 
 class ToushiShintakuDataUpdateAlert extends ConsumerStatefulWidget {
@@ -297,7 +299,34 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
 
   ///
   Future<void> updateData() async {
-    // ignore: avoid_print
-    print(toushiShintakuInputState.relationalIdMap);
+    bool errFlg = false;
+    toushiShintakuInputState.relationalIdMap.forEach((String key, int value) {
+      if (value == 0) {
+        errFlg = true;
+      }
+    });
+
+    if (errFlg) {
+      // ignore: always_specify_types
+      Future.delayed(
+        Duration.zero,
+        () => error_dialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          title: '登録できません。',
+          content: '値を正しく入力してください。',
+        ),
+      );
+
+      return;
+    }
+
+    toushiShintakuInputNotifier.updateToushiShintakuRelationalId(updateData: toushiShintakuInputState.relationalIdMap)
+    // ignore: always_specify_types
+    .then((value) {
+      if (mounted) {
+        context.findAncestorStateOfType<AppRootState>()?.restartApp();
+      }
+    });
   }
 }
