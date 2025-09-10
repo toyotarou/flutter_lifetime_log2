@@ -24,7 +24,10 @@ class ToushiShintakuInput extends _$ToushiShintakuInput {
   ToushiShintakuInputState build() => const ToushiShintakuInputState();
 
   ///
-  Future<void> setInputValue({required int relationalId, required int id}) async {
+  void setAllInputValue({required Map<String, int> map}) => state = state.copyWith(relationalIdMap: map);
+
+  ///
+  void setInputValue({required int relationalId, required int id}) {
     final Map<String, int> map = <String, int>{...state.relationalIdMap};
     map[id.toString()] = relationalId;
     state = state.copyWith(relationalIdMap: map);

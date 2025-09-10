@@ -562,9 +562,15 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           }
         }
 
-        print(referenceDataMapEntry);
-
         ///////////////////////////////////////////////////////////////////// e
+
+        //=============// s
+        final Map<String, List<ToushiShintakuModel>> referenceNameAndToushiShintakuModelListMap =
+            <String, List<ToushiShintakuModel>>{};
+        referenceDataMapEntry?.value.forEach((ToushiShintakuModel element) {
+          (referenceNameAndToushiShintakuModelListMap[element.name] ??= <ToushiShintakuModel>[]).add(element);
+        });
+        //=============// e
 
         List<ToushiShintakuModel> todayDataList = <ToushiShintakuModel>[];
 
@@ -579,6 +585,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
             date: date,
             todayDataList: todayDataList,
             referenceDataMapEntry: referenceDataMapEntry,
+            referenceNameAndToushiShintakuModelListMap: referenceNameAndToushiShintakuModelListMap,
           ),
 
           executeFunctionWhenDialogClose: true,

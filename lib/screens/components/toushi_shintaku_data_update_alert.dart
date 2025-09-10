@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../controllers/controllers_mixin.dart';
 import '../../models/toushi_shintaku_model.dart';
 
 class ToushiShintakuDataUpdateAlert extends ConsumerStatefulWidget {
@@ -9,17 +10,37 @@ class ToushiShintakuDataUpdateAlert extends ConsumerStatefulWidget {
     required this.date,
     required this.todayDataList,
     this.referenceDataMapEntry,
+    required this.referenceNameAndToushiShintakuModelListMap,
   });
 
   final String date;
   final List<ToushiShintakuModel> todayDataList;
   final MapEntry<String, List<ToushiShintakuModel>>? referenceDataMapEntry;
+  final Map<String, List<ToushiShintakuModel>> referenceNameAndToushiShintakuModelListMap;
 
   @override
   ConsumerState<ToushiShintakuDataUpdateAlert> createState() => _ToushiShintakuDataUpdateAlertState();
 }
 
-class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDataUpdateAlert> {
+class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDataUpdateAlert>
+    with ControllersMixin<ToushiShintakuDataUpdateAlert> {
+  ///
+  @override
+  void initState() {
+    super.initState();
+
+    final Map<String, int> map = <String, int>{};
+    for (final ToushiShintakuModel element in widget.todayDataList) {
+      map[element.id.toString()] = 0;
+    }
+
+    // ignore: always_specify_types
+    Future(() {
+      toushiShintakuInputNotifier.setAllInputValue(map: map);
+    });
+  }
+
+  ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +61,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
 
                     ElevatedButton(
                       onPressed: () {
-                        //                        updateData();
+                        updateData();
                       },
 
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
@@ -62,8 +83,69 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
   }
 
   ///
+  String textModify({required String text}) => text.replaceAll('円', '');
+
+  ///
   Widget displayDateToushiShintakuList() {
     final List<Widget> list = <Widget>[];
+
+    for (final ToushiShintakuModel element in widget.todayDataList) {
+      String displayRelationalId = '';
+      if (widget.referenceNameAndToushiShintakuModelListMap[element.name] != null &&
+          widget.referenceNameAndToushiShintakuModelListMap[element.name]!.length == 1) {
+        // ignore: always_specify_types
+        Future(() {
+          toushiShintakuInputNotifier.setInputValue(
+            relationalId: widget.referenceNameAndToushiShintakuModelListMap[element.name]![0].relationalId,
+            id: element.id,
+          );
+        });
+
+        displayRelationalId = widget.referenceNameAndToushiShintakuModelListMap[element.name]![0].relationalId
+            .toString();
+      }
+
+      list.add(
+        Container(
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+          ),
+          padding: const EdgeInsets.all(5),
+
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              if (displayRelationalId != '') ...<Widget>[SizedBox(width: 50, child: Text(displayRelationalId))],
+
+              if (displayRelationalId == '') ...<Widget>[
+                const SizedBox(
+                  width: 50,
+                  child: Text('-----', style: TextStyle(color: Colors.yellowAccent)),
+                ),
+              ],
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(element.name),
+                    const SizedBox(height: 5),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(textModify(text: element.shutokuSougaku)),
+                        const Icon(Icons.search),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return CustomScrollView(
       slivers: <Widget>[
@@ -75,6 +157,12 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
         ),
       ],
     );
+  }
+
+  ///
+  Future<void> updateData() async {
+    // ignore: avoid_print
+    print(toushiShintakuInputState.relationalIdMap);
   }
 }
 
