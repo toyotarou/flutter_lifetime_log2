@@ -28,8 +28,6 @@ class ToushiShintakuDataUpdateAlert extends ConsumerStatefulWidget {
 
 class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDataUpdateAlert>
     with ControllersMixin<ToushiShintakuDataUpdateAlert> {
-  List<TextEditingController> tecs = <TextEditingController>[];
-
   List<FocusNode> focusNodeList = <FocusNode>[];
 
   final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
@@ -39,10 +37,6 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
   @override
   void initState() {
     super.initState();
-
-    for (int i = 0; i < 20; i++) {
-      tecs.add(TextEditingController(text: ''));
-    }
 
     // ignore: always_specify_types
     focusNodeList = List.generate(20, (int index) => FocusNode());
@@ -100,8 +94,6 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
           final List<int>? relationalIdOnReference = widget.toushiShintakuNameRelationalIdMap[widget.todayData[i].name];
 
           if (relationalIdOnReference != null && relationalIdOnReference.length == 1) {
-            tecs[i].text = relationalIdOnReference[0].toString();
-
             // ignore: always_specify_types
             Future(() {
               toushiShintakuInputNotifier.setInputValue(
@@ -123,34 +115,9 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                 style: const TextStyle(fontSize: 12),
                 child: Row(
                   children: <Widget>[
-                    SizedBox(
-                      width: 40,
+                    SizedBox(width: 40, child: Text(toushiShintakuInputState.relationalIdList[i])),
 
-                      child: TextField(
-                        style: const TextStyle(fontSize: 12),
-
-                        keyboardType: TextInputType.number,
-                        controller: tecs[i],
-                        decoration: const InputDecoration(
-                          filled: true,
-                          contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                          border: InputBorder.none,
-                        ),
-
-                        onChanged: (String value) async {
-                          await toushiShintakuInputNotifier.setInputValue(
-                            pos: i,
-                            id: widget.todayData[i].id,
-                            relationalId: value.toInt(),
-                          );
-                        },
-
-                        onTapOutside: (PointerDownEvent event) => FocusManager.instance.primaryFocus?.unfocus(),
-                        focusNode: focusNodeList[i],
-                      ),
-                    ),
-
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 5),
 
                     Expanded(
                       child: Column(
@@ -161,7 +128,11 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
 
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: (tecs[i].text != '') ? Colors.white : Colors.yellowAccent),
+                            style: TextStyle(
+                              color: (toushiShintakuInputState.relationalIdList[i] == '')
+                                  ? Colors.yellowAccent
+                                  : Colors.white,
+                            ),
                           ),
 
                           const SizedBox(height: 5),

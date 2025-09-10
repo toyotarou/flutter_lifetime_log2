@@ -573,6 +573,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
             ..sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
         }
 
+        toushiShintakuInputNotifier.clearRelationalIdList();
+
         LifetimeDialog(
           context: context,
           widget: ToushiShintakuDataUpdateAlert(
