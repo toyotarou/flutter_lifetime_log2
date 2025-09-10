@@ -118,9 +118,15 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
               if (displayRelationalId != '') ...<Widget>[SizedBox(width: 50, child: Text(displayRelationalId))],
 
               if (displayRelationalId == '') ...<Widget>[
-                const SizedBox(
+                SizedBox(
                   width: 50,
-                  child: Text('-----', style: TextStyle(color: Colors.yellowAccent)),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+                    decoration: BoxDecoration(color: Colors.yellowAccent.withValues(alpha: 0.2)),
+
+                    alignment: Alignment.center,
+                    child: const Text('-----'),
+                  ),
                 ),
               ],
 
