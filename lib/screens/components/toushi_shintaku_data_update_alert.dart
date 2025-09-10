@@ -33,8 +33,6 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
   final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
   final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
 
-  List<int> shutokuSougakuNotMatchIdList = <int>[];
-
   ///
   @override
   void initState() {
@@ -87,6 +85,9 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
   }
 
   ///
+  String textModify({required String text}) => text.replaceAll('円', '');
+
+  ///
   Widget displayDateToushiShintakuList() {
     final List<Widget> list = <Widget>[];
 
@@ -132,7 +133,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text(widget.todayData[i].shutokuSougaku.replaceAll('円', '').trim()),
+                              Text(textModify(text: widget.todayData[i].shutokuSougaku).trim()),
 
                               GestureDetector(
                                 onTap: () {
@@ -140,14 +141,13 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                                     pos: i,
                                     date: widget.date,
                                     name: widget.todayData[i].name,
-                                    shutokuSougaku: widget.todayData[i].shutokuSougaku.replaceAll('円', '').trim(),
+                                    shutokuSougaku: textModify(text: widget.todayData[i].shutokuSougaku).trim(),
                                     referenceData: widget.referenceData,
+                                    id: widget.todayData[i].id,
                                   );
                                 },
 
-                                child: (toushiShintakuInputState.relationalIdList[i] != '')
-                                    ? const Icon(Icons.square_outlined, color: Colors.transparent)
-                                    : Icon(Icons.search, color: Colors.yellowAccent.withValues(alpha: 0.6)),
+                                child: Icon(Icons.search),
                               ),
                             ],
                           ),
@@ -182,6 +182,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
     required String name,
     required String shutokuSougaku,
     MapEntry<String, List<ToushiShintakuModel>>? referenceData,
+    required int id,
   }) {
     appParamNotifier.setFirstOverlayParams(firstEntries: _firstEntries);
 
@@ -212,8 +213,9 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
               child: displayToushiShintakuNameRelationalIdList(
                 pos: pos,
                 name: widget.todayData[pos].name,
-                shutokuSougaku: widget.todayData[pos].shutokuSougaku.replaceAll('円', '').trim(),
+                shutokuSougaku: textModify(text: widget.todayData[pos].shutokuSougaku).trim(),
                 referenceData: widget.referenceData,
+                id: id,
               ),
             ),
           ],
@@ -237,62 +239,31 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
     required String name,
     required String shutokuSougaku,
     MapEntry<String, List<ToushiShintakuModel>>? referenceData,
+    required int id,
   }) {
     final List<Widget> list = <Widget>[];
-
-    final List<int> list2 = <int>[];
 
     if (widget.referenceData != null) {
       final List<ToushiShintakuModel> sortedData = widget.referenceData!.value
         ..sort(
-          (ToushiShintakuModel a, ToushiShintakuModel b) => a.shutokuSougaku
-              .replaceAll('円', '')
+          (ToushiShintakuModel a, ToushiShintakuModel b) => textModify(text: a.shutokuSougaku)
               .replaceAll(',', '')
               .trim()
               .toInt()
-              .compareTo(b.shutokuSougaku.replaceAll('円', '').replaceAll(',', '').trim().toInt()),
+              .compareTo(textModify(text: b.shutokuSougaku).replaceAll(',', '').trim().toInt()),
         );
 
       for (final ToushiShintakuModel element in sortedData) {
-        if (element.name == name) {
-          if (element.shutokuSougaku.replaceAll('円', '').trim() != shutokuSougaku) {
-            list2.add(element.id);
-          }
-        }
-
         list.add(
           GestureDetector(
-            onTap: () {
-              if (widget.referenceData != null) {
-                for (final ToushiShintakuModel element2 in widget.referenceData!.value) {
-                  if (element2.name == name) {
-                    bool flag = false;
-
-                    if (shutokuSougakuNotMatchIdList.contains(element.id)) {
-                      flag = true;
-                    } else {
-                      if (element2.shutokuSougaku.replaceAll('円', '').trim() == shutokuSougaku) {
-                        flag = true;
-                      }
-                    }
-
-                    if (flag) {
-                      toushiShintakuInputNotifier.setInputValue(
-                        pos: pos,
-                        relationalId: element2.relationalId,
-                        id: element.id,
-                      );
-                    }
-                  }
-                }
-              }
-            },
+            onTap: () =>
+                toushiShintakuInputNotifier.setInputValue(pos: pos, relationalId: element.relationalId, id: id),
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 5),
               padding: const EdgeInsets.all(5),
 
               decoration: BoxDecoration(
-                color: (element.shutokuSougaku.replaceAll('円', '').trim() == shutokuSougaku)
+                color: (textModify(text: element.shutokuSougaku).trim() == shutokuSougaku)
                     ? Colors.yellowAccent.withValues(alpha: 0.1)
                     : Colors.black.withValues(alpha: 0.3),
               ),
@@ -308,7 +279,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
 
                     children: <Widget>[
                       const SizedBox.shrink(),
-                      Text(element.shutokuSougaku.replaceAll('円', '').trim()),
+                      Text(textModify(text: element.shutokuSougaku).trim()),
                     ],
                   ),
                 ],
@@ -318,8 +289,6 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
         );
       }
     }
-
-    setState(() => shutokuSougakuNotMatchIdList = list2);
 
     return CustomScrollView(
       slivers: <Widget>[
