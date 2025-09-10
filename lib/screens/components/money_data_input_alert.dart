@@ -135,8 +135,12 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
                 onTap: () {
                   moneyInputNotifier.setPos(pos: leftNum);
 
+                  /////////
+
                   callFirstBox();
                   callSecondBox();
+
+                  ////////////////
                 },
 
                 child: Container(

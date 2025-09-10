@@ -1,8 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../data/http/client.dart';
-import '../../data/http/path.dart';
 import '../../utility/utility.dart';
 
 part 'toushi_shintaku_input.freezed.dart';

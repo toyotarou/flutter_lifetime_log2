@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/toushi_shintaku_model.dart';
-import '../parts/lifetime_dialog.dart';
-import 'toushi_shintaku_data_search_alert.dart';
+import '../parts/lifetime_log_overlay.dart';
 
 class ToushiShintakuDataUpdateAlert extends ConsumerStatefulWidget {
   const ToushiShintakuDataUpdateAlert({
@@ -32,6 +31,9 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
   List<TextEditingController> tecs = <TextEditingController>[];
 
   List<FocusNode> focusNodeList = <FocusNode>[];
+
+  final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
+  final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
 
   ///
   @override
@@ -110,18 +112,6 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
             });
           }
 
-          //----------------------------------------------//
-
-          String searchResultRelationId = '';
-
-          for (final Map<int, int> element in toushiShintakuInputState.relationalIdMapList) {
-            if (element[widget.todayData[i].id] != null) {
-              searchResultRelationId = element[widget.todayData[i].id].toString();
-            }
-          }
-
-          //----------------------------------------------//
-
           list.add(
             Container(
               decoration: BoxDecoration(
@@ -181,38 +171,18 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                             children: <Widget>[
                               Text(widget.todayData[i].shutokuSougaku.replaceAll('円', '').trim()),
 
-                              Row(
-                                children: <Widget>[
-                                  SizedBox(
-                                    width: 50,
-                                    child: Text(
-                                      searchResultRelationId,
-                                      style: const TextStyle(color: Colors.orangeAccent),
-                                    ),
-                                  ),
+                              GestureDetector(
+                                onTap: () {
+                                  callFirstBox(
+                                    pos: i,
+                                    date: widget.date,
+                                    name: widget.todayData[i].name,
+                                    shutokuSougaku: widget.todayData[i].shutokuSougaku.replaceAll('円', '').trim(),
+                                    referenceData: widget.referenceData,
+                                  );
+                                },
 
-                                  GestureDetector(
-                                    onTap: () {
-                                      LifetimeDialog(
-                                        context: context,
-                                        widget: ToushiShintakuDataSearchAlert(
-                                          pos: i,
-                                          date: widget.date,
-                                          name: widget.todayData[i].name,
-
-                                          shutokuSougaku: widget.todayData[i].shutokuSougaku.replaceAll('円', '').trim(),
-
-                                          referenceData: widget.referenceData,
-                                        ),
-
-                                        paddingLeft: context.screenSize.width * 0.3,
-                                        clearBarrierColor: true,
-                                      );
-                                    },
-
-                                    child: Icon(Icons.search, color: Colors.white.withValues(alpha: 0.6)),
-                                  ),
-                                ],
+                                child: Icon(Icons.search, color: Colors.white.withValues(alpha: 0.6)),
                               ),
                             ],
                           ),
@@ -241,7 +211,140 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
   }
 
   ///
+  void callFirstBox({
+    required int pos,
+    required String date,
+    required String name,
+    required String shutokuSougaku,
+    MapEntry<String, List<ToushiShintakuModel>>? referenceData,
+  }) {
+    appParamNotifier.setFirstOverlayParams(firstEntries: _firstEntries);
+
+    addFirstOverlay(
+      context: context,
+      setStateCallback: setState,
+      width: MediaQuery.of(context).size.width * 0.5,
+      height: MediaQuery.of(context).size.height * 0.8,
+      color: Colors.blueGrey.withOpacity(0.3),
+      initialPosition: const Offset(80, 100),
+
+      widget: DefaultTextStyle(
+        style: const TextStyle(fontSize: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(name),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[const SizedBox.shrink(), Text(shutokuSougaku)],
+            ),
+
+            Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+            SizedBox(
+              height: context.screenSize.height * 0.65,
+              child: displayToushiShintakuNameRelationalIdList(
+                pos: pos,
+                name: widget.todayData[pos].name,
+                shutokuSougaku: widget.todayData[pos].shutokuSougaku.replaceAll('円', '').trim(),
+                referenceData: widget.referenceData,
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      firstEntries: _firstEntries,
+      secondEntries: _secondEntries,
+      onPositionChanged: (Offset newPos) => appParamNotifier.updateOverlayPosition(newPos),
+    );
+  }
+
+  ///
   Future<void> updateData() async {
     print(toushiShintakuInputState.relationalIdMapList);
+  }
+
+  ///
+  Widget displayToushiShintakuNameRelationalIdList({
+    required int pos,
+    required String name,
+    required String shutokuSougaku,
+    MapEntry<String, List<ToushiShintakuModel>>? referenceData,
+  }) {
+    final List<Widget> list = <Widget>[];
+
+    if (widget.referenceData != null) {
+      final List<ToushiShintakuModel> sortedData = widget.referenceData!.value
+        ..sort(
+          (ToushiShintakuModel a, ToushiShintakuModel b) => a.shutokuSougaku
+              .replaceAll('円', '')
+              .replaceAll(',', '')
+              .trim()
+              .toInt()
+              .compareTo(b.shutokuSougaku.replaceAll('円', '').replaceAll(',', '').trim().toInt()),
+        );
+
+      for (final ToushiShintakuModel element in sortedData) {
+        list.add(
+          GestureDetector(
+            onTap: () {
+              if (widget.referenceData != null) {
+                for (final ToushiShintakuModel element2 in widget.referenceData!.value) {
+                  if (element2.shutokuSougaku.replaceAll('円', '').trim() == shutokuSougaku) {
+                    if (element2.name == name) {
+                      toushiShintakuInputNotifier.setInputValue(
+                        pos: pos,
+                        relationalId: element2.relationalId,
+                        id: element.id,
+                      );
+                    }
+                  }
+                }
+              }
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              padding: const EdgeInsets.all(5),
+
+              decoration: BoxDecoration(
+                color: (element.shutokuSougaku.replaceAll('円', '').trim() == shutokuSougaku)
+                    ? Colors.yellowAccent.withValues(alpha: 0.1)
+                    : Colors.black.withValues(alpha: 0.3),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(element.name),
+
+                  const SizedBox(height: 5),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                    children: <Widget>[
+                      const SizedBox.shrink(),
+                      Text(element.shutokuSougaku.replaceAll('円', '').trim()),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+    }
+
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) => list[index],
+            childCount: list.length,
+          ),
+        ),
+      ],
+    );
   }
 }
