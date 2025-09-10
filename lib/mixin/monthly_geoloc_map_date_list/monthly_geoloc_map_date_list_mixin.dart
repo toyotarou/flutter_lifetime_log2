@@ -21,9 +21,7 @@ mixin MonthlyGeolocMapDateListMixin on ConsumerState<MonthlyGeolocMapDateListWid
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             GestureDetector(
-              onTap: () {
-                appParamNotifier.clearMonthlyGeolocMapSelectedDateList();
-              },
+              onTap: () => appParamNotifier.clearMonthlyGeolocMapSelectedDateList(),
               child: const Text('clear'),
             ),
 
@@ -105,9 +103,7 @@ mixin MonthlyGeolocMapDateListMixin on ConsumerState<MonthlyGeolocMapDateListWid
                                 const SizedBox(width: 10),
 
                                 GestureDetector(
-                                  onTap: () {
-                                    appParamNotifier.setMonthlyGeolocMapSelectedDateList(date: e.key);
-                                  },
+                                  onTap: () => appParamNotifier.setMonthlyGeolocMapSelectedDateList(date: e.key),
                                   child: const Icon(Icons.location_on),
                                 ),
                               ],

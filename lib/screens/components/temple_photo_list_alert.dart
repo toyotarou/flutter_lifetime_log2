@@ -194,15 +194,13 @@ class _TemplePhotoListAlertState extends ConsumerState<TemplePhotoListAlert>
         for (final String element2 in element.templephotos) {
           list2.add(
             GestureDetector(
-              onTap: () {
-                LifetimeDialog(
-                  context: context,
-                  widget: TemplePhotoDisplayAlert(imageUrl: element2),
+              onTap: () => LifetimeDialog(
+                context: context,
+                widget: TemplePhotoDisplayAlert(imageUrl: element2),
 
-                  paddingTop: context.screenSize.height * 0.1,
-                  paddingBottom: context.screenSize.height * 0.1,
-                );
-              },
+                paddingTop: context.screenSize.height * 0.1,
+                paddingBottom: context.screenSize.height * 0.1,
+              ),
 
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5),

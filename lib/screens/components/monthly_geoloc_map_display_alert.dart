@@ -173,9 +173,7 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: GestureDetector(
-                              onTap: () {
-                                setDefaultBoundsMap();
-                              },
+                              onTap: () => setDefaultBoundsMap(),
                               child: const Icon(FontAwesomeIcons.expand),
                             ),
                           ),

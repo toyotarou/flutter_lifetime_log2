@@ -106,9 +106,7 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               GestureDetector(
-                onTap: () {
-                  lifetimeInputNotifier.setItemPos(pos: i);
-                },
+                onTap: () => lifetimeInputNotifier.setItemPos(pos: i),
                 child: CircleAvatar(
                   backgroundColor: (i == lifetimeInputState.itemPos)
                       ? Colors.yellowAccent.withValues(alpha: 0.2)

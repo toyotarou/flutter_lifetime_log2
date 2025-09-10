@@ -493,12 +493,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     final String youbi = DateTime.parse(date).youbiStr;
 
     final GestureDetector stockInputButton = GestureDetector(
-      onTap: () {
-        LifetimeDialog(
-          context: context,
-          widget: StockDataInputAlert(date: date),
-        );
-      },
+      onTap: () => LifetimeDialog(
+        context: context,
+        widget: StockDataInputAlert(date: date),
+      ),
       child: Icon(
         Icons.input,
         color: (date == DateTime.now().yyyymmdd && !todayStockExists)

@@ -129,9 +129,7 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
           child: Row(
             children: <Widget>[
               GestureDetector(
-                onTap: () {
-                  lifetimeInputNotifier.setItemPos(pos: i);
-                },
+                onTap: () => lifetimeInputNotifier.setItemPos(pos: i),
                 child: CircleAvatar(
                   backgroundColor: (i == lifetimeInputState.itemPos)
                       ? Colors.yellowAccent.withValues(alpha: 0.2)

@@ -61,12 +61,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                           Row(
                             children: <Widget>[
                               GestureDetector(
-                                onTap: () {
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: MonthlyLifetimeDisplayAlert(yearmonth: widget.yearmonth),
-                                  );
-                                },
+                                onTap: () => LifetimeDialog(
+                                  context: context,
+                                  widget: MonthlyLifetimeDisplayAlert(yearmonth: widget.yearmonth),
+                                ),
                                 child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.3)),
                               ),
 
@@ -475,17 +473,15 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                             if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
                                               GestureDetector(
-                                                onTap: () {
-                                                  LifetimeDialog(
-                                                    context: context,
-                                                    widget: LifetimeGeolocMapDisplayAlert(
-                                                      date: date,
-                                                      geolocList: appParamState.keepGeolocMap[date],
-                                                      temple: appParamState.keepTempleMap[date],
-                                                      transportation: appParamState.keepTransportationMap[date],
-                                                    ),
-                                                  );
-                                                },
+                                                onTap: () => LifetimeDialog(
+                                                  context: context,
+                                                  widget: LifetimeGeolocMapDisplayAlert(
+                                                    date: date,
+                                                    geolocList: appParamState.keepGeolocMap[date],
+                                                    temple: appParamState.keepTempleMap[date],
+                                                    transportation: appParamState.keepTransportationMap[date],
+                                                  ),
+                                                ),
                                                 child: Column(
                                                   children: <Widget>[
                                                     Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
@@ -571,20 +567,18 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                           child: Container(
                                             alignment: Alignment.topRight,
                                             child: GestureDetector(
-                                              onTap: () {
-                                                LifetimeDialog(
-                                                  context: context,
-                                                  widget: WalkDataInputAlert(
-                                                    date: date,
-                                                    step: (appParamState.keepWalkModelMap[date] != null)
-                                                        ? appParamState.keepWalkModelMap[date]!.step.toString()
-                                                        : '',
-                                                    distance: (appParamState.keepWalkModelMap[date] != null)
-                                                        ? appParamState.keepWalkModelMap[date]!.distance.toString()
-                                                        : '',
-                                                  ),
-                                                );
-                                              },
+                                              onTap: () => LifetimeDialog(
+                                                context: context,
+                                                widget: WalkDataInputAlert(
+                                                  date: date,
+                                                  step: (appParamState.keepWalkModelMap[date] != null)
+                                                      ? appParamState.keepWalkModelMap[date]!.step.toString()
+                                                      : '',
+                                                  distance: (appParamState.keepWalkModelMap[date] != null)
+                                                      ? appParamState.keepWalkModelMap[date]!.distance.toString()
+                                                      : '',
+                                                ),
+                                              ),
                                               child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
                                             ),
                                           ),

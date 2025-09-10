@@ -107,9 +107,7 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
         child: GestureDetector(
-          onTap: () {
-            appParamNotifier.setSelectedGraphYear(year: 0);
-          },
+          onTap: () => appParamNotifier.setSelectedGraphYear(year: 0),
           child: CircleAvatar(
             backgroundColor: (appParamState.selectedGraphYear == 0)
                 ? Colors.yellowAccent.withValues(alpha: 0.3)
@@ -126,9 +124,7 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
           child: GestureDetector(
-            onTap: () {
-              appParamNotifier.setSelectedGraphYear(year: i);
-            },
+            onTap: () => appParamNotifier.setSelectedGraphYear(year: i),
             child: CircleAvatar(
               backgroundColor: (appParamState.selectedGraphYear == i)
                   ? Colors.yellowAccent.withValues(alpha: 0.3)

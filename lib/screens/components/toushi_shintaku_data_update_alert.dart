@@ -147,14 +147,12 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                       children: <Widget>[
                         Text(textModify(text: element.shutokuSougaku)),
                         GestureDetector(
-                          onTap: () {
-                            callFirstBox(
-                              pos: i,
-                              id: element.id,
-                              name: element.name,
-                              shutokuSougaku: textModify(text: element.shutokuSougaku).trim(),
-                            );
-                          },
+                          onTap: () => callFirstBox(
+                            pos: i,
+                            id: element.id,
+                            name: element.name,
+                            shutokuSougaku: textModify(text: element.shutokuSougaku).trim(),
+                          ),
                           child: Icon(
                             Icons.search,
 
@@ -249,6 +247,22 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
         );
 
       for (final ToushiShintakuModel element in sortedData) {
+        bool shutokuSougakuMatchFlag = false;
+
+        if (textModify(text: element.shutokuSougaku).trim() == shutokuSougaku) {
+          shutokuSougakuMatchFlag = true;
+        }
+
+        bool shutokuSougakuAroundFlag = false;
+        if (!shutokuSougakuMatchFlag) {
+          final int ss1 = textModify(text: shutokuSougaku).replaceAll(',', '').trim().toInt();
+          final int ss2 = textModify(text: element.shutokuSougaku).replaceAll(',', '').trim().toInt();
+
+          if ((ss1 - ss2) < 50000) {
+            shutokuSougakuAroundFlag = true;
+          }
+        }
+
         list.add(
           GestureDetector(
             onTap: () => toushiShintakuInputNotifier.setInputValue(relationalId: element.relationalId, id: id),
@@ -258,8 +272,10 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
               padding: const EdgeInsets.all(5),
 
               decoration: BoxDecoration(
-                color: (textModify(text: element.shutokuSougaku).trim() == shutokuSougaku)
+                color: shutokuSougakuMatchFlag
                     ? Colors.yellowAccent.withValues(alpha: 0.1)
+                    : shutokuSougakuAroundFlag
+                    ? Colors.blueAccent.withValues(alpha: 0.1)
                     : Colors.black.withValues(alpha: 0.3),
               ),
               child: Column(

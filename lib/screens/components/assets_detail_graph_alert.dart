@@ -156,9 +156,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: GestureDetector(
-                  onTap: () {
-                    appParamNotifier.setSelectedToushiGraphYear(year: e);
-                  },
+                  onTap: () => appParamNotifier.setSelectedToushiGraphYear(year: e),
                   child: CircleAvatar(
                     radius: 15,
 
@@ -647,9 +645,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                     child: Row(
                       children: <Widget>[
                         GestureDetector(
-                          onTap: () {
-                            appParamNotifier.setSelectedToushiGraphItemName(name: element2.ticker);
-                          },
+                          onTap: () => appParamNotifier.setSelectedToushiGraphItemName(name: element2.ticker),
                           child: CircleAvatar(
                             radius: 15,
                             backgroundColor: (appParamState.selectedToushiGraphItemName == element2.ticker)
@@ -688,12 +684,10 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                         const SizedBox(width: 20),
 
                         GestureDetector(
-                          onTap: () {
-                            LifetimeDialog(
-                              context: context,
-                              widget: AssetsDetailListAlert(title: widget.title, item: element2.ticker, name: name),
-                            );
-                          },
+                          onTap: () => LifetimeDialog(
+                            context: context,
+                            widget: AssetsDetailListAlert(title: widget.title, item: element2.ticker, name: name),
+                          ),
 
                           child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
                         ),
@@ -768,9 +762,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                       child: Row(
                         children: <Widget>[
                           GestureDetector(
-                            onTap: () {
-                              appParamNotifier.setSelectedToushiGraphItemName(name: element2.relationalId.toString());
-                            },
+                            onTap: () =>
+                                appParamNotifier.setSelectedToushiGraphItemName(name: element2.relationalId.toString()),
                             child: CircleAvatar(
                               radius: 15,
 
@@ -811,16 +804,14 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                           const SizedBox(width: 20),
 
                           GestureDetector(
-                            onTap: () {
-                              LifetimeDialog(
-                                context: context,
-                                widget: AssetsDetailListAlert(
-                                  title: widget.title,
-                                  item: element2.relationalId.toString(),
-                                  name: name,
-                                ),
-                              );
-                            },
+                            onTap: () => LifetimeDialog(
+                              context: context,
+                              widget: AssetsDetailListAlert(
+                                title: widget.title,
+                                item: element2.relationalId.toString(),
+                                name: name,
+                              ),
+                            ),
 
                             child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
                           ),

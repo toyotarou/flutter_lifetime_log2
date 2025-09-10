@@ -289,9 +289,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               GestureDetector(
-                onTap: () {
-                  lifetimeInputNotifier.setItemPos(pos: i);
-                },
+                onTap: () => lifetimeInputNotifier.setItemPos(pos: i),
                 child: CircleAvatar(
                   backgroundColor: (i == lifetimeInputState.itemPos)
                       ? Colors.yellowAccent.withValues(alpha: 0.2)
@@ -311,9 +309,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
                     Row(
                       children: <Widget>[
                         GestureDetector(
-                          onTap: () {
-                            _showDP(pos: i);
-                          },
+                          onTap: () => _showDP(pos: i),
                           child: Icon(Icons.calendar_month, color: Colors.white.withValues(alpha: 0.4)),
                         ),
                         const SizedBox(width: 10),
