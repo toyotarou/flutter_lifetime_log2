@@ -481,6 +481,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                     temple: appParamState.keepTempleMap[date],
                                                     transportation: appParamState.keepTransportationMap[date],
                                                   ),
+
+                                                  executeFunctionWhenDialogClose: true,
+                                                  from: 'LifetimeGeolocMapDisplayAlert',
+                                                  ref: ref,
                                                 ),
                                                 child: Column(
                                                   children: <Widget>[

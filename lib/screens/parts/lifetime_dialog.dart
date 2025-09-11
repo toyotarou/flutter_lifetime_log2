@@ -40,7 +40,8 @@ Future<void> LifetimeDialog({
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (from == 'MoneyDataInputAlert' ||
             from == 'MonthlyGeolocMapDisplayAlert' ||
-            from == 'ToushiShintakuDataUpdateAlert') {
+            from == 'ToushiShintakuDataUpdateAlert' ||
+            from == 'LifetimeGeolocMapDisplayAlert') {
           if (ref != null) {
             closeAllOverlays(ref: ref);
           }

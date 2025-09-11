@@ -14,6 +14,7 @@ import '../../models/transportation_model.dart';
 import '../../utility/tile_provider.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
+import '../parts/lifetime_log_overlay.dart';
 import 'temple_list_display_alert.dart';
 import 'time_place_display_alert.dart';
 
@@ -70,6 +71,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   final double timeContainerWidth = 40;
 
   List<Marker> displayTimeMarkerList = <Marker>[];
+
+  final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
+  final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
 
   ///
   @override
@@ -227,17 +231,28 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
                     Column(
                       children: <Widget>[
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                        Row(
+                          children: <Widget>[
+                            ElevatedButton(
+                              onPressed: () {
+                                callFirstBox();
+                              },
+                              child: const Text('dummy'),
+                            ),
 
-                          child: GestureDetector(
-                            onTap: () => setDefaultBoundsMap(),
-                            child: const Icon(FontAwesomeIcons.expand),
-                          ),
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+
+                              child: GestureDetector(
+                                onTap: () => setDefaultBoundsMap(),
+                                child: const Icon(FontAwesomeIcons.expand),
+                              ),
+                            ),
+                          ],
                         ),
 
                         if (widget.temple != null) ...<Widget>[
@@ -481,6 +496,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           clearBarrierColor: true,
         );
       }
+
+      callFirstBox();
     }
   }
 
@@ -499,6 +516,72 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         ),
       );
     });
+  }
+
+  ///
+  void callFirstBox() {
+    appParamNotifier.setFirstOverlayParams(firstEntries: _firstEntries);
+
+    addFirstOverlay(
+      context: context,
+      setStateCallback: setState,
+      width: context.screenSize.width * 0.25,
+      height: context.screenSize.height * 0.4,
+      color: Colors.blueGrey.withOpacity(0.3),
+      initialPosition: Offset(context.screenSize.width * 0.75, context.screenSize.height * 0.3),
+
+      widget: SizedBox(height: context.screenSize.height * 0.35, child: displayTimeGeolocList()),
+
+      fixedFlag: true,
+
+      firstEntries: _firstEntries,
+      secondEntries: _secondEntries,
+      onPositionChanged: (Offset newPos) => appParamNotifier.updateOverlayPosition(newPos),
+    );
+  }
+
+  ///
+  Widget displayTimeGeolocList() {
+    final List<Widget> list = <Widget>[];
+
+    String keepTime = '';
+    widget.geolocList
+      ?..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time))
+      ..forEach((GeolocModel element) {
+        if (keepTime != element.time.split(':')[0]) {
+          list.add(
+            GestureDetector(
+              onTap: () {},
+
+              child: Container(
+                margin: const EdgeInsets.all(5),
+                padding: const EdgeInsets.all(5),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: 0.4))),
+
+                child: Text(
+                  '${element.time.split(':')[0]}:${element.time.split(':')[1]}',
+
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+            ),
+          );
+        }
+
+        keepTime = element.time.split(':')[0];
+      });
+
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) => list[index],
+            childCount: list.length,
+          ),
+        ),
+      ],
+    );
   }
 
   ///
