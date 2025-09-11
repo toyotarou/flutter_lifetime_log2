@@ -105,11 +105,16 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
 
     int i = 0;
     for (final ToushiShintakuModel element in widget.todayDataList) {
-      final String displayRelationalId =
-          (toushiShintakuInputState.relationalIdMap[element.id.toString()] != null &&
-              toushiShintakuInputState.relationalIdMap[element.id.toString()] != 0)
-          ? toushiShintakuInputState.relationalIdMap[element.id.toString()].toString()
-          : '';
+      String displayRelationalId = '';
+
+      if (element.relationalId > 0) {
+        displayRelationalId = element.relationalId.toString();
+      } else {
+        if (toushiShintakuInputState.relationalIdMap[element.id.toString()] != null &&
+            toushiShintakuInputState.relationalIdMap[element.id.toString()] != 0) {
+          displayRelationalId = toushiShintakuInputState.relationalIdMap[element.id.toString()].toString();
+        }
+      }
 
       list.add(
         Container(
@@ -215,6 +220,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
               child: displayToushiShintakuNameRelationalIdList(
                 pos: pos,
                 id: id,
+                name: name,
                 shutokuSougaku: textModify(text: shutokuSougaku).trim(),
               ),
             ),
@@ -232,6 +238,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
   Widget displayToushiShintakuNameRelationalIdList({
     required int pos,
     required int id,
+    required String name,
     required String shutokuSougaku,
   }) {
     final List<Widget> list = <Widget>[];
@@ -258,7 +265,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
           final int ss1 = textModify(text: shutokuSougaku).replaceAll(',', '').trim().toInt();
           final int ss2 = textModify(text: element.shutokuSougaku).replaceAll(',', '').trim().toInt();
 
-          if ((ss1 - ss2) < 50000) {
+          if ((ss1 - ss2) < 50000 && element.name == name) {
             shutokuSougakuAroundFlag = true;
           }
         }
