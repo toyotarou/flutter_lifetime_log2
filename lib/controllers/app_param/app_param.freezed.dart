@@ -90,6 +90,7 @@ mixin _$AppParamState {
   String get yearlyAllSpendSelectedYear => throw _privateConstructorUsedError;
   String get yearlyAllSpendSelectedPrice => throw _privateConstructorUsedError;
   String get selectedToushiGraphYear => throw _privateConstructorUsedError;
+  String get selectedGeolocTime => throw _privateConstructorUsedError;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
@@ -142,7 +143,8 @@ abstract class $AppParamStateCopyWith<$Res> {
       String selectedToushiGraphItemName,
       String yearlyAllSpendSelectedYear,
       String yearlyAllSpendSelectedPrice,
-      String selectedToushiGraphYear});
+      String selectedToushiGraphYear,
+      String selectedGeolocTime});
 }
 
 /// @nodoc
@@ -198,6 +200,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? yearlyAllSpendSelectedYear = null,
     Object? yearlyAllSpendSelectedPrice = null,
     Object? selectedToushiGraphYear = null,
+    Object? selectedGeolocTime = null,
   }) {
     return _then(_value.copyWith(
       keepHolidayList: null == keepHolidayList
@@ -352,6 +355,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.selectedToushiGraphYear
           : selectedToushiGraphYear // ignore: cast_nullable_to_non_nullable
               as String,
+      selectedGeolocTime: null == selectedGeolocTime
+          ? _value.selectedGeolocTime
+          : selectedGeolocTime // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -402,7 +409,8 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       String selectedToushiGraphItemName,
       String yearlyAllSpendSelectedYear,
       String yearlyAllSpendSelectedPrice,
-      String selectedToushiGraphYear});
+      String selectedToushiGraphYear,
+      String selectedGeolocTime});
 }
 
 /// @nodoc
@@ -456,6 +464,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? yearlyAllSpendSelectedYear = null,
     Object? yearlyAllSpendSelectedPrice = null,
     Object? selectedToushiGraphYear = null,
+    Object? selectedGeolocTime = null,
   }) {
     return _then(_$AppParamStateImpl(
       keepHolidayList: null == keepHolidayList
@@ -610,6 +619,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value.selectedToushiGraphYear
           : selectedToushiGraphYear // ignore: cast_nullable_to_non_nullable
               as String,
+      selectedGeolocTime: null == selectedGeolocTime
+          ? _value.selectedGeolocTime
+          : selectedGeolocTime // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -673,7 +686,8 @@ class _$AppParamStateImpl implements _AppParamState {
       this.selectedToushiGraphItemName = '',
       this.yearlyAllSpendSelectedYear = '',
       this.yearlyAllSpendSelectedPrice = '',
-      this.selectedToushiGraphYear = ''})
+      this.selectedToushiGraphYear = '',
+      this.selectedGeolocTime = ''})
       : _keepHolidayList = keepHolidayList,
         _keepWalkModelMap = keepWalkModelMap,
         _keepMoneyMap = keepMoneyMap,
@@ -999,10 +1013,13 @@ class _$AppParamStateImpl implements _AppParamState {
   @override
   @JsonKey()
   final String selectedToushiGraphYear;
+  @override
+  @JsonKey()
+  final String selectedGeolocTime;
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, selectedToushiGraphItemName: $selectedToushiGraphItemName, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, selectedToushiGraphItemName: $selectedToushiGraphItemName, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime)';
   }
 
   @override
@@ -1091,7 +1108,8 @@ class _$AppParamStateImpl implements _AppParamState {
                 other.yearlyAllSpendSelectedPrice ==
                     yearlyAllSpendSelectedPrice) &&
             (identical(other.selectedToushiGraphYear, selectedToushiGraphYear) ||
-                other.selectedToushiGraphYear == selectedToushiGraphYear));
+                other.selectedToushiGraphYear == selectedToushiGraphYear) &&
+            (identical(other.selectedGeolocTime, selectedGeolocTime) || other.selectedGeolocTime == selectedGeolocTime));
   }
 
   @override
@@ -1134,7 +1152,8 @@ class _$AppParamStateImpl implements _AppParamState {
         selectedToushiGraphItemName,
         yearlyAllSpendSelectedYear,
         yearlyAllSpendSelectedPrice,
-        selectedToushiGraphYear
+        selectedToushiGraphYear,
+        selectedGeolocTime
       ]);
 
   /// Create a copy of AppParamState
@@ -1185,7 +1204,8 @@ abstract class _AppParamState implements AppParamState {
       final String selectedToushiGraphItemName,
       final String yearlyAllSpendSelectedYear,
       final String yearlyAllSpendSelectedPrice,
-      final String selectedToushiGraphYear}) = _$AppParamStateImpl;
+      final String selectedToushiGraphYear,
+      final String selectedGeolocTime}) = _$AppParamStateImpl;
 
   @override
   List<String> get keepHolidayList;
@@ -1277,6 +1297,8 @@ abstract class _AppParamState implements AppParamState {
   String get yearlyAllSpendSelectedPrice;
   @override
   String get selectedToushiGraphYear;
+  @override
+  String get selectedGeolocTime;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.

@@ -86,6 +86,8 @@ class AppParamState with _$AppParamState {
     @Default('') String yearlyAllSpendSelectedPrice,
 
     @Default('') String selectedToushiGraphYear,
+
+    @Default('') String selectedGeolocTime,
   }) = _AppParamState;
 }
 
@@ -245,4 +247,7 @@ class AppParam extends _$AppParam {
 
   ///
   void setSelectedToushiGraphYear({required String year}) => state = state.copyWith(selectedToushiGraphYear: year);
+
+  ///
+  void setSelectedGeolocTime({required String time}) => state = state.copyWith(selectedGeolocTime: time);
 }

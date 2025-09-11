@@ -231,28 +231,17 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
                     Column(
                       children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            ElevatedButton(
-                              onPressed: () {
-                                callFirstBox();
-                              },
-                              child: const Text('dummy'),
-                            ),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
 
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-
-                              child: GestureDetector(
-                                onTap: () => setDefaultBoundsMap(),
-                                child: const Icon(FontAwesomeIcons.expand),
-                              ),
-                            ),
-                          ],
+                          child: GestureDetector(
+                            onTap: () => setDefaultBoundsMap(),
+                            child: const Icon(FontAwesomeIcons.expand),
+                          ),
                         ),
 
                         if (widget.temple != null) ...<Widget>[
@@ -549,9 +538,19 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       ?..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time))
       ..forEach((GeolocModel element) {
         if (keepTime != element.time.split(':')[0]) {
+          final String time = '${element.time.split(':')[0]}:${element.time.split(':')[1]}';
+
           list.add(
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                appParamNotifier.setSelectedGeolocTime(time: time);
+
+                appParamNotifier.setCurrentZoom(zoom: 18);
+
+                mapController.move(LatLng(element.latitude.toDouble(), element.longitude.toDouble()), 18);
+
+                mapController.rotate(0);
+              },
 
               child: Container(
                 margin: const EdgeInsets.all(5),
@@ -559,11 +558,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 alignment: Alignment.center,
                 decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: 0.4))),
 
-                child: Text(
-                  '${element.time.split(':')[0]}:${element.time.split(':')[1]}',
-
-                  style: const TextStyle(fontSize: 12),
-                ),
+                child: Text(time, style: const TextStyle(fontSize: 12)),
               ),
             ),
           );
