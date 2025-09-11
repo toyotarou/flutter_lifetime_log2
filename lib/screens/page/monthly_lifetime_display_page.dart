@@ -473,19 +473,23 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                             if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
                                               GestureDetector(
-                                                onTap: () => LifetimeDialog(
-                                                  context: context,
-                                                  widget: LifetimeGeolocMapDisplayAlert(
-                                                    date: date,
-                                                    geolocList: appParamState.keepGeolocMap[date],
-                                                    temple: appParamState.keepTempleMap[date],
-                                                    transportation: appParamState.keepTransportationMap[date],
-                                                  ),
+                                                onTap: () {
+                                                  appParamNotifier.setSelectedGeolocTime(time: '');
 
-                                                  executeFunctionWhenDialogClose: true,
-                                                  from: 'LifetimeGeolocMapDisplayAlert',
-                                                  ref: ref,
-                                                ),
+                                                  LifetimeDialog(
+                                                    context: context,
+                                                    widget: LifetimeGeolocMapDisplayAlert(
+                                                      date: date,
+                                                      geolocList: appParamState.keepGeolocMap[date],
+                                                      temple: appParamState.keepTempleMap[date],
+                                                      transportation: appParamState.keepTransportationMap[date],
+                                                    ),
+
+                                                    executeFunctionWhenDialogClose: true,
+                                                    from: 'LifetimeGeolocMapDisplayAlert',
+                                                    ref: ref,
+                                                  );
+                                                },
                                                 child: Column(
                                                   children: <Widget>[
                                                     Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),

@@ -6,9 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../controllers/_get_data/lat_lng_address/lat_lng_address.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
+import '../../models/lat_lng_address.dart';
 import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
 import '../../utility/tile_provider.dart';
@@ -239,7 +241,11 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                           ),
 
                           child: GestureDetector(
-                            onTap: () => setDefaultBoundsMap(),
+                            onTap: () {
+                              appParamNotifier.setSelectedGeolocTime(time: '');
+
+                              setDefaultBoundsMap();
+                            },
                             child: const Icon(FontAwesomeIcons.expand),
                           ),
                         ),
@@ -281,6 +287,25 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           ),
 
           if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+
+          if (appParamState.selectedGeolocTime != '') ...<Widget>[
+            Positioned(
+              bottom: 10,
+              right: 5,
+              left: 5,
+              height: 150,
+
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.3),
+
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.all(5),
+                child: displayLatLngAddressList(),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -515,11 +540,11 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       context: context,
       setStateCallback: setState,
       width: context.screenSize.width * 0.25,
-      height: context.screenSize.height * 0.4,
+      height: context.screenSize.height * 0.25,
       color: Colors.blueGrey.withOpacity(0.3),
-      initialPosition: Offset(context.screenSize.width * 0.75, context.screenSize.height * 0.3),
+      initialPosition: Offset(context.screenSize.width * 0.75, context.screenSize.height * 0.45),
 
-      widget: SizedBox(height: context.screenSize.height * 0.35, child: displayTimeGeolocList()),
+      widget: SizedBox(height: context.screenSize.height * 0.2, child: displayTimeGeolocList()),
 
       fixedFlag: true,
 
@@ -655,5 +680,51 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         );
       }
     }
+  }
+
+  ///
+  Widget displayLatLngAddressList() {
+    final List<Widget> list = <Widget>[];
+
+    if (appParamState.selectedGeolocTime != '') {
+      final List<GeolocModel>? searchedGeoloc = widget.geolocList
+          ?.where((GeolocModel element) {
+            return '${element.year}-${element.month}-${element.day}' == widget.date;
+          })
+          .where((GeolocModel element2) {
+            return '${element2.time.split(':')[0]}:${element2.time.split(':')[1]}' == appParamState.selectedGeolocTime;
+          })
+          .toList();
+
+      final List<String> addressList = <String>[];
+      if (searchedGeoloc != null) {
+        final AsyncValue<LatLngAddressControllerState> latLngAddressControllerState = ref.watch(
+          latLngAddressControllerProvider(latitude: searchedGeoloc[0].latitude, longitude: searchedGeoloc[0].longitude),
+        );
+
+        final List<LatLngAddressDetailModel>? latLngAddressList = latLngAddressControllerState.value?.latLngAddressList;
+
+        latLngAddressList?.forEach(
+          (LatLngAddressDetailModel element) => addressList.add('${element.prefecture}${element.city}${element.town}'),
+        );
+      }
+
+      list.add(Text(appParamState.selectedGeolocTime));
+
+      for (final String element in addressList) {
+        list.add(Text(element, style: const TextStyle(fontSize: 12)));
+      }
+    }
+
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) => list[index],
+            childCount: list.length,
+          ),
+        ),
+      ],
+    );
   }
 }
