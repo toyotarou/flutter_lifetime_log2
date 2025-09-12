@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -536,6 +537,18 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void callFirstBox() {
     appParamNotifier.setFirstOverlayParams(firstEntries: _firstEntries);
 
+    final Completer<void> completer = Completer<void>();
+
+    completer.future.then((_) {
+      if (mounted) {
+        final NavigatorState nav = Navigator.of(context, rootNavigator: true);
+
+        if (nav.canPop()) {
+          nav.pop();
+        }
+      }
+    });
+
     addFirstOverlay(
       context: context,
       setStateCallback: setState,
@@ -544,7 +557,17 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       color: Colors.blueGrey.withOpacity(0.3),
       initialPosition: Offset(context.screenSize.width * 0.75, context.screenSize.height * 0.45),
 
-      widget: SizedBox(height: context.screenSize.height * 0.2, child: displayTimeGeolocList()),
+      widget: SizedBox(
+        height: context.screenSize.height * 0.2,
+
+        child: displayTimeGeolocList(
+          onCloseDialogFromOverlay: () {
+            if (!completer.isCompleted) {
+              completer.complete();
+            }
+          },
+        ),
+      ),
 
       fixedFlag: true,
 
@@ -555,7 +578,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   }
 
   ///
-  Widget displayTimeGeolocList() {
+  Widget displayTimeGeolocList({required VoidCallback onCloseDialogFromOverlay}) {
     final List<Widget> list = <Widget>[];
 
     String keepTime = '';
@@ -575,6 +598,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 mapController.move(LatLng(element.latitude.toDouble(), element.longitude.toDouble()), 18);
 
                 mapController.rotate(0);
+
+                onCloseDialogFromOverlay();
               },
 
               child: Container(
