@@ -599,7 +599,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
                 mapController.rotate(0);
 
-                onCloseDialogFromOverlay();
+                if (appParamState.keepTimePlaceMap[widget.date] != null) {
+                  onCloseDialogFromOverlay();
+                }
               },
 
               child: Container(
