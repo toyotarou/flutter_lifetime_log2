@@ -43,7 +43,10 @@ Future<void> LifetimeDialog({
             from == 'ToushiShintakuDataUpdateAlert' ||
             from == 'LifetimeGeolocMapDisplayAlert') {
           if (ref != null) {
-            closeAllOverlays(ref: ref);
+            try {
+              closeAllOverlays(ref: ref);
+            // ignore: empty_catches
+            } catch (e) {}
           }
         }
 

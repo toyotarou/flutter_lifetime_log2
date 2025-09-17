@@ -263,6 +263,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
                             child: GestureDetector(
                               onTap: () {
+                                closeAllOverlays(ref: ref);
+
                                 appParamNotifier.setSelectedTempleDirection(direction: '');
 
                                 LifetimeDialog(
