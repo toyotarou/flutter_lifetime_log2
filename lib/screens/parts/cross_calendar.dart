@@ -81,34 +81,45 @@ class _CrossCalendarState extends State<CrossCalendar> {
       if (_syncingH) {
         return;
       }
+
       _syncingH = true;
+
       if (_hBodyCtrl.hasClients) {
         _hBodyCtrl.jumpTo(_hHeaderCtrl.offset);
       }
+
       _syncingH = false;
-      _updateCurrentMonthByOffset(_hHeaderCtrl.offset);
+
+      _updateCurrentMonthByOffset(dx: _hHeaderCtrl.offset);
     });
 
     _hBodyCtrl.addListener(() {
       if (_syncingH) {
         return;
       }
+
       _syncingH = true;
+
       if (_hHeaderCtrl.hasClients) {
         _hHeaderCtrl.jumpTo(_hBodyCtrl.offset);
       }
+
       _syncingH = false;
-      _updateCurrentMonthByOffset(_hBodyCtrl.offset);
+
+      _updateCurrentMonthByOffset(dx: _hBodyCtrl.offset);
     });
 
     _vLeftCtrl.addListener(() {
       if (_syncingV) {
         return;
       }
+
       _syncingV = true;
+
       if (_vBodyCtrl.hasClients) {
         _vBodyCtrl.jumpTo(_vLeftCtrl.offset);
       }
+
       _syncingV = false;
     });
 
@@ -116,42 +127,51 @@ class _CrossCalendarState extends State<CrossCalendar> {
       if (_syncingV) {
         return;
       }
+
       _syncingV = true;
+
       if (_vLeftCtrl.hasClients) {
         _vLeftCtrl.jumpTo(_vBodyCtrl.offset);
       }
+
       _syncingV = false;
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _scrollToMonth(nowMonth);
+      await _scrollToMonth(month: nowMonth);
 
-      _ensureMonthButtonVisible(nowMonth, alignment: nowMonth >= 7 ? 1.0 : 0.0, animate: false);
+      _ensureMonthButtonVisible(month: nowMonth, alignment: nowMonth >= 7 ? 1.0 : 0.0, animate: false);
     });
   }
 
   ///
-  void _updateCurrentMonthByOffset(double dx) {
+  void _updateCurrentMonthByOffset({required double dx}) {
     int lo = 0, hi = widget.monthDays.length;
+
     while (lo < hi) {
       final int mid = (lo + hi) >> 1;
+
       if (_prefixWidths[mid] <= dx) {
         lo = mid + 1;
       } else {
         hi = mid;
       }
     }
+
     final int idx = (lo - 1).clamp(0, widget.monthDays.length - 1);
+
     final String md = widget.monthDays[idx];
+
     final int m = int.tryParse(md.substring(0, 2)) ?? 1;
+
     if (m != _currentMonth) {
       setState(() => _currentMonth = m);
-      _ensureMonthButtonVisible(m);
+      _ensureMonthButtonVisible(month: m);
     }
   }
 
   ///
-  Future<void> _scrollToMonth(int month) async {
+  Future<void> _scrollToMonth({required int month}) async {
     final int idx = _monthStartIndex[month] ?? 0;
     _syncingH = true;
     // ignore: strict_raw_type, always_specify_types
@@ -172,11 +192,12 @@ class _CrossCalendarState extends State<CrossCalendar> {
     if (_currentMonth != month) {
       setState(() => _currentMonth = month);
     }
-    _ensureMonthButtonVisible(month);
+
+    _ensureMonthButtonVisible(month: month);
   }
 
   ///
-  void _ensureMonthButtonVisible(int month, {double alignment = 0.5, bool animate = true}) {
+  void _ensureMonthButtonVisible({required int month, double alignment = 0.5, bool animate = true}) {
     final int i = (month - 1).clamp(0, 11);
     final GlobalKey<State<StatefulWidget>> key = _monthKeys[i];
     final BuildContext? ctx = key.currentContext;
@@ -224,7 +245,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
                 key: _monthKeys[i],
 
                 child: GestureDetector(
-                  onTap: () => _scrollToMonth(month),
+                  onTap: () => _scrollToMonth(month: month),
                   child: CircleAvatar(
                     radius: 22,
                     backgroundColor: selected ? Colors.blue : Colors.grey.shade300,
@@ -255,7 +276,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
                       right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                     ),
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Text(r'Year \ Date', style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
@@ -293,9 +314,14 @@ class _CrossCalendarState extends State<CrossCalendar> {
                     itemCount: widget.years.length,
                     itemBuilder: (BuildContext context, int i) {
                       final int row = i + 1;
+
                       final String year = widget.years[i];
+
+                      final double rowHeight = widget.rowHeights[row];
+
                       return Container(
-                        height: widget.rowHeights[row],
+                        height: rowHeight,
+
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.2),
                           border: Border(
@@ -353,7 +379,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
 
   ///
   Widget _headerCell({required double width, required String md}) {
-    final String label = _mdToSlash(md);
+    final String label = getHeaderDate(md: md);
 
     return Container(
       width: width,
@@ -373,35 +399,41 @@ class _CrossCalendarState extends State<CrossCalendar> {
 
   ///
   Widget _buildColumnOfYear({required String md, required double colWidth}) {
+    final List<Widget> list = <Widget>[];
+
+    for (int r = 0; r < widget.years.length; r++) {
+      final double rowHeight = widget.rowHeights[r + 1];
+
+      list.add(
+        _bodyCell(
+          width: colWidth,
+          height: rowHeight,
+
+          isDisabled: _isNonLeapFeb29(year: widget.years[r], md: md),
+          child: _isNonLeapFeb29(year: widget.years[r], md: md)
+              ? const SizedBox.shrink()
+              : _cellContent(year: widget.years[r], md: md),
+        ),
+      );
+    }
+
     return SizedBox(
       width: colWidth,
-      child: Column(
-        children: <Widget>[
-          for (int r = 0; r < widget.years.length; r++)
-            _bodyCell(
-              width: colWidth,
-              height: widget.rowHeights[r + 1],
-              isDisabled: _isNonLeapFeb29(widget.years[r], md),
-              child: _isNonLeapFeb29(widget.years[r], md) ? const SizedBox.shrink() : _cellContent(widget.years[r], md),
-            ),
-        ],
-      ),
+      child: Column(children: list),
     );
   }
 
   ///
-  Widget _cellContent(String year, String md) {
-    final String fallback = _ymdJP(year, md);
-
+  Widget _cellContent({required String year, required String md}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[Text(fallback, maxLines: 2, overflow: TextOverflow.ellipsis)],
+      children: <Widget>[Text('$year-$md', maxLines: 2, overflow: TextOverflow.ellipsis)],
     );
   }
 
   ///
-  bool _isNonLeapFeb29(String year, String md) {
+  bool _isNonLeapFeb29({required String year, required String md}) {
     if (md != '02-29') {
       return false;
     }
@@ -411,17 +443,10 @@ class _CrossCalendarState extends State<CrossCalendar> {
   }
 
   ///
-  String _mdToSlash(String md) {
+  String getHeaderDate({required String md}) {
     final int m = int.tryParse(md.substring(0, 2)) ?? 1;
     final int d = int.tryParse(md.substring(3, 5)) ?? 1;
-    return '$m/$d';
-  }
-
-  ///
-  String _ymdJP(String year, String md) {
-    final int m = int.tryParse(md.substring(0, 2)) ?? 1;
-    final int d = int.tryParse(md.substring(3, 5)) ?? 1;
-    return '$year年$m月$d日';
+    return '${m.toString().padLeft(2, '0')}-${d.toString().padLeft(2, '0')}';
   }
 
   ///

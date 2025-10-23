@@ -18,11 +18,14 @@ class _LifetimeSummaryAlertState extends ConsumerState<LifetimeSummaryAlert>
   ///
   @override
   Widget build(BuildContext context) {
-    List<String> years = ['2023', '2024', '2025'];
+    final List<String> years = <String>['2023', '2024', '2025'];
 
     final List<String> monthDays = generateFullMonthDays();
 
-    final List<double> rowHeights = List<double>.generate(years.length + 1, (int i) => i == 0 ? 48 : 72);
+    final List<double> rowHeights = List<double>.generate(
+      years.length + 1,
+      (int i) => i == 0 ? 48 : context.screenSize.height * 0.2,
+    );
     final List<double> colWidths = List<double>.generate(monthDays.length + 1, (int i) => i == 0 ? 96 : 120);
 
     return Scaffold(
@@ -37,7 +40,6 @@ class _LifetimeSummaryAlertState extends ConsumerState<LifetimeSummaryAlert>
               leftColWidth: colWidths[0],
               rowHeights: rowHeights,
               colWidths: colWidths,
-
             ),
           ),
         ],
