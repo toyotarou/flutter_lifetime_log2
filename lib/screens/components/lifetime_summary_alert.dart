@@ -7,7 +7,9 @@ import '../../utility/functions.dart';
 import '../parts/cross_calendar.dart';
 
 class LifetimeSummaryAlert extends ConsumerStatefulWidget {
-  const LifetimeSummaryAlert({super.key});
+  const LifetimeSummaryAlert({super.key, required this.years});
+
+  final List<String> years;
 
   @override
   ConsumerState<LifetimeSummaryAlert> createState() => _LifetimeSummaryAlertState();
@@ -18,14 +20,13 @@ class _LifetimeSummaryAlertState extends ConsumerState<LifetimeSummaryAlert>
   ///
   @override
   Widget build(BuildContext context) {
-    final List<String> years = <String>['2023', '2024', '2025'];
-
     final List<String> monthDays = generateFullMonthDays();
 
     final List<double> rowHeights = List<double>.generate(
-      years.length + 1,
+      widget.years.length + 1,
       (int i) => i == 0 ? 48 : context.screenSize.height * 0.2,
     );
+
     final List<double> colWidths = List<double>.generate(monthDays.length + 1, (int i) => i == 0 ? 96 : 120);
 
     return Scaffold(
@@ -34,7 +35,7 @@ class _LifetimeSummaryAlertState extends ConsumerState<LifetimeSummaryAlert>
         children: <Widget>[
           Expanded(
             child: CrossCalendar(
-              years: years,
+              years: widget.years,
               monthDays: monthDays,
               headerHeight: rowHeights[0],
               leftColWidth: colWidths[0],

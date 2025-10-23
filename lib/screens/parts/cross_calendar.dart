@@ -462,14 +462,14 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         ? utility.getYoubiColor(date: '$year-$md', youbiStr: youbi, holiday: appParamState.keepHolidayList)
         : Colors.transparent;
 
-    return Container(
-      decoration: BoxDecoration(color: containerColor),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Container(
+          decoration: BoxDecoration(color: containerColor),
 
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text('$year-$md', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
@@ -477,8 +477,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
               Text(youbi.substring(0, 3), style: const TextStyle(fontSize: 12)),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

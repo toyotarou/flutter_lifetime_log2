@@ -201,7 +201,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
               GestureDetector(
                 onTap: () {
-                  LifetimeDialog(context: context, widget: const LifetimeSummaryAlert());
+                  final List<String> yList = <String>[];
+                  lifetimeState.lifetimeMap.forEach((String key, LifetimeModel value) {
+                    final List<String> exKey = key.split('-');
+                    yList.add(exKey[0]);
+                  });
+
+                  final List<String> years = yList.toSet().toList();
+
+                  LifetimeDialog(
+                    context: context,
+                    widget: LifetimeSummaryAlert(years: years),
+                  );
                 },
                 child: const Row(
                   children: <Widget>[
