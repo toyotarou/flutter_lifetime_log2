@@ -247,12 +247,12 @@ class _CrossCalendarState extends State<CrossCalendar> {
                 top: 0,
                 width: leftW,
                 height: headerH,
-                child: const DecoratedBox(
+                child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Color(0xFFF5F5F7),
+                    color: Colors.black.withValues(alpha: 0.2),
                     border: Border(
-                      bottom: BorderSide(color: Color(0xFFE0E0E0)),
-                      right: BorderSide(color: Color(0xFFE0E0E0)),
+                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                      right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                     ),
                   ),
                   child: Center(
@@ -296,11 +296,11 @@ class _CrossCalendarState extends State<CrossCalendar> {
                       final String year = widget.years[i];
                       return Container(
                         height: widget.rowHeights[row],
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF8F8FA),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.2),
                           border: Border(
-                            bottom: BorderSide(color: Color(0xFFEAEAEA)),
-                            right: BorderSide(color: Color(0xFFE0E0E0)),
+                            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                            right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                           ),
                         ),
                         alignment: Alignment.centerLeft,
@@ -354,15 +354,15 @@ class _CrossCalendarState extends State<CrossCalendar> {
   ///
   Widget _headerCell({required double width, required String md}) {
     final String label = _mdToSlash(md);
-    final bool isLeapDay = (md == '02-29');
+
     return Container(
       width: width,
       height: widget.headerHeight,
       decoration: BoxDecoration(
-        color: isLeapDay ? const Color(0xFFFAFAFA) : const Color(0xFFF5F5F7),
-        border: const Border(
-          bottom: BorderSide(color: Color(0xFFE0E0E0)),
-          right: BorderSide(color: Color(0xFFE0E0E0)),
+        color: Colors.black.withValues(alpha: 0.2),
+        border: Border(
+          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+          right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
         ),
       ),
       alignment: Alignment.centerLeft,
@@ -429,10 +429,10 @@ class _CrossCalendarState extends State<CrossCalendar> {
     final Container frame = Container(
       width: width,
       height: height,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Color(0xFFEAEAEA)),
-          right: BorderSide(color: Color(0xFFE0E0E0)),
+          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+          right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
         ),
       ),
     );
@@ -448,7 +448,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
 
     return Stack(
       children: <Widget>[
-        Container(width: width, height: height, color: const Color(0xFFF0F0F0)),
+        Container(width: width, height: height, color: Colors.black.withValues(alpha: 0.2)),
         CustomPaint(size: Size(width, height), painter: DiagonalSlashPainter()),
         frame,
       ],

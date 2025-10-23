@@ -6,7 +6,7 @@ class DiagonalSlashPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Paint p = Paint()
-      ..color = const Color(0xFFB0B0B0)
+      ..color = Colors.white.withValues(alpha: 0.2)
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
