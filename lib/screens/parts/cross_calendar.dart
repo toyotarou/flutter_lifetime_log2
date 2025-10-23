@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../controllers/controllers_mixin.dart';
+import '../../extensions/extensions.dart';
+import '../../utility/utility.dart';
 import '../parts/diagonal_slash_painter.dart';
 
 ///
-class CrossCalendar extends StatefulWidget {
+class CrossCalendar extends ConsumerStatefulWidget {
   const CrossCalendar({
     super.key,
     required this.years,
@@ -25,11 +29,11 @@ class CrossCalendar extends StatefulWidget {
   final List<double> colWidths;
 
   @override
-  State<CrossCalendar> createState() => _CrossCalendarState();
+  ConsumerState<CrossCalendar> createState() => _CrossCalendarState();
 }
 
 ///
-class _CrossCalendarState extends State<CrossCalendar> {
+class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersMixin<CrossCalendar> {
   late final AutoScrollController _hHeaderCtrl;
   late final AutoScrollController _hBodyCtrl;
 
@@ -47,6 +51,8 @@ class _CrossCalendarState extends State<CrossCalendar> {
   late final Map<int, int> _monthStartIndex;
 
   late final List<double> _prefixWidths;
+
+  Utility utility = Utility();
 
   ///
   double get _bodyTotalHeight {
@@ -229,151 +235,175 @@ class _CrossCalendarState extends State<CrossCalendar> {
     final double headerH = widget.headerHeight;
     final double leftW = widget.leftColWidth;
 
-    return Column(
-      children: <Widget>[
-        SizedBox(
-          height: 64,
-          child: ListView.separated(
-            controller: _monthBarCtrl,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            scrollDirection: Axis.horizontal,
-            itemCount: 12,
-            itemBuilder: (BuildContext context, int i) {
-              final int month = i + 1;
-              final bool selected = month == _currentMonth;
-              return Container(
-                key: _monthKeys[i],
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: <Widget>[
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-                child: GestureDetector(
-                  onTap: () => _scrollToMonth(month: month),
-                  child: CircleAvatar(
-                    radius: 22,
-                    backgroundColor: selected ? Colors.blue : Colors.grey.shade300,
-                    foregroundColor: selected ? Colors.white : Colors.black87,
-                    child: Text('$month月'),
-                  ),
-                ),
-              );
-            },
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
-          ),
-        ),
-        const Divider(height: 1),
+              children: <Widget>[Text('lifetime summary'), SizedBox.shrink()],
+            ),
 
-        Expanded(
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                left: 0,
-                top: 0,
-                width: leftW,
-                height: headerH,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    border: Border(
-                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                      right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+            Divider(thickness: 5, color: Colors.white.withValues(alpha: 0.4)),
+
+            getMonthDateSelectWidget(),
+
+            const Divider(height: 1),
+
+            Expanded(
+              child: Stack(
+                children: <Widget>[
+                  Positioned(
+                    left: 0,
+                    top: 0,
+                    width: leftW,
+                    height: headerH,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        border: Border(
+                          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                          right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                        ),
+                      ),
+                      child: const Center(
+                        child: Text(r'Year \ Date', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      ),
                     ),
                   ),
-                  child: const Center(
-                    child: Text(r'Year \ Date', style: TextStyle(fontWeight: FontWeight.bold)),
+
+                  Positioned(
+                    left: leftW,
+                    right: 0,
+                    top: 0,
+                    height: headerH,
+                    child: ListView.builder(
+                      controller: _hHeaderCtrl,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: widget.monthDays.length,
+                      itemBuilder: (_, int idx) => AutoScrollTag(
+                        // ignore: always_specify_types
+                        key: ValueKey('hheader_$idx'),
+                        controller: _hHeaderCtrl,
+                        index: idx,
+                        child: _headerCell(width: widget.colWidths[idx + 1], md: widget.monthDays[idx]),
+                      ),
+                    ),
                   ),
-                ),
-              ),
 
-              Positioned(
-                left: leftW,
-                right: 0,
-                top: 0,
-                height: headerH,
-                child: ListView.builder(
-                  controller: _hHeaderCtrl,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: widget.monthDays.length,
-                  itemBuilder: (_, int idx) => AutoScrollTag(
-                    // ignore: always_specify_types
-                    key: ValueKey('hheader_$idx'),
-                    controller: _hHeaderCtrl,
-                    index: idx,
-                    child: _headerCell(width: widget.colWidths[idx + 1], md: widget.monthDays[idx]),
-                  ),
-                ),
-              ),
-
-              Positioned(
-                left: 0,
-                top: headerH,
-                bottom: 0,
-                width: leftW,
-                child: Scrollbar(
-                  controller: _vLeftCtrl,
-                  thumbVisibility: true,
-                  child: ListView.builder(
-                    controller: _vLeftCtrl,
-                    itemCount: widget.years.length,
-                    itemBuilder: (BuildContext context, int i) {
-                      final int row = i + 1;
-
-                      final String year = widget.years[i];
-
-                      final double rowHeight = widget.rowHeights[row];
-
-                      return Container(
-                        height: rowHeight,
-
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          border: Border(
-                            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                            right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                          ),
-                        ),
-                        alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Text(year, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      );
-                    },
-                  ),
-                ),
-              ),
-
-              Positioned(
-                left: leftW,
-                top: headerH,
-                right: 0,
-                bottom: 0,
-                child: Scrollbar(
-                  controller: _vBodyCtrl,
-                  thumbVisibility: true,
-                  child: SingleChildScrollView(
-                    controller: _vBodyCtrl,
-
-                    child: SizedBox(
-                      height: _bodyTotalHeight,
+                  Positioned(
+                    left: 0,
+                    top: headerH,
+                    bottom: 0,
+                    width: leftW,
+                    child: Scrollbar(
+                      controller: _vLeftCtrl,
+                      thumbVisibility: true,
                       child: ListView.builder(
-                        controller: _hBodyCtrl,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: widget.monthDays.length,
-                        itemBuilder: (_, int colIdx) => AutoScrollTag(
-                          // ignore: always_specify_types
-                          key: ValueKey('hbody_$colIdx'),
-                          controller: _hBodyCtrl,
-                          index: colIdx,
-                          child: _buildColumnOfYear(
-                            md: widget.monthDays[colIdx],
-                            colWidth: widget.colWidths[colIdx + 1],
+                        controller: _vLeftCtrl,
+                        itemCount: widget.years.length,
+                        itemBuilder: (BuildContext context, int i) {
+                          final int row = i + 1;
+
+                          final String year = widget.years[i];
+
+                          final double rowHeight = widget.rowHeights[row];
+
+                          return Container(
+                            height: rowHeight,
+
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              border: Border(
+                                bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                                right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                              ),
+                            ),
+                            alignment: Alignment.centerLeft,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: Text(year, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
+                  Positioned(
+                    left: leftW,
+                    top: headerH,
+                    right: 0,
+                    bottom: 0,
+                    child: Scrollbar(
+                      controller: _vBodyCtrl,
+                      thumbVisibility: true,
+                      child: SingleChildScrollView(
+                        controller: _vBodyCtrl,
+
+                        child: SizedBox(
+                          height: _bodyTotalHeight,
+                          child: ListView.builder(
+                            controller: _hBodyCtrl,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: widget.monthDays.length,
+                            itemBuilder: (_, int colIdx) => AutoScrollTag(
+                              // ignore: always_specify_types
+                              key: ValueKey('hbody_$colIdx'),
+                              controller: _hBodyCtrl,
+                              index: colIdx,
+                              child: _buildColumnOfYear(
+                                md: widget.monthDays[colIdx],
+                                colWidth: widget.colWidths[colIdx + 1],
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  ///
+  Widget getMonthDateSelectWidget() {
+    return SizedBox(
+      height: 64,
+      child: ListView.separated(
+        controller: _monthBarCtrl,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        scrollDirection: Axis.horizontal,
+        itemCount: 12,
+        itemBuilder: (BuildContext context, int i) {
+          final int month = i + 1;
+          final bool selected = month == _currentMonth;
+          return Container(
+            key: _monthKeys[i],
+
+            child: GestureDetector(
+              onTap: () => _scrollToMonth(month: month),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: CircleAvatar(
+                  backgroundColor: selected
+                      ? Colors.yellowAccent.withValues(alpha: 0.3)
+                      : Colors.blueGrey.withValues(alpha: 0.3),
+
+                  child: Text('$month月', style: const TextStyle(fontSize: 12)),
                 ),
               ),
-            ],
-          ),
-        ),
-      ],
+            ),
+          );
+        },
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+      ),
     );
   }
 
@@ -393,7 +423,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
       ),
       alignment: Alignment.centerLeft,
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+      child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
     );
   }
 
@@ -412,7 +442,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
           isDisabled: _isNonLeapFeb29(year: widget.years[r], md: md),
           child: _isNonLeapFeb29(year: widget.years[r], md: md)
               ? const SizedBox.shrink()
-              : _cellContent(year: widget.years[r], md: md),
+              : getOneCellContent(year: widget.years[r], md: md),
         ),
       );
     }
@@ -424,11 +454,31 @@ class _CrossCalendarState extends State<CrossCalendar> {
   }
 
   ///
-  Widget _cellContent({required String year, required String md}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[Text('$year-$md', maxLines: 2, overflow: TextOverflow.ellipsis)],
+  Widget getOneCellContent({required String year, required String md}) {
+    final String youbi = DateTime.parse('$year-$md').youbiStr;
+
+    final Color containerColor =
+        (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains('$year-$md'))
+        ? utility.getYoubiColor(date: '$year-$md', youbiStr: youbi, holiday: appParamState.keepHolidayList)
+        : Colors.transparent;
+
+    return Container(
+      decoration: BoxDecoration(color: containerColor),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text('$year-$md', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
+
+              Text(youbi.substring(0, 3), style: const TextStyle(fontSize: 12)),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
