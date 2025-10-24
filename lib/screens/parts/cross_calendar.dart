@@ -273,62 +273,10 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     final double headerH = widget.headerHeight;
     final double leftW = widget.leftColWidth;
 
-    final DateTime now = DateTime.now();
-
     return Column(
       children: <Widget>[
-        // 上部の月ボタンバー
-        SizedBox(
-          height: 64,
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: ListView.separated(
-                  controller: _monthBarCtrl,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 12,
-                  itemBuilder: (BuildContext context, int i) {
-                    final int month = i + 1;
-                    final bool selected = month == _currentMonth;
-                    return Container(
-                      key: _monthKeys[i],
-                      child: GestureDetector(
-                        onTap: () => _scrollToMonth(month),
-                        child: CircleAvatar(
-                          radius: 22,
-                          backgroundColor: selected ? Colors.blue : Colors.grey.shade300,
-                          foregroundColor: selected ? Colors.white : Colors.black87,
-                          child: Text('$month月'),
-                        ),
-                      ),
-                    );
-                  },
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Wrap(
-                  spacing: 8,
-                  children: <Widget>[
-                    OutlinedButton.icon(
-                      onPressed: () => _scrollToMonth(now.month),
-                      icon: const Icon(Icons.calendar_month, size: 18),
-                      label: const Text('今月'),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: () => _scrollToTodayDay(),
-                      icon: const Icon(Icons.today, size: 18),
-                      label: const Text('今日'),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+        getMonthSelectButton(),
+
         const Divider(height: 1),
 
         // テーブル本体
@@ -370,7 +318,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                     key: ValueKey('hheader_$idx'),
                     controller: _hHeaderCtrl,
                     index: idx,
-                    child: _headerCell(width: widget.colWidths[idx + 1], md: widget.monthDays[idx]),
+                    child: getHeaderCellContent(width: widget.colWidths[idx + 1], md: widget.monthDays[idx]),
                   ),
                 ),
               ),
@@ -394,12 +342,9 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                         height: widget.rowHeights[i + 1],
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.2),
-                          border: Border(
-                            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                            //                            right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                          ),
+                          border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
                         ),
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Text(year, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                       );
@@ -448,7 +393,76 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   }
 
   ///
-  Widget _headerCell({required double width, required String md}) {
+  Widget getMonthSelectButton() {
+    return SizedBox(
+      height: 64,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: ListView.separated(
+              controller: _monthBarCtrl,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              scrollDirection: Axis.horizontal,
+              itemCount: 12,
+              itemBuilder: (BuildContext context, int i) {
+                final int month = i + 1;
+                final bool selected = month == _currentMonth;
+                return Container(
+                  key: _monthKeys[i],
+                  child: GestureDetector(
+                    onTap: () => _scrollToMonth(month),
+                    child: CircleAvatar(
+                      radius: 22,
+                      backgroundColor: selected ? Colors.blue : Colors.grey.shade300,
+                      foregroundColor: selected ? Colors.white : Colors.black87,
+                      child: Text('$month月'),
+                    ),
+                  ),
+                );
+              },
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+            ),
+          ),
+          const SizedBox(width: 8),
+
+          /*
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Wrap(
+              spacing: 8,
+              children: <Widget>[
+                // OutlinedButton.icon(
+                //   onPressed: () => _scrollToMonth(DateTime.now().month),
+                //   icon: const Icon(Icons.calendar_month, size: 18),
+                //   label: const Text('今月'),
+                // ),
+                //
+                //
+                //
+                //
+                OutlinedButton.icon(
+                  onPressed: () => _scrollToTodayDay(),
+                  icon: const Icon(Icons.today, size: 18),
+                  label: const Text('今日'),
+                ),
+              ],
+            ),
+          ),
+          */
+          OutlinedButton.icon(
+            onPressed: () => _scrollToTodayDay(),
+            icon: const Icon(Icons.today, size: 18),
+            label: const Text('今日'),
+          ),
+
+          const SizedBox(width: 8),
+        ],
+      ),
+    );
+  }
+
+  ///
+  Widget getHeaderCellContent({required double width, required String md}) {
     return Container(
       width: width,
       height: widget.headerHeight,
@@ -459,7 +473,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         border: Border(right: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
       ),
 
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Text(md, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
     );
