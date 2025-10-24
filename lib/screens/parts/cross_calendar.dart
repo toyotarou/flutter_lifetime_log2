@@ -1,3 +1,5 @@
+// ignore: depend_on_referenced_packages
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -425,30 +427,6 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
           ),
           const SizedBox(width: 8),
 
-          /*
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: Wrap(
-              spacing: 8,
-              children: <Widget>[
-                // OutlinedButton.icon(
-                //   onPressed: () => _scrollToMonth(DateTime.now().month),
-                //   icon: const Icon(Icons.calendar_month, size: 18),
-                //   label: const Text('今月'),
-                // ),
-                //
-                //
-                //
-                //
-                OutlinedButton.icon(
-                  onPressed: () => _scrollToTodayDay(),
-                  icon: const Icon(Icons.today, size: 18),
-                  label: const Text('今日'),
-                ),
-              ],
-            ),
-          ),
-          */
           OutlinedButton.icon(
             onPressed: () => _scrollToTodayDay(),
             icon: const Icon(Icons.today, size: 18),
@@ -507,11 +485,13 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
   ///
   Widget getOneCellContent(String year, String md) {
-    final String youbi = DateTime.parse('$year-$md').youbiStr;
+    final String date = '$year-$md';
+
+    final String youbi = DateTime.parse(date).youbiStr;
 
     final Color containerColor =
-        (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains('$year-$md'))
-        ? utility.getYoubiColor(date: '$year-$md', youbiStr: youbi, holiday: appParamState.keepHolidayList)
+        (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(date))
+        ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
         : Colors.transparent;
 
     return Column(
@@ -522,13 +502,90 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text('$year-$md', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
+              Text(date, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
               Text(youbi.substring(0, 3), style: const TextStyle(fontSize: 12)),
             ],
           ),
         ),
+
+        const SizedBox(height: 10),
+
+        Row(
+          children: <Widget>[
+            const Spacer(),
+            getLifetimeDisplayCellForCrossCalendar(date: date),
+            const Spacer(),
+          ],
+        ),
       ],
     );
+  }
+
+  ///
+  Widget getLifetimeDisplayCellForCrossCalendar({required String date}) {
+    List<String> lifetimeData = <String>[];
+
+    if (lifetimeState.lifetimeMap[date] != null) {
+      lifetimeData = <String>[
+        lifetimeState.lifetimeMap[date]!.hour00,
+        lifetimeState.lifetimeMap[date]!.hour01,
+        lifetimeState.lifetimeMap[date]!.hour02,
+        lifetimeState.lifetimeMap[date]!.hour03,
+        lifetimeState.lifetimeMap[date]!.hour04,
+        lifetimeState.lifetimeMap[date]!.hour05,
+        lifetimeState.lifetimeMap[date]!.hour06,
+        lifetimeState.lifetimeMap[date]!.hour07,
+        lifetimeState.lifetimeMap[date]!.hour08,
+        lifetimeState.lifetimeMap[date]!.hour09,
+        lifetimeState.lifetimeMap[date]!.hour10,
+        lifetimeState.lifetimeMap[date]!.hour11,
+        lifetimeState.lifetimeMap[date]!.hour12,
+        lifetimeState.lifetimeMap[date]!.hour13,
+        lifetimeState.lifetimeMap[date]!.hour14,
+        lifetimeState.lifetimeMap[date]!.hour15,
+        lifetimeState.lifetimeMap[date]!.hour16,
+        lifetimeState.lifetimeMap[date]!.hour17,
+        lifetimeState.lifetimeMap[date]!.hour18,
+        lifetimeState.lifetimeMap[date]!.hour19,
+        lifetimeState.lifetimeMap[date]!.hour20,
+        lifetimeState.lifetimeMap[date]!.hour21,
+        lifetimeState.lifetimeMap[date]!.hour22,
+        lifetimeState.lifetimeMap[date]!.hour23,
+      ];
+    }
+
+    if (lifetimeData.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final List<List<String>> chunks = lifetimeData.slices(6).toList();
+
+    final List<Widget> list = <Widget>[];
+
+    int i = 0;
+    for (final List<String> element in chunks) {
+      final List<Widget> list2 = <Widget>[];
+
+      for (final String element2 in element) {
+        final Color color = utility.getLifetimeRowBgColor(value: element2, textDisplay: false);
+
+        list2.add(
+          Container(
+            width: context.screenSize.width / 30,
+            margin: const EdgeInsets.all(1),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(color: color),
+            child: Text((i % 6 == 0) ? i.toString().padLeft(2, '0') : '', style: const TextStyle(fontSize: 10)),
+          ),
+        );
+
+        i++;
+      }
+
+      list.add(Row(children: list2));
+    }
+
+    return Column(children: list);
   }
 
   ///
