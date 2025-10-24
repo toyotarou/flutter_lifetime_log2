@@ -24,7 +24,7 @@ class _LifetimeSummaryAlertState extends ConsumerState<LifetimeSummaryAlert>
 
     final List<double> rowHeights = List<double>.generate(
       widget.years.length + 1,
-      (int i) => i == 0 ? 48 : context.screenSize.height * 0.2,
+      (int i) => i == 0 ? 48 : context.screenSize.height * 0.3,
     );
 
     final List<double> colWidths = List<double>.generate(monthDays.length + 1, (int i) => i == 0 ? 96 : 120);
@@ -41,6 +41,7 @@ class _LifetimeSummaryAlertState extends ConsumerState<LifetimeSummaryAlert>
               leftColWidth: colWidths[0],
               rowHeights: rowHeights,
               colWidths: colWidths,
+              data: const <String, Map<String, String>>{},
             ),
           ),
         ],

@@ -84,7 +84,16 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
       ],
 
       supportedLocales: const <Locale>[Locale('en'), Locale('ja')],
-      theme: ThemeData.dark(useMaterial3: false),
+
+      theme: ThemeData(
+        scrollbarTheme: const ScrollbarThemeData().copyWith(
+          thumbColor: MaterialStateProperty.all(Colors.greenAccent.withOpacity(0.4)),
+        ),
+        useMaterial3: false,
+        colorScheme: ColorScheme.fromSwatch(brightness: Brightness.dark),
+        highlightColor: Colors.grey,
+      ),
+
       themeMode: ThemeMode.dark,
       title: 'LIFETIME LOG',
       debugShowCheckedModeBanner: false,

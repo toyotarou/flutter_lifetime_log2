@@ -208,6 +208,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                   });
 
                   final List<String> years = yList.toSet().toList();
+                  years.sort();
 
                   LifetimeDialog(
                     context: context,
