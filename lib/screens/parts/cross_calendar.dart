@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../controllers/controllers_mixin.dart';
+import '../../extensions/extensions.dart';
+import '../../utility/utility.dart';
 import '../parts/diagonal_slash_painter.dart';
 
-class CrossCalendar extends StatefulWidget {
+///
+class CrossCalendar extends ConsumerStatefulWidget {
   const CrossCalendar({
     super.key,
     required this.years,
     required this.monthDays,
-    required this.data,
+
     required this.headerHeight,
     required this.leftColWidth,
     required this.rowHeights,
@@ -17,18 +22,19 @@ class CrossCalendar extends StatefulWidget {
        assert(colWidths.length == monthDays.length + 1);
 
   final List<String> years;
-  final List<String> monthDays; // "MM-dd"
-  final Map<String, Map<String, String>> data;
+  final List<String> monthDays;
+
   final double headerHeight;
   final double leftColWidth;
   final List<double> rowHeights;
   final List<double> colWidths;
 
   @override
-  State<CrossCalendar> createState() => _CrossCalendarState();
+  ConsumerState<CrossCalendar> createState() => _CrossCalendarState();
 }
 
-class _CrossCalendarState extends State<CrossCalendar> {
+///
+class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersMixin<CrossCalendar> {
   late final AutoScrollController _hHeaderCtrl;
   late final AutoScrollController _hBodyCtrl;
   final ScrollController _vLeftCtrl = ScrollController();
@@ -45,8 +51,12 @@ class _CrossCalendarState extends State<CrossCalendar> {
   late final Map<String, int> _dayIndex;
   late final List<double> _prefixWidths;
 
+  Utility utility = Utility();
+
+  ///
   double get _bodyTotalHeight => widget.rowHeights.sublist(1).reduce((double a, double b) => a + b);
 
+  ///
   @override
   void initState() {
     super.initState();
@@ -119,8 +129,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
     });
   }
 
-  // ===== 基本機能 =====
-
+  ///
   void _updateCurrentMonthByOffset(double dx) {
     int lo = 0, hi = widget.monthDays.length;
     while (lo < hi) {
@@ -140,6 +149,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
     }
   }
 
+  ///
   Future<void> _scrollToMonth(int month) async {
     final int idx = _monthStartIndex[month] ?? 0;
     _syncingH = true;
@@ -163,6 +173,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
     _ensureMonthButtonVisible(month);
   }
 
+  ///
   Future<void> _scrollToTodayDay({bool fromInit = false}) async {
     final DateTime now = DateTime.now();
     final String md = '${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
@@ -194,6 +205,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
     _ensureYearVisible(_closestYearTo(now.year), animate: !fromInit);
   }
 
+  ///
   void _ensureMonthButtonVisible(int month, {double alignment = 0.5, bool animate = true}) {
     final int i = (month - 1).clamp(0, 11);
     final BuildContext? ctx = _monthKeys[i].currentContext;
@@ -208,6 +220,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
     );
   }
 
+  ///
   void _ensureYearVisible(int year, {double alignment = 0.5, bool animate = true}) {
     final int idx = widget.years.indexOf(year.toString());
     if (idx < 0 || idx >= _yearKeys.length) {
@@ -225,6 +238,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
     );
   }
 
+  ///
   int _closestYearTo(int y) {
     final int idx = widget.years.indexOf(y.toString());
     if (idx >= 0) {
@@ -242,8 +256,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
     return best;
   }
 
-  // ===== 表示構成 =====
-
+  ///
   @override
   void dispose() {
     _hHeaderCtrl.dispose();
@@ -254,6 +267,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
     super.dispose();
   }
 
+  ///
   @override
   Widget build(BuildContext context) {
     final double headerH = widget.headerHeight;
@@ -327,16 +341,16 @@ class _CrossCalendarState extends State<CrossCalendar> {
                 top: 0,
                 width: leftW,
                 height: headerH,
-                child: const DecoratedBox(
+                child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Color(0xFFF5F5F7),
+                    color: Colors.black.withValues(alpha: 0.2),
                     border: Border(
-                      bottom: BorderSide(color: Color(0xFFE0E0E0)),
-                      right: BorderSide(color: Color(0xFFE0E0E0)),
+                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                      right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                     ),
                   ),
-                  child: Center(
-                    child: Text(r'Year \ Date', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Center(
+                    child: Text(r'Year \ Date', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ),
@@ -378,16 +392,16 @@ class _CrossCalendarState extends State<CrossCalendar> {
                       return Container(
                         key: _yearKeys[i],
                         height: widget.rowHeights[i + 1],
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF8F8FA),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.2),
                           border: Border(
-                            bottom: BorderSide(color: Color(0xFFEAEAEA)),
-                            right: BorderSide(color: Color(0xFFE0E0E0)),
+                            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                            //                            right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                           ),
                         ),
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Text(year, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text(year, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                       );
                     },
                   ),
@@ -433,21 +447,25 @@ class _CrossCalendarState extends State<CrossCalendar> {
     );
   }
 
-  // ===== セル描画ユーティリティ =====
-
+  ///
   Widget _headerCell({required double width, required String md}) {
-    final String label = _mdToSlash(md);
-    final bool isLeap = md == '02-29';
     return Container(
       width: width,
       height: widget.headerHeight,
-      color: isLeap ? const Color(0xFFFAFAFA) : const Color(0xFFF5F5F7),
+
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.2),
+
+        border: Border(right: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
+      ),
+
       alignment: Alignment.centerLeft,
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+      child: Text(md, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
     );
   }
 
+  ///
   Widget _buildColumnOfYear({required String md, required double colWidth}) {
     final DateTime today = DateTime.now();
     final String todayMd = '${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
@@ -464,19 +482,42 @@ class _CrossCalendarState extends State<CrossCalendar> {
               isDisabled: _isNonLeapFeb29(widget.years[r], md),
               isCurrentYear: widget.years[r] == todayYear,
               isToday: widget.years[r] == todayYear && md == todayMd,
-              child: _isNonLeapFeb29(widget.years[r], md) ? const SizedBox.shrink() : _cellContent(widget.years[r], md),
+              child: _isNonLeapFeb29(widget.years[r], md)
+                  ? const SizedBox.shrink()
+                  : getOneCellContent(widget.years[r], md),
             ),
         ],
       ),
     );
   }
 
-  Widget _cellContent(String year, String md) {
-    final String? v = widget.data[year]?[md];
-    final String fallback = _ymdJP(year, md);
-    return Text(v ?? fallback, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13));
+  ///
+  Widget getOneCellContent(String year, String md) {
+    final String youbi = DateTime.parse('$year-$md').youbiStr;
+
+    final Color containerColor =
+        (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains('$year-$md'))
+        ? utility.getYoubiColor(date: '$year-$md', youbiStr: youbi, holiday: appParamState.keepHolidayList)
+        : Colors.transparent;
+
+    return Column(
+      children: <Widget>[
+        Container(
+          decoration: BoxDecoration(color: containerColor),
+
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text('$year-$md', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
+              Text(youbi.substring(0, 3), style: const TextStyle(fontSize: 12)),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
+  ///
   bool _isNonLeapFeb29(String year, String md) {
     if (md != '02-29') {
       return false;
@@ -486,11 +527,7 @@ class _CrossCalendarState extends State<CrossCalendar> {
     return !isLeap;
   }
 
-  String _mdToSlash(String md) => '${int.parse(md.substring(0, 2))}/${int.parse(md.substring(3, 5))}';
-
-  String _ymdJP(String y, String md) => '$y年${int.parse(md.substring(0, 2))}月${int.parse(md.substring(3, 5))}日';
-
-  /// 共通セル（今年＝薄黄色＋薄オレンジ枠、本日＝濃黄＋濃オレンジ枠）
+  ///
   Widget _bodyCell({
     required double width,
     required double height,
@@ -502,21 +539,21 @@ class _CrossCalendarState extends State<CrossCalendar> {
     // 背景色設定
     Color? bg;
     if (isDisabled) {
-      bg = const Color(0xFFF0F0F0);
+      bg = Colors.black.withValues(alpha: 0.2);
     } else if (isToday) {
-      bg = const Color(0xFFFFF59D); // 濃い黄色（今日）
+      bg = Colors.white.withValues(alpha: 0.2);
     } else if (isCurrentYear) {
-      bg = const Color(0xFFFFFDE7); // 薄い黄色（今年）
+      bg = Colors.white.withValues(alpha: 0.1);
     }
 
     // 枠線設定
     BorderSide borderColor;
     if (isToday) {
-      borderColor = const BorderSide(color: Color(0xFFFFB300), width: 2.0); // 濃いオレンジ
+      borderColor = BorderSide(color: Colors.orangeAccent.withValues(alpha: 0.3), width: 5);
     } else if (isCurrentYear) {
-      borderColor = const BorderSide(color: Color(0xFFFFCC80), width: 1.5); // 薄いオレンジ
+      borderColor = BorderSide(color: Colors.orangeAccent.withValues(alpha: 0.2), width: 1.5);
     } else {
-      borderColor = const BorderSide(color: Color(0xFFE0E0E0)); // 通常枠線
+      borderColor = BorderSide(color: Colors.white.withValues(alpha: 0.2));
     }
 
     return Stack(

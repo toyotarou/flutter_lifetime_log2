@@ -41,7 +41,6 @@ class _LifetimeSummaryAlertState extends ConsumerState<LifetimeSummaryAlert>
               leftColWidth: colWidths[0],
               rowHeights: rowHeights,
               colWidths: colWidths,
-              data: const <String, Map<String, String>>{},
             ),
           ),
         ],
