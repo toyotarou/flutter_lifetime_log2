@@ -479,10 +479,12 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                   child: GestureDetector(
                     onTap: () => _scrollToMonth(month),
                     child: CircleAvatar(
-                      radius: 22,
-                      backgroundColor: selected ? Colors.blue : Colors.grey.shade300,
-                      foregroundColor: selected ? Colors.white : Colors.black87,
-                      child: Text('$month月'),
+                      backgroundColor: selected
+                          ? Colors.yellowAccent.withValues(alpha: 0.3)
+                          : Colors.blueGrey.withValues(alpha: 0.3),
+                      foregroundColor: Colors.white,
+
+                      child: Text('$month月', style: const TextStyle(fontSize: 12)),
                     ),
                   ),
                 );
@@ -491,9 +493,11 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
             ),
           ),
           const SizedBox(width: 8),
-          OutlinedButton.icon(
+          ElevatedButton.icon(
             onPressed: () => _scrollToTodayDay(),
             icon: const Icon(Icons.today, size: 18),
+
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
             label: const Text('今日'),
           ),
           const SizedBox(width: 8),
@@ -720,7 +724,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
               child: SizedBox(
                 width: tileW,
                 child: Center(
-                  child: Text((j % 6 == 0) ? j.toString().padLeft(2, '0') : '', style: const TextStyle(fontSize: 10)),
+                  child: Text((j % 3 == 0) ? j.toString().padLeft(2, '0') : '', style: const TextStyle(fontSize: 10)),
                 ),
               ),
             ),
