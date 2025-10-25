@@ -12,7 +12,6 @@ import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
 import '../components/money_data_input_alert.dart';
 import '../components/monthly_assets_display_alert.dart';
-import '../components/monthly_geoloc_map_display_alert.dart';
 import '../components/monthly_lifetime_display_alert.dart';
 import '../components/monthly_money_spend_display_alert.dart';
 import '../components/monthly_work_time_display_alert.dart';
@@ -96,6 +95,18 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                 child: Icon(Icons.money, color: Colors.white.withValues(alpha: 0.3)),
                               ),
 
+
+
+
+
+
+                              /*
+
+
+
+
+
+
                               if (appParamState.keepGeolocMap.isNotEmpty) ...<Widget>[
                                 const SizedBox(width: 20),
 
@@ -130,6 +141,16 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                   child: Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
                                 ),
                               ],
+
+
+
+
+                              */
+
+
+
+
+
                             ],
                           ),
 

@@ -193,6 +193,15 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
 
       _endY = endY;
 
+      final List<List<int>> weeks = getSplitWeeksByIndex(dateList: dateList);
+
+      final List<VerticalRangeAnnotation> verticalRanges = buildWeekBandsByWeeks(
+        weeks: weeks,
+        paintEvenWeeks: true,
+        color: Colors.yellowAccent,
+        opacity: 0.1,
+      );
+
       graphData = LineChartData(
         minX: 1,
 
@@ -232,6 +241,8 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
             },
           ),
         ),
+
+        rangeAnnotations: RangeAnnotations(verticalRangeAnnotations: verticalRanges),
 
         gridData: FlGridData(
           verticalInterval: 1,
@@ -405,9 +416,67 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
     }
   }
 
+  ///
   String _formatDelta(double d) {
     final String s = d.round().toString().toCurrency();
 
     return d >= 0 ? '+$s' : s;
+  }
+
+  ///
+  List<List<int>> getSplitWeeksByIndex({required List<String> dateList}) {
+    if (dateList.isEmpty) {
+      return <List<int>>[];
+    }
+
+    final List<List<int>> result = <List<int>>[];
+    final List<int> currentWeek = <int>[];
+
+    for (int i = 0; i < dateList.length; i++) {
+      final DateTime date = DateTime.parse(dateList[i]);
+
+      if (i != 0 && date.weekday % 7 == 0) {
+        // ignore: always_specify_types
+        result.add(List.from(currentWeek));
+
+        currentWeek.clear();
+      }
+
+      currentWeek.add(i);
+    }
+
+    if (currentWeek.isNotEmpty) {
+      result.add(currentWeek);
+    }
+
+    return result;
+  }
+
+  ///
+  List<VerticalRangeAnnotation> buildWeekBandsByWeeks({
+    required List<List<int>> weeks,
+    required bool paintEvenWeeks,
+    required Color color,
+    required double opacity,
+  }) {
+    final List<VerticalRangeAnnotation> ranges = <VerticalRangeAnnotation>[];
+
+    for (int i = 0; i < weeks.length; i++) {
+      final List<int> w = weeks[i];
+
+      if (w.isEmpty) {
+        continue;
+      }
+
+      if ((paintEvenWeeks && i.isEven) || (!paintEvenWeeks && i.isOdd)) {
+        final double x1 = w.first + 1.0;
+
+        final double x2 = w.last + 2.0;
+
+        ranges.add(VerticalRangeAnnotation(x1: x1, x2: x2, color: color.withOpacity(opacity)));
+      }
+    }
+
+    return ranges;
   }
 }
