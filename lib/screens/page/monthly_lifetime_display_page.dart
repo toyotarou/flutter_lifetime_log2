@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/lifetime_model.dart';
 import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
 import '../../utility/utility.dart';
@@ -735,7 +736,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   Widget getLifetimeDisplayCell({required String date, required int num}) {
     List<String> dispValList = <String>[];
     if (appParamState.keepLifetimeMap[date] != null) {
-      var dataMap = appParamState.keepLifetimeMap[date];
+      final LifetimeModel? dataMap = appParamState.keepLifetimeMap[date];
 
       dispValList = <String>[
         dataMap!.hour00,

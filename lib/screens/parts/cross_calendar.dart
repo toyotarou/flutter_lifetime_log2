@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/lifetime_model.dart';
 import '../../utility/utility.dart';
 import '../parts/diagonal_slash_painter.dart';
 
@@ -567,7 +569,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     List<String> lifetimeData = <String>[];
 
     if (appParamState.keepLifetimeMap[date] != null) {
-      var dataMap = appParamState.keepLifetimeMap[date];
+      final LifetimeModel? dataMap = appParamState.keepLifetimeMap[date];
 
       lifetimeData = <String>[
         dataMap!.hour00,
@@ -598,6 +600,18 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     }
 
     final List<String> duplicateConsecutive = getDuplicateConsecutive(lifetimeData);
+
+    final List<Widget> displayIcons = <Widget>[];
+
+    if (appParamState.keepTempleMap[date] != null) {
+      displayIcons.add(Icon(FontAwesomeIcons.toriiGate, size: 20, color: Colors.white.withValues(alpha: 0.3)));
+    }
+
+    if (appParamState.keepTransportationMap[date] != null) {
+      displayIcons.add(Icon(Icons.train, size: 20, color: Colors.white.withValues(alpha: 0.3)));
+    }
+
+    displayIcons.add(const Icon(Icons.square_outlined, size: 20, color: Colors.transparent));
 
     /// アプリデータ依存
 
@@ -644,7 +658,14 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                 ),
               ),
 
-              const Padding(padding: EdgeInsets.all(10), child: Icon(Icons.ac_unit)),
+              Padding(
+                padding: const EdgeInsets.all(5),
+                child: Column(
+                  children: displayIcons.map((Widget e) {
+                    return Column(children: <Widget>[e, const SizedBox(height: 10)]);
+                  }).toList(),
+                ),
+              ),
             ],
           ),
         ],
