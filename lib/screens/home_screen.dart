@@ -45,6 +45,9 @@ class HomeScreen extends ConsumerStatefulWidget {
     super.key,
     required this.walkMap,
     required this.moneyMap,
+
+    required this.lifetimeMap,
+
     required this.lifetimeItemList,
     required this.holidayList,
     required this.geolocMap,
@@ -71,6 +74,9 @@ class HomeScreen extends ConsumerStatefulWidget {
   final List<String> holidayList;
   final Map<String, WalkModel> walkMap;
   final Map<String, MoneyModel> moneyMap;
+
+  final Map<String, LifetimeModel> lifetimeMap;
+
   final List<LifetimeItemModel> lifetimeItemList;
   final Map<String, List<GeolocModel>> geolocMap;
   final Map<String, TempleModel> templeMap;
@@ -110,6 +116,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepHolidayList(list: widget.holidayList);
       appParamNotifier.setKeepWalkModelMap(map: widget.walkMap);
       appParamNotifier.setKeepMoneyMap(map: widget.moneyMap);
+
+      appParamNotifier.setKeepLifetimeMap(map: widget.lifetimeMap);
+
       appParamNotifier.setKeepLifetimeItemList(list: widget.lifetimeItemList);
       appParamNotifier.setKeepGeolocMap(map: widget.geolocMap);
       appParamNotifier.setKeepTempleMap(map: widget.templeMap);
@@ -202,7 +211,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               GestureDetector(
                 onTap: () {
                   final List<String> yList = <String>[];
-                  lifetimeState.lifetimeMap.forEach((String key, LifetimeModel value) {
+                  widget.lifetimeMap.forEach((String key, LifetimeModel value) {
                     final List<String> exKey = key.split('-');
                     yList.add(exKey[0]);
                   });

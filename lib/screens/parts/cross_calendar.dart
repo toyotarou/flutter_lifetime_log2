@@ -565,34 +565,39 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         : Colors.transparent;
 
     List<String> lifetimeData = <String>[];
-    if (lifetimeState.lifetimeMap[date] != null) {
+
+    if (appParamState.keepLifetimeMap[date] != null) {
+      var dataMap = appParamState.keepLifetimeMap[date];
+
       lifetimeData = <String>[
-        lifetimeState.lifetimeMap[date]!.hour00,
-        lifetimeState.lifetimeMap[date]!.hour01,
-        lifetimeState.lifetimeMap[date]!.hour02,
-        lifetimeState.lifetimeMap[date]!.hour03,
-        lifetimeState.lifetimeMap[date]!.hour04,
-        lifetimeState.lifetimeMap[date]!.hour05,
-        lifetimeState.lifetimeMap[date]!.hour06,
-        lifetimeState.lifetimeMap[date]!.hour07,
-        lifetimeState.lifetimeMap[date]!.hour08,
-        lifetimeState.lifetimeMap[date]!.hour09,
-        lifetimeState.lifetimeMap[date]!.hour10,
-        lifetimeState.lifetimeMap[date]!.hour11,
-        lifetimeState.lifetimeMap[date]!.hour12,
-        lifetimeState.lifetimeMap[date]!.hour13,
-        lifetimeState.lifetimeMap[date]!.hour14,
-        lifetimeState.lifetimeMap[date]!.hour15,
-        lifetimeState.lifetimeMap[date]!.hour16,
-        lifetimeState.lifetimeMap[date]!.hour17,
-        lifetimeState.lifetimeMap[date]!.hour18,
-        lifetimeState.lifetimeMap[date]!.hour19,
-        lifetimeState.lifetimeMap[date]!.hour20,
-        lifetimeState.lifetimeMap[date]!.hour21,
-        lifetimeState.lifetimeMap[date]!.hour22,
-        lifetimeState.lifetimeMap[date]!.hour23,
+        dataMap!.hour00,
+        dataMap.hour01,
+        dataMap.hour02,
+        dataMap.hour03,
+        dataMap.hour04,
+        dataMap.hour05,
+        dataMap.hour06,
+        dataMap.hour07,
+        dataMap.hour08,
+        dataMap.hour09,
+        dataMap.hour10,
+        dataMap.hour11,
+        dataMap.hour12,
+        dataMap.hour13,
+        dataMap.hour14,
+        dataMap.hour15,
+        dataMap.hour16,
+        dataMap.hour17,
+        dataMap.hour18,
+        dataMap.hour19,
+        dataMap.hour20,
+        dataMap.hour21,
+        dataMap.hour22,
+        dataMap.hour23,
       ];
     }
+
+    final List<String> duplicateConsecutive = getDuplicateConsecutive(lifetimeData);
 
     /// アプリデータ依存
 
@@ -616,7 +621,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         ),
         const SizedBox(height: 10),
 
-        if (lifetimeData.isNotEmpty)
+        if (lifetimeData.isNotEmpty) ...<Widget>[
           Row(
             children: <Widget>[
               const Spacer(),
@@ -624,8 +629,49 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
               const Spacer(),
             ],
           ),
+
+          const SizedBox(height: 10),
+
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: duplicateConsecutive.map((String e) {
+                    return Text(e, style: TextStyle(fontSize: 10, color: _lifetimeColor(e).withValues(alpha: 1)));
+                  }).toList(),
+                ),
+              ),
+
+              const Padding(padding: EdgeInsets.all(10), child: Icon(Icons.ac_unit)),
+            ],
+          ),
+        ],
       ],
     );
+  }
+
+  ///
+  List<T> getDuplicateConsecutive<T>(List<T> list) {
+    if (list.isEmpty) {
+      return const <Never>[];
+    }
+    final List<T> result = <T>[];
+    // ignore: always_specify_types
+    var last = list.first;
+    result.add(last);
+
+    for (int i = 1; i < list.length; i++) {
+      // ignore: always_specify_types
+      final current = list[i];
+      if (current != last) {
+        result.add(current);
+        last = current;
+      }
+    }
+
+    return result;
   }
 
   ///

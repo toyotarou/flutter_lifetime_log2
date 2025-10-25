@@ -103,6 +103,9 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           holidayList: holidayState.holidayList,
           walkMap: walkState.walkMap,
           moneyMap: moneyState.moneyMap,
+
+          lifetimeMap: lifetimeState.lifetimeMap,
+
           lifetimeItemList: lifetimeItemState.lifetimeItemList,
           geolocMap: geolocState.geolocMap,
           templeMap: templeState.templeMap,

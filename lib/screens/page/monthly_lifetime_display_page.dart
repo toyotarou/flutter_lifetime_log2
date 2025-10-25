@@ -461,7 +461,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                   context: context,
                                                   widget: LifetimeInputAlert(
                                                     date: date,
-                                                    dateLifetime: lifetimeState.lifetimeMap[date],
+                                                    dateLifetime: appParamState.keepLifetimeMap[date],
                                                   ),
                                                 );
                                               },
@@ -518,7 +518,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                             Expanded(
                               child: Column(
                                 children: <Widget>[
-                                  if (lifetimeState.lifetimeMap[date] != null) ...<Widget>[
+                                  if (appParamState.keepLifetimeMap[date] != null) ...<Widget>[
                                     Row(
                                       children: <Widget>[
                                         Expanded(
@@ -680,7 +680,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                           ],
                         ),
 
-                        if (lifetimeState.lifetimeMap[date] != null) ...<Widget>[
+                        if (appParamState.keepLifetimeMap[date] != null) ...<Widget>[
                           const SizedBox(height: 10),
                           Row(
                             // ignore: always_specify_types
@@ -734,32 +734,34 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   ///
   Widget getLifetimeDisplayCell({required String date, required int num}) {
     List<String> dispValList = <String>[];
-    if (lifetimeState.lifetimeMap[date] != null) {
+    if (appParamState.keepLifetimeMap[date] != null) {
+      var dataMap = appParamState.keepLifetimeMap[date];
+
       dispValList = <String>[
-        lifetimeState.lifetimeMap[date]!.hour00,
-        lifetimeState.lifetimeMap[date]!.hour01,
-        lifetimeState.lifetimeMap[date]!.hour02,
-        lifetimeState.lifetimeMap[date]!.hour03,
-        lifetimeState.lifetimeMap[date]!.hour04,
-        lifetimeState.lifetimeMap[date]!.hour05,
-        lifetimeState.lifetimeMap[date]!.hour06,
-        lifetimeState.lifetimeMap[date]!.hour07,
-        lifetimeState.lifetimeMap[date]!.hour08,
-        lifetimeState.lifetimeMap[date]!.hour09,
-        lifetimeState.lifetimeMap[date]!.hour10,
-        lifetimeState.lifetimeMap[date]!.hour11,
-        lifetimeState.lifetimeMap[date]!.hour12,
-        lifetimeState.lifetimeMap[date]!.hour13,
-        lifetimeState.lifetimeMap[date]!.hour14,
-        lifetimeState.lifetimeMap[date]!.hour15,
-        lifetimeState.lifetimeMap[date]!.hour16,
-        lifetimeState.lifetimeMap[date]!.hour17,
-        lifetimeState.lifetimeMap[date]!.hour18,
-        lifetimeState.lifetimeMap[date]!.hour19,
-        lifetimeState.lifetimeMap[date]!.hour20,
-        lifetimeState.lifetimeMap[date]!.hour21,
-        lifetimeState.lifetimeMap[date]!.hour22,
-        lifetimeState.lifetimeMap[date]!.hour23,
+        dataMap!.hour00,
+        dataMap.hour01,
+        dataMap.hour02,
+        dataMap.hour03,
+        dataMap.hour04,
+        dataMap.hour05,
+        dataMap.hour06,
+        dataMap.hour07,
+        dataMap.hour08,
+        dataMap.hour09,
+        dataMap.hour10,
+        dataMap.hour11,
+        dataMap.hour12,
+        dataMap.hour13,
+        dataMap.hour14,
+        dataMap.hour15,
+        dataMap.hour16,
+        dataMap.hour17,
+        dataMap.hour18,
+        dataMap.hour19,
+        dataMap.hour20,
+        dataMap.hour21,
+        dataMap.hour22,
+        dataMap.hour23,
       ];
     }
 

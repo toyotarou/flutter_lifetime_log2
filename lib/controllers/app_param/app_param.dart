@@ -31,6 +31,9 @@ class AppParamState with _$AppParamState {
     @Default(<String>[]) List<String> keepHolidayList,
     @Default(<String, WalkModel>{}) Map<String, WalkModel> keepWalkModelMap,
     @Default(<String, MoneyModel>{}) Map<String, MoneyModel> keepMoneyMap,
+
+    @Default(<String, LifetimeModel>{}) Map<String, LifetimeModel> keepLifetimeMap,
+
     @Default(<LifetimeItemModel>[]) List<LifetimeItemModel> keepLifetimeItemList,
     @Default(<String, List<GeolocModel>>{}) Map<String, List<GeolocModel>> keepGeolocMap,
     @Default(<String, TempleModel>{}) Map<String, TempleModel> keepTempleMap,
@@ -107,6 +110,9 @@ class AppParam extends _$AppParam {
 
   ///
   void setKeepMoneyMap({required Map<String, MoneyModel> map}) => state = state.copyWith(keepMoneyMap: map);
+
+  ///
+  void setKeepLifetimeMap({required Map<String, LifetimeModel> map}) => state = state.copyWith(keepLifetimeMap: map);
 
   ///
   void setKeepLifetimeItemList({required List<LifetimeItemModel> list}) =>
