@@ -5,9 +5,12 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/weekly_history_event_model.dart';
 import '../../utility/functions.dart';
 import '../../utility/utility.dart';
+import '../components/weekly_history_alert.dart';
 import '../parts/diagonal_slash_painter.dart';
+import 'lifetime_dialog.dart';
 
 class CrossCalendar extends ConsumerStatefulWidget {
   const CrossCalendar({
@@ -34,11 +37,13 @@ class CrossCalendar extends ConsumerStatefulWidget {
 }
 
 class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersMixin<CrossCalendar> {
-  late final AutoScrollController _hHeaderCtrl;
-  late final AutoScrollController _hBodyCtrl;
-  final ScrollController _vLeftCtrl = ScrollController();
-  final ScrollController _vBodyCtrl = ScrollController();
-  final ScrollController _monthBarCtrl = ScrollController();
+  late final AutoScrollController horizontalHeaderAutoScrollController;
+  late final AutoScrollController horizontalBodyAutoScrollController;
+
+  final ScrollController verticalLeftScrollController = ScrollController();
+  final ScrollController verticalBodyScrollController = ScrollController();
+
+  final ScrollController monthSelectorScrollController = ScrollController();
 
   final List<GlobalKey> _monthKeys = List<GlobalKey>.generate(12, (_) => GlobalKey());
   late final List<GlobalKey> _yearKeys;
@@ -77,8 +82,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   void initState() {
     super.initState();
 
-    _hHeaderCtrl = AutoScrollController(axis: Axis.horizontal);
-    _hBodyCtrl = AutoScrollController(axis: Axis.horizontal);
+    horizontalHeaderAutoScrollController = AutoScrollController(axis: Axis.horizontal);
+    horizontalBodyAutoScrollController = AutoScrollController(axis: Axis.horizontal);
 
     final DateTime now = DateTime.now();
     _currentMonth = now.month;
@@ -95,46 +100,46 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       _prefixWidths[i] = _prefixWidths[i - 1] + widget.colWidths[i];
     }
 
-    _hHeaderCtrl.addListener(() {
+    horizontalHeaderAutoScrollController.addListener(() {
       if (_syncingH) {
         return;
       }
       _syncingH = true;
-      if (_hBodyCtrl.hasClients) {
-        _hBodyCtrl.jumpTo(_hHeaderCtrl.offset);
+      if (horizontalBodyAutoScrollController.hasClients) {
+        horizontalBodyAutoScrollController.jumpTo(horizontalHeaderAutoScrollController.offset);
       }
       _syncingH = false;
-      _updateCurrentMonthByOffset(_hHeaderCtrl.offset);
+      _updateCurrentMonthByOffset(horizontalHeaderAutoScrollController.offset);
     });
-    _hBodyCtrl.addListener(() {
+    horizontalBodyAutoScrollController.addListener(() {
       if (_syncingH) {
         return;
       }
       _syncingH = true;
-      if (_hHeaderCtrl.hasClients) {
-        _hHeaderCtrl.jumpTo(_hBodyCtrl.offset);
+      if (horizontalHeaderAutoScrollController.hasClients) {
+        horizontalHeaderAutoScrollController.jumpTo(horizontalBodyAutoScrollController.offset);
       }
       _syncingH = false;
-      _updateCurrentMonthByOffset(_hBodyCtrl.offset);
+      _updateCurrentMonthByOffset(horizontalBodyAutoScrollController.offset);
     });
 
-    _vLeftCtrl.addListener(() {
+    verticalLeftScrollController.addListener(() {
       if (_syncingV) {
         return;
       }
       _syncingV = true;
-      if (_vBodyCtrl.hasClients) {
-        _vBodyCtrl.jumpTo(_vLeftCtrl.offset);
+      if (verticalBodyScrollController.hasClients) {
+        verticalBodyScrollController.jumpTo(verticalLeftScrollController.offset);
       }
       _syncingV = false;
     });
-    _vBodyCtrl.addListener(() {
+    verticalBodyScrollController.addListener(() {
       if (_syncingV) {
         return;
       }
       _syncingV = true;
-      if (_vLeftCtrl.hasClients) {
-        _vLeftCtrl.jumpTo(_vBodyCtrl.offset);
+      if (verticalLeftScrollController.hasClients) {
+        verticalLeftScrollController.jumpTo(verticalBodyScrollController.offset);
       }
       _syncingV = false;
     });
@@ -170,12 +175,12 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     _syncingH = true;
     // ignore: strict_raw_type, always_specify_types
     await Future.wait(<Future>[
-      _hHeaderCtrl.scrollToIndex(
+      horizontalHeaderAutoScrollController.scrollToIndex(
         idx,
         preferPosition: AutoScrollPosition.begin,
         duration: const Duration(milliseconds: 260),
       ),
-      _hBodyCtrl.scrollToIndex(
+      horizontalBodyAutoScrollController.scrollToIndex(
         idx,
         preferPosition: AutoScrollPosition.begin,
         duration: const Duration(milliseconds: 260),
@@ -197,12 +202,12 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       _syncingH = true;
       // ignore: strict_raw_type, always_specify_types
       await Future.wait(<Future>[
-        _hHeaderCtrl.scrollToIndex(
+        horizontalHeaderAutoScrollController.scrollToIndex(
           idx,
           preferPosition: AutoScrollPosition.begin,
           duration: const Duration(milliseconds: 260),
         ),
-        _hBodyCtrl.scrollToIndex(
+        horizontalBodyAutoScrollController.scrollToIndex(
           idx,
           preferPosition: AutoScrollPosition.begin,
           duration: const Duration(milliseconds: 260),
@@ -316,11 +321,13 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   ///
   @override
   void dispose() {
-    _hHeaderCtrl.dispose();
-    _hBodyCtrl.dispose();
-    _vLeftCtrl.dispose();
-    _vBodyCtrl.dispose();
-    _monthBarCtrl.dispose();
+    horizontalHeaderAutoScrollController.dispose();
+    horizontalBodyAutoScrollController.dispose();
+
+    verticalLeftScrollController.dispose();
+    verticalBodyScrollController.dispose();
+
+    monthSelectorScrollController.dispose();
     super.dispose();
   }
 
@@ -363,7 +370,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                 top: 0,
                 height: headerH,
                 child: ListView.builder(
-                  controller: _hHeaderCtrl,
+                  controller: horizontalHeaderAutoScrollController,
                   scrollDirection: Axis.horizontal,
                   itemCount: widget.monthDays.length,
                   cacheExtent: 400,
@@ -373,7 +380,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                   itemBuilder: (_, int idx) => AutoScrollTag(
                     // ignore: always_specify_types
                     key: ValueKey('hheader_$idx'),
-                    controller: _hHeaderCtrl,
+                    controller: horizontalHeaderAutoScrollController,
                     index: idx,
                     child: getHeaderCellContent(width: widget.colWidths[idx + 1], md: widget.monthDays[idx]),
                   ),
@@ -386,10 +393,10 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                 bottom: 0,
                 width: leftW,
                 child: Scrollbar(
-                  controller: _vLeftCtrl,
+                  controller: verticalLeftScrollController,
                   thumbVisibility: true,
                   child: ListView.builder(
-                    controller: _vLeftCtrl,
+                    controller: verticalLeftScrollController,
                     itemCount: widget.years.length,
                     addAutomaticKeepAlives: false,
                     addSemanticIndexes: false,
@@ -417,15 +424,15 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                 right: 0,
                 bottom: 0,
                 child: Scrollbar(
-                  controller: _vBodyCtrl,
+                  controller: verticalBodyScrollController,
                   thumbVisibility: true,
                   child: SingleChildScrollView(
-                    controller: _vBodyCtrl,
+                    controller: verticalBodyScrollController,
 
                     child: SizedBox(
                       height: _bodyTotalHeight,
                       child: ListView.builder(
-                        controller: _hBodyCtrl,
+                        controller: horizontalBodyAutoScrollController,
                         scrollDirection: Axis.horizontal,
                         itemCount: widget.monthDays.length,
                         cacheExtent: 400,
@@ -434,7 +441,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                         itemBuilder: (_, int colIdx) => AutoScrollTag(
                           // ignore: always_specify_types
                           key: ValueKey('hbody_$colIdx'),
-                          controller: _hBodyCtrl,
+                          controller: horizontalBodyAutoScrollController,
                           index: colIdx,
                           child: RepaintBoundary(
                             child: _buildColumnOfYear(
@@ -464,7 +471,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         children: <Widget>[
           Expanded(
             child: ListView.separated(
-              controller: _monthBarCtrl,
+              controller: monthSelectorScrollController,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               scrollDirection: Axis.horizontal,
               itemCount: 12,
@@ -551,6 +558,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
               child: _isNonLeapFeb29(widget.years[r], md)
                   ? const SizedBox.shrink()
                   : getOneCellContent(widget.years[r], md, lifetimeTileW: lifetimeTileW),
+
+              date: '${widget.years[r]}-$md',
             ),
         ],
       ),
@@ -574,7 +583,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         ? getOnedayLifetimeItemList(lifetimeModel: appParamState.keepLifetimeMap[date]!)
         : <String>[];
 
-    final List<String> duplicateConsecutive = getDuplicateConsecutive(lifetimeData);
+    final Map<int, String> duplicateConsecutiveMap = getDuplicateConsecutiveMap(lifetimeData);
 
     final List<Widget> displayIcons = <Widget>[];
 
@@ -627,8 +636,11 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: duplicateConsecutive.map((String e) {
-                    return Text(e, style: TextStyle(fontSize: 10, color: _lifetimeColor(e).withValues(alpha: 1)));
+                  children: duplicateConsecutiveMap.entries.map((MapEntry<int, String> e) {
+                    return Text(
+                      e.value,
+                      style: TextStyle(fontSize: 10, color: _lifetimeColor(e.value).withValues(alpha: 1)),
+                    );
                   }).toList(),
                 ),
               ),
@@ -646,28 +658,6 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         ],
       ],
     );
-  }
-
-  ///
-  List<T> getDuplicateConsecutive<T>(List<T> list) {
-    if (list.isEmpty) {
-      return const <Never>[];
-    }
-    final List<T> result = <T>[];
-    // ignore: always_specify_types
-    var last = list.first;
-    result.add(last);
-
-    for (int i = 1; i < list.length; i++) {
-      // ignore: always_specify_types
-      final current = list[i];
-      if (current != last) {
-        result.add(current);
-        last = current;
-      }
-    }
-
-    return result;
   }
 
   ///
@@ -728,6 +718,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     bool isDisabled = false,
     bool isCurrentYear = false,
     bool isToday = false,
+    required String date,
   }) {
     Color? bg;
     if (isDisabled) {
@@ -795,9 +786,97 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                 ),
               ),
             ),
+
+            if (DateTime.parse(date).youbiStr == 'Sunday') ...<Widget>[
+              Positioned(
+                bottom: 10,
+                right: 10,
+                child: GestureDetector(
+                  onTap: () {
+                    appParamNotifier.setWeeklyHistorySelectedDate(date: date);
+
+                    final List<WeeklyHistoryEventModel> weeklyHistoryEvent = getWeeklyHistoryEvent(date: date);
+
+                    LifetimeDialog(
+                      context: context,
+                      widget: WeeklyHistoryAlert(weeklyHistoryEvent: weeklyHistoryEvent),
+                    );
+                  },
+                  child: CircleAvatar(
+                    radius: 15,
+                    backgroundColor: Colors.pinkAccent.withValues(alpha: 0.2),
+                    child: const Icon(Icons.vertical_align_bottom, color: Colors.white, size: 15),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  ///
+  List<WeeklyHistoryEventModel> getWeeklyHistoryEvent({required String date}) {
+    final List<WeeklyHistoryEventModel> list = <WeeklyHistoryEventModel>[];
+
+    for (int i = 0; i < 7; i++) {
+      final String genDate = DateTime.parse(date).add(Duration(days: i)).yyyymmdd;
+
+      if (appParamState.keepLifetimeMap[genDate] != null) {
+        final List<String> lifetimeData = getOnedayLifetimeItemList(
+          lifetimeModel: appParamState.keepLifetimeMap[genDate]!,
+        );
+
+        final Map<int, String> duplicateConsecutiveMap = getDuplicateConsecutiveMap(lifetimeData);
+
+        list.addAll(convertMapToEvents(dayIndex: i, data: duplicateConsecutiveMap));
+      }
+    }
+
+    return list;
+  }
+
+  ///
+  int toMinutes(int h, int m) {
+    return h * 60 + m;
+  }
+
+  ///
+  List<WeeklyHistoryEventModel> convertMapToEvents({required int dayIndex, required Map<int, String> data}) {
+    final List<WeeklyHistoryEventModel> events = <WeeklyHistoryEventModel>[];
+
+    final List<int> keys = data.keys.toList()..sort();
+
+    final List<String> exclusionItemList = <String>['睡眠', '自宅', '実家'];
+
+    for (int i = 0; i < keys.length; i++) {
+      final int startHour = keys[i];
+      final String title = data[startHour] ?? '';
+
+      final int endHour = (i < keys.length - 1) ? keys[i + 1] : 24;
+
+      bool flag = true;
+
+      if (exclusionItemList.contains(title)) {
+        flag = false;
+      }
+
+      if (flag) {
+        final Color color = _lifetimeColor(title);
+
+        events.add(
+          WeeklyHistoryEventModel(
+            dayIndex: dayIndex,
+            startMinutes: toMinutes(startHour, 0),
+            endMinutes: toMinutes(endHour, 0),
+            title: title,
+            color: color,
+          ),
+        );
+      }
+    }
+
+    return events;
   }
 }

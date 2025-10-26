@@ -44,3 +44,29 @@ List<String> getOnedayLifetimeItemList({required LifetimeModel lifetimeModel}) {
     lifetimeModel.hour23,
   ];
 }
+
+///
+Map<int, T> getDuplicateConsecutiveMap<T>(List<T> list) {
+  if (list.isEmpty) {
+    return const <int, Never>{};
+  }
+
+  final Map<int, T> result = <int, T>{};
+
+  // ignore: always_specify_types
+  var last = list[0];
+
+  result[0] = last;
+
+  for (int i = 1; i < list.length; i++) {
+    // ignore: always_specify_types
+    final current = list[i];
+
+    if (current != last) {
+      result[i] = current;
+      last = current;
+    }
+  }
+
+  return result;
+}

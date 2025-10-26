@@ -17,7 +17,7 @@ class WeeklyHistoryAlert extends ConsumerStatefulWidget {
 }
 
 class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with ControllersMixin<WeeklyHistoryAlert> {
-  int startHour = 5;
+  int weeklyHistoryStartTime = 5;
   int endHour = 24;
 
   double pxPerMinute = 1.0;
@@ -35,7 +35,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
   void initState() {
     super.initState();
 
-    gridHeight = (endHour - startHour) * 60 * pxPerMinute;
+    gridHeight = (endHour - weeklyHistoryStartTime) * 60 * pxPerMinute;
   }
 
   ///
@@ -69,7 +69,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
                 child: SizedBox(
                   width: gutter + 7 * gridWidth,
                   child: WeeklyScheduleView(
-                    startHour: startHour,
+                    startHour: weeklyHistoryStartTime,
                     endHour: endHour,
                     pxPerMinute: pxPerMinute,
                     events: widget.weeklyHistoryEvent,
@@ -89,7 +89,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
                   physics: const NeverScrollableScrollPhysics(),
                   child: SizedBox(
                     height: gridHeight,
-                    child: TimeLabels(startHour: startHour, endHour: endHour, pxPerMinute: pxPerMinute),
+                    child: TimeLabels(startHour: weeklyHistoryStartTime, endHour: endHour, pxPerMinute: pxPerMinute),
                   ),
                 ),
               ),
@@ -125,6 +125,8 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
 }
 
 class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with ControllersMixin<WeeklyScheduleView> {
+  int weeklyHistoryStartTime = 5;
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -153,7 +155,10 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
               height: gridHeight,
               child: Row(
                 children: <Widget>[
-                  const SizedBox(width: timeGutterWidth, child: TimeLabels(startHour: 3, endHour: 24, pxPerMinute: 1)),
+                  SizedBox(
+                    width: timeGutterWidth,
+                    child: TimeLabels(startHour: weeklyHistoryStartTime, endHour: 24, pxPerMinute: 1),
+                  ),
 
                   Expanded(
                     child: LayoutBuilder(
@@ -397,7 +402,7 @@ class DisplayHistoryItem extends StatelessWidget {
       padding: const EdgeInsets.all(3),
 
       child: Material(
-        color: event.color.withValues(alpha: 0.95),
+        color: event.color.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(6),
         elevation: 1,
         child: InkWell(
