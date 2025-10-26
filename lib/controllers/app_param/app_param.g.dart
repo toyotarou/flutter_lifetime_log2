@@ -6,7 +6,7 @@ part of 'app_param.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appParamHash() => r'cf1ad7f842516e184b828909a764d469ca1939a1';
+String _$appParamHash() => r'e18dfd657af118a2700f750145eacdc1921d0af9';
 
 /// See also [AppParam].
 @ProviderFor(AppParam)

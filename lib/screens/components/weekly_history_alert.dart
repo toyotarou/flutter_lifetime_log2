@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../extensions/extensions.dart';
 
 ///
 int toMinutes(int h, int m) => h * 60 + m;
@@ -26,8 +27,6 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
   double gridHeight = 0;
 
   ScrollController gutterVertical = ScrollController();
-
-  double headerHeight = 80;
 
   ///
   @override
@@ -124,7 +123,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
 
             Positioned(
               left: 0,
-              top: headerHeight,
+              top: appParamState.weeklyHistoryHeaderHeight,
               bottom: 0,
               width: gutter,
               child: IgnorePointer(
@@ -147,7 +146,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-class WeeklyScheduleView extends StatelessWidget {
+class WeeklyScheduleView extends ConsumerStatefulWidget {
   const WeeklyScheduleView({
     super.key,
     required this.startHour,
@@ -164,27 +163,29 @@ class WeeklyScheduleView extends StatelessWidget {
 
   final List<ScheduleEventModel> events;
 
-  // ignore: avoid_field_initializers_in_const_classes
-  final double headerHeight = 80;
+  @override
+  ConsumerState<WeeklyScheduleView> createState() => _WeeklyScheduleViewState();
+}
 
+class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with ControllersMixin<WeeklyScheduleView> {
   ///
   @override
   Widget build(BuildContext context) {
-    final int totalMinutes = (endHour - startHour) * 60;
+    final int totalMinutes = (widget.endHour - widget.startHour) * 60;
 
-    final double gridHeight = totalMinutes * pxPerMinute;
+    final double gridHeight = totalMinutes * widget.pxPerMinute;
 
     const double timeGutterWidth = 56.0;
 
     return Column(
       children: <Widget>[
         SizedBox(
-          height: headerHeight,
-          child: const Row(
+          height: appParamState.weeklyHistoryHeaderHeight,
+          child: Row(
             children: <Widget>[
-              SizedBox(width: timeGutterWidth),
+              const SizedBox(width: timeGutterWidth),
 
-              Expanded(child: WeekHeader()),
+              Expanded(child: WeekHeader(date: appParamState.weeklyHistorySelectedDate)),
             ],
           ),
         ),
@@ -202,16 +203,16 @@ class WeeklyScheduleView extends StatelessWidget {
                       builder: (BuildContext context, BoxConstraints constraints) {
                         final double colW = constraints.maxWidth / 7;
 
-                        final List<PlacedItemModel> placed = _placeWeekly(events, colW);
+                        final List<PlacedItemModel> placed = _placeWeekly(widget.events, colW);
 
                         return Stack(
                           children: <Widget>[
                             CustomPaint(
                               size: Size(constraints.maxWidth, gridHeight),
                               painter: TimeTableGrid(
-                                startHour: startHour,
-                                endHour: endHour,
-                                pxPerMinute: pxPerMinute,
+                                startHour: widget.startHour,
+                                endHour: widget.endHour,
+                                pxPerMinute: widget.pxPerMinute,
                                 columnWidth: colW,
                               ),
                             ),
@@ -223,13 +224,13 @@ class WeeklyScheduleView extends StatelessWidget {
 
                               const double gap = 2.0;
 
-                              final double top = (e.startMinutes - startHour * 60) * pxPerMinute;
+                              final double top = (e.startMinutes - widget.startHour * 60) * widget.pxPerMinute;
 
                               final double left = e.dayIndex * colW + placedItemModel.columnIndex * perWidth;
 
                               final double width = perWidth - gap * 2;
 
-                              final double height = (e.endMinutes - e.startMinutes) * pxPerMinute;
+                              final double height = (e.endMinutes - e.startMinutes) * widget.pxPerMinute;
 
                               return Positioned(
                                 top: top.clamp(0, gridHeight - 1),
@@ -342,12 +343,36 @@ class NowIndicatorLine extends StatelessWidget {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-class WeekHeader extends StatelessWidget {
-  const WeekHeader({super.key});
+class WeekHeader extends StatefulWidget {
+  const WeekHeader({super.key, required this.date});
+
+  final String date;
+
+  @override
+  State<WeekHeader> createState() => _WeekHeaderState();
+}
+
+class _WeekHeaderState extends State<WeekHeader> {
+  Map<String, String> weekDateMap = <String, String>{};
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+
+    for (int i = 0; i < 7; i++) {
+      final String youbi = DateTime.parse(widget.date).add(Duration(days: i)).youbiStr;
+      final String ymd = DateTime.parse(widget.date).add(Duration(days: i)).yyyymmdd;
+
+      weekDateMap[youbi] = ymd;
+    }
+  }
 
   ///
   @override
   Widget build(BuildContext context) {
+    final String displayWeekDayStr = '${widget.date} / ${weekDateMap.entries.last.value}';
+
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final double colW = constraints.maxWidth / 7;
@@ -356,9 +381,9 @@ class WeekHeader extends StatelessWidget {
           children: <Widget>[
             const SizedBox(height: 10),
 
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[Text('xxxxxxxxxxxxx'), SizedBox.shrink()],
+              children: <Widget>[Text(displayWeekDayStr), const SizedBox.shrink()],
             ),
 
             const SizedBox(height: 5),
@@ -366,6 +391,16 @@ class WeekHeader extends StatelessWidget {
             Row(
               // ignore: always_specify_types
               children: List.generate(7, (int i) {
+                final String youbi = _dayLabels[i];
+
+                String year = '';
+                String monthDay = '';
+
+                if (weekDateMap[youbi] != null) {
+                  year = weekDateMap[youbi]!.split('-')[0];
+                  monthDay = '${weekDateMap[youbi]!.split('-')[1]}-${weekDateMap[youbi]!.split('-')[2]}';
+                }
+
                 return Container(
                   alignment: Alignment.center,
                   width: colW,
@@ -373,7 +408,10 @@ class WeekHeader extends StatelessWidget {
                   child: DefaultTextStyle(
                     style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
 
-                    child: Column(children: <Widget>[Text(_dayLabels[i].substring(0, 3)), const Text('99')]),
+                    child: DefaultTextStyle(
+                      style: const TextStyle(fontSize: 10),
+                      child: Column(children: <Widget>[Text(year), Text(monthDay), Text(youbi.substring(0, 3))]),
+                    ),
                   ),
                 );
               }),

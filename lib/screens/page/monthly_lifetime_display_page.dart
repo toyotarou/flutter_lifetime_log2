@@ -730,6 +730,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                       right: 10,
                       child: GestureDetector(
                         onTap: () {
+                          appParamNotifier.setWeeklyHistorySelectedDate(date: date);
+
                           LifetimeDialog(context: context, widget: const WeeklyHistoryAlert());
                         },
 

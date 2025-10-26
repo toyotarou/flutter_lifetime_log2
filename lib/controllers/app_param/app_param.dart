@@ -91,6 +91,10 @@ class AppParamState with _$AppParamState {
     @Default('') String selectedToushiGraphYear,
 
     @Default('') String selectedGeolocTime,
+
+    @Default(90.0) double weeklyHistoryHeaderHeight,
+
+    @Default('') String weeklyHistorySelectedDate,
   }) = _AppParamState;
 }
 
@@ -256,4 +260,7 @@ class AppParam extends _$AppParam {
 
   ///
   void setSelectedGeolocTime({required String time}) => state = state.copyWith(selectedGeolocTime: time);
+
+  ///
+  void setWeeklyHistorySelectedDate({required String date}) => state = state.copyWith(weeklyHistorySelectedDate: date);
 }
