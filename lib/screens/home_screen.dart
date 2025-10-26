@@ -139,6 +139,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepToushiShintakuRelationalMap(map: widget.toushiShintakuRelationalMap);
       appParamNotifier.setKeepTimePlaceMap(map: widget.timePlaceMap);
       appParamNotifier.setKeepAmazonPurchaseMap(map: widget.amazonPurchaseMap);
+
+      //===========================================//
+      final Map<String, List<String>> templeDateTimeBadgeMap = <String, List<String>>{};
+
+      widget.templeMap.forEach((String key, TempleModel value) {
+        for (final TempleDataModel element in value.templeDataList) {
+          element.templePhotoModelList?.forEach((TemplePhotoModel element2) {
+            element2.templephotos.sort();
+
+            final String fileName = element2.templephotos.first;
+            final List<String> exFileName = fileName.split('/');
+            final List<String> exFileNameLast = exFileName.last.split('_');
+
+            if (exFileNameLast.first == key.replaceAll('-', '')) {
+              final List<String> exFileNameLastLast = exFileNameLast.last.split('.');
+
+              if (exFileNameLastLast.first.length >= 4) {
+                final String fileHourMinute = exFileNameLastLast.first.substring(0, 4);
+                final String hour = fileHourMinute.substring(0, 2);
+                final String minute = fileHourMinute.substring(2);
+
+                (templeDateTimeBadgeMap[key] ??= <String>[]).add('$hour:$minute');
+              }
+            }
+          });
+        }
+      });
+
+      print(templeDateTimeBadgeMap['2025-09-23']);
+
+      // ignore: always_specify_types
+      Future(() {
+        appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
+      });
+      //===========================================//
     });
 
     return DefaultTabController(

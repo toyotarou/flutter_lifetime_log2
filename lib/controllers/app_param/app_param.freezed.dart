@@ -63,6 +63,8 @@ mixin _$AppParamState {
 
   ///
   List<StationModel> get keepStationList => throw _privateConstructorUsedError;
+  Map<String, List<String>> get keepTempleDateTimeBadgeMap =>
+      throw _privateConstructorUsedError;
 
   ///
   List<OverlayEntry>? get firstEntries => throw _privateConstructorUsedError;
@@ -134,6 +136,7 @@ abstract class $AppParamStateCopyWith<$Res> {
       Map<String, List<TimePlaceModel>> keepTimePlaceMap,
       Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
       List<StationModel> keepStationList,
+      Map<String, List<String>> keepTempleDateTimeBadgeMap,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
       Offset? overlayPosition,
@@ -193,6 +196,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? keepTimePlaceMap = null,
     Object? keepAmazonPurchaseMap = null,
     Object? keepStationList = null,
+    Object? keepTempleDateTimeBadgeMap = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
     Object? overlayPosition = freezed,
@@ -309,6 +313,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.keepStationList
           : keepStationList // ignore: cast_nullable_to_non_nullable
               as List<StationModel>,
+      keepTempleDateTimeBadgeMap: null == keepTempleDateTimeBadgeMap
+          ? _value.keepTempleDateTimeBadgeMap
+          : keepTempleDateTimeBadgeMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
       firstEntries: freezed == firstEntries
           ? _value.firstEntries
           : firstEntries // ignore: cast_nullable_to_non_nullable
@@ -418,6 +426,7 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       Map<String, List<TimePlaceModel>> keepTimePlaceMap,
       Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
       List<StationModel> keepStationList,
+      Map<String, List<String>> keepTempleDateTimeBadgeMap,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
       Offset? overlayPosition,
@@ -475,6 +484,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? keepTimePlaceMap = null,
     Object? keepAmazonPurchaseMap = null,
     Object? keepStationList = null,
+    Object? keepTempleDateTimeBadgeMap = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
     Object? overlayPosition = freezed,
@@ -591,6 +601,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value._keepStationList
           : keepStationList // ignore: cast_nullable_to_non_nullable
               as List<StationModel>,
+      keepTempleDateTimeBadgeMap: null == keepTempleDateTimeBadgeMap
+          ? _value._keepTempleDateTimeBadgeMap
+          : keepTempleDateTimeBadgeMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
       firstEntries: freezed == firstEntries
           ? _value._firstEntries
           : firstEntries // ignore: cast_nullable_to_non_nullable
@@ -714,6 +728,7 @@ class _$AppParamStateImpl implements _AppParamState {
           const <String, List<TimePlaceModel>>{},
       final Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap = const <String, List<AmazonPurchaseModel>>{},
       final List<StationModel> keepStationList = const <StationModel>[],
+      final Map<String, List<String>> keepTempleDateTimeBadgeMap = const <String, List<String>>{},
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
       this.overlayPosition,
@@ -756,6 +771,7 @@ class _$AppParamStateImpl implements _AppParamState {
         _keepTimePlaceMap = keepTimePlaceMap,
         _keepAmazonPurchaseMap = keepAmazonPurchaseMap,
         _keepStationList = keepStationList,
+        _keepTempleDateTimeBadgeMap = keepTempleDateTimeBadgeMap,
         _firstEntries = firstEntries,
         _secondEntries = secondEntries,
         _monthlyGeolocMapSelectedDateList = monthlyGeolocMapSelectedDateList;
@@ -990,6 +1006,16 @@ class _$AppParamStateImpl implements _AppParamState {
     return EqualUnmodifiableListView(_keepStationList);
   }
 
+  final Map<String, List<String>> _keepTempleDateTimeBadgeMap;
+  @override
+  @JsonKey()
+  Map<String, List<String>> get keepTempleDateTimeBadgeMap {
+    if (_keepTempleDateTimeBadgeMap is EqualUnmodifiableMapView)
+      return _keepTempleDateTimeBadgeMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_keepTempleDateTimeBadgeMap);
+  }
+
   ///
   final List<OverlayEntry>? _firstEntries;
 
@@ -1079,7 +1105,7 @@ class _$AppParamStateImpl implements _AppParamState {
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStationList: $keepStationList, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, selectedToushiGraphItemName: $selectedToushiGraphItemName, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, selectedToushiGraphItemName: $selectedToushiGraphItemName, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate)';
   }
 
   @override
@@ -1136,6 +1162,9 @@ class _$AppParamStateImpl implements _AppParamState {
                 .equals(other._keepAmazonPurchaseMap, _keepAmazonPurchaseMap) &&
             const DeepCollectionEquality()
                 .equals(other._keepStationList, _keepStationList) &&
+            const DeepCollectionEquality().equals(
+                other._keepTempleDateTimeBadgeMap,
+                _keepTempleDateTimeBadgeMap) &&
             const DeepCollectionEquality()
                 .equals(other._firstEntries, _firstEntries) &&
             const DeepCollectionEquality()
@@ -1167,8 +1196,7 @@ class _$AppParamStateImpl implements _AppParamState {
                 other.yearlyAllSpendSelectedYear ==
                     yearlyAllSpendSelectedYear) &&
             (identical(other.yearlyAllSpendSelectedPrice, yearlyAllSpendSelectedPrice) ||
-                other.yearlyAllSpendSelectedPrice ==
-                    yearlyAllSpendSelectedPrice) &&
+                other.yearlyAllSpendSelectedPrice == yearlyAllSpendSelectedPrice) &&
             (identical(other.selectedToushiGraphYear, selectedToushiGraphYear) || other.selectedToushiGraphYear == selectedToushiGraphYear) &&
             (identical(other.selectedGeolocTime, selectedGeolocTime) || other.selectedGeolocTime == selectedGeolocTime) &&
             (identical(other.weeklyHistoryHeaderHeight, weeklyHistoryHeaderHeight) || other.weeklyHistoryHeaderHeight == weeklyHistoryHeaderHeight) &&
@@ -1202,6 +1230,7 @@ class _$AppParamStateImpl implements _AppParamState {
         const DeepCollectionEquality().hash(_keepTimePlaceMap),
         const DeepCollectionEquality().hash(_keepAmazonPurchaseMap),
         const DeepCollectionEquality().hash(_keepStationList),
+        const DeepCollectionEquality().hash(_keepTempleDateTimeBadgeMap),
         const DeepCollectionEquality().hash(_firstEntries),
         const DeepCollectionEquality().hash(_secondEntries),
         overlayPosition,
@@ -1257,6 +1286,7 @@ abstract class _AppParamState implements AppParamState {
       final Map<String, List<TimePlaceModel>> keepTimePlaceMap,
       final Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
       final List<StationModel> keepStationList,
+      final Map<String, List<String>> keepTempleDateTimeBadgeMap,
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
       final Offset? overlayPosition,
@@ -1326,6 +1356,8 @@ abstract class _AppParamState implements AppParamState {
   ///
   @override
   List<StationModel> get keepStationList;
+  @override
+  Map<String, List<String>> get keepTempleDateTimeBadgeMap;
 
   ///
   @override

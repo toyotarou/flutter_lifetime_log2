@@ -57,6 +57,8 @@ class AppParamState with _$AppParamState {
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
 
+    @Default(<String, List<String>>{}) Map<String, List<String>> keepTempleDateTimeBadgeMap,
+
     ///
     List<OverlayEntry>? firstEntries,
     List<OverlayEntry>? secondEntries,
@@ -189,6 +191,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepAmazonPurchaseMap({required Map<String, List<AmazonPurchaseModel>> map}) =>
       state = state.copyWith(keepAmazonPurchaseMap: map);
+
+  ///
+  void setKeepTempleDateTimeBadgeMap({required Map<String, List<String>> map}) =>
+      state = state.copyWith(keepTempleDateTimeBadgeMap: map);
 
   //===================================================
 
