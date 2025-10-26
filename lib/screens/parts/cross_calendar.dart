@@ -571,7 +571,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         : Colors.transparent;
 
     final List<String> lifetimeData = (appParamState.keepLifetimeMap[date] != null)
-        ? getOnedayLifetimeItemList(value: appParamState.keepLifetimeMap[date]!)
+        ? getOnedayLifetimeItemList(lifetimeModel: appParamState.keepLifetimeMap[date]!)
         : <String>[];
 
     final List<String> duplicateConsecutive = getDuplicateConsecutive(lifetimeData);

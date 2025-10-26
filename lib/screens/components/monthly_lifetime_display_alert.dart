@@ -58,7 +58,7 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
 
     appParamState.keepLifetimeMap.forEach((String key, LifetimeModel value) {
       if ('${key.split('-')[0]}-${key.split('-')[1]}' == widget.yearmonth) {
-        final List<String> dispValList = getOnedayLifetimeItemList(value: value);
+        final List<String> dispValList = getOnedayLifetimeItemList(lifetimeModel: value);
 
         final String youbi = DateTime.parse(key).youbiStr;
 
