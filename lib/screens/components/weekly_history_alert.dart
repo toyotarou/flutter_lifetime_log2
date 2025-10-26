@@ -41,7 +41,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
   ///
   @override
   Widget build(BuildContext context) {
-    gridWidth = context.screenSize.width / 10;
+    gridWidth = context.screenSize.width / 11;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -203,7 +203,8 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
                                 child: DisplayHistoryItem(event: e),
                               );
                             }),
-                            const NowIndicatorLine(startHour: 3, endHour: 24, pxPerMinute: 1),
+
+                            NowIndicatorLine(startHour: weeklyHistoryStartTime, endHour: 24, pxPerMinute: 1),
                           ],
                         );
                       },
