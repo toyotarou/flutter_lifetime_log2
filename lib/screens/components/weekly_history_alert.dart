@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/weekly_history_event_model.dart';
 
 ///
 int toMinutes(int h, int m) => h * 60 + m;
@@ -17,16 +18,20 @@ class WeeklyHistoryAlert extends ConsumerStatefulWidget {
 }
 
 class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with ControllersMixin<WeeklyHistoryAlert> {
-  List<ScheduleEventModel> events = <ScheduleEventModel>[];
+  List<WeeklyHistoryEventModel> events = <WeeklyHistoryEventModel>[];
 
-  int startHour = 3;
+  int startHour = 5;
   int endHour = 24;
+
   double pxPerMinute = 1.0;
+
   double gutter = 56;
-  double gridWidth = 40;
-  double gridHeight = 0;
 
   ScrollController gutterVertical = ScrollController();
+
+  double gridWidth = 0;
+
+  double gridHeight = 0;
 
   ///
   @override
@@ -39,15 +44,17 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
   ///
   @override
   Widget build(BuildContext context) {
+    gridWidth = context.screenSize.width / 10;
+
     ///////////////////////////////
     ///////////////////////////////
     ///////////////////////////////
     ///////////////////////////////
     ///////////////////////////////
 
-    events = <ScheduleEventModel>[
-      ScheduleEventModel(dayIndex: 0, startMinutes: toMinutes(8, 0), endMinutes: toMinutes(10, 0), title: '病院'),
-      ScheduleEventModel(
+    events = <WeeklyHistoryEventModel>[
+      WeeklyHistoryEventModel(dayIndex: 0, startMinutes: toMinutes(8, 0), endMinutes: toMinutes(10, 0), title: '病院'),
+      WeeklyHistoryEventModel(
         dayIndex: 0,
         startMinutes: toMinutes(10, 0),
         endMinutes: toMinutes(15, 30),
@@ -55,7 +62,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
         color: const Color(0xFF26A69A),
       ),
 
-      ScheduleEventModel(dayIndex: 2, startMinutes: toMinutes(10, 0), endMinutes: toMinutes(12, 0), title: '通院'),
+      WeeklyHistoryEventModel(dayIndex: 2, startMinutes: toMinutes(10, 0), endMinutes: toMinutes(12, 0), title: '通院'),
 
       // ScheduleEventModel(
       //   dayIndex: 2,
@@ -71,7 +78,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
       //   title: 'MTG',
       //   color: const Color(0xFFFFA726),
       // ),
-      ScheduleEventModel(
+      WeeklyHistoryEventModel(
         dayIndex: 4,
         startMinutes: toMinutes(13, 15),
         endMinutes: toMinutes(16, 45),
@@ -152,7 +159,7 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
     required this.startHour,
     required this.endHour,
     required this.pxPerMinute,
-    this.events = const <ScheduleEventModel>[],
+    this.events = const <WeeklyHistoryEventModel>[],
   });
 
   final int startHour;
@@ -161,7 +168,7 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
 
   final double pxPerMinute;
 
-  final List<ScheduleEventModel> events;
+  final List<WeeklyHistoryEventModel> events;
 
   @override
   ConsumerState<WeeklyScheduleView> createState() => _WeeklyScheduleViewState();
@@ -218,7 +225,7 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
                             ),
 
                             ...placed.map((PlacedItemModel placedItemModel) {
-                              final ScheduleEventModel e = placedItemModel.event;
+                              final WeeklyHistoryEventModel e = placedItemModel.event;
 
                               final double perWidth = colW / placedItemModel.columnCount;
 
@@ -431,7 +438,7 @@ const List<String> _dayLabels = <String>['Sunday', 'Monday', 'Tuesday', 'Wednesd
 class DisplayHistoryItem extends StatelessWidget {
   const DisplayHistoryItem({super.key, required this.event});
 
-  final ScheduleEventModel event;
+  final WeeklyHistoryEventModel event;
 
   ///
   @override
@@ -445,7 +452,7 @@ class DisplayHistoryItem extends StatelessWidget {
         elevation: 1,
         child: InkWell(
           borderRadius: BorderRadius.circular(6),
-          child: Text(event.title, maxLines: 1, overflow: TextOverflow.clip),
+          child: Text(event.title, maxLines: 1, overflow: TextOverflow.clip, style: TextStyle(fontSize: 10)),
         ),
       ),
     );
@@ -489,23 +496,23 @@ class TimeLabels extends StatelessWidget {
 class PlacedItemModel {
   const PlacedItemModel({required this.event, required this.columnIndex, required this.columnCount});
 
-  final ScheduleEventModel event;
+  final WeeklyHistoryEventModel event;
 
   final int columnIndex, columnCount;
 }
 
-List<PlacedItemModel> _placeWeekly(List<ScheduleEventModel> events, double columnWidth) {
-  final Map<int, List<ScheduleEventModel>> byDay = <int, List<ScheduleEventModel>>{};
+List<PlacedItemModel> _placeWeekly(List<WeeklyHistoryEventModel> events, double columnWidth) {
+  final Map<int, List<WeeklyHistoryEventModel>> byDay = <int, List<WeeklyHistoryEventModel>>{};
 
-  for (final ScheduleEventModel e in events) {
-    byDay.putIfAbsent(e.dayIndex, () => <ScheduleEventModel>[]).add(e);
+  for (final WeeklyHistoryEventModel e in events) {
+    byDay.putIfAbsent(e.dayIndex, () => <WeeklyHistoryEventModel>[]).add(e);
   }
 
   final List<PlacedItemModel> placedAll = <PlacedItemModel>[];
 
-  for (final MapEntry<int, List<ScheduleEventModel>> entry in byDay.entries) {
-    final List<ScheduleEventModel> dayEvents = <ScheduleEventModel>[...entry.value]
-      ..sort((ScheduleEventModel a, ScheduleEventModel b) => a.startMinutes.compareTo(b.startMinutes));
+  for (final MapEntry<int, List<WeeklyHistoryEventModel>> entry in byDay.entries) {
+    final List<WeeklyHistoryEventModel> dayEvents = <WeeklyHistoryEventModel>[...entry.value]
+      ..sort((WeeklyHistoryEventModel a, WeeklyHistoryEventModel b) => a.startMinutes.compareTo(b.startMinutes));
 
     placedAll.addAll(_placeForOneDay(dayEvents));
   }
@@ -514,22 +521,22 @@ List<PlacedItemModel> _placeWeekly(List<ScheduleEventModel> events, double colum
 }
 
 ///
-List<PlacedItemModel> _placeForOneDay(List<ScheduleEventModel> events) {
+List<PlacedItemModel> _placeForOneDay(List<WeeklyHistoryEventModel> events) {
   final List<PlacedItemModel> result = <PlacedItemModel>[];
 
   int i = 0;
 
   while (i < events.length) {
-    final List<ScheduleEventModel> cluster = <ScheduleEventModel>[];
+    final List<WeeklyHistoryEventModel> cluster = <WeeklyHistoryEventModel>[];
 
-    final List<ScheduleEventModel> active = <ScheduleEventModel>[];
+    final List<WeeklyHistoryEventModel> active = <WeeklyHistoryEventModel>[];
 
     int j = i;
 
     while (j < events.length) {
-      final ScheduleEventModel e = events[j];
+      final WeeklyHistoryEventModel e = events[j];
 
-      active.removeWhere((ScheduleEventModel a) => a.endMinutes <= e.startMinutes);
+      active.removeWhere((WeeklyHistoryEventModel a) => a.endMinutes <= e.startMinutes);
 
       if (active.isEmpty && cluster.isNotEmpty) {
         break;
@@ -548,9 +555,9 @@ List<PlacedItemModel> _placeForOneDay(List<ScheduleEventModel> events) {
 }
 
 ///
-List<PlacedItemModel> _assignColumns(List<ScheduleEventModel> cluster) {
-  final List<ScheduleEventModel> sorted = <ScheduleEventModel>[...cluster]
-    ..sort((ScheduleEventModel a, ScheduleEventModel b) {
+List<PlacedItemModel> _assignColumns(List<WeeklyHistoryEventModel> cluster) {
+  final List<WeeklyHistoryEventModel> sorted = <WeeklyHistoryEventModel>[...cluster]
+    ..sort((WeeklyHistoryEventModel a, WeeklyHistoryEventModel b) {
       final int c = a.startMinutes.compareTo(b.startMinutes);
       if (c != 0) {
         return c;
@@ -560,12 +567,12 @@ List<PlacedItemModel> _assignColumns(List<ScheduleEventModel> cluster) {
 
   final List<PlacedItemModel> placed = <PlacedItemModel>[];
 
-  final Map<int, ScheduleEventModel> active = <int, ScheduleEventModel>{};
+  final Map<int, WeeklyHistoryEventModel> active = <int, WeeklyHistoryEventModel>{};
 
-  for (final ScheduleEventModel e in sorted) {
+  for (final WeeklyHistoryEventModel e in sorted) {
     final List<int> toRemove = <int>[];
 
-    active.forEach((int col, ScheduleEventModel ev) {
+    active.forEach((int col, WeeklyHistoryEventModel ev) {
       if (ev.endMinutes <= e.startMinutes) {
         toRemove.add(col);
       }
@@ -591,22 +598,4 @@ List<PlacedItemModel> _assignColumns(List<ScheduleEventModel> cluster) {
   return placed
       .map((PlacedItemModel p) => PlacedItemModel(event: p.event, columnIndex: p.columnIndex, columnCount: cc))
       .toList();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-class ScheduleEventModel {
-  ScheduleEventModel({
-    required this.dayIndex,
-    required this.startMinutes,
-    required this.endMinutes,
-    required this.title,
-    this.color = const Color(0xFF42A5F5),
-  });
-
-  final int dayIndex;
-  final int startMinutes;
-  final int endMinutes;
-  final String title;
-  final Color color;
 }
