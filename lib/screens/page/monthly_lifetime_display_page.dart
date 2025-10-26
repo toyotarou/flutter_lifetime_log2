@@ -17,6 +17,7 @@ import '../components/monthly_lifetime_display_alert.dart';
 import '../components/monthly_money_spend_display_alert.dart';
 import '../components/monthly_work_time_display_alert.dart';
 import '../components/walk_data_input_alert.dart';
+import '../components/weekly_history_alert.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 
@@ -261,7 +262,17 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
           ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
           : Colors.blueGrey.withValues(alpha: 0.2);
 
-      double constrainedBoxHeight = context.screenSize.height / 6;
+      //////////
+
+      // double constrainedBoxHeight = context.screenSize.height / 6;
+      //
+      //
+      //
+      //
+
+      double constrainedBoxHeight = context.screenSize.height / 4;
+
+      //////////
 
       if (DateTime.parse(date).isAfter(DateTime.now())) {
         cardColor = Colors.transparent;
@@ -709,6 +720,20 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                           style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
                         ),
+                      ),
+                    ),
+                  ],
+
+                  if (DateTime.parse(date).youbiStr == 'Sunday') ...<Widget>[
+                    Positioned(
+                      bottom: 10,
+                      right: 10,
+                      child: GestureDetector(
+                        onTap: () {
+                          LifetimeDialog(context: context, widget: const WeeklyHistoryAlert());
+                        },
+
+                        child: const Icon(Icons.ac_unit, color: Colors.white),
                       ),
                     ),
                   ],
