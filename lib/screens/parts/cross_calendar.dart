@@ -106,6 +106,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       }
       _syncingH = true;
       if (horizontalBodyAutoScrollController.hasClients) {
+        /// 自動スクロール 1/8
+
         horizontalBodyAutoScrollController.jumpTo(horizontalHeaderAutoScrollController.offset);
       }
       _syncingH = false;
@@ -117,6 +119,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       }
       _syncingH = true;
       if (horizontalHeaderAutoScrollController.hasClients) {
+        /// 自動スクロール 2/8
+
         horizontalHeaderAutoScrollController.jumpTo(horizontalBodyAutoScrollController.offset);
       }
       _syncingH = false;
@@ -129,6 +133,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       }
       _syncingV = true;
       if (verticalBodyScrollController.hasClients) {
+        /// 自動スクロール 3/8
+
         verticalBodyScrollController.jumpTo(verticalLeftScrollController.offset);
       }
       _syncingV = false;
@@ -139,6 +145,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       }
       _syncingV = true;
       if (verticalLeftScrollController.hasClients) {
+        /// 自動スクロール 4/8
+
         verticalLeftScrollController.jumpTo(verticalBodyScrollController.offset);
       }
       _syncingV = false;
@@ -175,11 +183,14 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     _syncingH = true;
     // ignore: strict_raw_type, always_specify_types
     await Future.wait(<Future>[
+      /// 自動スクロール 5/8
       horizontalHeaderAutoScrollController.scrollToIndex(
         idx,
         preferPosition: AutoScrollPosition.begin,
         duration: const Duration(milliseconds: 260),
       ),
+
+      /// 自動スクロール 6/8
       horizontalBodyAutoScrollController.scrollToIndex(
         idx,
         preferPosition: AutoScrollPosition.begin,
@@ -202,11 +213,14 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       _syncingH = true;
       // ignore: strict_raw_type, always_specify_types
       await Future.wait(<Future>[
+        /// 自動スクロール 7/8
         horizontalHeaderAutoScrollController.scrollToIndex(
           idx,
           preferPosition: AutoScrollPosition.begin,
           duration: const Duration(milliseconds: 260),
         ),
+
+        /// 自動スクロール 8/8
         horizontalBodyAutoScrollController.scrollToIndex(
           idx,
           preferPosition: AutoScrollPosition.begin,
