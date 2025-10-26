@@ -7,6 +7,7 @@ import '../../extensions/extensions.dart';
 import '../../models/lifetime_model.dart';
 import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
+import '../../models/weekly_history_event_model.dart';
 import '../../utility/utility.dart';
 import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
@@ -732,7 +733,12 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         onTap: () {
                           appParamNotifier.setWeeklyHistorySelectedDate(date: date);
 
-                          LifetimeDialog(context: context, widget: const WeeklyHistoryAlert());
+                          var weeklyHistoryEvent = getWeeklyHistoryEvent(date: date);
+
+                          LifetimeDialog(
+                            context: context,
+                            widget: WeeklyHistoryAlert(weeklyHistoryEvent: weeklyHistoryEvent),
+                          );
                         },
 
                         child: const Icon(Icons.ac_unit, color: Colors.white),
@@ -757,6 +763,35 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
         ),
       ],
     );
+  }
+
+  ///
+  List<WeeklyHistoryEventModel> getWeeklyHistoryEvent({required String date}) {
+    return <WeeklyHistoryEventModel>[
+      WeeklyHistoryEventModel(dayIndex: 0, startMinutes: toMinutes(8, 0), endMinutes: toMinutes(10, 0), title: '病院'),
+      WeeklyHistoryEventModel(
+        dayIndex: 0,
+        startMinutes: toMinutes(10, 0),
+        endMinutes: toMinutes(15, 30),
+        title: '買い物',
+        color: const Color(0xFF26A69A),
+      ),
+
+      WeeklyHistoryEventModel(dayIndex: 2, startMinutes: toMinutes(10, 0), endMinutes: toMinutes(12, 0), title: '通院'),
+
+      WeeklyHistoryEventModel(
+        dayIndex: 4,
+        startMinutes: toMinutes(13, 15),
+        endMinutes: toMinutes(16, 45),
+        title: '検診',
+        color: const Color(0xFF1E88E5),
+      ),
+    ];
+  }
+
+  ///
+  int toMinutes(int h, int m) {
+    return h * 60 + m;
   }
 
   ///

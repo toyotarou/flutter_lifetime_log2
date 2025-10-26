@@ -5,21 +5,18 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/weekly_history_event_model.dart';
 
-///
-int toMinutes(int h, int m) => h * 60 + m;
-
 /////////////////////////////////////////////////////////////////////////////////////////
 
 class WeeklyHistoryAlert extends ConsumerStatefulWidget {
-  const WeeklyHistoryAlert({super.key});
+  const WeeklyHistoryAlert({super.key, required this.weeklyHistoryEvent});
+
+  final List<WeeklyHistoryEventModel> weeklyHistoryEvent;
 
   @override
   ConsumerState<WeeklyHistoryAlert> createState() => _WeeklyHistoryAlertState();
 }
 
 class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with ControllersMixin<WeeklyHistoryAlert> {
-  List<WeeklyHistoryEventModel> events = <WeeklyHistoryEventModel>[];
-
   int startHour = 5;
   int endHour = 24;
 
@@ -45,53 +42,6 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
   @override
   Widget build(BuildContext context) {
     gridWidth = context.screenSize.width / 10;
-
-    ///////////////////////////////
-    ///////////////////////////////
-    ///////////////////////////////
-    ///////////////////////////////
-    ///////////////////////////////
-
-    events = <WeeklyHistoryEventModel>[
-      WeeklyHistoryEventModel(dayIndex: 0, startMinutes: toMinutes(8, 0), endMinutes: toMinutes(10, 0), title: '病院'),
-      WeeklyHistoryEventModel(
-        dayIndex: 0,
-        startMinutes: toMinutes(10, 0),
-        endMinutes: toMinutes(15, 30),
-        title: '買い物',
-        color: const Color(0xFF26A69A),
-      ),
-
-      WeeklyHistoryEventModel(dayIndex: 2, startMinutes: toMinutes(10, 0), endMinutes: toMinutes(12, 0), title: '通院'),
-
-      // ScheduleEventModel(
-      //   dayIndex: 2,
-      //   startMinutes: toMinutes(10, 30),
-      //   endMinutes: toMinutes(12, 30),
-      //   title: 'オンライン',
-      //   color: const Color(0xFF8E24AA),
-      // ),
-      // ScheduleEventModel(
-      //   dayIndex: 2,
-      //   startMinutes: toMinutes(11, 0),
-      //   endMinutes: toMinutes(12, 0),
-      //   title: 'MTG',
-      //   color: const Color(0xFFFFA726),
-      // ),
-      WeeklyHistoryEventModel(
-        dayIndex: 4,
-        startMinutes: toMinutes(13, 15),
-        endMinutes: toMinutes(16, 45),
-        title: '検診',
-        color: const Color(0xFF1E88E5),
-      ),
-    ];
-
-    ///////////////////////////////
-    ///////////////////////////////
-    ///////////////////////////////
-    ///////////////////////////////
-    ///////////////////////////////
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -122,7 +72,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
                     startHour: startHour,
                     endHour: endHour,
                     pxPerMinute: pxPerMinute,
-                    events: events,
+                    events: widget.weeklyHistoryEvent,
                   ),
                 ),
               ),
