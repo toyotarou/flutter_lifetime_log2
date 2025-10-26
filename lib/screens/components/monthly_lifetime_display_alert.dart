@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/lifetime_model.dart';
+import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 
 class MonthlyLifetimeDisplayAlert extends ConsumerStatefulWidget {
@@ -57,32 +58,7 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
 
     appParamState.keepLifetimeMap.forEach((String key, LifetimeModel value) {
       if ('${key.split('-')[0]}-${key.split('-')[1]}' == widget.yearmonth) {
-        final List<String> dispValList = <String>[
-          value.hour00,
-          value.hour01,
-          value.hour02,
-          value.hour03,
-          value.hour04,
-          value.hour05,
-          value.hour06,
-          value.hour07,
-          value.hour08,
-          value.hour09,
-          value.hour10,
-          value.hour11,
-          value.hour12,
-          value.hour13,
-          value.hour14,
-          value.hour15,
-          value.hour16,
-          value.hour17,
-          value.hour18,
-          value.hour19,
-          value.hour20,
-          value.hour21,
-          value.hour22,
-          value.hour23,
-        ];
+        final List<String> dispValList = getOnedayLifetimeItemList(value: value);
 
         final String youbi = DateTime.parse(key).youbiStr;
 

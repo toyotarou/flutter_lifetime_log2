@@ -4,10 +4,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
-import '../../models/lifetime_model.dart';
 import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
 import '../../models/weekly_history_event_model.dart';
+import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
@@ -733,7 +733,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         onTap: () {
                           appParamNotifier.setWeeklyHistorySelectedDate(date: date);
 
-                          var weeklyHistoryEvent = getWeeklyHistoryEvent(date: date);
+                          final List<WeeklyHistoryEventModel> weeklyHistoryEvent = getWeeklyHistoryEvent(date: date);
 
                           LifetimeDialog(
                             context: context,
@@ -796,37 +796,9 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
   ///
   Widget getLifetimeDisplayCell({required String date, required int num}) {
-    List<String> dispValList = <String>[];
-    if (appParamState.keepLifetimeMap[date] != null) {
-      final LifetimeModel? dataMap = appParamState.keepLifetimeMap[date];
-
-      dispValList = <String>[
-        dataMap!.hour00,
-        dataMap.hour01,
-        dataMap.hour02,
-        dataMap.hour03,
-        dataMap.hour04,
-        dataMap.hour05,
-        dataMap.hour06,
-        dataMap.hour07,
-        dataMap.hour08,
-        dataMap.hour09,
-        dataMap.hour10,
-        dataMap.hour11,
-        dataMap.hour12,
-        dataMap.hour13,
-        dataMap.hour14,
-        dataMap.hour15,
-        dataMap.hour16,
-        dataMap.hour17,
-        dataMap.hour18,
-        dataMap.hour19,
-        dataMap.hour20,
-        dataMap.hour21,
-        dataMap.hour22,
-        dataMap.hour23,
-      ];
-    }
+    final List<String> dispValList = (appParamState.keepLifetimeMap[date] != null)
+        ? getOnedayLifetimeItemList(value: appParamState.keepLifetimeMap[date]!)
+        : <String>[];
 
     final Color color = utility.getLifetimeRowBgColor(value: dispValList[num], textDisplay: false);
 

@@ -402,7 +402,7 @@ class DisplayHistoryItem extends StatelessWidget {
         elevation: 1,
         child: InkWell(
           borderRadius: BorderRadius.circular(6),
-          child: Text(event.title, maxLines: 1, overflow: TextOverflow.clip, style: TextStyle(fontSize: 10)),
+          child: Text(event.title, maxLines: 1, overflow: TextOverflow.clip, style: const TextStyle(fontSize: 10)),
         ),
       ),
     );

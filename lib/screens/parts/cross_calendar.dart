@@ -5,7 +5,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
-import '../../models/lifetime_model.dart';
+import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../parts/diagonal_slash_painter.dart';
 
@@ -570,38 +570,9 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
         : Colors.transparent;
 
-    List<String> lifetimeData = <String>[];
-
-    if (appParamState.keepLifetimeMap[date] != null) {
-      final LifetimeModel? dataMap = appParamState.keepLifetimeMap[date];
-
-      lifetimeData = <String>[
-        dataMap!.hour00,
-        dataMap.hour01,
-        dataMap.hour02,
-        dataMap.hour03,
-        dataMap.hour04,
-        dataMap.hour05,
-        dataMap.hour06,
-        dataMap.hour07,
-        dataMap.hour08,
-        dataMap.hour09,
-        dataMap.hour10,
-        dataMap.hour11,
-        dataMap.hour12,
-        dataMap.hour13,
-        dataMap.hour14,
-        dataMap.hour15,
-        dataMap.hour16,
-        dataMap.hour17,
-        dataMap.hour18,
-        dataMap.hour19,
-        dataMap.hour20,
-        dataMap.hour21,
-        dataMap.hour22,
-        dataMap.hour23,
-      ];
-    }
+    final List<String> lifetimeData = (appParamState.keepLifetimeMap[date] != null)
+        ? getOnedayLifetimeItemList(value: appParamState.keepLifetimeMap[date]!)
+        : <String>[];
 
     final List<String> duplicateConsecutive = getDuplicateConsecutive(lifetimeData);
 
