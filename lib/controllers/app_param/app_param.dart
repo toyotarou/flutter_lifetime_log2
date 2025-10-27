@@ -97,6 +97,8 @@ class AppParamState with _$AppParamState {
     @Default(90.0) double weeklyHistoryHeaderHeight,
 
     @Default('') String weeklyHistorySelectedDate,
+
+    @Default(0) int selectedCrossCalendarYear,
   }) = _AppParamState;
 }
 
@@ -106,7 +108,9 @@ class AppParam extends _$AppParam {
 
   ///
   @override
-  AppParamState build() => const AppParamState();
+  AppParamState build() {
+    return AppParamState(selectedCrossCalendarYear: DateTime.now().year);
+  }
 
   ///
   void setKeepHolidayList({required List<String> list}) => state = state.copyWith(keepHolidayList: list);
@@ -269,4 +273,7 @@ class AppParam extends _$AppParam {
 
   ///
   void setWeeklyHistorySelectedDate({required String date}) => state = state.copyWith(weeklyHistorySelectedDate: date);
+
+  ///
+  void setSelectedCrossCalendarYear({required int year}) => state = state.copyWith(selectedCrossCalendarYear: year);
 }

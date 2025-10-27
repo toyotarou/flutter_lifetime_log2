@@ -67,6 +67,9 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
   final Map<String, bool> _holidayCache = <String, bool>{};
 
+  late final List<double> _rowPrefixHeights;
+  final bool _sundayNavLocked = false;
+
   static const TextStyle _text12 = TextStyle(fontSize: 12);
   static const TextStyle _text12Bold = TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
   static const EdgeInsets _cellPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 6);
@@ -99,6 +102,11 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     _prefixWidths = List<double>.filled(widget.monthDays.length + 1, 0);
     for (int i = 1; i <= widget.monthDays.length; i++) {
       _prefixWidths[i] = _prefixWidths[i - 1] + widget.colWidths[i];
+    }
+
+    _rowPrefixHeights = List<double>.filled(widget.years.length + 1, 0);
+    for (int i = 1; i <= widget.years.length; i++) {
+      _rowPrefixHeights[i] = _rowPrefixHeights[i - 1] + widget.rowHeights[i];
     }
 
     horizontalHeaderAutoScrollController.addListener(() {
@@ -139,6 +147,9 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         verticalBodyScrollController.jumpTo(verticalLeftScrollController.offset);
       }
       _syncingV = false;
+      if (!_sundayNavLocked) {
+        _updateBaseYearByOffset(verticalLeftScrollController.offset);
+      }
     });
     verticalBodyScrollController.addListener(() {
       if (_syncingV) {
@@ -151,6 +162,9 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         verticalLeftScrollController.jumpTo(verticalBodyScrollController.offset);
       }
       _syncingV = false;
+      if (!_sundayNavLocked) {
+        _updateBaseYearByOffset(verticalBodyScrollController.offset);
+      }
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -310,6 +324,69 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   }
 
   ///
+  void _updateBaseYearByOffset(double dy) {
+    int lo = 0, hi = widget.years.length;
+    while (lo < hi) {
+      final int mid = (lo + hi) >> 1;
+      if (_rowPrefixHeights[mid] <= dy) {
+        lo = mid + 1;
+      } else {
+        hi = mid;
+      }
+    }
+  }
+
+  ///
+  int _currentColIndex() {
+    final double dx = horizontalBodyAutoScrollController.hasClients ? horizontalBodyAutoScrollController.offset : 0.0;
+    int lo = 0, hi = widget.monthDays.length;
+    while (lo < hi) {
+      final int mid = (lo + hi) >> 1;
+      if (_prefixWidths[mid] <= dx) {
+        lo = mid + 1;
+      } else {
+        hi = mid;
+      }
+    }
+    return (lo - 1).clamp(0, widget.monthDays.length - 1);
+  }
+
+  ///
+  Future<void> _scrollToSunday({required bool next}) async {
+    _ensureYearVisible(appParamState.selectedCrossCalendarYear, alignment: 0.0);
+
+    int i = _currentColIndex() + (next ? 1 : -1);
+    while (i >= 0 && i < widget.monthDays.length) {
+      final String md = widget.monthDays[i];
+      final int mm = int.parse(md.substring(0, 2));
+      final int dd = int.parse(md.substring(3, 5));
+
+      final DateTime dt = DateTime(appParamState.selectedCrossCalendarYear, mm).add(Duration(days: dd - 1));
+      if (dt.month == mm && dt.day == dd) {
+        if (dt.weekday == DateTime.sunday) {
+          _syncingH = true;
+          // ignore: strict_raw_type, always_specify_types
+          await Future.wait(<Future>[
+            horizontalHeaderAutoScrollController.scrollToIndex(
+              i,
+              preferPosition: AutoScrollPosition.begin,
+              duration: const Duration(milliseconds: 260),
+            ),
+            horizontalBodyAutoScrollController.scrollToIndex(
+              i,
+              preferPosition: AutoScrollPosition.begin,
+              duration: const Duration(milliseconds: 260),
+            ),
+          ]);
+          _syncingH = false;
+          return;
+        }
+      }
+      i += (next ? 1 : -1);
+    }
+  }
+
+  ///
   Color _lifetimeColor(String value) {
     final Color? c = _lifetimeColorCache[value];
     if (c != null) {
@@ -357,6 +434,24 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     return Column(
       children: <Widget>[
         getMonthSelectButton(),
+        const Divider(height: 1),
+
+        Row(
+          children: <Widget>[
+            OutlinedButton.icon(
+              onPressed: () => _scrollToSunday(next: false),
+              icon: const Icon(Icons.chevron_left),
+              label: const Text('前の日曜'),
+            ),
+
+            OutlinedButton.icon(
+              onPressed: () => _scrollToSunday(next: true),
+              icon: const Icon(Icons.chevron_right),
+              label: const Text('次の日曜'),
+            ),
+          ],
+        ),
+
         const Divider(height: 1),
 
         Expanded(
@@ -425,7 +520,28 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                             color: Colors.black.withValues(alpha: 0.2),
                             border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
                           ),
-                          child: Center(child: Text(year, style: _text12Bold)),
+                          child: Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                appParamNotifier.setSelectedCrossCalendarYear(year: year.toInt());
+                              },
+
+                              child: CircleAvatar(
+                                backgroundColor: (appParamState.selectedCrossCalendarYear == year.toInt())
+                                    ? Colors.yellowAccent.withValues(alpha: 0.2)
+                                    : Colors.white.withValues(alpha: 0.2),
+
+                                child: Text(
+                                  year,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       );
                     },
