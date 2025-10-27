@@ -167,8 +167,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         }
       });
 
-      print(templeDateTimeBadgeMap['2025-09-23']);
-
       // ignore: always_specify_types
       Future(() {
         appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);

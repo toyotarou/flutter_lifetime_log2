@@ -5,6 +5,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
 import '../../utility/functions.dart';
 import '../../utility/utility.dart';
@@ -811,9 +812,16 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
                     final List<WeeklyHistoryEventModel> weeklyHistoryEvent = getWeeklyHistoryEvent(date: date);
 
+                    /////////
+
+                    final List<WeeklyHistoryBadgeModel> weeklyHistoryBadge = getWeeklyHistoryBadge(date: date);
+
                     LifetimeDialog(
                       context: context,
-                      widget: WeeklyHistoryAlert(weeklyHistoryEvent: weeklyHistoryEvent),
+                      widget: WeeklyHistoryAlert(
+                        weeklyHistoryEvent: weeklyHistoryEvent,
+                        weeklyHistoryBadge: weeklyHistoryBadge,
+                      ),
                     );
                   },
                   child: CircleAvatar(
@@ -892,5 +900,31 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     }
 
     return events;
+  }
+
+  ///
+  List<WeeklyHistoryBadgeModel> getWeeklyHistoryBadge({required String date}) {
+    final List<WeeklyHistoryBadgeModel> list = <WeeklyHistoryBadgeModel>[];
+
+    for (int i = 0; i < 7; i++) {
+      final String genDate = DateTime.parse(date).add(Duration(days: i)).yyyymmdd;
+
+      if (appParamState.keepTempleDateTimeBadgeMap[genDate] != null) {
+        for (final String element in appParamState.keepTempleDateTimeBadgeMap[genDate]!) {
+          final List<String> exElement = element.split(':');
+
+          list.add(
+            WeeklyHistoryBadgeModel(
+              dayIndex: i,
+              minutesOfDay: exElement[0].toInt() * 60 + exElement[1].toInt(),
+              icon: FontAwesomeIcons.toriiGate,
+              color: Colors.pinkAccent,
+            ),
+          );
+        }
+      }
+    }
+
+    return list;
   }
 }

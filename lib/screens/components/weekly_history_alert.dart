@@ -3,14 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 class WeeklyHistoryAlert extends ConsumerStatefulWidget {
-  const WeeklyHistoryAlert({super.key, required this.weeklyHistoryEvent});
+  const WeeklyHistoryAlert({super.key, required this.weeklyHistoryEvent, required this.weeklyHistoryBadge});
 
   final List<WeeklyHistoryEventModel> weeklyHistoryEvent;
+  final List<WeeklyHistoryBadgeModel> weeklyHistoryBadge;
 
   @override
   ConsumerState<WeeklyHistoryAlert> createState() => _WeeklyHistoryAlertState();
@@ -73,6 +75,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
                     endHour: endHour,
                     pxPerMinute: pxPerMinute,
                     events: widget.weeklyHistoryEvent,
+                    badges: widget.weeklyHistoryBadge,
                   ),
                 ),
               ),
@@ -110,6 +113,8 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
     required this.endHour,
     required this.pxPerMinute,
     this.events = const <WeeklyHistoryEventModel>[],
+
+    this.badges = const <WeeklyHistoryBadgeModel>[],
   });
 
   final int startHour;
@@ -119,6 +124,8 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
   final double pxPerMinute;
 
   final List<WeeklyHistoryEventModel> events;
+
+  final List<WeeklyHistoryBadgeModel> badges;
 
   @override
   ConsumerState<WeeklyScheduleView> createState() => _WeeklyScheduleViewState();
@@ -201,6 +208,37 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
                                 height: height,
 
                                 child: DisplayHistoryItem(event: e),
+                              );
+                            }),
+
+                            ...widget.badges.map((WeeklyHistoryBadgeModel b) {
+                              const double size = 20.0;
+
+                              final double top =
+                                  (b.minutesOfDay - widget.startHour * 60) * widget.pxPerMinute - size / 2;
+
+                              final double left = b.dayIndex * colW + (colW - size) / 2;
+
+                              return Positioned(
+                                top: top.clamp(0, gridHeight - size),
+                                left: left,
+                                width: size,
+                                height: size,
+                                child: Tooltip(
+                                  message: b.tooltip ?? 'badge',
+
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: <BoxShadow>[BoxShadow(blurRadius: 3, color: Color(0x33000000))],
+                                    ),
+
+                                    alignment: Alignment.center,
+
+                                    child: Icon(b.icon, size: 14, color: b.color),
+                                  ),
+                                ),
                               );
                             }),
 
@@ -459,6 +497,8 @@ class PlacedItemModel {
 
 List<PlacedItemModel> _placeWeekly(List<WeeklyHistoryEventModel> events, double columnWidth) {
   final Map<int, List<WeeklyHistoryEventModel>> byDay = <int, List<WeeklyHistoryEventModel>>{};
+
+  //////////
 
   for (final WeeklyHistoryEventModel e in events) {
     byDay.putIfAbsent(e.dayIndex, () => <WeeklyHistoryEventModel>[]).add(e);
