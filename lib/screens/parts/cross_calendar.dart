@@ -440,14 +440,14 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
           children: <Widget>[
             OutlinedButton.icon(
               onPressed: () => _scrollToSunday(next: false),
-              icon: const Icon(Icons.chevron_left),
-              label: const Text('前の日曜'),
+              icon: const Icon(Icons.chevron_left, color: Colors.white),
+              label: const Text('前の日曜', style: TextStyle(color: Colors.white)),
             ),
 
             OutlinedButton.icon(
               onPressed: () => _scrollToSunday(next: true),
-              icon: const Icon(Icons.chevron_right),
-              label: const Text('次の日曜'),
+              icon: const Icon(Icons.chevron_right, color: Colors.white),
+              label: const Text('次の日曜', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
