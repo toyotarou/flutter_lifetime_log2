@@ -59,6 +59,8 @@ class AppParamState with _$AppParamState {
 
     @Default(<String, List<String>>{}) Map<String, List<String>> keepTempleDateTimeBadgeMap,
 
+    @Default(<String, String>{}) Map<String, String> keepTempleDateTimeNameMap,
+
     ///
     List<OverlayEntry>? firstEntries,
     List<OverlayEntry>? secondEntries,
@@ -199,6 +201,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepTempleDateTimeBadgeMap({required Map<String, List<String>> map}) =>
       state = state.copyWith(keepTempleDateTimeBadgeMap: map);
+
+  ///
+  void setKeepTempleDateTimeNameMap({required Map<String, String> map}) =>
+      state = state.copyWith(keepTempleDateTimeNameMap: map);
 
   //===================================================
 

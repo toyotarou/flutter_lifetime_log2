@@ -95,6 +95,11 @@ class _TemplePhotoListAlertState extends ConsumerState<TemplePhotoListAlert>
                           children: <Widget>[Text(widget.temple.name), const SizedBox.shrink()],
                         ),
 
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[Text(widget.temple.address), const SizedBox.shrink()],
+                        ),
+
                         Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
                       ],
                     ),

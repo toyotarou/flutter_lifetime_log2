@@ -143,6 +143,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       //===========================================//
       final Map<String, List<String>> templeDateTimeBadgeMap = <String, List<String>>{};
 
+      final Map<String, String> templeDateTimeNameMap = <String, String>{};
+
       widget.templeMap.forEach((String key, TempleModel value) {
         for (final TempleDataModel element in value.templeDataList) {
           element.templePhotoModelList?.forEach((TemplePhotoModel element2) {
@@ -161,6 +163,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 final String minute = fileHourMinute.substring(2);
 
                 (templeDateTimeBadgeMap[key] ??= <String>[]).add('$hour:$minute');
+
+                templeDateTimeNameMap['$key|$hour:$minute'] = element2.temple;
               }
             }
           });
@@ -170,6 +174,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       // ignore: always_specify_types
       Future(() {
         appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
+
+        appParamNotifier.setKeepTempleDateTimeNameMap(map: templeDateTimeNameMap);
       });
       //===========================================//
     });

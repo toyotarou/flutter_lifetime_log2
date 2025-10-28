@@ -1030,12 +1030,15 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         for (final String element in appParamState.keepTempleDateTimeBadgeMap[genDate]!) {
           final List<String> exElement = element.split(':');
 
+          String? templeName = appParamState.keepTempleDateTimeNameMap['${genDate}|${element}'];
+
           list.add(
             WeeklyHistoryBadgeModel(
               dayIndex: i,
               minutesOfDay: exElement[0].toInt() * 60 + exElement[1].toInt(),
               icon: FontAwesomeIcons.toriiGate,
               color: Colors.pinkAccent,
+              tooltip: templeName,
             ),
           );
         }

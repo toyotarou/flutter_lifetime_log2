@@ -230,16 +230,19 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
                                 child: Tooltip(
                                   message: b.tooltip ?? 'badge',
 
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                      boxShadow: <BoxShadow>[BoxShadow(blurRadius: 3, color: Color(0x33000000))],
+                                  child: GestureDetector(
+                                    onTap: () {},
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                        boxShadow: <BoxShadow>[BoxShadow(blurRadius: 3, color: Color(0x33000000))],
+                                      ),
+
+                                      alignment: Alignment.center,
+
+                                      child: Icon(b.icon, size: 14, color: b.color),
                                     ),
-
-                                    alignment: Alignment.center,
-
-                                    child: Icon(b.icon, size: 14, color: b.color),
                                   ),
                                 ),
                               );
