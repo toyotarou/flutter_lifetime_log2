@@ -1,0 +1,112 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../controllers/controllers_mixin.dart';
+import '../../models/lifetime_model.dart';
+import '../../utility/utility.dart';
+
+class LifetimeItemSearchAlert extends ConsumerStatefulWidget {
+  const LifetimeItemSearchAlert({super.key});
+
+  @override
+  ConsumerState<LifetimeItemSearchAlert> createState() => _LifetimeItemSearchAlertState();
+}
+
+class _LifetimeItemSearchAlertState extends ConsumerState<LifetimeItemSearchAlert>
+    with ControllersMixin<LifetimeItemSearchAlert> {
+  Utility utility = Utility();
+
+  final Map<String, Color> _lifetimeColorCache = <String, Color>{};
+
+  ///
+  Color _lifetimeColor(String value) {
+    final Color? c = _lifetimeColorCache[value];
+    if (c != null) {
+      return c;
+    }
+    final Color v = utility.getLifetimeRowBgColor(value: value, textDisplay: false);
+    _lifetimeColorCache[value] = v;
+    return v;
+  }
+
+  ///
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+
+      body: SafeArea(
+        child: DefaultTextStyle(
+          style: const TextStyle(color: Colors.white),
+
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: <Widget>[
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[Text('amazon purchase list'), SizedBox.shrink()],
+                ),
+
+                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                displayLifetimeItemSearchItemList(),
+
+                Expanded(child: displayLifetimeItemSearchResultList()),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  ///
+  Widget displayLifetimeItemSearchItemList() {
+    final List<Widget> list = <Widget>[];
+
+    for (final LifetimeItemModel element in appParamState.keepLifetimeItemList) {
+      final Color color = _lifetimeColor(element.item);
+
+      list.add(
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 5),
+          child: ChoiceChip(
+            label: Text(element.item, style: const TextStyle(fontSize: 12)),
+            backgroundColor: color.withValues(alpha: 0.3),
+            selectedColor: Colors.greenAccent.withValues(alpha: 0.4),
+            selected: element.item == lifetimeInputState.selectedInputChoiceChip,
+            onSelected: (bool isSelected) async {
+              lifetimeInputNotifier.setSelectedInputChoiceChip(item: element.item);
+            },
+            showCheckmark: false,
+          ),
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 60,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(children: list),
+      ),
+    );
+  }
+
+  ///
+  Widget displayLifetimeItemSearchResultList() {
+    final List<Widget> list = <Widget>[];
+
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) => list[index],
+            childCount: list.length,
+          ),
+        ),
+      ],
+    );
+  }
+}

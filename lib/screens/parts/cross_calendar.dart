@@ -928,7 +928,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
                     final List<WeeklyHistoryEventModel> weeklyHistoryEvent = getWeeklyHistoryEvent(date: date);
 
-                    final List<WeeklyHistoryBadgeModel> weeklyHistoryBadge = getWeeklyHistoryBadge(date: date);
+                    final List<WeeklyHistoryBadgeModel> weeklyHistoryBadge = getWeeklyHistoryBadges(date: date);
 
                     LifetimeDialog(
                       context: context,
@@ -966,7 +966,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
         final Map<int, String> duplicateConsecutiveMap = getDuplicateConsecutiveMap(lifetimeData);
 
-        list.addAll(convertMapToEvents(dayIndex: i, data: duplicateConsecutiveMap));
+        list.addAll(getWeeklyHistoryEvents(dayIndex: i, data: duplicateConsecutiveMap));
       }
     }
 
@@ -979,46 +979,40 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   }
 
   ///
-  List<WeeklyHistoryEventModel> convertMapToEvents({required int dayIndex, required Map<int, String> data}) {
-    final List<WeeklyHistoryEventModel> events = <WeeklyHistoryEventModel>[];
+  List<WeeklyHistoryEventModel> getWeeklyHistoryEvents({required int dayIndex, required Map<int, String> data}) {
+    final List<WeeklyHistoryEventModel> list = <WeeklyHistoryEventModel>[];
 
-    final List<int> keys = data.keys.toList()..sort();
+    final List<String> exclusionItemList = <String>[]; // ['睡眠', '自宅', '実家']
 
-    // final List<String> exclusionItemList = <String>['睡眠', '自宅', '実家'];
-    final List<String> exclusionItemList = <String>[];
+    final List<Map<String, dynamic>> startEndList = getStartEndTitleList(data: data);
 
-    for (int i = 0; i < keys.length; i++) {
-      final int startHour = keys[i];
-      final String title = data[startHour] ?? '';
-
-      final int endHour = (i < keys.length - 1) ? keys[i + 1] : 24;
-
-      bool flag = true;
+    for (final Map<String, dynamic> item in startEndList) {
+      final int startHour = item['startHour'] as int;
+      final int endHour = item['endHour'] as int;
+      final String title = item['title'] as String;
 
       if (exclusionItemList.contains(title)) {
-        flag = false;
+        continue;
       }
 
-      if (flag) {
-        final Color color = _lifetimeColor(title);
+      final Color color = _lifetimeColor(title);
 
-        events.add(
-          WeeklyHistoryEventModel(
-            dayIndex: dayIndex,
-            startMinutes: toMinutes(startHour, 0),
-            endMinutes: toMinutes(endHour, 0),
-            title: title,
-            color: color,
-          ),
-        );
-      }
+      list.add(
+        WeeklyHistoryEventModel(
+          dayIndex: dayIndex,
+          startMinutes: toMinutes(startHour, 0),
+          endMinutes: toMinutes(endHour, 0),
+          title: title,
+          color: color,
+        ),
+      );
     }
 
-    return events;
+    return list;
   }
 
   ///
-  List<WeeklyHistoryBadgeModel> getWeeklyHistoryBadge({required String date}) {
+  List<WeeklyHistoryBadgeModel> getWeeklyHistoryBadges({required String date}) {
     final List<WeeklyHistoryBadgeModel> list = <WeeklyHistoryBadgeModel>[];
 
     for (int i = 0; i < 7; i++) {

@@ -70,3 +70,21 @@ Map<int, T> getDuplicateConsecutiveMap<T>(List<T> list) {
 
   return result;
 }
+
+///
+List<Map<String, dynamic>> getStartEndTitleList({required Map<int, String> data}) {
+  final List<Map<String, dynamic>> result = <Map<String, dynamic>>[];
+
+  final List<int> keys = data.keys.toList()..sort();
+
+  for (int i = 0; i < keys.length; i++) {
+    final int startHour = keys[i];
+    final String title = data[startHour] ?? '';
+
+    final int endHour = (i < keys.length - 1) ? keys[i + 1] : 24;
+
+    result.add(<String, dynamic>{'startHour': startHour, 'endHour': endHour, 'title': title});
+  }
+
+  return result;
+}
