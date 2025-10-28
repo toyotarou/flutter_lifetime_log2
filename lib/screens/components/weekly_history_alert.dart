@@ -5,6 +5,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
+import '../parts/badge_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import 'lifetime_input_alert.dart';
 
@@ -26,8 +27,6 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
   int endHour = 24;
 
   double pxPerMinute = 1.0;
-
-  double gutter = 56;
 
   ScrollController gutterVertical = ScrollController();
 
@@ -72,7 +71,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: SizedBox(
-                  width: gutter + 7 * gridWidth,
+                  width: appParamState.gutterWidth + 7 * gridWidth,
                   child: WeeklyScheduleView(
                     startHour: weeklyHistoryStartTime,
                     endHour: endHour,
@@ -88,7 +87,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
               left: 0,
               top: appParamState.weeklyHistoryHeaderHeight,
               bottom: 0,
-              width: gutter,
+              width: appParamState.gutterWidth,
               child: IgnorePointer(
                 child: SingleChildScrollView(
                   controller: gutterVertical,
@@ -137,6 +136,17 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
 class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with ControllersMixin<WeeklyScheduleView> {
   int weeklyHistoryStartTime = 0;
 
+  List<GlobalKey> globalKeyList = <GlobalKey>[];
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+
+    // ignore: always_specify_types
+    globalKeyList = List.generate(1000, (int index) => GlobalKey());
+  }
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -144,15 +154,13 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
 
     final double gridHeight = totalMinutes * widget.pxPerMinute;
 
-    const double timeGutterWidth = 56.0;
-
     return Column(
       children: <Widget>[
         SizedBox(
           height: appParamState.weeklyHistoryHeaderHeight,
           child: Row(
             children: <Widget>[
-              const SizedBox(width: timeGutterWidth),
+              SizedBox(width: appParamState.gutterWidth),
 
               Expanded(child: WeekHeader(date: appParamState.weeklyHistorySelectedDate)),
             ],
@@ -166,7 +174,7 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
               child: Row(
                 children: <Widget>[
                   SizedBox(
-                    width: timeGutterWidth,
+                    width: appParamState.gutterWidth,
                     child: TimeLabels(startHour: weeklyHistoryStartTime, endHour: 24, pxPerMinute: 1),
                   ),
 
@@ -214,39 +222,12 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
                               );
                             }),
 
-                            ...widget.badges.map((WeeklyHistoryBadgeModel b) {
-                              const double size = 20.0;
+                            ...displayWeeklyHistoryBadge(
+                              timeGutterWidth: appParamState.gutterWidth,
 
-                              final double top =
-                                  (b.minutesOfDay - widget.startHour * 60) * widget.pxPerMinute - size / 2;
-
-                              final double left = b.dayIndex * colW + (colW - size) / 2;
-
-                              return Positioned(
-                                top: top.clamp(0, gridHeight - size),
-                                left: left,
-                                width: size,
-                                height: size,
-                                child: Tooltip(
-                                  message: b.tooltip ?? 'badge',
-
-                                  child: GestureDetector(
-                                    onTap: () {},
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        boxShadow: <BoxShadow>[BoxShadow(blurRadius: 3, color: Color(0x33000000))],
-                                      ),
-
-                                      alignment: Alignment.center,
-
-                                      child: Icon(b.icon, size: 14, color: b.color),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }),
+                              gridHeight: gridHeight,
+                              colW: colW,
+                            ).map((Widget e) => e),
 
                             NowIndicatorLine(startHour: weeklyHistoryStartTime, endHour: 24, pxPerMinute: 1),
                           ],
@@ -261,6 +242,64 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
         ),
       ],
     );
+  }
+
+  ///
+  List<Widget> displayWeeklyHistoryBadge({
+    required double timeGutterWidth,
+
+    required double gridHeight,
+    required double colW,
+  }) {
+    final List<Widget> list = <Widget>[];
+
+    const double size = 20.0;
+
+    for (int i = 0; i < widget.badges.length; i++) {
+      final double top = (widget.badges[i].minutesOfDay - widget.startHour * 60) * widget.pxPerMinute - size / 2;
+
+      final double left = widget.badges[i].dayIndex * colW + (colW - size) / 2;
+
+      list.add(
+        Positioned(
+          key: globalKeyList[i],
+
+          top: top.clamp(0, gridHeight - size),
+          left: left,
+          width: size,
+          height: size,
+          child: Tooltip(
+            message: widget.badges[i].tooltip ?? 'badge',
+
+            child: GestureDetector(
+              onTap: () {
+                showBadgeToolChipDisplayOverlay(
+                  context: context,
+                  buttonKey: globalKeyList[i],
+                  dayIndex: widget.badges[i].dayIndex,
+                  message: widget.badges[i].tooltip ?? 'badge',
+                  displayDuration: const Duration(seconds: 2),
+                  timeGutterWidth: timeGutterWidth,
+                );
+              },
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[BoxShadow(blurRadius: 3, color: Color(0x33000000))],
+                ),
+
+                alignment: Alignment.center,
+
+                child: Icon(widget.badges[i].icon, size: 14, color: widget.badges[i].color),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return list;
   }
 }
 

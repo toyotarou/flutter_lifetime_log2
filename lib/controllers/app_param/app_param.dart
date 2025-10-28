@@ -101,6 +101,8 @@ class AppParamState with _$AppParamState {
     @Default('') String weeklyHistorySelectedDate,
 
     @Default(0) int selectedCrossCalendarYear,
+
+    @Default(56) double gutterWidth,
   }) = _AppParamState;
 }
 

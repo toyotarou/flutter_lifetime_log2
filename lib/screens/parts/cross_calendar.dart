@@ -928,8 +928,6 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
                     final List<WeeklyHistoryEventModel> weeklyHistoryEvent = getWeeklyHistoryEvent(date: date);
 
-                    /////////
-
                     final List<WeeklyHistoryBadgeModel> weeklyHistoryBadge = getWeeklyHistoryBadge(date: date);
 
                     LifetimeDialog(
@@ -1030,7 +1028,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         for (final String element in appParamState.keepTempleDateTimeBadgeMap[genDate]!) {
           final List<String> exElement = element.split(':');
 
-          String? templeName = appParamState.keepTempleDateTimeNameMap['${genDate}|${element}'];
+          final String? templeName = appParamState.keepTempleDateTimeNameMap['$genDate|$element'];
 
           list.add(
             WeeklyHistoryBadgeModel(
