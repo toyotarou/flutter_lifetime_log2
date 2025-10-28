@@ -986,7 +986,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
     final List<int> keys = data.keys.toList()..sort();
 
-    final List<String> exclusionItemList = <String>['睡眠', '自宅', '実家'];
+    // final List<String> exclusionItemList = <String>['睡眠', '自宅', '実家'];
+    final List<String> exclusionItemList = <String>[];
 
     for (int i = 0; i < keys.length; i++) {
       final int startHour = keys[i];

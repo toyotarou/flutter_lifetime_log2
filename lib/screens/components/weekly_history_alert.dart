@@ -5,6 +5,8 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
+import '../parts/lifetime_dialog.dart';
+import 'lifetime_input_alert.dart';
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -19,7 +21,8 @@ class WeeklyHistoryAlert extends ConsumerStatefulWidget {
 }
 
 class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with ControllersMixin<WeeklyHistoryAlert> {
-  int weeklyHistoryStartTime = 5;
+  int weeklyHistoryStartTime = 0;
+
   int endHour = 24;
 
   double pxPerMinute = 1.0;
@@ -132,7 +135,7 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
 }
 
 class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with ControllersMixin<WeeklyScheduleView> {
-  int weeklyHistoryStartTime = 5;
+  int weeklyHistoryStartTime = 0;
 
   ///
   @override
@@ -344,16 +347,16 @@ class NowIndicatorLine extends StatelessWidget {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-class WeekHeader extends StatefulWidget {
+class WeekHeader extends ConsumerStatefulWidget {
   const WeekHeader({super.key, required this.date});
 
   final String date;
 
   @override
-  State<WeekHeader> createState() => _WeekHeaderState();
+  ConsumerState<WeekHeader> createState() => _WeekHeaderState();
 }
 
-class _WeekHeaderState extends State<WeekHeader> {
+class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<WeekHeader> {
   Map<String, String> weekDateMap = <String, String>{};
 
   ///
@@ -406,12 +409,27 @@ class _WeekHeaderState extends State<WeekHeader> {
                   alignment: Alignment.center,
                   width: colW,
 
-                  child: DefaultTextStyle(
-                    style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+                  child: GestureDetector(
+                    onTap: () {
+                      LifetimeDialog(
+                        context: context,
+                        widget: LifetimeInputAlert(
+                          date: weekDateMap[youbi]!,
+                          dateLifetime: appParamState.keepLifetimeMap[weekDateMap[youbi]],
+                          isReloadHomeScreen: false,
+                        ),
+                      );
+                    },
 
-                    child: DefaultTextStyle(
-                      style: const TextStyle(fontSize: 10),
-                      child: Column(children: <Widget>[Text(year), Text(monthDay), Text(youbi.substring(0, 3))]),
+                    child: Container(
+                      decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: 0.3))),
+                      padding: const EdgeInsets.all(2),
+
+                      child: DefaultTextStyle(
+                        style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 10),
+
+                        child: Column(children: <Widget>[Text(year), Text(monthDay), Text(youbi.substring(0, 3))]),
+                      ),
                     ),
                   ),
                 );

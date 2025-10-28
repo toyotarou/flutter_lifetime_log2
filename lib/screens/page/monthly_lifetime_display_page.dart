@@ -463,6 +463,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                   widget: LifetimeInputAlert(
                                                     date: date,
                                                     dateLifetime: appParamState.keepLifetimeMap[date],
+                                                    isReloadHomeScreen: true,
                                                   ),
                                                 );
                                               },

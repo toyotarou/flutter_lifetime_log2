@@ -7,10 +7,11 @@ import '../../models/lifetime_model.dart';
 import '../parts/error_dialog.dart';
 
 class LifetimeInputAlert extends ConsumerStatefulWidget {
-  const LifetimeInputAlert({super.key, this.dateLifetime, required this.date});
+  const LifetimeInputAlert({super.key, this.dateLifetime, required this.date, required this.isReloadHomeScreen});
 
   final String date;
   final LifetimeModel? dateLifetime;
+  final bool isReloadHomeScreen;
 
   @override
   ConsumerState<LifetimeInputAlert> createState() => _LifetimeInputAlertState();
@@ -274,8 +275,10 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
 
     // ignore: always_specify_types
     await lifetimeInputNotifier.inputLifetime(date: widget.date).then((value) {
-      if (mounted) {
-        context.findAncestorStateOfType<AppRootState>()?.restartApp();
+      if (widget.isReloadHomeScreen) {
+        if (mounted) {
+          context.findAncestorStateOfType<AppRootState>()?.restartApp();
+        }
       }
     });
   }
