@@ -46,7 +46,7 @@ class _LifetimeItemSearchAlertState extends ConsumerState<LifetimeItemSearchAler
               children: <Widget>[
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text('amazon purchase list'), SizedBox.shrink()],
+                  children: <Widget>[Text('lifetime item search'), SizedBox.shrink()],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
@@ -110,20 +110,44 @@ class _LifetimeItemSearchAlertState extends ConsumerState<LifetimeItemSearchAler
   Widget displayLifetimeItemSearchResultList() {
     final List<Widget> list = <Widget>[];
 
+    String keepYear = '';
+
     appParamState.keepAllDateLifetimeSummaryMap.forEach((String key, List<Map<String, dynamic>> value) {
       for (final Map<String, dynamic> element in value) {
         if (element['title'] == lifetimeInputState.selectedInputChoiceChip) {
+          if (key.split('-')[0] != keepYear) {
+            list.add(
+              Container(
+                padding: const EdgeInsets.all(10),
+
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(key.split('-')[0], style: const TextStyle(color: Colors.yellowAccent)),
+                    const SizedBox.shrink(),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          final String youbiStr = DateTime.parse(key).youbiStr;
+
+          final Color color = utility.getYoubiColor(date: key, youbiStr: youbiStr, holiday: holidayState.holidayList);
+
           list.add(
             Container(
               decoration: BoxDecoration(
                 border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+
+                color: color,
               ),
               padding: const EdgeInsets.all(5),
 
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('$key ${DateTime.parse(key).youbiStr.substring(0, 3)}'),
+                  Text('$key ${youbiStr.substring(0, 3)}'),
 
                   Text(
                     '${(element['startHour'] as int).toString().padLeft(2, '0')}:00 - ${(element['endHour'] as int).toString().padLeft(2, '0')}:00',
@@ -132,6 +156,8 @@ class _LifetimeItemSearchAlertState extends ConsumerState<LifetimeItemSearchAler
               ),
             ),
           );
+
+          keepYear = key.split('-')[0];
         }
       }
     });
