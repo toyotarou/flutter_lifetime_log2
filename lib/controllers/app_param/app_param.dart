@@ -61,6 +61,9 @@ class AppParamState with _$AppParamState {
 
     @Default(<String, String>{}) Map<String, String> keepTempleDateTimeNameMap,
 
+    @Default(<String, List<Map<String, dynamic>>>{})
+    Map<String, List<Map<String, dynamic>>> keepAllDateLifetimeSummaryMap,
+
     ///
     List<OverlayEntry>? firstEntries,
     List<OverlayEntry>? secondEntries,
@@ -207,6 +210,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepTempleDateTimeNameMap({required Map<String, String> map}) =>
       state = state.copyWith(keepTempleDateTimeNameMap: map);
+
+  ///
+  void setKeepAllDateLifetimeSummaryMap({required Map<String, List<Map<String, dynamic>>> map}) =>
+      state = state.copyWith(keepAllDateLifetimeSummaryMap: map);
 
   //===================================================
 

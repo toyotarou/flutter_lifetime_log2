@@ -22,6 +22,7 @@ import '../models/transportation_model.dart';
 import '../models/walk_model.dart';
 import '../models/weather_model.dart';
 import '../models/work_time_model.dart';
+import '../utility/functions.dart';
 import '../utility/utility.dart';
 import 'components/amazon_purchase_list_alert.dart';
 import 'components/bank_data_input_alert.dart';
@@ -172,11 +173,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         }
       });
 
+      final Map<String, List<Map<String, dynamic>>> allDateLifetimeSummaryMap = <String, List<Map<String, dynamic>>>{};
+
+      widget.lifetimeMap.forEach((String key, LifetimeModel value) {
+        final List<String> lifetimeData = getLifetimeData(lifetimeModel: value);
+
+        final Map<int, String> duplicateConsecutiveMap = getDuplicateConsecutiveMap(lifetimeData);
+
+        final List<Map<String, dynamic>> startEndTitleList = getStartEndTitleList(data: duplicateConsecutiveMap);
+
+        allDateLifetimeSummaryMap[key] = startEndTitleList;
+      });
+
       // ignore: always_specify_types
       Future(() {
         appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
 
         appParamNotifier.setKeepTempleDateTimeNameMap(map: templeDateTimeNameMap);
+
+        appParamNotifier.setKeepAllDateLifetimeSummaryMap(map: allDateLifetimeSummaryMap);
       });
       //===========================================//
     });

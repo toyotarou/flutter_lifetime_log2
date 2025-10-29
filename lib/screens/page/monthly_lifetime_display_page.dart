@@ -736,7 +736,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   ///
   Widget getLifetimeDisplayCell({required String date, required int num}) {
     final List<String> dispValList = (appParamState.keepLifetimeMap[date] != null)
-        ? getOnedayLifetimeItemList(lifetimeModel: appParamState.keepLifetimeMap[date]!)
+        ? getLifetimeData(lifetimeModel: appParamState.keepLifetimeMap[date]!)
         : <String>[];
 
     final Color color = utility.getLifetimeRowBgColor(value: dispValList[num], textDisplay: false);

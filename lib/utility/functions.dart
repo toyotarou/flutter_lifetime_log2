@@ -16,7 +16,7 @@ List<String> generateFullMonthDays() {
 }
 
 ///
-List<String> getOnedayLifetimeItemList({required LifetimeModel lifetimeModel}) {
+List<String> getLifetimeData({required LifetimeModel lifetimeModel}) {
   return <String>[
     lifetimeModel.hour00,
     lifetimeModel.hour01,

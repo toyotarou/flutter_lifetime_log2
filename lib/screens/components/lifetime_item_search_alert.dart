@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../extensions/extensions.dart';
 import '../../models/lifetime_model.dart';
 import '../../utility/utility.dart';
 
@@ -71,6 +72,17 @@ class _LifetimeItemSearchAlertState extends ConsumerState<LifetimeItemSearchAler
       list.add(
         Container(
           padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 5),
+
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: (element.item == lifetimeInputState.selectedInputChoiceChip)
+                    ? Colors.yellowAccent
+                    : Colors.transparent,
+              ),
+            ),
+          ),
+
           child: ChoiceChip(
             label: Text(element.item, style: const TextStyle(fontSize: 12)),
             backgroundColor: color.withValues(alpha: 0.3),
@@ -97,6 +109,32 @@ class _LifetimeItemSearchAlertState extends ConsumerState<LifetimeItemSearchAler
   ///
   Widget displayLifetimeItemSearchResultList() {
     final List<Widget> list = <Widget>[];
+
+    appParamState.keepAllDateLifetimeSummaryMap.forEach((String key, List<Map<String, dynamic>> value) {
+      for (final Map<String, dynamic> element in value) {
+        if (element['title'] == lifetimeInputState.selectedInputChoiceChip) {
+          list.add(
+            Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+              ),
+              padding: const EdgeInsets.all(5),
+
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text('$key ${DateTime.parse(key).youbiStr.substring(0, 3)}'),
+
+                  Text(
+                    '${(element['startHour'] as int).toString().padLeft(2, '0')}:00 - ${(element['endHour'] as int).toString().padLeft(2, '0')}:00',
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      }
+    });
 
     return CustomScrollView(
       slivers: <Widget>[
