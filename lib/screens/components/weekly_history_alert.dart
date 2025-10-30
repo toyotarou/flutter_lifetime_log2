@@ -18,12 +18,14 @@ class WeeklyHistoryAlert extends ConsumerStatefulWidget {
     super.key,
     required this.weeklyHistoryEvent,
     required this.weeklyHistoryBadge,
-    required this.date,
+    required this.isNeedGeolocMapDisplayHeight,
+    required this.isNeedStationStampDisplayHeight,
   });
 
-  final String date;
   final List<WeeklyHistoryEventModel> weeklyHistoryEvent;
   final List<WeeklyHistoryBadgeModel> weeklyHistoryBadge;
+  final bool isNeedGeolocMapDisplayHeight;
+  final bool isNeedStationStampDisplayHeight;
 
   @override
   ConsumerState<WeeklyHistoryAlert> createState() => _WeeklyHistoryAlertState();
@@ -42,19 +44,12 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
 
   double gridHeight = 0;
 
-  Map<String, String> weeklyHistoryDisplayWeekDate = <String, String>{};
-
-  bool isNeedDisplayGeolocMapRow = false;
-  bool isNeedDisplayStationStampRow = false;
-
   ///
   @override
   void initState() {
     super.initState();
 
     gridHeight = (endHour - weeklyHistoryStartTime) * 60 * pxPerMinute;
-
-    weeklyHistoryDisplayWeekDate = getWeeklyHistoryDisplayWeekDate(date: widget.date);
   }
 
   ///
@@ -93,17 +88,19 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
                     pxPerMinute: pxPerMinute,
                     events: widget.weeklyHistoryEvent,
                     badges: widget.weeklyHistoryBadge,
-                    isNeedDisplayGeolocMapRow: isNeedDisplayGeolocMapRow,
-                    isNeedDisplayStationStampRow: isNeedDisplayStationStampRow,
+                    isNeedGeolocMapDisplayHeight: widget.isNeedGeolocMapDisplayHeight,
+                    isNeedStationStampDisplayHeight: widget.isNeedStationStampDisplayHeight,
                   ),
                 ),
               ),
             ),
 
-            //////////
             Positioned(
               left: 0,
-              top: appParamState.weeklyHistoryHeaderHeight,
+              top:
+                  appParamState.weeklyHistoryHeaderHeight +
+                  (widget.isNeedGeolocMapDisplayHeight ? 30 : 0) +
+                  (widget.isNeedStationStampDisplayHeight ? 30 : 0),
               bottom: 0,
               width: appParamState.gutterWidth,
               child: IgnorePointer(
@@ -133,10 +130,9 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
     required this.endHour,
     required this.pxPerMinute,
     this.events = const <WeeklyHistoryEventModel>[],
-
     this.badges = const <WeeklyHistoryBadgeModel>[],
-    required this.isNeedDisplayGeolocMapRow,
-    required this.isNeedDisplayStationStampRow,
+    required this.isNeedGeolocMapDisplayHeight,
+    required this.isNeedStationStampDisplayHeight,
   });
 
   final int startHour;
@@ -149,9 +145,9 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
 
   final List<WeeklyHistoryBadgeModel> badges;
 
-  final bool isNeedDisplayGeolocMapRow;
+  final bool isNeedGeolocMapDisplayHeight;
 
-  final bool isNeedDisplayStationStampRow;
+  final bool isNeedStationStampDisplayHeight;
 
   @override
   ConsumerState<WeeklyScheduleView> createState() => _WeeklyScheduleViewState();
@@ -180,9 +176,11 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
 
     return Column(
       children: <Widget>[
-        /////////
         SizedBox(
-          height: appParamState.weeklyHistoryHeaderHeight,
+          height:
+              appParamState.weeklyHistoryHeaderHeight +
+              (widget.isNeedGeolocMapDisplayHeight ? 30 : 0) +
+              (widget.isNeedStationStampDisplayHeight ? 30 : 0),
           child: Row(
             children: <Widget>[
               SizedBox(width: appParamState.gutterWidth),
@@ -190,8 +188,8 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
               Expanded(
                 child: WeekHeader(
                   date: appParamState.weeklyHistorySelectedDate,
-                  isNeedDisplayGeolocMapRow: widget.isNeedDisplayGeolocMapRow,
-                  isNeedDisplayStationStampRow: widget.isNeedDisplayStationStampRow,
+                  isNeedGeolocMapDisplayHeight: widget.isNeedGeolocMapDisplayHeight,
+                  isNeedStationStampDisplayHeight: widget.isNeedStationStampDisplayHeight,
                 ),
               ),
             ],
@@ -424,13 +422,13 @@ class WeekHeader extends ConsumerStatefulWidget {
   const WeekHeader({
     super.key,
     required this.date,
-    required this.isNeedDisplayGeolocMapRow,
-    required this.isNeedDisplayStationStampRow,
+    required this.isNeedGeolocMapDisplayHeight,
+    required this.isNeedStationStampDisplayHeight,
   });
 
   final String date;
-  final bool isNeedDisplayGeolocMapRow;
-  final bool isNeedDisplayStationStampRow;
+  final bool isNeedGeolocMapDisplayHeight;
+  final bool isNeedStationStampDisplayHeight;
 
   @override
   ConsumerState<WeekHeader> createState() => _WeekHeaderState();
@@ -515,17 +513,23 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                         ),
                       ),
 
-                      const SizedBox(height: 15),
+                      if (widget.isNeedGeolocMapDisplayHeight) ...<Widget>[
+                        SizedBox(
+                          height: 30,
+                          child: (appParamState.keepGeolocMap[date] != null)
+                              ? Icon(Icons.map, size: 20, color: Colors.white.withValues(alpha: 0.4))
+                              : null,
+                        ),
+                      ],
 
-                      if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
-                        Icon(Icons.map, size: 15, color: Colors.white.withValues(alpha: 0.4)),
-                      ] else ...<Widget>[const Icon(Icons.square_outlined, size: 15, color: Colors.transparent)],
-
-                      const SizedBox(height: 15),
-
-                      if (appParamState.keepDateStationStampMap[date] != null) ...<Widget>[
-                        Icon(FontAwesomeIcons.stamp, size: 15, color: Colors.white.withValues(alpha: 0.4)),
-                      ] else ...<Widget>[const Icon(Icons.square_outlined, size: 15, color: Colors.transparent)],
+                      if (widget.isNeedStationStampDisplayHeight) ...<Widget>[
+                        SizedBox(
+                          height: 30,
+                          child: (appParamState.keepDateStationStampMap[date] != null)
+                              ? Icon(FontAwesomeIcons.stamp, size: 15, color: Colors.white.withValues(alpha: 0.4))
+                              : null,
+                        ),
+                      ],
                     ],
                   ),
                 );

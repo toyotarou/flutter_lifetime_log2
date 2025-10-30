@@ -74,7 +74,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   static const TextStyle _text12Bold = TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
   static const EdgeInsets _cellPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 6);
 
-  bool doAutoScroll = false;
+  bool doAutoScroll = true;
 
   ///
   double get _bodyTotalHeight => widget.rowHeights
@@ -973,6 +973,19 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                   onTap: () {
                     appParamNotifier.setWeeklyHistorySelectedDate(date: date);
 
+                    bool isNeedGeolocMapDisplayHeight = false;
+                    bool isNeedStationStampDisplayHeight = false;
+
+                    getWeeklyHistoryDisplayWeekDate(date: date).forEach((String key, String value) {
+                      if (appParamState.keepGeolocMap[value] != null) {
+                        isNeedGeolocMapDisplayHeight = true;
+                      }
+
+                      if (appParamState.keepDateStationStampMap[value] != null) {
+                        isNeedStationStampDisplayHeight = true;
+                      }
+                    });
+
                     final List<WeeklyHistoryEventModel> weeklyHistoryEvent = getWeeklyHistoryEvent(date: date);
 
                     final List<WeeklyHistoryBadgeModel> weeklyHistoryBadge = getWeeklyHistoryBadges(date: date);
@@ -980,15 +993,10 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                     LifetimeDialog(
                       context: context,
                       widget: WeeklyHistoryAlert(
-
-
-
-                        date:date,
-
-
-
                         weeklyHistoryEvent: weeklyHistoryEvent,
                         weeklyHistoryBadge: weeklyHistoryBadge,
+                        isNeedGeolocMapDisplayHeight: isNeedGeolocMapDisplayHeight,
+                        isNeedStationStampDisplayHeight: isNeedStationStampDisplayHeight,
                       ),
                     );
                   },
