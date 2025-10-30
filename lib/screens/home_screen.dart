@@ -265,6 +265,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
               GestureDetector(
                 onTap: () {
+                  appParamNotifier.setSelectedCrossCalendarYear(year: DateTime.now().year);
+
                   final List<String> yList = <String>[];
                   widget.lifetimeMap.forEach((String key, LifetimeModel value) {
                     final List<String> exKey = key.split('-');

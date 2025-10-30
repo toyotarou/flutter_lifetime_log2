@@ -74,6 +74,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   static const TextStyle _text12Bold = TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
   static const EdgeInsets _cellPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 6);
 
+  bool doAutoScroll = true;
+
   ///
   double get _bodyTotalHeight => widget.rowHeights
       .asMap()
@@ -114,11 +116,15 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         return;
       }
       _syncingH = true;
-      if (horizontalBodyAutoScrollController.hasClients) {
-        /// 自動スクロール 1/8
 
-        horizontalBodyAutoScrollController.jumpTo(horizontalHeaderAutoScrollController.offset);
+      if (doAutoScroll) {
+        if (horizontalBodyAutoScrollController.hasClients) {
+          /// 自動スクロール 1/8
+
+          horizontalBodyAutoScrollController.jumpTo(horizontalHeaderAutoScrollController.offset);
+        }
       }
+
       _syncingH = false;
       _updateCurrentMonthByOffset(horizontalHeaderAutoScrollController.offset);
     });
@@ -127,11 +133,15 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         return;
       }
       _syncingH = true;
-      if (horizontalHeaderAutoScrollController.hasClients) {
-        /// 自動スクロール 2/8
 
-        horizontalHeaderAutoScrollController.jumpTo(horizontalBodyAutoScrollController.offset);
+      if (doAutoScroll) {
+        if (horizontalHeaderAutoScrollController.hasClients) {
+          /// 自動スクロール 2/8
+
+          horizontalHeaderAutoScrollController.jumpTo(horizontalBodyAutoScrollController.offset);
+        }
       }
+
       _syncingH = false;
       _updateCurrentMonthByOffset(horizontalBodyAutoScrollController.offset);
     });
@@ -141,11 +151,15 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         return;
       }
       _syncingV = true;
-      if (verticalBodyScrollController.hasClients) {
-        /// 自動スクロール 3/8
 
-        verticalBodyScrollController.jumpTo(verticalLeftScrollController.offset);
+      if (doAutoScroll) {
+        if (verticalBodyScrollController.hasClients) {
+          /// 自動スクロール 3/8
+
+          verticalBodyScrollController.jumpTo(verticalLeftScrollController.offset);
+        }
       }
+
       _syncingV = false;
       if (!_sundayNavLocked) {
         _updateBaseYearByOffset(verticalLeftScrollController.offset);
@@ -156,11 +170,15 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
         return;
       }
       _syncingV = true;
-      if (verticalLeftScrollController.hasClients) {
-        /// 自動スクロール 4/8
 
-        verticalLeftScrollController.jumpTo(verticalBodyScrollController.offset);
+      if (doAutoScroll) {
+        if (verticalLeftScrollController.hasClients) {
+          /// 自動スクロール 4/8
+
+          verticalLeftScrollController.jumpTo(verticalBodyScrollController.offset);
+        }
       }
+
       _syncingV = false;
       if (!_sundayNavLocked) {
         _updateBaseYearByOffset(verticalBodyScrollController.offset);
@@ -196,22 +214,26 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   Future<void> _scrollToMonth(int month) async {
     final int idx = _monthStartIndex[month] ?? 0;
     _syncingH = true;
-    // ignore: strict_raw_type, always_specify_types
-    await Future.wait(<Future>[
-      /// 自動スクロール 5/8
-      horizontalHeaderAutoScrollController.scrollToIndex(
-        idx,
-        preferPosition: AutoScrollPosition.begin,
-        duration: const Duration(milliseconds: 260),
-      ),
 
-      /// 自動スクロール 6/8
-      horizontalBodyAutoScrollController.scrollToIndex(
-        idx,
-        preferPosition: AutoScrollPosition.begin,
-        duration: const Duration(milliseconds: 260),
-      ),
-    ]);
+    if (doAutoScroll) {
+      // ignore: strict_raw_type, always_specify_types
+      await Future.wait(<Future>[
+        /// 自動スクロール 5/8
+        horizontalHeaderAutoScrollController.scrollToIndex(
+          idx,
+          preferPosition: AutoScrollPosition.begin,
+          duration: const Duration(milliseconds: 260),
+        ),
+
+        /// 自動スクロール 6/8
+        horizontalBodyAutoScrollController.scrollToIndex(
+          idx,
+          preferPosition: AutoScrollPosition.begin,
+          duration: const Duration(milliseconds: 260),
+        ),
+      ]);
+    }
+
     _syncingH = false;
     if (_currentMonth != month) {
       setState(() => _currentMonth = month);
@@ -224,7 +246,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     final DateTime now = DateTime.now();
     final String md = '${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
     final int? idx = _dayIndex[md];
-    if (idx != null) {
+    if (idx != null && doAutoScroll) {
       _syncingH = true;
       // ignore: strict_raw_type, always_specify_types
       await Future.wait(<Future>[
@@ -880,6 +902,31 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
             if (isDisabled) CustomPaint(size: Size(width, height), painter: DiagonalSlashPainter()),
 
+            if (appParamState.keepWorkTimeMap['${date.split('-')[0]}-${date.split('-')[1]}'] != null &&
+                appParamState.keepWorkTimeMap['${date.split('-')[0]}-${date.split('-')[1]}']!.genbaName !=
+                    '✕') ...<Widget>[
+              Positioned(
+                bottom: 5,
+                left: 5,
+                right: 5,
+                child: Container(
+                  decoration: BoxDecoration(color: Colors.blueAccent.withValues(alpha: 0.2)),
+                  child: DefaultTextStyle(
+                    style: TextStyle(fontSize: 10, color: Colors.white.withValues(alpha: 0.5)),
+
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(appParamState.keepWorkTimeMap['${date.split('-')[0]}-${date.split('-')[1]}']!.genbaName),
+
+                        Text(appParamState.keepWorkTimeMap['${date.split('-')[0]}-${date.split('-')[1]}']!.agentName),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -960,9 +1007,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       final String genDate = DateTime.parse(date).add(Duration(days: i)).yyyymmdd;
 
       if (appParamState.keepLifetimeMap[genDate] != null) {
-        final List<String> lifetimeData = getLifetimeData(
-          lifetimeModel: appParamState.keepLifetimeMap[genDate]!,
-        );
+        final List<String> lifetimeData = getLifetimeData(lifetimeModel: appParamState.keepLifetimeMap[genDate]!);
 
         final Map<int, String> duplicateConsecutiveMap = getDuplicateConsecutiveMap(lifetimeData);
 
