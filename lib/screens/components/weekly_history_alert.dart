@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
+import '../../utility/functions.dart';
 import '../parts/badge_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import 'lifetime_input_alert.dart';
@@ -12,8 +14,14 @@ import 'lifetime_input_alert.dart';
 /////////////////////////////////////////////////////////////////////////////////////////
 
 class WeeklyHistoryAlert extends ConsumerStatefulWidget {
-  const WeeklyHistoryAlert({super.key, required this.weeklyHistoryEvent, required this.weeklyHistoryBadge});
+  const WeeklyHistoryAlert({
+    super.key,
+    required this.weeklyHistoryEvent,
+    required this.weeklyHistoryBadge,
+    required this.date,
+  });
 
+  final String date;
   final List<WeeklyHistoryEventModel> weeklyHistoryEvent;
   final List<WeeklyHistoryBadgeModel> weeklyHistoryBadge;
 
@@ -34,12 +42,19 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
 
   double gridHeight = 0;
 
+  Map<String, String> weeklyHistoryDisplayWeekDate = <String, String>{};
+
+  bool isNeedDisplayGeolocMapRow = false;
+  bool isNeedDisplayStationStampRow = false;
+
   ///
   @override
   void initState() {
     super.initState();
 
     gridHeight = (endHour - weeklyHistoryStartTime) * 60 * pxPerMinute;
+
+    weeklyHistoryDisplayWeekDate = getWeeklyHistoryDisplayWeekDate(date: widget.date);
   }
 
   ///
@@ -78,11 +93,14 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
                     pxPerMinute: pxPerMinute,
                     events: widget.weeklyHistoryEvent,
                     badges: widget.weeklyHistoryBadge,
+                    isNeedDisplayGeolocMapRow: isNeedDisplayGeolocMapRow,
+                    isNeedDisplayStationStampRow: isNeedDisplayStationStampRow,
                   ),
                 ),
               ),
             ),
 
+            //////////
             Positioned(
               left: 0,
               top: appParamState.weeklyHistoryHeaderHeight,
@@ -117,6 +135,8 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
     this.events = const <WeeklyHistoryEventModel>[],
 
     this.badges = const <WeeklyHistoryBadgeModel>[],
+    required this.isNeedDisplayGeolocMapRow,
+    required this.isNeedDisplayStationStampRow,
   });
 
   final int startHour;
@@ -128,6 +148,10 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
   final List<WeeklyHistoryEventModel> events;
 
   final List<WeeklyHistoryBadgeModel> badges;
+
+  final bool isNeedDisplayGeolocMapRow;
+
+  final bool isNeedDisplayStationStampRow;
 
   @override
   ConsumerState<WeeklyScheduleView> createState() => _WeeklyScheduleViewState();
@@ -156,13 +180,20 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
 
     return Column(
       children: <Widget>[
+        /////////
         SizedBox(
           height: appParamState.weeklyHistoryHeaderHeight,
           child: Row(
             children: <Widget>[
               SizedBox(width: appParamState.gutterWidth),
 
-              Expanded(child: WeekHeader(date: appParamState.weeklyHistorySelectedDate)),
+              Expanded(
+                child: WeekHeader(
+                  date: appParamState.weeklyHistorySelectedDate,
+                  isNeedDisplayGeolocMapRow: widget.isNeedDisplayGeolocMapRow,
+                  isNeedDisplayStationStampRow: widget.isNeedDisplayStationStampRow,
+                ),
+              ),
             ],
           ),
         ),
@@ -390,34 +421,36 @@ class NowIndicatorLine extends StatelessWidget {
 /////////////////////////////////////////////////////////////////////////////////////////
 
 class WeekHeader extends ConsumerStatefulWidget {
-  const WeekHeader({super.key, required this.date});
+  const WeekHeader({
+    super.key,
+    required this.date,
+    required this.isNeedDisplayGeolocMapRow,
+    required this.isNeedDisplayStationStampRow,
+  });
 
   final String date;
+  final bool isNeedDisplayGeolocMapRow;
+  final bool isNeedDisplayStationStampRow;
 
   @override
   ConsumerState<WeekHeader> createState() => _WeekHeaderState();
 }
 
 class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<WeekHeader> {
-  Map<String, String> weekDateMap = <String, String>{};
+  Map<String, String> weeklyHistoryDisplayWeekDate = <String, String>{};
 
   ///
   @override
   void initState() {
     super.initState();
 
-    for (int i = 0; i < 7; i++) {
-      final String youbi = DateTime.parse(widget.date).add(Duration(days: i)).youbiStr;
-      final String ymd = DateTime.parse(widget.date).add(Duration(days: i)).yyyymmdd;
-
-      weekDateMap[youbi] = ymd;
-    }
+    weeklyHistoryDisplayWeekDate = getWeeklyHistoryDisplayWeekDate(date: widget.date);
   }
 
   ///
   @override
   Widget build(BuildContext context) {
-    final String displayWeekDayStr = '${widget.date} / ${weekDateMap.entries.last.value}';
+    final String displayWeekDayStr = '${widget.date} / ${weeklyHistoryDisplayWeekDate.entries.last.value}';
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
@@ -442,37 +475,58 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                 String year = '';
                 String monthDay = '';
 
-                if (weekDateMap[youbi] != null) {
-                  year = weekDateMap[youbi]!.split('-')[0];
-                  monthDay = '${weekDateMap[youbi]!.split('-')[1]}-${weekDateMap[youbi]!.split('-')[2]}';
+                String date = '';
+
+                if (weeklyHistoryDisplayWeekDate[youbi] != null) {
+                  year = weeklyHistoryDisplayWeekDate[youbi]!.split('-')[0];
+                  monthDay =
+                      '${weeklyHistoryDisplayWeekDate[youbi]!.split('-')[1]}-${weeklyHistoryDisplayWeekDate[youbi]!.split('-')[2]}';
+
+                  date = '$year-$monthDay';
                 }
 
                 return Container(
                   alignment: Alignment.center,
                   width: colW,
 
-                  child: GestureDetector(
-                    onTap: () {
-                      LifetimeDialog(
-                        context: context,
-                        widget: LifetimeInputAlert(
-                          date: weekDateMap[youbi]!,
-                          dateLifetime: appParamState.keepLifetimeMap[weekDateMap[youbi]],
-                          isReloadHomeScreen: false,
+                  child: Column(
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          LifetimeDialog(
+                            context: context,
+                            widget: LifetimeInputAlert(
+                              date: weeklyHistoryDisplayWeekDate[youbi]!,
+                              dateLifetime: appParamState.keepLifetimeMap[weeklyHistoryDisplayWeekDate[youbi]],
+                              isReloadHomeScreen: false,
+                            ),
+                          );
+                        },
+
+                        child: Container(
+                          decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: 0.3))),
+                          padding: const EdgeInsets.all(2),
+
+                          child: DefaultTextStyle(
+                            style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 10),
+
+                            child: Column(children: <Widget>[Text(year), Text(monthDay), Text(youbi.substring(0, 3))]),
+                          ),
                         ),
-                      );
-                    },
-
-                    child: Container(
-                      decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: 0.3))),
-                      padding: const EdgeInsets.all(2),
-
-                      child: DefaultTextStyle(
-                        style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 10),
-
-                        child: Column(children: <Widget>[Text(year), Text(monthDay), Text(youbi.substring(0, 3))]),
                       ),
-                    ),
+
+                      const SizedBox(height: 15),
+
+                      if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
+                        Icon(Icons.map, size: 15, color: Colors.white.withValues(alpha: 0.4)),
+                      ] else ...<Widget>[const Icon(Icons.square_outlined, size: 15, color: Colors.transparent)],
+
+                      const SizedBox(height: 15),
+
+                      if (appParamState.keepDateStationStampMap[date] != null) ...<Widget>[
+                        Icon(FontAwesomeIcons.stamp, size: 15, color: Colors.white.withValues(alpha: 0.4)),
+                      ] else ...<Widget>[const Icon(Icons.square_outlined, size: 15, color: Colors.transparent)],
+                    ],
                   ),
                 );
               }),

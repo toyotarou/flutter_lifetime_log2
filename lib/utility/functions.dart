@@ -1,3 +1,4 @@
+import '../extensions/extensions.dart';
 import '../models/lifetime_model.dart';
 
 ///
@@ -87,4 +88,18 @@ List<Map<String, dynamic>> getStartEndTitleList({required Map<int, String> data}
   }
 
   return result;
+}
+
+///
+Map<String, String> getWeeklyHistoryDisplayWeekDate({required String date}) {
+  final Map<String, String> map = <String, String>{};
+
+  for (int i = 0; i < 7; i++) {
+    final String youbi = DateTime.parse(date).add(Duration(days: i)).youbiStr;
+    final String ymd = DateTime.parse(date).add(Duration(days: i)).yyyymmdd;
+
+    map[youbi] = ymd;
+  }
+
+  return map;
 }

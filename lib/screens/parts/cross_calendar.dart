@@ -74,7 +74,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   static const TextStyle _text12Bold = TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
   static const EdgeInsets _cellPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 6);
 
-  bool doAutoScroll = true;
+  bool doAutoScroll = false;
 
   ///
   double get _bodyTotalHeight => widget.rowHeights
@@ -980,6 +980,13 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                     LifetimeDialog(
                       context: context,
                       widget: WeeklyHistoryAlert(
+
+
+
+                        date:date,
+
+
+
                         weeklyHistoryEvent: weeklyHistoryEvent,
                         weeklyHistoryBadge: weeklyHistoryBadge,
                       ),
