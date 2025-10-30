@@ -14,6 +14,7 @@ import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
 import '../models/salary_model.dart';
+import '../models/station_stamp_model.dart';
 import '../models/stock_model.dart';
 import '../models/temple_model.dart';
 import '../models/time_place_model.dart';
@@ -47,9 +48,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     super.key,
     required this.walkMap,
     required this.moneyMap,
-
     required this.lifetimeMap,
-
     required this.lifetimeItemList,
     required this.holidayList,
     required this.geolocMap,
@@ -71,6 +70,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.toushiShintakuRelationalMap,
     required this.timePlaceMap,
     required this.amazonPurchaseMap,
+    required this.dateStationStampMap,
   });
 
   final List<String> holidayList;
@@ -99,6 +99,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<int, List<ToushiShintakuModel>> toushiShintakuRelationalMap;
   final Map<String, List<TimePlaceModel>> timePlaceMap;
   final Map<String, List<AmazonPurchaseModel>> amazonPurchaseMap;
+  final Map<String, List<StationStampModel>> dateStationStampMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -118,9 +119,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepHolidayList(list: widget.holidayList);
       appParamNotifier.setKeepWalkModelMap(map: widget.walkMap);
       appParamNotifier.setKeepMoneyMap(map: widget.moneyMap);
-
       appParamNotifier.setKeepLifetimeMap(map: widget.lifetimeMap);
-
       appParamNotifier.setKeepLifetimeItemList(list: widget.lifetimeItemList);
       appParamNotifier.setKeepGeolocMap(map: widget.geolocMap);
       appParamNotifier.setKeepTempleMap(map: widget.templeMap);
@@ -141,6 +140,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepToushiShintakuRelationalMap(map: widget.toushiShintakuRelationalMap);
       appParamNotifier.setKeepTimePlaceMap(map: widget.timePlaceMap);
       appParamNotifier.setKeepAmazonPurchaseMap(map: widget.amazonPurchaseMap);
+      appParamNotifier.setKeepDateStationStampMap(map: widget.dateStationStampMap);
 
       //===========================================//
       final Map<String, List<String>> templeDateTimeBadgeMap = <String, List<String>>{};

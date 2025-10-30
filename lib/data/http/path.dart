@@ -31,6 +31,7 @@ enum APIPath {
   getAllTimePlaceRecord,
   updateToushiShintakuRelationalId,
   getAmazonData,
+  getStationStamp,
 }
 
 extension APIPathExtension on APIPath {
@@ -123,6 +124,8 @@ extension APIPathExtension on APIPath {
 
       case APIPath.getAmazonData:
         return 'getAmazonData';
+      case APIPath.getStationStamp:
+        return 'getStationStamp';
     }
   }
 }

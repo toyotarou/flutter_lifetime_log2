@@ -11,6 +11,7 @@ import '../../models/lifetime_model.dart';
 import '../../models/money_model.dart';
 import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
+import '../../models/station_stamp_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/temple_model.dart';
 import '../../models/time_place_model.dart';
@@ -53,6 +54,7 @@ class AppParamState with _$AppParamState {
     @Default(<int, List<ToushiShintakuModel>>{}) Map<int, List<ToushiShintakuModel>> keepToushiShintakuRelationalMap,
     @Default(<String, List<TimePlaceModel>>{}) Map<String, List<TimePlaceModel>> keepTimePlaceMap,
     @Default(<String, List<AmazonPurchaseModel>>{}) Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
+    @Default(<String, List<StationStampModel>>{}) Map<String, List<StationStampModel>> keepDateStationStampMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -214,6 +216,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepAllDateLifetimeSummaryMap({required Map<String, List<Map<String, dynamic>>> map}) =>
       state = state.copyWith(keepAllDateLifetimeSummaryMap: map);
+
+  ///
+  void setKeepDateStationStampMap({required Map<String, List<StationStampModel>> map}) =>
+      state = state.copyWith(keepDateStationStampMap: map);
 
   //===================================================
 

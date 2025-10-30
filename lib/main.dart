@@ -70,6 +70,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     fundNotifier.getAllFundData();
     timePlaceNotifier.getAllTimePlaceData();
     amazonPurchaseNotifier.getAllAmazonPurchaseData();
+    stationStampNotifier.getAllStationStampData();
   }
 
   ///
@@ -103,9 +104,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           holidayList: holidayState.holidayList,
           walkMap: walkState.walkMap,
           moneyMap: moneyState.moneyMap,
-
           lifetimeMap: lifetimeState.lifetimeMap,
-
           lifetimeItemList: lifetimeItemState.lifetimeItemList,
           geolocMap: geolocState.geolocMap,
           templeMap: templeState.templeMap,
@@ -126,6 +125,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           toushiShintakuRelationalMap: toushiShintakuState.toushiShintakuRelationalMap,
           timePlaceMap: timePlaceState.timePlaceMap,
           amazonPurchaseMap: amazonPurchaseState.amazonPurchaseMap,
+          dateStationStampMap: stationStampState.dateStationStampMap,
         ),
       ),
     );
