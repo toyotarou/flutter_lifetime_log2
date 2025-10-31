@@ -12,6 +12,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/lat_lng_address.dart';
+import '../../models/station_stamp_model.dart';
 import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
 import '../../utility/tile_provider.dart';
@@ -78,6 +79,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
   final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
 
+  List<Marker> stampRallyStationMarkerList = <Marker>[];
+
   ///
   @override
   void initState() {
@@ -138,6 +141,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
     makeDisplayTimeMarker();
 
+    makeStampRallyStationMarker();
+
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -173,6 +178,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               MarkerLayer(markers: templeMarkerList),
 
               MarkerLayer(markers: displayTimeMarkerList),
+
+              MarkerLayer(markers: stampRallyStationMarkerList),
             ],
           ),
 
@@ -228,9 +235,52 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 const SizedBox(height: 10),
 
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const SizedBox.shrink(),
+                    Expanded(
+                      child: (appParamState.keepDateStationStampMap[widget.date] != null)
+                          ? Container(
+                              margin: const EdgeInsets.only(right: 20),
+                              child: DefaultTextStyle(
+                                style: const TextStyle(fontSize: 12),
+                                child: Row(
+                                  children: <Widget>[
+                                    const Icon(FontAwesomeIcons.stamp, color: Colors.black),
+
+                                    const SizedBox(width: 10),
+
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.deepOrange,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+                                      child: const Text('特殊'),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.indigo,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+                                      child: const Text('改札外'),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.pinkAccent,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+                                      child: const Text('改札内'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
 
                     Column(
                       children: <Widget>[
@@ -755,5 +805,41 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         ),
       ],
     );
+  }
+
+  ///
+  void makeStampRallyStationMarker() {
+    stampRallyStationMarkerList.clear();
+
+    appParamState.keepDateStationStampMap[widget.date]?.forEach((StationStampModel element) {
+      stampRallyStationMarkerList.add(
+        Marker(
+          point: LatLng(element.lat.toDouble(), element.lng.toDouble()),
+          child: Icon(
+            FontAwesomeIcons.stamp,
+            size: 20,
+            color: getStationInnerOuterColor(posterPosition: element.posterPosition, stationName: element.stationName),
+          ),
+        ),
+      );
+    });
+  }
+
+  ///
+  Color getStationInnerOuterColor({required String posterPosition, required String stationName}) {
+    final RegExp reg = RegExp('改札内');
+    final RegExp reg2 = RegExp('改札外');
+
+    final List<String> specialStation = <String>['中目黒', '中野', '西船橋', '代々木上原', '和光市', '目黒'];
+
+    if (specialStation.contains(stationName)) {
+      return Colors.deepOrange;
+    } else if (reg.firstMatch(posterPosition) != null) {
+      return Colors.pinkAccent;
+    } else if (reg2.firstMatch(posterPosition) != null) {
+      return Colors.indigo;
+    } else {
+      return Colors.black;
+    }
   }
 }

@@ -466,10 +466,13 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
               label: const Text('前の日曜', style: TextStyle(color: Colors.white)),
             ),
 
-            OutlinedButton.icon(
-              onPressed: () => _scrollToSunday(next: true),
-              icon: const Icon(Icons.chevron_right, color: Colors.white),
-              label: const Text('次の日曜', style: TextStyle(color: Colors.white)),
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: OutlinedButton.icon(
+                onPressed: () => _scrollToSunday(next: true),
+                icon: const Icon(Icons.chevron_left, color: Colors.white),
+                label: const Text('次の日曜', style: TextStyle(color: Colors.white)),
+              ),
             ),
           ],
         ),
@@ -746,6 +749,10 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
     if (appParamState.keepTransportationMap[date] != null) {
       displayIcons.add(Icon(Icons.train, size: 20, color: Colors.white.withValues(alpha: 0.3)));
+    }
+
+    if (appParamState.keepDateStationStampMap[date] != null) {
+      displayIcons.add(Icon(FontAwesomeIcons.stamp, size: 15, color: Colors.white.withValues(alpha: 0.3)));
     }
 
     displayIcons.add(const Icon(Icons.square_outlined, size: 20, color: Colors.transparent));

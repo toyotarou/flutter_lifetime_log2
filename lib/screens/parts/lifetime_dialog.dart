@@ -41,11 +41,12 @@ Future<void> LifetimeDialog({
         if (from == 'MoneyDataInputAlert' ||
             from == 'MonthlyGeolocMapDisplayAlert' ||
             from == 'ToushiShintakuDataUpdateAlert' ||
-            from == 'LifetimeGeolocMapDisplayAlert') {
+            from == 'LifetimeGeolocMapDisplayAlert' ||
+            from == 'WeeklyHistoryAlert') {
           if (ref != null) {
             try {
               closeAllOverlays(ref: ref);
-            // ignore: empty_catches
+              // ignore: empty_catches
             } catch (e) {}
           }
         }

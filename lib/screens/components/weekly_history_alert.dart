@@ -9,7 +9,9 @@ import '../../models/weekly_history_event_model.dart';
 import '../../utility/functions.dart';
 import '../parts/badge_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
+import 'lifetime_geoloc_map_display_alert.dart';
 import 'lifetime_input_alert.dart';
+import 'stamp_rally_info_display_alert.dart';
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -179,8 +181,8 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
         SizedBox(
           height:
               appParamState.weeklyHistoryHeaderHeight +
-              (widget.isNeedGeolocMapDisplayHeight ? 30 : 0) +
-              (widget.isNeedStationStampDisplayHeight ? 30 : 0),
+              (widget.isNeedGeolocMapDisplayHeight ? 25 : 0) +
+              (widget.isNeedStationStampDisplayHeight ? 25 : 0),
           child: Row(
             children: <Widget>[
               SizedBox(width: appParamState.gutterWidth),
@@ -517,7 +519,34 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                         SizedBox(
                           height: 30,
                           child: (appParamState.keepGeolocMap[date] != null)
-                              ? Icon(Icons.map, size: 20, color: Colors.white.withValues(alpha: 0.4))
+                              ? GestureDetector(
+                                  child: Icon(
+                                    Icons.map,
+                                    size: 20,
+                                    color: (appParamState.weeklyHistorySelectedDate == date)
+                                        ? Colors.yellowAccent.withValues(alpha: 0.4)
+                                        : Colors.white.withValues(alpha: 0.4),
+                                  ),
+                                  onTap: () {
+                                    appParamNotifier.setWeeklyHistorySelectedDate(date: date);
+
+                                    appParamNotifier.setSelectedGeolocTime(time: '');
+
+                                    LifetimeDialog(
+                                      context: context,
+                                      widget: LifetimeGeolocMapDisplayAlert(
+                                        date: date,
+                                        geolocList: appParamState.keepGeolocMap[date],
+                                        temple: appParamState.keepTempleMap[date],
+                                        transportation: appParamState.keepTransportationMap[date],
+                                      ),
+
+                                      executeFunctionWhenDialogClose: true,
+                                      from: 'WeeklyHistoryAlert',
+                                      ref: ref,
+                                    );
+                                  },
+                                )
                               : null,
                         ),
                       ],
@@ -526,7 +555,19 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                         SizedBox(
                           height: 30,
                           child: (appParamState.keepDateStationStampMap[date] != null)
-                              ? Icon(FontAwesomeIcons.stamp, size: 15, color: Colors.white.withValues(alpha: 0.4))
+                              ? GestureDetector(
+                                  child: Icon(
+                                    FontAwesomeIcons.stamp,
+                                    size: 15,
+                                    color: Colors.white.withValues(alpha: 0.4),
+                                  ),
+                                  onTap: () {
+                                    LifetimeDialog(
+                                      context: context,
+                                      widget: StampRallyInfoDisplayAlert(date: date),
+                                    );
+                                  },
+                                )
                               : null,
                         ),
                       ],
