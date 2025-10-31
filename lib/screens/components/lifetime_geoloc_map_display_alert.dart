@@ -17,6 +17,7 @@ import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
 import '../../utility/tile_provider.dart';
 import '../../utility/utility.dart';
+import '../parts/icon_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import '../parts/lifetime_log_overlay.dart';
 import 'temple_list_display_alert.dart';
@@ -81,12 +82,17 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   List<Marker> stampRallyStationMarkerList = <Marker>[];
 
+  List<GlobalKey> globalKeyList = <GlobalKey>[];
+
   ///
   @override
   void initState() {
     super.initState();
 
     twentyFourColor = utility.getTwentyFourColor();
+
+    // ignore: always_specify_types
+    globalKeyList = List.generate(1000, (int index) => GlobalKey());
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() => isLoading = true);
@@ -728,32 +734,45 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       for (int i = 0; i < widget.temple!.templeDataList.length; i++) {
         templeMarkerList.add(
           Marker(
+            key: globalKeyList[i],
+
             point: LatLng(
               widget.temple!.templeDataList[i].latitude.toDouble(),
               widget.temple!.templeDataList[i].longitude.toDouble(),
             ),
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.only(bottom: 5, right: 5),
-                  child: const Icon(FontAwesomeIcons.toriiGate, color: Color(0xFFFBB6CE)),
-                ),
+            child: GestureDetector(
+              onTap: () {
+                iconToolChipDisplayOverlay(
+                  type: 'lifetime_geoloc_map_display_alert_icon',
+                  context: context,
+                  buttonKey: globalKeyList[i],
+                  message: widget.temple!.templeDataList[i].name,
+                  displayDuration: const Duration(seconds: 2),
+                );
+              },
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 5, right: 5),
+                    child: const Icon(FontAwesomeIcons.toriiGate, color: Color(0xFFFBB6CE)),
+                  ),
 
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    width: 16,
-                    height: 16,
-                    alignment: Alignment.center,
-                    decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                    child: Text(
-                      (i + 1).toString().padLeft(2, '0'),
-                      style: const TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      width: 16,
+                      height: 16,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                      child: Text(
+                        (i + 1).toString().padLeft(2, '0'),
+                        style: const TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -811,18 +830,38 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeStampRallyStationMarker() {
     stampRallyStationMarkerList.clear();
 
-    appParamState.keepDateStationStampMap[widget.date]?.forEach((StationStampModel element) {
-      stampRallyStationMarkerList.add(
-        Marker(
-          point: LatLng(element.lat.toDouble(), element.lng.toDouble()),
-          child: Icon(
-            FontAwesomeIcons.stamp,
-            size: 20,
-            color: getStationInnerOuterColor(posterPosition: element.posterPosition, stationName: element.stationName),
+    if (appParamState.keepDateStationStampMap[widget.date] != null) {
+      for (int i = 0; i < appParamState.keepDateStationStampMap[widget.date]!.length; i++) {
+        final StationStampModel element = appParamState.keepDateStationStampMap[widget.date]![i];
+
+        stampRallyStationMarkerList.add(
+          Marker(
+            key: globalKeyList[i + 100],
+
+            point: LatLng(element.lat.toDouble(), element.lng.toDouble()),
+            child: GestureDetector(
+              onTap: () {
+                iconToolChipDisplayOverlay(
+                  type: 'lifetime_geoloc_map_display_alert_icon',
+                  context: context,
+                  buttonKey: globalKeyList[i + 100],
+                  message: element.stationName,
+                  displayDuration: const Duration(seconds: 2),
+                );
+              },
+              child: Icon(
+                FontAwesomeIcons.stamp,
+                size: 20,
+                color: getStationInnerOuterColor(
+                  posterPosition: element.posterPosition,
+                  stationName: element.stationName,
+                ),
+              ),
+            ),
           ),
-        ),
-      );
-    });
+        );
+      }
+    }
   }
 
   ///

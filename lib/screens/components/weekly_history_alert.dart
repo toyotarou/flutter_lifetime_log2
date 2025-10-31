@@ -7,7 +7,7 @@ import '../../extensions/extensions.dart';
 import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
 import '../../utility/functions.dart';
-import '../parts/badge_toolchip_display_overlay.dart';
+import '../parts/icon_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import 'lifetime_geoloc_map_display_alert.dart';
 import 'lifetime_input_alert.dart';
@@ -304,12 +304,14 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
 
             child: GestureDetector(
               onTap: () {
-                showBadgeToolChipDisplayOverlay(
+                iconToolChipDisplayOverlay(
+                  type: 'weekly_history_alert_badge',
                   context: context,
                   buttonKey: globalKeyList[i],
-                  dayIndex: widget.badges[i].dayIndex,
                   message: widget.badges[i].tooltip ?? 'badge',
                   displayDuration: const Duration(seconds: 2),
+
+                  dayIndex: widget.badges[i].dayIndex,
                   timeGutterWidth: timeGutterWidth,
                 );
               },
