@@ -24,8 +24,8 @@ http://toyohide.work/BrainLog/api/getStationStamp
 
 import '../extensions/extensions.dart';
 
-class StationStampModel {
-  StationStampModel({
+class MetroStampModel {
+  MetroStampModel({
     required this.trainCode,
     required this.trainName,
     required this.stationCode,
@@ -39,7 +39,7 @@ class StationStampModel {
     required this.stampGetOrder,
   });
 
-  factory StationStampModel.fromJson(Map<String, dynamic> json) => StationStampModel(
+  factory MetroStampModel.fromJson(Map<String, dynamic> json) => MetroStampModel(
     trainCode: json['train_code'].toString(),
     trainName: json['train_name'].toString(),
     stationCode: json['station_code'].toString(),

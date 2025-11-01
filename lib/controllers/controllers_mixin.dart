@@ -9,11 +9,11 @@ import '_get_data/gold/gold.dart';
 import '_get_data/holiday/holiday.dart';
 import '_get_data/lifetime/lifetime.dart';
 import '_get_data/lifetime_item/lifetime_item.dart';
+import '_get_data/metro_stamp/metro_stamp.dart';
 import '_get_data/money/money.dart';
 import '_get_data/money_spend/money_spend.dart';
 import '_get_data/money_spend_item/money_spend_item.dart';
 import '_get_data/salary/salary.dart';
-import '_get_data/station_stamp/station_stamp.dart';
 import '_get_data/stock/stock.dart';
 import '_get_data/temple/temple.dart';
 import '_get_data/time_place/time_place.dart';
@@ -204,9 +204,9 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   //==========================================//
 
-  StationStampState get stationStampState => ref.watch(stationStampProvider);
+  MetroStampState get metroStampState => ref.watch(metroStampProvider);
 
-  StationStamp get stationStampNotifier => ref.read(stationStampProvider.notifier);
+  MetroStamp get metroStampNotifier => ref.read(metroStampProvider.notifier);
 
   //==========================================//
   Directions get directionsNotifier => ref.read(directionsProvider.notifier);

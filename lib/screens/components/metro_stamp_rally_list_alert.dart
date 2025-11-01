@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
-import '../../models/station_stamp_model.dart';
+import '../../models/metro_stamp_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'metro_stamp_display_alert.dart';
@@ -53,16 +53,16 @@ class _MetroStampRallyListAlertState extends ConsumerState<MetroStampRallyListAl
   Widget displayStationStampModelList() {
     final List<Widget> list = <Widget>[];
 
-    final List<MapEntry<String, List<StationStampModel>>> sortedEntries =
-        appParamState.keepDateStationStampMap.entries.toList()..sort(
-          (MapEntry<String, List<StationStampModel>> a, MapEntry<String, List<StationStampModel>> b) =>
+    final List<MapEntry<String, List<MetroStampModel>>> sortedEntries =
+        appParamState.keepDateMetroStampMap.entries.toList()..sort(
+          (MapEntry<String, List<MetroStampModel>> a, MapEntry<String, List<MetroStampModel>> b) =>
               a.key.compareTo(b.key),
         );
 
-    for (final MapEntry<String, List<StationStampModel>> entry in sortedEntries) {
+    for (final MapEntry<String, List<MetroStampModel>> entry in sortedEntries) {
       final String key = entry.key;
 
-      final List<StationStampModel> value = entry.value;
+      final List<MetroStampModel> value = entry.value;
 
       final String youbiStr = DateTime.parse(key).youbiStr;
 
@@ -77,12 +77,12 @@ class _MetroStampRallyListAlertState extends ConsumerState<MetroStampRallyListAl
         ),
       );
 
-      value.sort((StationStampModel a, StationStampModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
+      value.sort((MetroStampModel a, MetroStampModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
 
       final Set<String> stationNames = <String>{};
       final List<Widget> list2 = <Widget>[];
 
-      for (final StationStampModel element in value) {
+      for (final MetroStampModel element in value) {
         if (stationNames.add(element.stationName)) {
           final String stamp =
               'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';

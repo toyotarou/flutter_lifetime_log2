@@ -12,7 +12,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/lat_lng_address.dart';
-import '../../models/station_stamp_model.dart';
+import '../../models/metro_stamp_model.dart';
 import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
 import '../../utility/tile_provider.dart';
@@ -244,7 +244,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Expanded(
-                      child: (appParamState.keepDateStationStampMap[widget.date] != null)
+                      child: (appParamState.keepDateMetroStampMap[widget.date] != null)
                           ? Container(
                               margin: const EdgeInsets.only(right: 20),
                               child: DefaultTextStyle(
@@ -830,9 +830,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeStampRallyStationMarker() {
     stampRallyStationMarkerList.clear();
 
-    if (appParamState.keepDateStationStampMap[widget.date] != null) {
-      for (int i = 0; i < appParamState.keepDateStationStampMap[widget.date]!.length; i++) {
-        final StationStampModel element = appParamState.keepDateStationStampMap[widget.date]![i];
+    if (appParamState.keepDateMetroStampMap[widget.date] != null) {
+      for (int i = 0; i < appParamState.keepDateMetroStampMap[widget.date]!.length; i++) {
+        final MetroStampModel element = appParamState.keepDateMetroStampMap[widget.date]![i];
 
         stampRallyStationMarkerList.add(
           Marker(

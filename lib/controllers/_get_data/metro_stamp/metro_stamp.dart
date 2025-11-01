@@ -4,54 +4,54 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
-import '../../../models/station_stamp_model.dart';
+import '../../../models/metro_stamp_model.dart';
 import '../../../utility/utility.dart';
 
-part 'station_stamp.freezed.dart';
+part 'metro_stamp.freezed.dart';
 
-part 'station_stamp.g.dart';
+part 'metro_stamp.g.dart';
 
 @freezed
-class StationStampState with _$StationStampState {
-  const factory StationStampState({
+class MetroStampState with _$MetroStampState {
+  const factory MetroStampState({
     @Default(<String, String>{}) Map<String, String> trainMap,
-    @Default(<StationStampModel>[]) List<StationStampModel> stationStampList,
-    @Default(<String, List<StationStampModel>>{}) Map<String, List<StationStampModel>> stationStampMap,
-    @Default(<String, List<StationStampModel>>{}) Map<String, List<StationStampModel>> dateStationStampMap,
-  }) = _StationStampState;
+    @Default(<MetroStampModel>[]) List<MetroStampModel> metroStampList,
+    @Default(<String, List<MetroStampModel>>{}) Map<String, List<MetroStampModel>> metroStampMap,
+    @Default(<String, List<MetroStampModel>>{}) Map<String, List<MetroStampModel>> dateMetroStampMap,
+  }) = _MetroStampState;
 }
 
 @Riverpod(keepAlive: true)
-class StationStamp extends _$StationStamp {
+class MetroStamp extends _$MetroStamp {
   final Utility utility = Utility();
 
   ///
   @override
-  StationStampState build() => const StationStampState();
+  MetroStampState build() => const MetroStampState();
 
   //============================================== api
 
   ///
-  Future<StationStampState> fetchAllStationStampData() async {
+  Future<MetroStampState> fetchAllMetroStampData() async {
     final HttpClient client = ref.read(httpClientProvider);
 
     try {
       final dynamic value = await client.post(path: APIPath.getStationStamp);
 
-      final List<StationStampModel> list = <StationStampModel>[];
+      final List<MetroStampModel> list = <MetroStampModel>[];
 
       final Map<String, String> map = <String, String>{};
-      final Map<String, List<StationStampModel>> map2 = <String, List<StationStampModel>>{};
-      final Map<String, List<StationStampModel>> map3 = <String, List<StationStampModel>>{};
+      final Map<String, List<MetroStampModel>> map2 = <String, List<MetroStampModel>>{};
+      final Map<String, List<MetroStampModel>> map3 = <String, List<MetroStampModel>>{};
 
       final List<String> keepTrain = <String>[];
       // ignore: avoid_dynamic_calls
       for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
         // ignore: avoid_dynamic_calls
-        final StationStampModel val = StationStampModel.fromJson(value['data'][i] as Map<String, dynamic>);
+        final MetroStampModel val = MetroStampModel.fromJson(value['data'][i] as Map<String, dynamic>);
 
-        map2[val.imageFolder] = <StationStampModel>[];
-        map3[val.stampGetDate.replaceAll('/', '-')] = <StationStampModel>[];
+        map2[val.imageFolder] = <MetroStampModel>[];
+        map3[val.stampGetDate.replaceAll('/', '-')] = <MetroStampModel>[];
 
         if (!keepTrain.contains(val.imageFolder)) {
           map[val.imageFolder] = val.trainName;
@@ -63,7 +63,7 @@ class StationStamp extends _$StationStamp {
       // ignore: avoid_dynamic_calls
       for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
         // ignore: avoid_dynamic_calls
-        final StationStampModel val = StationStampModel.fromJson(value['data'][i] as Map<String, dynamic>);
+        final MetroStampModel val = MetroStampModel.fromJson(value['data'][i] as Map<String, dynamic>);
 
         list.add(val);
 
@@ -72,7 +72,7 @@ class StationStamp extends _$StationStamp {
         map3[val.stampGetDate.replaceAll('/', '-')]?.add(val);
       }
 
-      return state.copyWith(trainMap: map, stationStampList: list, stationStampMap: map2, dateStationStampMap: map3);
+      return state.copyWith(trainMap: map, metroStampList: list, metroStampMap: map2, dateMetroStampMap: map3);
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
@@ -80,9 +80,9 @@ class StationStamp extends _$StationStamp {
   }
 
   ///
-  Future<void> getAllStationStampData() async {
+  Future<void> getAllMetroStampData() async {
     try {
-      final StationStampState newState = await fetchAllStationStampData();
+      final MetroStampState newState = await fetchAllMetroStampData();
 
       state = newState;
     } catch (_) {}

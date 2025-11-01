@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
-import '../../models/station_stamp_model.dart';
+import '../../models/metro_stamp_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'metro_stamp_display_alert.dart';
@@ -54,12 +54,12 @@ class _MetroStampRallyInfoDisplayAlertState extends ConsumerState<MetroStampRall
   Widget displayStationStampModelList() {
     final List<Widget> list = <Widget>[];
 
-    final List<StationStampModel>? stamps = appParamState.keepDateStationStampMap[widget.date];
+    final List<MetroStampModel>? stamps = appParamState.keepDateMetroStampMap[widget.date];
 
     if (stamps != null) {
-      stamps.sort((StationStampModel a, StationStampModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
+      stamps.sort((MetroStampModel a, MetroStampModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
 
-      for (final StationStampModel element in stamps) {
+      for (final MetroStampModel element in stamps) {
         final String stamp =
             'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';
 
