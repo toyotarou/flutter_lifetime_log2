@@ -8,10 +8,11 @@ import '../../models/fund_model.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/gold_model.dart';
 import '../../models/lifetime_model.dart';
+import '../../models/metro_stamp_20_anniversary_model.dart';
+import '../../models/metro_stamp_model.dart';
 import '../../models/money_model.dart';
 import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
-import '../../models/metro_stamp_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/temple_model.dart';
 import '../../models/time_place_model.dart';
@@ -32,9 +33,7 @@ class AppParamState with _$AppParamState {
     @Default(<String>[]) List<String> keepHolidayList,
     @Default(<String, WalkModel>{}) Map<String, WalkModel> keepWalkModelMap,
     @Default(<String, MoneyModel>{}) Map<String, MoneyModel> keepMoneyMap,
-
     @Default(<String, LifetimeModel>{}) Map<String, LifetimeModel> keepLifetimeMap,
-
     @Default(<LifetimeItemModel>[]) List<LifetimeItemModel> keepLifetimeItemList,
     @Default(<String, List<GeolocModel>>{}) Map<String, List<GeolocModel>> keepGeolocMap,
     @Default(<String, TempleModel>{}) Map<String, TempleModel> keepTempleMap,
@@ -55,6 +54,8 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<TimePlaceModel>>{}) Map<String, List<TimePlaceModel>> keepTimePlaceMap,
     @Default(<String, List<AmazonPurchaseModel>>{}) Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
     @Default(<String, List<MetroStampModel>>{}) Map<String, List<MetroStampModel>> keepDateMetroStampMap,
+    @Default(<String, List<MetroStamp20AnniversaryModel>>{})
+    Map<String, List<MetroStamp20AnniversaryModel>> keepMetroStamp20AnniversaryModelMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -220,6 +221,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepDateMetroStampMap({required Map<String, List<MetroStampModel>> map}) =>
       state = state.copyWith(keepDateMetroStampMap: map);
+
+  ///
+  void setKeepMetroStamp20AnniversaryModelMap({required Map<String, List<MetroStamp20AnniversaryModel>> map}) =>
+      state = state.copyWith(keepMetroStamp20AnniversaryModelMap: map);
 
   //===================================================
 
