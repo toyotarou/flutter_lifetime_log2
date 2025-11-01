@@ -29,10 +29,10 @@ import 'components/amazon_purchase_list_alert.dart';
 import 'components/bank_data_input_alert.dart';
 import 'components/lifetime_item_search_alert.dart';
 import 'components/lifetime_summary_alert.dart';
+import 'components/metro_stamp_rally_list_alert.dart';
 import 'components/money_in_possession_display_alert.dart';
 import 'components/salary_list_alert.dart';
 import 'components/spend_each_year_display_alert.dart';
-import 'components/metro_stamp_rally_list_alert.dart';
 import 'page/monthly_lifetime_display_page.dart';
 import 'parts/lifetime_dialog.dart';
 

@@ -5,6 +5,8 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/station_stamp_model.dart';
 import '../../utility/utility.dart';
+import '../parts/lifetime_dialog.dart';
+import 'metro_stamp_display_alert.dart';
 
 class MetroStampRallyListAlert extends ConsumerStatefulWidget {
   const MetroStampRallyListAlert({super.key});
@@ -94,15 +96,27 @@ class _MetroStampRallyListAlertState extends ConsumerState<MetroStampRallyListAl
 
               child: Row(
                 children: <Widget>[
-                  SizedBox(
-                    width: 80,
-                    child: Opacity(
-                      opacity: 0.6,
-                      child: FadeInImage.assetNetwork(
-                        placeholder: 'assets/images/no_image.png',
-                        image: stamp,
-                        imageErrorBuilder: (BuildContext c, Object o, StackTrace? s) =>
-                            Image.asset('assets/images/no_image.png'),
+                  GestureDetector(
+                    onTap: () {
+                      LifetimeDialog(
+                        context: context,
+                        widget: MetroStampDisplayAlert(imageUrl: stamp),
+                      );
+                    },
+
+                    child: SizedBox(
+                      width: 80,
+                      child: Opacity(
+                        opacity: 0.6,
+                        child: Hero(
+                          tag: stamp,
+
+                          child: FadeInImage.assetNetwork(
+                            placeholder: 'assets/images/no_image.png',
+                            image: stamp,
+                            imageErrorBuilder: (BuildContext c, Object o, StackTrace? s) => Image.asset('assets/images/no_image.png'),
+                          ),
+                        ),
                       ),
                     ),
                   ),
