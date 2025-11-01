@@ -11,6 +11,7 @@ import '../parts/icon_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import 'lifetime_geoloc_map_display_alert.dart';
 import 'lifetime_input_alert.dart';
+import 'metro_stamp_rally_20_anniversary_info_display_alert.dart';
 import 'metro_stamp_rally_info_display_alert.dart';
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -556,21 +557,18 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                       if (widget.isNeedStationStampDisplayHeight) ...<Widget>[
                         SizedBox(
                           height: 30,
-                          child: (appParamState.keepDateMetroStampMap[date] != null)
-                              ? GestureDetector(
-                                  child: Icon(
-                                    FontAwesomeIcons.stamp,
-                                    size: 15,
-                                    color: Colors.white.withValues(alpha: 0.4),
-                                  ),
-                                  onTap: () {
-                                    LifetimeDialog(
-                                      context: context,
-                                      widget: MetroStampRallyInfoDisplayAlert(date: date),
-                                    );
-                                  },
-                                )
-                              : null,
+                          child: GestureDetector(
+                            child: Icon(FontAwesomeIcons.stamp, size: 15, color: Colors.white.withValues(alpha: 0.4)),
+
+                            onTap: () {
+                              LifetimeDialog(
+                                context: context,
+                                widget: (appParamState.keepDateMetroStampMap[date] != null)
+                                    ? MetroStampRallyInfoDisplayAlert(date: date)
+                                    : MetroStampRally20AnniversaryInfoDisplayAlert(date: date),
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ],

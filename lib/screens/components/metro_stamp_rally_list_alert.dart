@@ -114,7 +114,8 @@ class _MetroStampRallyListAlertState extends ConsumerState<MetroStampRallyListAl
                           child: FadeInImage.assetNetwork(
                             placeholder: 'assets/images/no_image.png',
                             image: stamp,
-                            imageErrorBuilder: (BuildContext c, Object o, StackTrace? s) => Image.asset('assets/images/no_image.png'),
+                            imageErrorBuilder: (BuildContext c, Object o, StackTrace? s) =>
+                                Image.asset('assets/images/no_image.png'),
                           ),
                         ),
                       ),
