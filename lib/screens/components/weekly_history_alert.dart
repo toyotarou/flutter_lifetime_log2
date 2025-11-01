@@ -11,7 +11,7 @@ import '../parts/icon_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import 'lifetime_geoloc_map_display_alert.dart';
 import 'lifetime_input_alert.dart';
-import 'stamp_rally_info_display_alert.dart';
+import 'metro_stamp_rally_info_display_alert.dart';
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -566,7 +566,7 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                                   onTap: () {
                                     LifetimeDialog(
                                       context: context,
-                                      widget: StampRallyInfoDisplayAlert(date: date),
+                                      widget: MetroStampRallyInfoDisplayAlert(date: date),
                                     );
                                   },
                                 )

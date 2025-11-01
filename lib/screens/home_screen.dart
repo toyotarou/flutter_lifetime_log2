@@ -32,6 +32,7 @@ import 'components/lifetime_summary_alert.dart';
 import 'components/money_in_possession_display_alert.dart';
 import 'components/salary_list_alert.dart';
 import 'components/spend_each_year_display_alert.dart';
+import 'components/metro_stamp_rally_list_alert.dart';
 import 'page/monthly_lifetime_display_page.dart';
 import 'parts/lifetime_dialog.dart';
 
@@ -311,6 +312,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               const SizedBox(height: 30),
 
               GestureDetector(
+                onTap: () => LifetimeDialog(context: context, widget: const SpendEachYearDisplayAlert()),
+                child: const Row(
+                  children: <Widget>[
+                    Icon(Icons.ac_unit),
+                    SizedBox(width: 20),
+                    Expanded(child: Text('spend each year')),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              GestureDetector(
                 onTap: () => LifetimeDialog(context: context, widget: const MoneyInPossessionDisplayAlert()),
                 child: const Row(
                   children: <Widget>[
@@ -349,25 +363,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               ),
 
               const SizedBox(height: 30),
-              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-              const SizedBox(height: 30),
-
-              GestureDetector(
-                onTap: () => LifetimeDialog(context: context, widget: const SpendEachYearDisplayAlert()),
-                child: const Row(
-                  children: <Widget>[
-                    Icon(Icons.ac_unit),
-                    SizedBox(width: 20),
-                    Expanded(child: Text('spend each year')),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 30),
-              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-              const SizedBox(height: 30),
 
               GestureDetector(
                 onTap: () => LifetimeDialog(context: context, widget: const AmazonPurchaseListAlert()),
@@ -376,6 +371,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                     Icon(FontAwesomeIcons.amazon),
                     SizedBox(width: 20),
                     Expanded(child: Text('amazon purchase list')),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+              const SizedBox(height: 30),
+
+              GestureDetector(
+                onTap: () => LifetimeDialog(context: context, widget: const MetroStampRallyListAlert()),
+                child: const Row(
+                  children: <Widget>[
+                    Icon(FontAwesomeIcons.stamp),
+                    SizedBox(width: 20),
+                    Expanded(child: Text('station stamp rally list')),
                   ],
                 ),
               ),

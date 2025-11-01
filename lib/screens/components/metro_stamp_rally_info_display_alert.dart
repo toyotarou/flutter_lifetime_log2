@@ -5,17 +5,17 @@ import '../../controllers/controllers_mixin.dart';
 import '../../models/station_stamp_model.dart';
 import '../../utility/utility.dart';
 
-class StampRallyInfoDisplayAlert extends ConsumerStatefulWidget {
-  const StampRallyInfoDisplayAlert({super.key, required this.date});
+class MetroStampRallyInfoDisplayAlert extends ConsumerStatefulWidget {
+  const MetroStampRallyInfoDisplayAlert({super.key, required this.date});
 
   final String date;
 
   @override
-  ConsumerState<StampRallyInfoDisplayAlert> createState() => _StampRallyInfoDisplayAlertState();
+  ConsumerState<MetroStampRallyInfoDisplayAlert> createState() => _MetroStampRallyInfoDisplayAlertState();
 }
 
-class _StampRallyInfoDisplayAlertState extends ConsumerState<StampRallyInfoDisplayAlert>
-    with ControllersMixin<StampRallyInfoDisplayAlert> {
+class _MetroStampRallyInfoDisplayAlertState extends ConsumerState<MetroStampRallyInfoDisplayAlert>
+    with ControllersMixin<MetroStampRallyInfoDisplayAlert> {
   Utility utility = Utility();
 
   ///
