@@ -10,7 +10,6 @@ import '_get_data/holiday/holiday.dart';
 import '_get_data/lifetime/lifetime.dart';
 import '_get_data/lifetime_item/lifetime_item.dart';
 import '_get_data/metro_stamp/metro_stamp.dart';
-import '_get_data/metro_stamp_20_anniversary/metro_stamp_20_anniversary.dart';
 import '_get_data/money/money.dart';
 import '_get_data/money_spend/money_spend.dart';
 import '_get_data/money_spend_item/money_spend_item.dart';
@@ -211,11 +210,6 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   //==========================================//
 
-  MetroStamp20AnniversaryState get metroStamp20AnniversaryState => ref.watch(metroStamp20AnniversaryProvider);
-
-  MetroStamp20Anniversary get metroStamp20AnniversaryNotifier => ref.read(metroStamp20AnniversaryProvider.notifier);
-
-  //==========================================//
   Directions get directionsNotifier => ref.read(directionsProvider.notifier);
 
   //==========================================//

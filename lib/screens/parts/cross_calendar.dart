@@ -751,8 +751,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       displayIcons.add(Icon(Icons.train, size: 20, color: Colors.white.withValues(alpha: 0.3)));
     }
 
-    if (appParamState.keepDateMetroStampMap[date] != null ||
-        appParamState.keepMetroStamp20AnniversaryModelMap[date] != null) {
+    if (appParamState.keepDateMetroStampMap[date] != null) {
       displayIcons.add(Icon(FontAwesomeIcons.stamp, size: 15, color: Colors.white.withValues(alpha: 0.3)));
     }
 
@@ -989,8 +988,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                         isNeedGeolocMapDisplayHeight = true;
                       }
 
-                      if (appParamState.keepDateMetroStampMap[value] != null ||
-                          appParamState.keepMetroStamp20AnniversaryModelMap[value] != null) {
+                      if (appParamState.keepDateMetroStampMap[value] != null) {
                         isNeedStationStampDisplayHeight = true;
                       }
                     });

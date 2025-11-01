@@ -11,7 +11,6 @@ import '../models/fund_model.dart';
 import '../models/geoloc_model.dart';
 import '../models/gold_model.dart';
 import '../models/lifetime_model.dart';
-import '../models/metro_stamp_20_anniversary_model.dart';
 import '../models/metro_stamp_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
@@ -73,7 +72,6 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.timePlaceMap,
     required this.amazonPurchaseMap,
     required this.dateMetroStampMap,
-    required this.metroStamp20AnniversaryModelMap,
   });
 
   final List<String> holidayList;
@@ -101,7 +99,6 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<TimePlaceModel>> timePlaceMap;
   final Map<String, List<AmazonPurchaseModel>> amazonPurchaseMap;
   final Map<String, List<MetroStampModel>> dateMetroStampMap;
-  final Map<String, List<MetroStamp20AnniversaryModel>> metroStamp20AnniversaryModelMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -143,7 +140,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepTimePlaceMap(map: widget.timePlaceMap);
       appParamNotifier.setKeepAmazonPurchaseMap(map: widget.amazonPurchaseMap);
       appParamNotifier.setKeepDateMetroStampMap(map: widget.dateMetroStampMap);
-      appParamNotifier.setKeepMetroStamp20AnniversaryModelMap(map: widget.metroStamp20AnniversaryModelMap);
 
       //===========================================//
       final Map<String, List<String>> templeDateTimeBadgeMap = <String, List<String>>{};
