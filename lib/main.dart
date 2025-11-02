@@ -71,6 +71,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     timePlaceNotifier.getAllTimePlaceData();
     amazonPurchaseNotifier.getAllAmazonPurchaseData();
     metroStampNotifier.getAllMetroStampData();
+    tokyoMunicipalNotifier.getAllTokyoMunicipalData();
   }
 
   ///
@@ -126,6 +127,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           timePlaceMap: timePlaceState.timePlaceMap,
           amazonPurchaseMap: amazonPurchaseState.amazonPurchaseMap,
           dateMetroStampMap: metroStampState.dateMetroStampMap,
+          tokyoMunicipalMap: tokyoMunicipalState.tokyoMunicipalMap,
         ),
       ),
     );

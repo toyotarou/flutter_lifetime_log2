@@ -1,26 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'transportation.dart';
+part of 'tokyo_municipal.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$transportationHash() => r'74151ccfc9cac1a4fcf8ae49a3282e930e62874f';
+String _$tokyoMunicipalHash() => r'79dc8162d7de1168cd35f52bba15eeb7916f1ecf';
 
-/// See also [Transportation].
-@ProviderFor(Transportation)
-final transportationProvider =
-    AutoDisposeNotifierProvider<Transportation, TransportationState>.internal(
-  Transportation.new,
-  name: r'transportationProvider',
+/// See also [TokyoMunicipal].
+@ProviderFor(TokyoMunicipal)
+final tokyoMunicipalProvider =
+    AutoDisposeNotifierProvider<TokyoMunicipal, TokyoMunicipalState>.internal(
+  TokyoMunicipal.new,
+  name: r'tokyoMunicipalProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$transportationHash,
+      : _$tokyoMunicipalHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$Transportation = AutoDisposeNotifier<TransportationState>;
+typedef _$TokyoMunicipal = AutoDisposeNotifier<TokyoMunicipalState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

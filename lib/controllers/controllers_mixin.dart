@@ -17,6 +17,7 @@ import '_get_data/salary/salary.dart';
 import '_get_data/stock/stock.dart';
 import '_get_data/temple/temple.dart';
 import '_get_data/time_place/time_place.dart';
+import '_get_data/tokyo_municipal/tokyo_municipal.dart';
 import '_get_data/toushi_shintaku/toushi_shintaku.dart';
 import '_get_data/transportation/transportation.dart';
 import '_get_data/walk/walk.dart';
@@ -207,6 +208,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   MetroStampState get metroStampState => ref.watch(metroStampProvider);
 
   MetroStamp get metroStampNotifier => ref.read(metroStampProvider.notifier);
+
+  //==========================================//
+
+  TokyoMunicipalState get tokyoMunicipalState => ref.watch(tokyoMunicipalProvider);
+
+  TokyoMunicipal get tokyoMunicipalNotifier => ref.read(tokyoMunicipalProvider.notifier);
 
   //==========================================//
 

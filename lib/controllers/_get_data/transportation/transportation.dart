@@ -103,6 +103,8 @@ class Transportation extends _$Transportation {
 
         val.trainName = trainMap[val.trainNumber];
 
+        stationList1.add(val);
+
         if (dupMap1[val.stationName] != null) {
           if (dupMap1[val.stationName]?[val.prefecture] == null) {
             continue;
@@ -110,8 +112,6 @@ class Transportation extends _$Transportation {
         }
 
         stationMap1[val.stationName] = val;
-
-        stationList1.add(val);
       }
 
       //---------------------------------------------------------------------------//

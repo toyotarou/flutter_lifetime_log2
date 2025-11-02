@@ -14,6 +14,7 @@ import '../models/lifetime_model.dart';
 import '../models/metro_stamp_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
+import '../models/municipal_model.dart';
 import '../models/salary_model.dart';
 import '../models/stock_model.dart';
 import '../models/temple_model.dart';
@@ -24,6 +25,7 @@ import '../models/walk_model.dart';
 import '../models/weather_model.dart';
 import '../models/work_time_model.dart';
 import '../utility/functions.dart';
+import '../utility/map_functions.dart';
 import '../utility/utility.dart';
 import 'components/amazon_purchase_list_alert.dart';
 import 'components/bank_data_input_alert.dart';
@@ -72,6 +74,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.timePlaceMap,
     required this.amazonPurchaseMap,
     required this.dateMetroStampMap,
+    required this.tokyoMunicipalMap,
   });
 
   final List<String> holidayList;
@@ -99,6 +102,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<TimePlaceModel>> timePlaceMap;
   final Map<String, List<AmazonPurchaseModel>> amazonPurchaseMap;
   final Map<String, List<MetroStampModel>> dateMetroStampMap;
+  final Map<String, MunicipalModel> tokyoMunicipalMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -142,6 +146,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepDateMetroStampMap(map: widget.dateMetroStampMap);
 
       //===========================================//
+
+      //-------------------------------------------------- templeDateTimeBadgeMap, templeDateTimeNameMap/s
+
       final Map<String, List<String>> templeDateTimeBadgeMap = <String, List<String>>{};
 
       final Map<String, String> templeDateTimeNameMap = <String, String>{};
@@ -172,6 +179,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         }
       });
 
+      //-------------------------------------------------- templeDateTimeBadgeMap, templeDateTimeNameMap/e
+
+      //-------------------------------------------------- allDateLifetimeSummaryMap/s
+
       final Map<String, List<Map<String, dynamic>>> allDateLifetimeSummaryMap = <String, List<Map<String, dynamic>>>{};
 
       widget.lifetimeMap.forEach((String key, LifetimeModel value) {
@@ -184,6 +195,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         allDateLifetimeSummaryMap[key] = startEndTitleList;
       });
 
+      //-------------------------------------------------- allDateLifetimeSummaryMap/e
+
+      //-------------------------------------------------- tokyoStation/s
+      final Map<String, StationModel> tokyoStationMap = <String, StationModel>{};
+
+      for (final StationModel element in widget.stationList) {
+        widget.tokyoMunicipalMap.forEach((String key, MunicipalModel value) {
+          if (spotInMunicipality(element.lat.toDouble(), element.lng.toDouble(), value)) {
+            tokyoStationMap[element.stationName] = element;
+          }
+        });
+      }
+
+      //-------------------------------------------------- tokyoStation/e
+
       // ignore: always_specify_types
       Future(() {
         appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
@@ -191,6 +217,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         appParamNotifier.setKeepTempleDateTimeNameMap(map: templeDateTimeNameMap);
 
         appParamNotifier.setKeepAllDateLifetimeSummaryMap(map: allDateLifetimeSummaryMap);
+
+        appParamNotifier.setKeepTokyoStationMap(map: tokyoStationMap);
       });
       //===========================================//
     });
