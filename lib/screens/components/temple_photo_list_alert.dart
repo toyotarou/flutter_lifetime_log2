@@ -55,7 +55,7 @@ class _TemplePhotoListAlertState extends ConsumerState<TemplePhotoListAlert>
               // ignore: always_specify_types
               return MapEntry(station, d);
             })
-            .where((MapEntry<StationModel, double> entry) => entry.value <= 1000)
+            .where((MapEntry<StationModel, double> entry) => entry.value <= 2000)
             .toList();
 
         list.sort((MapEntry<StationModel, double> a, MapEntry<StationModel, double> b) => a.value.compareTo(b.value));
