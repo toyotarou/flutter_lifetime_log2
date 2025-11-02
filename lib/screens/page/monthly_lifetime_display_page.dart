@@ -53,139 +53,67 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
             padding: const EdgeInsets.all(20),
             child: Column(
               children: <Widget>[
-                Row(
+                Stack(
                   children: <Widget>[
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              GestureDetector(
-                                onTap: () => LifetimeDialog(
-                                  context: context,
-                                  widget: MonthlyLifetimeDisplayAlert(yearmonth: widget.yearmonth),
-                                ),
-                                child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.3)),
+                    Row(
+                      children: <Widget>[
+                        const Spacer(),
+
+                        Expanded(
+                          child: Container(alignment: Alignment.center, child: Text(widget.yearmonth)),
+                        ),
+
+                        const Spacer(),
+                      ],
+                    ),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        //---------------------------------------------------------//
+                        Row(
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () => LifetimeDialog(
+                                context: context,
+                                widget: MonthlyLifetimeDisplayAlert(yearmonth: widget.yearmonth),
                               ),
+                              child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.3)),
+                            ),
 
-                              const SizedBox(width: 20),
+                            const SizedBox(width: 20),
 
-                              GestureDetector(
-                                onTap: () {
-                                  if (appParamState.keepMoneySpendItemMap.isEmpty) {
-                                    // ignore: always_specify_types
-                                    Future.delayed(
-                                      Duration.zero,
-                                      () => error_dialog(
-                                        // ignore: use_build_context_synchronously
-                                        context: context,
-                                        title: '表示できません。',
-                                        content: 'appParamState.keepMoneySpendItemMapが作成されていません。',
-                                      ),
-                                    );
-
-                                    return;
-                                  }
-
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: MonthlyMoneySpendDisplayAlert(yearmonth: widget.yearmonth),
-                                  );
-                                },
-                                child: Icon(Icons.money, color: Colors.white.withValues(alpha: 0.3)),
-                              ),
-
-                              if (appParamState.keepGeolocMap.isNotEmpty) ...<Widget>[
-                                const SizedBox(width: 20),
-
-                                GestureDetector(
-                                  onTap: () {
-                                    if (DateTime.now().day == 1) {
-                                      // ignore: always_specify_types
-                                      Future.delayed(
-                                        Duration.zero,
-                                        () => error_dialog(
-                                          // ignore: use_build_context_synchronously
-                                          context: context,
-                                          title: '表示できません。',
-                                          content: '今月分のgeolocが存在しません。',
-                                        ),
-                                      );
-
-                                      return;
-                                    }
-
-                                    appParamNotifier.setSelectedYearMonth(yearmonth: widget.yearmonth);
-                                    appParamNotifier.clearMonthlyGeolocMapSelectedDateList();
-
-                                    LifetimeDialog(
+                            GestureDetector(
+                              onTap: () {
+                                if (appParamState.keepMoneySpendItemMap.isEmpty) {
+                                  // ignore: always_specify_types
+                                  Future.delayed(
+                                    Duration.zero,
+                                    () => error_dialog(
+                                      // ignore: use_build_context_synchronously
                                       context: context,
-                                      widget: MonthlyGeolocMapDisplayAlert(yearmonth: widget.yearmonth),
-                                      executeFunctionWhenDialogClose: true,
-                                      from: 'MonthlyGeolocMapDisplayAlert',
-                                      ref: ref,
-                                    );
-                                  },
-                                  child: Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
-                                ),
-                              ],
-                            ],
-                          ),
-
-                          const SizedBox.shrink(),
-                        ],
-                      ),
-                    ),
-
-                    Expanded(
-                      child: Container(alignment: Alignment.center, child: Text(widget.yearmonth)),
-                    ),
-
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          const SizedBox.shrink(),
-
-                          Row(
-                            children: <Widget>[
-                              GestureDetector(
-                                onTap: () {
-                                  if (appParamState.keepGoldMap.isEmpty ||
-                                      appParamState.keepStockMap.isEmpty ||
-                                      appParamState.keepToushiShintakuMap.isEmpty) {
-                                    // ignore: always_specify_types
-                                    Future.delayed(
-                                      Duration.zero,
-                                      () => error_dialog(
-                                        // ignore: use_build_context_synchronously
-                                        context: context,
-                                        title: '表示できません。',
-                                        content: '資産情報が作成されていません。',
-                                      ),
-                                    );
-
-                                    return;
-                                  }
-
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: MonthlyAssetsDisplayAlert(
-                                      yearmonth: widget.yearmonth,
-                                      insuranceDataList: insuranceDataList,
-                                      nenkinKikinDataList: nenkinKikinDataList,
+                                      title: '表示できません。',
+                                      content: 'appParamState.keepMoneySpendItemMapが作成されていません。',
                                     ),
                                   );
-                                },
-                                child: Icon(FontAwesomeIcons.sun, size: 20, color: Colors.white.withValues(alpha: 0.3)),
-                              ),
 
+                                  return;
+                                }
+
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: MonthlyMoneySpendDisplayAlert(yearmonth: widget.yearmonth),
+                                );
+                              },
+                              child: Icon(Icons.money, color: Colors.white.withValues(alpha: 0.3)),
+                            ),
+
+                            if (appParamState.keepGeolocMap.isNotEmpty) ...<Widget>[
                               const SizedBox(width: 20),
 
                               GestureDetector(
                                 onTap: () {
-                                  if (appParamState.keepWorkTimeMap.isEmpty) {
+                                  if (DateTime.now().day == 1) {
                                     // ignore: always_specify_types
                                     Future.delayed(
                                       Duration.zero,
@@ -193,24 +121,97 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                         // ignore: use_build_context_synchronously
                                         context: context,
                                         title: '表示できません。',
-                                        content: 'appParamState.keepWorkTimeMapが作成されていません。',
+                                        content: '今月分のgeolocが存在しません。',
                                       ),
                                     );
 
                                     return;
                                   }
 
+                                  appParamNotifier.setSelectedYearMonth(yearmonth: widget.yearmonth);
+                                  appParamNotifier.clearMonthlyGeolocMapSelectedDateList();
+
                                   LifetimeDialog(
                                     context: context,
-                                    widget: MonthlyWorkTimeDisplayAlert(yearmonth: widget.yearmonth),
+                                    widget: MonthlyGeolocMapDisplayAlert(yearmonth: widget.yearmonth),
+                                    executeFunctionWhenDialogClose: true,
+                                    from: 'MonthlyGeolocMapDisplayAlert',
+                                    ref: ref,
                                   );
                                 },
-                                child: Icon(Icons.work, color: Colors.white.withValues(alpha: 0.3)),
+                                child: Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
                               ),
                             ],
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+
+                        //---------------------------------------------------------//
+
+                        //---------------------------------------------------------//
+                        Row(
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () {
+                                if (appParamState.keepGoldMap.isEmpty ||
+                                    appParamState.keepStockMap.isEmpty ||
+                                    appParamState.keepToushiShintakuMap.isEmpty) {
+                                  // ignore: always_specify_types
+                                  Future.delayed(
+                                    Duration.zero,
+                                    () => error_dialog(
+                                      // ignore: use_build_context_synchronously
+                                      context: context,
+                                      title: '表示できません。',
+                                      content: '資産情報が作成されていません。',
+                                    ),
+                                  );
+
+                                  return;
+                                }
+
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: MonthlyAssetsDisplayAlert(
+                                    yearmonth: widget.yearmonth,
+                                    insuranceDataList: insuranceDataList,
+                                    nenkinKikinDataList: nenkinKikinDataList,
+                                  ),
+                                );
+                              },
+                              child: Icon(FontAwesomeIcons.sun, size: 20, color: Colors.white.withValues(alpha: 0.3)),
+                            ),
+
+                            const SizedBox(width: 20),
+
+                            GestureDetector(
+                              onTap: () {
+                                if (appParamState.keepWorkTimeMap.isEmpty) {
+                                  // ignore: always_specify_types
+                                  Future.delayed(
+                                    Duration.zero,
+                                    () => error_dialog(
+                                      // ignore: use_build_context_synchronously
+                                      context: context,
+                                      title: '表示できません。',
+                                      content: 'appParamState.keepWorkTimeMapが作成されていません。',
+                                    ),
+                                  );
+
+                                  return;
+                                }
+
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: MonthlyWorkTimeDisplayAlert(yearmonth: widget.yearmonth),
+                                );
+                              },
+                              child: Icon(Icons.work, color: Colors.white.withValues(alpha: 0.3)),
+                            ),
+                          ],
+                        ),
+
+                        //---------------------------------------------------------//
+                      ],
                     ),
                   ],
                 ),
