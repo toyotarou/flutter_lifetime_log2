@@ -74,7 +74,6 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.timePlaceMap,
     required this.amazonPurchaseMap,
     required this.dateMetroStampMap,
-    required this.tokyoMunicipalMap,
   });
 
   final List<String> holidayList;
@@ -102,7 +101,6 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<TimePlaceModel>> timePlaceMap;
   final Map<String, List<AmazonPurchaseModel>> amazonPurchaseMap;
   final Map<String, List<MetroStampModel>> dateMetroStampMap;
-  final Map<String, MunicipalModel> tokyoMunicipalMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -197,19 +195,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
       //-------------------------------------------------- allDateLifetimeSummaryMap/e
 
-      //-------------------------------------------------- tokyoStation/s
-      final Map<String, StationModel> tokyoStationMap = <String, StationModel>{};
-
-      for (final StationModel element in widget.stationList) {
-        widget.tokyoMunicipalMap.forEach((String key, MunicipalModel value) {
-          if (spotInMunicipality(element.lat.toDouble(), element.lng.toDouble(), value)) {
-            tokyoStationMap[element.stationName] = element;
-          }
-        });
-      }
-
-      //-------------------------------------------------- tokyoStation/e
-
       // ignore: always_specify_types
       Future(() {
         appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
@@ -217,8 +202,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         appParamNotifier.setKeepTempleDateTimeNameMap(map: templeDateTimeNameMap);
 
         appParamNotifier.setKeepAllDateLifetimeSummaryMap(map: allDateLifetimeSummaryMap);
-
-        appParamNotifier.setKeepTokyoStationMap(map: tokyoStationMap);
       });
       //===========================================//
     });
