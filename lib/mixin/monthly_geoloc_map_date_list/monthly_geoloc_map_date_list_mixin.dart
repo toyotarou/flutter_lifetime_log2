@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/app_param/app_param.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/geo_utils.dart';
+import '../../utils/ui_utils.dart';
 import 'monthly_geoloc_map_date_list_widget.dart';
 
 mixin MonthlyGeolocMapDateListMixin on ConsumerState<MonthlyGeolocMapDateListWidget> {
@@ -12,8 +13,6 @@ mixin MonthlyGeolocMapDateListMixin on ConsumerState<MonthlyGeolocMapDateListWid
   Widget buildContent(BuildContext context) {
     final AppParam appParamNotifier = ref.read(appParamProvider.notifier);
     final AppParamState appParamState = ref.watch(appParamProvider);
-
-    final Utility utility = Utility();
 
     return Column(
       children: <Widget>[
@@ -43,11 +42,7 @@ mixin MonthlyGeolocMapDateListMixin on ConsumerState<MonthlyGeolocMapDateListWid
 
                         Color containerColor =
                             (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(e.key))
-                            ? utility.getYoubiColor(
-                                date: e.key,
-                                youbiStr: youbi,
-                                holiday: appParamState.keepHolidayList,
-                              )
+                            ? UiUtils.youbiColor(date: e.key, youbiStr: youbi, holiday: appParamState.keepHolidayList)
                             : Colors.transparent;
 
                         if (appParamState.monthlyGeolocMapSelectedDateList.contains(e.key)) {
@@ -93,7 +88,7 @@ mixin MonthlyGeolocMapDateListMixin on ConsumerState<MonthlyGeolocMapDateListWid
                                         children: <Widget>[
                                           const SizedBox.shrink(),
 
-                                          Text(utility.getBoundingBoxArea(points: e.value)),
+                                          Text(GeoUtils.getBoundingBoxArea(points: e.value)),
                                         ],
                                       ),
                                     ],

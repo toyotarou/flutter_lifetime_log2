@@ -67,6 +67,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/stamps/
     - .env
 
 flutter_native_splash:

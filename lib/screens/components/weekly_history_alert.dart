@@ -6,7 +6,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
-import '../../utility/functions.dart';
+import '../../utils/date_lifetime_utils.dart';
 import '../parts/icon_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import 'lifetime_geoloc_map_display_alert.dart';

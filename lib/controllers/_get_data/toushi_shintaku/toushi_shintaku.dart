@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/toushi_shintaku_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'toushi_shintaku.freezed.dart';
 
@@ -22,8 +22,6 @@ class ToushiShintakuState with _$ToushiShintakuState {
 
 @riverpod
 class ToushiShintaku extends _$ToushiShintaku {
-  final Utility utility = Utility();
-
   ///
   @override
   ToushiShintakuState build() => const ToushiShintakuState();
@@ -56,7 +54,7 @@ class ToushiShintaku extends _$ToushiShintaku {
 
       return state.copyWith(toushiShintakuList: list, toushiShintakuMap: map, toushiShintakuRelationalMap: map2);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

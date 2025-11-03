@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/lifetime_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'lifetime.freezed.dart';
 
@@ -21,8 +21,6 @@ class LifetimeState with _$LifetimeState {
 
 @riverpod
 class Lifetime extends _$Lifetime {
-  final Utility utility = Utility();
-
   ///
   @override
   LifetimeState build() => const LifetimeState();
@@ -52,7 +50,7 @@ class Lifetime extends _$Lifetime {
 
       return state.copyWith(lifetimeList: list, lifetimeMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/http/client.dart';
 import '../../data/http/path.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 
 part 'lifetime_input.freezed.dart';
 
@@ -20,8 +20,6 @@ class LifetimeInputState with _$LifetimeInputState {
 
 @riverpod
 class LifetimeInput extends _$LifetimeInput {
-  final Utility utility = Utility();
-
   ///
   @override
   LifetimeInputState build() {
@@ -56,7 +54,7 @@ class LifetimeInput extends _$LifetimeInput {
 
     // ignore: always_specify_types
     await client.post(path: APIPath.insertLifetime, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
     });
   }
 }

@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/transportation_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'transportation.freezed.dart';
 
@@ -23,8 +23,6 @@ class TransportationState with _$TransportationState {
 
 @riverpod
 class Transportation extends _$Transportation {
-  final Utility utility = Utility();
-
   ///
   @override
   TransportationState build() => const TransportationState();
@@ -105,13 +103,9 @@ class Transportation extends _$Transportation {
 
         stationList1.add(val);
 
-        if (dupMap1[val.stationName] != null) {
-          if (dupMap1[val.stationName]?[val.prefecture] == null) {
-            continue;
-          }
+        if (dupMap1[val.stationName] != null && dupMap1[val.stationName]?[val.prefecture] != null) {
+          stationMap1[val.stationName] = val;
         }
-
-        stationMap1[val.stationName] = val;
       }
 
       //---------------------------------------------------------------------------//
@@ -190,7 +184,7 @@ class Transportation extends _$Transportation {
 
       return state.copyWith(transportationList: list, transportationMap: map, stationList: stationList1);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

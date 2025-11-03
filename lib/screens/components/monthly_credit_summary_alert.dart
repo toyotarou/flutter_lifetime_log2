@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/credit_summary_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/iterable_extensions.dart';
 
 class MonthlyCreditSummaryAlert extends ConsumerStatefulWidget {
   const MonthlyCreditSummaryAlert({super.key, required this.yearmonth});
@@ -20,8 +20,6 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
   Map<String, List<int>> creditSummaryMap = <String, List<int>>{};
 
   int listSum = 0;
-
-  Utility utility = Utility();
 
   ///
   @override
@@ -146,7 +144,7 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
       });
     });
 
-    final int total = utility.getListSum<int>(totalMap.values.toList(), (int e) => e);
+    final int total = totalMap.values.sumByInt((int e) => e);
 
     setState(() => listSum = total);
 

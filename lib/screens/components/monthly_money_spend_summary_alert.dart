@@ -5,7 +5,6 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
-import '../../utility/utility.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 import 'monthly_credit_display_alert.dart';
@@ -22,8 +21,6 @@ class MonthlyMoneySpendSummaryAlert extends ConsumerStatefulWidget {
 class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpendSummaryAlert>
     with ControllersMixin<MonthlyMoneySpendSummaryAlert> {
   Map<String, int> moneySpendSummaryMap = <String, int>{};
-
-  Utility utility = Utility();
 
   int monthlySum = 0;
 

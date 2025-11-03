@@ -20,7 +20,6 @@ import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
 import '../../models/weather_model.dart';
 import '../../models/work_time_model.dart';
-import '../../utility/utility.dart';
 
 part 'app_param.freezed.dart';
 
@@ -111,8 +110,6 @@ class AppParamState with _$AppParamState {
 
 @riverpod
 class AppParam extends _$AppParam {
-  final Utility utility = Utility();
-
   ///
   @override
   AppParamState build() {

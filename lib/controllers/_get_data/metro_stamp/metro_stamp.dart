@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/metro_stamp_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'metro_stamp.freezed.dart';
 
@@ -23,8 +23,6 @@ class MetroStampState with _$MetroStampState {
 
 @Riverpod(keepAlive: true)
 class MetroStamp extends _$MetroStamp {
-  final Utility utility = Utility();
-
   ///
   @override
   MetroStampState build() => const MetroStampState();
@@ -74,7 +72,7 @@ class MetroStamp extends _$MetroStamp {
 
       return state.copyWith(trainMap: map, metroStampList: list, metroStampMap: map2, dateMetroStampMap: map3);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

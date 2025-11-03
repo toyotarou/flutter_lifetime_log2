@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/credit_summary_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'credit_summary.freezed.dart';
 
@@ -21,8 +21,6 @@ class CreditSummaryState with _$CreditSummaryState {
 
 @riverpod
 class CreditSummary extends _$CreditSummary {
-  final Utility utility = Utility();
-
   ///
   @override
   CreditSummaryState build() => const CreditSummaryState();
@@ -52,7 +50,7 @@ class CreditSummary extends _$CreditSummary {
 
       return state.copyWith(creditSummaryList: list, creditSummaryMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

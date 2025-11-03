@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/http/client.dart';
 import '../../data/http/path.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 
 part 'bank_input.freezed.dart';
 
@@ -23,8 +23,6 @@ class BankInputState with _$BankInputState {
 
 @riverpod
 class BankInput extends _$BankInput {
-  final Utility utility = Utility();
-
   ///
   @override
   BankInputState build() {
@@ -70,7 +68,7 @@ class BankInput extends _$BankInput {
 
     // ignore: always_specify_types
     await client.post(path: APIPath.updateBankMoney, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
     });
   }
 

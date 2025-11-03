@@ -9,7 +9,7 @@ import '../../extensions/extensions.dart';
 import '../../models/gold_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 import '../parts/lifetime_dialog.dart';
 import 'assets_detail_list_alert.dart';
 
@@ -33,8 +33,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
   int graphMin = 0;
   int graphMax = 0;
 
-  Utility utility = Utility();
-
   String lastAssetsDate = '';
 
   List<Color> twentyFourColor = <Color>[];
@@ -46,7 +44,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
   void initState() {
     super.initState();
 
-    twentyFourColor = utility.getTwentyFourColor();
+    twentyFourColor = UiUtils.twentyFourColors();
   }
 
   ///

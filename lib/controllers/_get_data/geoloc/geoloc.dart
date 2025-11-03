@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../data/http/client.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/geoloc_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'geoloc.freezed.dart';
 
@@ -20,8 +20,6 @@ class GeolocState with _$GeolocState {
 
 @riverpod
 class Geoloc extends _$Geoloc {
-  final Utility utility = Utility();
-
   ///
   @override
   GeolocState build() => const GeolocState();
@@ -51,7 +49,7 @@ class Geoloc extends _$Geoloc {
 
       return state.copyWith(geolocList: list, geolocMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

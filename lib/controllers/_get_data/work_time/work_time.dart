@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/work_time_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'work_time.freezed.dart';
 
@@ -22,8 +22,6 @@ class WorkTimeState with _$WorkTimeState {
 
 @riverpod
 class WorkTime extends _$WorkTime {
-  final Utility utility = Utility();
-
   ///
   @override
   WorkTimeState build() => const WorkTimeState();
@@ -87,7 +85,7 @@ class WorkTime extends _$WorkTime {
 
       return state.copyWith(workTimeList: list, workTimeMap: map, workTimeDateMap: map2);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

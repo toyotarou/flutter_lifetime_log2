@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/amazon_purchase_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'amazon_purchase.freezed.dart';
 
@@ -21,8 +21,6 @@ class AmazonPurchaseState with _$AmazonPurchaseState {
 
 @riverpod
 class AmazonPurchase extends _$AmazonPurchase {
-  final Utility utility = Utility();
-
   ///
   @override
   AmazonPurchaseState build() => const AmazonPurchaseState();
@@ -52,7 +50,7 @@ class AmazonPurchase extends _$AmazonPurchase {
 
       return state.copyWith(amazonPurchaseList: list, amazonPurchaseMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

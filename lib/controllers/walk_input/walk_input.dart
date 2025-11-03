@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/http/client.dart';
 import '../../data/http/path.dart';
 import '../../models/walk_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 
 part 'walk_input.freezed.dart';
 
@@ -20,8 +20,6 @@ class WalkInputState with _$WalkInputState {
 
 @riverpod
 class WalkInput extends _$WalkInput {
-  final Utility utility = Utility();
-
   ///
   @override
   WalkInputState build() => const WalkInputState();
@@ -37,7 +35,7 @@ class WalkInput extends _$WalkInput {
 
     // ignore: always_specify_types
     await client.post(path: APIPath.insertWalkRecord, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
     });
   }
 }

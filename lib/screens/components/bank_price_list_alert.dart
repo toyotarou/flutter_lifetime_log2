@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 
 class BankPriceListAlert extends ConsumerStatefulWidget {
   const BankPriceListAlert({super.key, required this.bankKey});
@@ -15,8 +15,6 @@ class BankPriceListAlert extends ConsumerStatefulWidget {
 }
 
 class _BankPriceListAlertState extends ConsumerState<BankPriceListAlert> with ControllersMixin<BankPriceListAlert> {
-  Utility utility = Utility();
-
   Map<String, String> bankNameMap = <String, String>{};
 
   ///
@@ -24,7 +22,7 @@ class _BankPriceListAlertState extends ConsumerState<BankPriceListAlert> with Co
   void initState() {
     super.initState();
 
-    bankNameMap = utility.getBankName();
+    bankNameMap = UiUtils.bankName();
   }
 
   ///

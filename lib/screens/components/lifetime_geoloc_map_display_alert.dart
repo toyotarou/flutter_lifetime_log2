@@ -15,8 +15,8 @@ import '../../models/lat_lng_address.dart';
 import '../../models/metro_stamp_model.dart';
 import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
-import '../../utility/tile_provider.dart';
-import '../../utility/utility.dart';
+import '../../utils/image_cache_tile_provider.dart';
+import '../../utils/ui_utils.dart';
 import '../parts/icon_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import '../parts/lifetime_log_overlay.dart';
@@ -61,8 +61,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   List<Marker> markerList = <Marker>[];
 
-  Utility utility = Utility();
-
   List<Marker> transportationGoalMarkerList = <Marker>[];
 
   List<Marker> templeMarkerList = <Marker>[];
@@ -89,7 +87,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void initState() {
     super.initState();
 
-    twentyFourColor = utility.getTwentyFourColor();
+    twentyFourColor = UiUtils.twentyFourColors();
 
     // ignore: always_specify_types
     globalKeyList = List.generate(1000, (int index) => GlobalKey());

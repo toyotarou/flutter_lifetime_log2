@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/temple_utils.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 import 'temple_directions_map_alert.dart';
@@ -22,8 +22,6 @@ class TempleListDisplayAlert extends ConsumerStatefulWidget {
 
 class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
     with ControllersMixin<TempleListDisplayAlert> {
-  Utility utility = Utility();
-
   ///
   @override
   Widget build(BuildContext context) {
@@ -106,7 +104,7 @@ class _TempleListDisplayAlertState extends ConsumerState<TempleListDisplayAlert>
                             const SizedBox.shrink(),
 
                             Text(
-                              utility.getTempleReachTimeFromTemplePhotoList(
+                              TempleUtils.getTempleReachTimeFromTemplePhotoList(
                                 date: widget.date,
                                 temple: widget.temple!.templeDataList[i],
                               ),

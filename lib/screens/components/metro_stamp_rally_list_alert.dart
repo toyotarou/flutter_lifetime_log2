@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/metro_stamp_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 import '../parts/lifetime_dialog.dart';
 import 'metro_stamp_display_alert.dart';
 
@@ -17,8 +17,6 @@ class MetroStampRallyListAlert extends ConsumerStatefulWidget {
 
 class _MetroStampRallyListAlertState extends ConsumerState<MetroStampRallyListAlert>
     with ControllersMixin<MetroStampRallyListAlert> {
-  Utility utility = Utility();
-
   ///
   @override
   Widget build(BuildContext context) {
@@ -69,7 +67,7 @@ class _MetroStampRallyListAlertState extends ConsumerState<MetroStampRallyListAl
       list.add(
         Container(
           decoration: BoxDecoration(
-            color: utility.getYoubiColor(date: key, youbiStr: youbiStr, holiday: appParamState.keepHolidayList),
+            color: UiUtils.youbiColor(date: key, youbiStr: youbiStr, holiday: appParamState.keepHolidayList),
           ),
           margin: const EdgeInsets.symmetric(vertical: 3),
           padding: const EdgeInsets.symmetric(vertical: 3),
@@ -136,7 +134,7 @@ class _MetroStampRallyListAlertState extends ConsumerState<MetroStampRallyListAl
                               Column(
                                 children: <Widget>[
                                   CircleAvatar(
-                                    backgroundColor: utility.getTrainColor(trainName: element.trainName),
+                                    backgroundColor: UiUtils.trainColor(trainName: element.trainName),
                                     radius: 22,
                                     child: CircleAvatar(
                                       radius: 20,

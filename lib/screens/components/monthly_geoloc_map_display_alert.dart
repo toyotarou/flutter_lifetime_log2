@@ -10,8 +10,8 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../mixin/monthly_geoloc_map_date_list/monthly_geoloc_map_date_list_widget.dart';
 import '../../models/geoloc_model.dart';
-import '../../utility/tile_provider.dart';
-import '../../utility/utility.dart';
+import '../../utils/geo_utils.dart';
+import '../../utils/image_cache_tile_provider.dart';
 import '../parts/lifetime_log_overlay.dart';
 
 class MonthlyGeolocMapDisplayAlert extends ConsumerStatefulWidget {
@@ -47,8 +47,6 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
 
   final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
   final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
-
-  Utility utility = Utility();
 
   List<LatLng> latLngList = <LatLng>[];
 
@@ -254,7 +252,7 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
     }
 
     if (latList.isNotEmpty && lngList.isNotEmpty) {
-      polygonPoints = utility.getBoundingBoxPoints(selectedGeolocList);
+      polygonPoints = GeoUtils.getBoundingBoxPoints(selectedGeolocList);
 
       centerLat = (polygonPoints[0].latitude + polygonPoints[2].latitude) / 2;
       centerLng = (polygonPoints[0].longitude + polygonPoints[2].longitude) / 2;

@@ -7,8 +7,8 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
-import '../../utility/functions.dart';
-import '../../utility/utility.dart';
+import '../../utils/date_lifetime_utils.dart';
+import '../../utils/ui_utils.dart';
 import '../components/weekly_history_alert.dart';
 import '../parts/diagonal_slash_painter.dart';
 import 'lifetime_dialog.dart';
@@ -58,8 +58,6 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   late final Map<String, int> _dayIndex;
 
   late final List<double> _prefixWidths;
-
-  Utility utility = Utility();
 
   final Map<String, String> _weekdayCache = <String, String>{};
 
@@ -414,7 +412,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     if (c != null) {
       return c;
     }
-    final Color v = utility.getLifetimeRowBgColor(value: value, textDisplay: false);
+    final Color v = UiUtils.lifetimeRowBgColor(value: value, textDisplay: false);
     _lifetimeColorCache[value] = v;
     return v;
   }
@@ -732,7 +730,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
     /// アプリデータ依存
     final Color containerColor = isHoliday
-        ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
+        ? UiUtils.youbiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
         : Colors.transparent;
 
     final List<String> lifetimeData = (appParamState.keepLifetimeMap[date] != null)

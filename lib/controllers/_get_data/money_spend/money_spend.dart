@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/money_spend_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'money_spend.freezed.dart';
 
@@ -21,8 +21,6 @@ class MoneySpendState with _$MoneySpendState {
 
 @riverpod
 class MoneySpend extends _$MoneySpend {
-  final Utility utility = Utility();
-
   ///
   @override
   MoneySpendState build() => const MoneySpendState();
@@ -83,7 +81,7 @@ class MoneySpend extends _$MoneySpend {
 
       return state.copyWith(moneySpendList: list, moneySpendMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

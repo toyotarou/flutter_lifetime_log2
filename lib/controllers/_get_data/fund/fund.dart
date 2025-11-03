@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/fund_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'fund.freezed.dart';
 
@@ -22,8 +22,6 @@ class FundState with _$FundState {
 
 @riverpod
 class Fund extends _$Fund {
-  final Utility utility = Utility();
-
   ///
   @override
   FundState build() => const FundState();
@@ -56,7 +54,7 @@ class Fund extends _$Fund {
 
       return state.copyWith(fundList: list, fundMap: map, fundRelationMap: map2);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

@@ -11,8 +11,8 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/direction_model.dart';
 import '../../models/transportation_model.dart';
-import '../../utility/tile_provider.dart';
-import '../../utility/utility.dart';
+import '../../utils/image_cache_tile_provider.dart';
+import '../../utils/ui_utils.dart';
 
 class TempleDirectionsMapAlert extends ConsumerStatefulWidget {
   const TempleDirectionsMapAlert({super.key, required this.fromSpot, required this.toSpot});
@@ -43,8 +43,6 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
   bool isLoading = false;
 
   double? currentZoom;
-
-  Utility utility = Utility();
 
   List<LatLng> latLngList = <LatLng>[];
 
@@ -91,7 +89,7 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
       }
     });
 
-    twentyFourColor = utility.getTwentyFourColor();
+    twentyFourColor = UiUtils.twentyFourColors();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() => isLoading = true);

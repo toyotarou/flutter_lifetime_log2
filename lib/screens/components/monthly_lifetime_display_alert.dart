@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/lifetime_model.dart';
-import '../../utility/functions.dart';
-import '../../utility/utility.dart';
+import '../../utils/date_lifetime_utils.dart';
+import '../../utils/ui_utils.dart';
 
 class MonthlyLifetimeDisplayAlert extends ConsumerStatefulWidget {
   const MonthlyLifetimeDisplayAlert({super.key, required this.yearmonth});
@@ -18,8 +18,6 @@ class MonthlyLifetimeDisplayAlert extends ConsumerStatefulWidget {
 
 class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDisplayAlert>
     with ControllersMixin<MonthlyLifetimeDisplayAlert> {
-  Utility utility = Utility();
-
   ///
   @override
   Widget build(BuildContext context) {
@@ -64,7 +62,7 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
 
         final Color headColor =
             (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(key))
-            ? utility.getYoubiColor(date: key, youbiStr: youbi, holiday: appParamState.keepHolidayList)
+            ? UiUtils.youbiColor(date: key, youbiStr: youbi, holiday: appParamState.keepHolidayList)
             : Colors.white.withValues(alpha: 0.1);
 
         list.add(
@@ -113,7 +111,7 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
     final List<Widget> list = <Widget>[];
 
     for (int i = 0; i < dispValList.length; i++) {
-      final Color color = utility.getLifetimeRowBgColor(value: dispValList[i], textDisplay: true);
+      final Color color = UiUtils.lifetimeRowBgColor(value: dispValList[i], textDisplay: true);
 
       list.add(
         Container(

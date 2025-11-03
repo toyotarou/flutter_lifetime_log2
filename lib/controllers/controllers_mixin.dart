@@ -10,6 +10,7 @@ import '_get_data/holiday/holiday.dart';
 import '_get_data/lifetime/lifetime.dart';
 import '_get_data/lifetime_item/lifetime_item.dart';
 import '_get_data/metro_stamp/metro_stamp.dart';
+import '_get_data/metro_stamp_20_anniversary/metro_stamp_20_anniversary.dart';
 import '_get_data/money/money.dart';
 import '_get_data/money_spend/money_spend.dart';
 import '_get_data/money_spend_item/money_spend_item.dart';
@@ -22,9 +23,7 @@ import '_get_data/transportation/transportation.dart';
 import '_get_data/walk/walk.dart';
 import '_get_data/weather/weather.dart';
 import '_get_data/work_time/work_time.dart';
-
 import 'app_param/app_param.dart';
-
 import 'bank_input/bank_input.dart';
 import 'lifetime_input/lifetime_input.dart';
 import 'money_input/money_input.dart';
@@ -207,6 +206,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   MetroStampState get metroStampState => ref.watch(metroStampProvider);
 
   MetroStamp get metroStampNotifier => ref.read(metroStampProvider.notifier);
+
+  //==========================================//
+
+  MetroStamp20AnniversaryState get metroStamp20AnniversaryState => ref.watch(metroStamp20AnniversaryProvider);
+
+  MetroStamp20Anniversary get metroStamp20AnniversaryNotifier => ref.read(metroStamp20AnniversaryProvider.notifier);
 
   //==========================================//
 

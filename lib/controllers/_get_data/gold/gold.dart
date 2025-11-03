@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/gold_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'gold.freezed.dart';
 
@@ -22,8 +22,6 @@ class GoldState with _$GoldState {
 
 @Riverpod(keepAlive: true)
 class Gold extends _$Gold {
-  final Utility utility = Utility();
-
   @override
   GoldState build() => const GoldState();
 
@@ -52,7 +50,7 @@ class Gold extends _$Gold {
 
       return state.copyWith(goldList: list, goldMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

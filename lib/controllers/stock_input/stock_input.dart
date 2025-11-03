@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/http/client.dart';
 import '../../data/http/path.dart';
 import '../../models/walk_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 
 part 'stock_input.freezed.dart';
 
@@ -20,8 +20,6 @@ class StockInputState with _$StockInputState {
 
 @riverpod
 class StockInput extends _$StockInput {
-  final Utility utility = Utility();
-
   ///
   @override
   StockInputState build() => const StockInputState();
@@ -36,7 +34,7 @@ class StockInput extends _$StockInput {
 
     // ignore: always_specify_types
     await client.post(path: APIPath.insertDailyStockData, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
     });
   }
 }

@@ -5,7 +5,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../main.dart';
 import '../../models/money_spend_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 import '../parts/error_dialog.dart';
 
 class SpendDateInputAlert extends ConsumerStatefulWidget {
@@ -20,8 +20,6 @@ class SpendDateInputAlert extends ConsumerStatefulWidget {
 class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with ControllersMixin<SpendDateInputAlert> {
   final List<TextEditingController> priceTecs = <TextEditingController>[];
 
-  Utility utility = Utility();
-
   Map<String, String> bankNameMap = <String, String>{};
 
   List<FocusNode> focusNodeList = <FocusNode>[];
@@ -35,7 +33,7 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
       priceTecs.add(TextEditingController(text: ''));
     }
 
-    bankNameMap = utility.getBankName();
+    bankNameMap = UiUtils.bankName();
 
     // ignore: always_specify_types
     focusNodeList = List.generate(10, (int index) => FocusNode());

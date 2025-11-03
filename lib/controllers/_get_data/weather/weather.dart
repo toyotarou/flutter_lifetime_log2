@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/weather_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'weather.freezed.dart';
 
@@ -21,8 +21,6 @@ class WeatherState with _$WeatherState {
 
 @riverpod
 class Weather extends _$Weather {
-  final Utility utility = Utility();
-
   ///
   @override
   WeatherState build() => const WeatherState();
@@ -52,7 +50,7 @@ class Weather extends _$Weather {
 
       return state.copyWith(weatherList: list, weatherMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

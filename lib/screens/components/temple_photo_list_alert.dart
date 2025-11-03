@@ -7,7 +7,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/geo_utils.dart';
 import '../parts/lifetime_dialog.dart';
 import 'temple_directions_map_alert.dart';
 import 'temple_photo_display_alert.dart';
@@ -23,8 +23,6 @@ class TemplePhotoListAlert extends ConsumerStatefulWidget {
 
 class _TemplePhotoListAlertState extends ConsumerState<TemplePhotoListAlert>
     with ControllersMixin<TemplePhotoListAlert> {
-  Utility utility = Utility();
-
   List<MapEntry<StationModel, double>> nearStationList = <MapEntry<StationModel, double>>[];
 
   ///
@@ -35,7 +33,7 @@ class _TemplePhotoListAlertState extends ConsumerState<TemplePhotoListAlert>
     // ignore: always_specify_types
     Future(() {
       if (appParamState.selectedTemple != null) {
-        final List<StationModel> roughFiltered = utility.filterByBoundingBox(
+        final List<StationModel> roughFiltered = GeoUtils.filterByBoundingBox(
           stationList: appParamState.keepStationList,
           baseLat: appParamState.selectedTemple!.latitude.toDouble(),
           baseLng: appParamState.selectedTemple!.longitude.toDouble(),
@@ -44,7 +42,7 @@ class _TemplePhotoListAlertState extends ConsumerState<TemplePhotoListAlert>
 
         final List<MapEntry<StationModel, double>> list = roughFiltered
             .map((StationModel station) {
-              final double d = utility.calculateDistance(
+              final double d = GeoUtils.calculateDistance(
                 LatLng(
                   appParamState.selectedTemple!.latitude.toDouble(),
                   appParamState.selectedTemple!.longitude.toDouble(),

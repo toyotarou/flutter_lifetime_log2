@@ -9,7 +9,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/http/client.dart';
 import '../../data/http/path.dart';
 import '../../models/money_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 
 part 'money_input.freezed.dart';
 
@@ -21,17 +21,6 @@ class MoneyInputState with _$MoneyInputState {
     @Default(<MoneyModel>[]) List<MoneyModel> moneyList,
     @Default(<String, MoneyModel>{}) Map<String, MoneyModel> moneyMap,
 
-    // ///
-    // List<OverlayEntry>? firstEntries,
-    // List<OverlayEntry>? secondEntries,
-    //
-    // Offset? overlayPosition,
-    //
-    //
-    //
-    //
-    //
-    //
     @Default(-1) int pos,
     @Default(<String>[]) List<String> inputValueList,
 
@@ -43,8 +32,6 @@ class MoneyInputState with _$MoneyInputState {
 
 @riverpod
 class MoneyInput extends _$MoneyInput {
-  final Utility utility = Utility();
-
   ///
   @override
   MoneyInputState build() {
@@ -53,22 +40,6 @@ class MoneyInput extends _$MoneyInput {
 
     return MoneyInputState(inputValueList: list);
   }
-
-  // ///
-  // void setFirstOverlayParams({required List<OverlayEntry>? firstEntries}) =>
-  //     state = state.copyWith(firstEntries: firstEntries);
-  //
-  // ///
-  // void setSecondOverlayParams({required List<OverlayEntry>? secondEntries}) =>
-  //     state = state.copyWith(secondEntries: secondEntries);
-  //
-  // ///
-  // void updateOverlayPosition(Offset newPos) => state = state.copyWith(overlayPosition: newPos);
-  //
-  //
-  //
-  //
-  //
 
   ///
   void setPos({required int pos}) => state = state.copyWith(pos: pos);
@@ -95,7 +66,7 @@ class MoneyInput extends _$MoneyInput {
 
     // ignore: always_specify_types
     await client.post(path: APIPath.moneyinsert, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
     });
   }
 }

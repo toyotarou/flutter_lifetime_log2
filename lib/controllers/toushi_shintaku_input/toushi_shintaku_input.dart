@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/http/client.dart';
 import '../../data/http/path.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 
 part 'toushi_shintaku_input.freezed.dart';
 
@@ -17,8 +17,6 @@ class ToushiShintakuInputState with _$ToushiShintakuInputState {
 
 @Riverpod(keepAlive: true)
 class ToushiShintakuInput extends _$ToushiShintakuInput {
-  final Utility utility = Utility();
-
   ///
   @override
   ToushiShintakuInputState build() => const ToushiShintakuInputState();
@@ -46,7 +44,7 @@ class ToushiShintakuInput extends _$ToushiShintakuInput {
       error,
       _,
     ) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
     });
   }
 }

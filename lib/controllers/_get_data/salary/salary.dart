@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/salary_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'salary.freezed.dart';
 
@@ -21,8 +21,6 @@ class SalaryState with _$SalaryState {
 
 @riverpod
 class Salary extends _$Salary {
-  final Utility utility = Utility();
-
   ///
   @override
   SalaryState build() => const SalaryState();
@@ -59,7 +57,7 @@ class Salary extends _$Salary {
 
       return state.copyWith(salaryList: list, salaryMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

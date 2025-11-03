@@ -6,7 +6,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/iterable_extensions.dart';
+import '../../utils/ui_utils.dart';
 import '../parts/lifetime_dialog.dart';
 import 'monthly_money_spend_summary_alert.dart';
 import 'spend_data_input_alert.dart';
@@ -22,8 +23,6 @@ class MonthlyMoneySpendDisplayAlert extends ConsumerStatefulWidget {
 
 class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpendDisplayAlert>
     with ControllersMixin<MonthlyMoneySpendDisplayAlert> {
-  Utility utility = Utility();
-
   int monthlySum = 0;
 
   ///
@@ -106,7 +105,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
       final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
 
       final Color headColor = (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(date))
-          ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
+          ? UiUtils.youbiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
           : Colors.yellowAccent.withValues(alpha: 0.1);
 
       int sum = 0;
@@ -237,7 +236,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
       );
     }
 
-    final int listSum = utility.getListSum<int>(listSumList, (int e) => e);
+    final int listSum = listSumList.sumByInt((int e) => e);
 
     setState(() => monthlySum = listSum);
 

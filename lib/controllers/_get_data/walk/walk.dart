@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/walk_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'walk.freezed.dart';
 
@@ -21,8 +21,6 @@ class WalkState with _$WalkState {
 
 @riverpod
 class Walk extends _$Walk {
-  final Utility utility = Utility();
-
   ///
   @override
   WalkState build() => const WalkState();
@@ -52,7 +50,7 @@ class Walk extends _$Walk {
 
       return state.copyWith(walkList: list, walkMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

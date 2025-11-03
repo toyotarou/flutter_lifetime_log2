@@ -8,7 +8,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 import 'assets_detail_graph_alert.dart';
@@ -34,8 +34,6 @@ class MonthlyAssetsDisplayAlert extends ConsumerStatefulWidget {
 
 class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplayAlert>
     with ControllersMixin<MonthlyAssetsDisplayAlert> {
-  Utility utility = Utility();
-
   bool todayStockExists = false;
 
   Map<int, int> monthlyGraphAssetsMap = <int, int>{};
@@ -309,7 +307,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
               children: <Widget>[
                 Container(
                   decoration: BoxDecoration(
-                    color: utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList),
+                    color: UiUtils.youbiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList),
                   ),
 
                   padding: const EdgeInsets.all(5),

@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/http/client.dart';
 import '../../data/http/path.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 
 part 'spend_input.freezed.dart';
 
@@ -23,8 +23,6 @@ class SpendInputState with _$SpendInputState {
 
 @riverpod
 class SpendInput extends _$SpendInput {
-  final Utility utility = Utility();
-
   ///
   @override
   SpendInputState build() {
@@ -77,7 +75,7 @@ class SpendInput extends _$SpendInput {
 
     // ignore: always_specify_types
     await client.post(path: APIPath.insertSpend, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
     });
   }
 }

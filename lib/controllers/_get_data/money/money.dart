@@ -5,7 +5,8 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/money_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/iterable_extensions.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'money.freezed.dart';
 
@@ -22,8 +23,6 @@ class MoneyState with _$MoneyState {
 
 @riverpod
 class Money extends _$Money {
-  final Utility utility = Utility();
-
   ///
   @override
   MoneyState build() => const MoneyState();
@@ -74,7 +73,7 @@ class Money extends _$Money {
             prices.add(exValue[k].toInt());
           }
 
-          final int sum = utility.getListSum<int>(prices, (int e) => e);
+          final int sum = prices.sumByInt((int e) => e);
 
           ////////////////////////////////////////////
 
@@ -126,7 +125,7 @@ class Money extends _$Money {
 
       return state.copyWith(moneyList: list, moneyMap: map, bankMoneyMap: map2);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

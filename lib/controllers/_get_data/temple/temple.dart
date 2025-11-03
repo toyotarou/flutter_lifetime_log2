@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/temple_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'temple.freezed.dart';
 
@@ -21,8 +21,6 @@ class TempleState with _$TempleState {
 
 @riverpod
 class Temple extends _$Temple {
-  final Utility utility = Utility();
-
   ///
   @override
   TempleState build() => const TempleState();
@@ -171,7 +169,7 @@ class Temple extends _$Temple {
 
       return state.copyWith(templeList: list, templeMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

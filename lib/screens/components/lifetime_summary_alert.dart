@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
-import '../../utility/functions.dart';
+import '../../utils/date_lifetime_utils.dart';
 import '../parts/cross_calendar.dart';
 
 class LifetimeSummaryAlert extends ConsumerStatefulWidget {

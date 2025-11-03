@@ -11,6 +11,7 @@ import '../models/fund_model.dart';
 import '../models/geoloc_model.dart';
 import '../models/gold_model.dart';
 import '../models/lifetime_model.dart';
+import '../models/metro_stamp_20_anniversary_model.dart';
 import '../models/metro_stamp_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
@@ -23,8 +24,8 @@ import '../models/transportation_model.dart';
 import '../models/walk_model.dart';
 import '../models/weather_model.dart';
 import '../models/work_time_model.dart';
-import '../utility/functions.dart';
-import '../utility/utility.dart';
+import '../utils/date_lifetime_utils.dart';
+import '../utils/ui_utils.dart';
 import 'components/amazon_purchase_list_alert.dart';
 import 'components/bank_data_input_alert.dart';
 import 'components/lifetime_item_search_alert.dart';
@@ -72,6 +73,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.timePlaceMap,
     required this.amazonPurchaseMap,
     required this.dateMetroStampMap,
+    required this.metroStamp20AnniversaryMap,
   });
 
   final List<String> holidayList;
@@ -99,6 +101,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<TimePlaceModel>> timePlaceMap;
   final Map<String, List<AmazonPurchaseModel>> amazonPurchaseMap;
   final Map<String, List<MetroStampModel>> dateMetroStampMap;
+  final Map<String, List<MetroStamp20AnniversaryModel>> metroStamp20AnniversaryMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -106,8 +109,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<HomeScreen> {
   final List<TabInfo> _tabs = <TabInfo>[];
-
-  Utility utility = Utility();
 
   ///
   @override
@@ -193,6 +194,59 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
       //-------------------------------------------------- allDateLifetimeSummaryMap/e
 
+      //-------------------------------------------------- /s
+
+      final Map<String, List<MetroStamp20AnniversaryModel>> metroStamp20AnniversaryMap =
+          <String, List<MetroStamp20AnniversaryModel>>{};
+
+      widget.metroStamp20AnniversaryMap.forEach((String key, List<MetroStamp20AnniversaryModel> value) {
+        final List<MetroStamp20AnniversaryModel> list = <MetroStamp20AnniversaryModel>[];
+
+        for (final MetroStamp20AnniversaryModel element in value) {
+          if (widget.stationList.isNotEmpty) {
+            final StationModel stationModel = widget.stationList.firstWhere(
+              (StationModel element2) => element2.id == element.stationId,
+            );
+
+            final MetroStamp20AnniversaryModel metroStamp20AnniversaryModel = MetroStamp20AnniversaryModel(
+              id: element.id,
+              stationId: element.stationId,
+              stationName: element.stationName,
+              getDate: element.getDate,
+              stamp: element.stamp,
+              latitude: stationModel.lat,
+              longitude: stationModel.lng,
+            );
+
+            list.add(metroStamp20AnniversaryModel);
+          }
+        }
+
+        metroStamp20AnniversaryMap[key] = list;
+      });
+
+      print('-----------------');
+
+      metroStamp20AnniversaryMap.forEach((String key, List<MetroStamp20AnniversaryModel> value) {
+        if (value.isNotEmpty) {
+          print(key);
+          print('-----');
+          for (final MetroStamp20AnniversaryModel element in value) {
+            print(element.id);
+            print(element.stationId);
+            print(element.stationName);
+            print(element.getDate);
+            print(element.stamp);
+            print(element.latitude);
+            print(element.longitude);
+          }
+        }
+      });
+
+      print('-----------------');
+
+      //-------------------------------------------------- /e
+
       // ignore: always_specify_types
       Future(() {
         appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
@@ -239,7 +293,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         body: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            utility.getBackGround(),
+            UiUtils.background(),
 
             Container(
               width: context.screenSize.width,

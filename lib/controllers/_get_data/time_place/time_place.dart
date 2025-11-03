@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/time_place_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'time_place.freezed.dart';
 
@@ -21,8 +21,6 @@ class TimePlaceState with _$TimePlaceState {
 
 @riverpod
 class TimePlace extends _$TimePlace {
-  final Utility utility = Utility();
-
   ///
   @override
   TimePlaceState build() => const TimePlaceState();
@@ -52,7 +50,7 @@ class TimePlace extends _$TimePlace {
 
       return state.copyWith(timePlaceList: list, timePlaceMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

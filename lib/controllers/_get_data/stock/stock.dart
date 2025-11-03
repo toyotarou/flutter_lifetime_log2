@@ -5,7 +5,7 @@ import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
 import '../../../models/stock_model.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'stock.freezed.dart';
 
@@ -22,8 +22,6 @@ class StockState with _$StockState {
 
 @riverpod
 class Stock extends _$Stock {
-  final Utility utility = Utility();
-
   ///
   @override
   StockState build() => const StockState();
@@ -56,7 +54,7 @@ class Stock extends _$Stock {
 
       return state.copyWith(stockList: list, stockMap: map, stockTickerMap: map2);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

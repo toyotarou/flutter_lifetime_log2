@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
-import '../../../utility/utility.dart';
+import '../../../utils/ui_utils.dart';
 
 part 'holiday.freezed.dart';
 
@@ -17,8 +17,6 @@ class HolidayState with _$HolidayState {
 
 @riverpod
 class Holiday extends _$Holiday {
-  final Utility utility = Utility();
-
   ///
   @override
   HolidayState build() => const HolidayState();
@@ -43,7 +41,7 @@ class Holiday extends _$Holiday {
 
       return state.copyWith(holidayList: list);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      UiUtils.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

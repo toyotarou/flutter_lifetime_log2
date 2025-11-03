@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/amazon_purchase_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 
 class AmazonPurchaseListAlert extends ConsumerStatefulWidget {
   const AmazonPurchaseListAlert({super.key});
@@ -15,8 +15,6 @@ class AmazonPurchaseListAlert extends ConsumerStatefulWidget {
 
 class _AmazonPurchaseListAlertState extends ConsumerState<AmazonPurchaseListAlert>
     with ControllersMixin<AmazonPurchaseListAlert> {
-  Utility utility = Utility();
-
   ///
   @override
   Widget build(BuildContext context) {
@@ -51,7 +49,7 @@ class _AmazonPurchaseListAlertState extends ConsumerState<AmazonPurchaseListAler
   Widget displayAmazonPurchaseList() {
     final List<Widget> list = <Widget>[];
 
-    final List<Color> twentyFourColor = utility.getTwentyFourColor();
+    final List<Color> twentyFourColor = UiUtils.twentyFourColors();
 
     appParamState.keepAmazonPurchaseMap.forEach((String key, List<AmazonPurchaseModel> value) {
       for (final AmazonPurchaseModel element in value) {

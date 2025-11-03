@@ -6,8 +6,8 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
-import '../../utility/functions.dart';
-import '../../utility/utility.dart';
+import '../../utils/date_lifetime_utils.dart';
+import '../../utils/ui_utils.dart';
 import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
 import '../components/money_data_input_alert.dart';
@@ -31,8 +31,6 @@ class MonthlyLifetimeDisplayPage extends ConsumerStatefulWidget {
 
 class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisplayPage>
     with ControllersMixin<MonthlyLifetimeDisplayPage> {
-  Utility utility = Utility();
-
   List<Map<String, String>> insuranceDataList = <Map<String, String>>[];
 
   List<Map<String, String>> nenkinKikinDataList = <Map<String, String>>[];
@@ -259,7 +257,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
       final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
 
       Color cardColor = (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(date))
-          ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
+          ? UiUtils.youbiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
           : Colors.blueGrey.withValues(alpha: 0.2);
 
       double constrainedBoxHeight = context.screenSize.height / 6;
@@ -740,7 +738,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
         ? getLifetimeData(lifetimeModel: appParamState.keepLifetimeMap[date]!)
         : <String>[];
 
-    final Color color = utility.getLifetimeRowBgColor(value: dispValList[num], textDisplay: false);
+    final Color color = UiUtils.lifetimeRowBgColor(value: dispValList[num], textDisplay: false);
 
     return Column(
       children: <Widget>[

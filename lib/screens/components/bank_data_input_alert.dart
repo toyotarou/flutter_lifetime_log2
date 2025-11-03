@@ -7,7 +7,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../main.dart';
 import '../../models/money_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 import 'bank_price_list_alert.dart';
@@ -21,8 +21,6 @@ class BankDataInputAlert extends ConsumerStatefulWidget {
 
 class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with ControllersMixin<BankDataInputAlert> {
   final List<TextEditingController> priceTecs = <TextEditingController>[];
-
-  Utility utility = Utility();
 
   Map<String, String> bankNameMap = <String, String>{};
 
@@ -39,7 +37,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
       priceTecs.add(TextEditingController(text: ''));
     }
 
-    bankNameMap = utility.getBankName();
+    bankNameMap = UiUtils.bankName();
 
     // ignore: always_specify_types
     focusNodeList = List.generate(10, (int index) => FocusNode());
@@ -236,7 +234,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
         scrollDirection: Axis.horizontal,
 
         child: Row(
-          children: utility.getBankName().entries.map((MapEntry<String, String> e) {
+          children: UiUtils.bankName().entries.map((MapEntry<String, String> e) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
 

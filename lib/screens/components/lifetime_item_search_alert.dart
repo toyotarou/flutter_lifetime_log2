@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/lifetime_model.dart';
-import '../../utility/utility.dart';
+import '../../utils/ui_utils.dart';
 
 class LifetimeItemSearchAlert extends ConsumerStatefulWidget {
   const LifetimeItemSearchAlert({super.key});
@@ -15,8 +15,6 @@ class LifetimeItemSearchAlert extends ConsumerStatefulWidget {
 
 class _LifetimeItemSearchAlertState extends ConsumerState<LifetimeItemSearchAlert>
     with ControllersMixin<LifetimeItemSearchAlert> {
-  Utility utility = Utility();
-
   final Map<String, Color> _lifetimeColorCache = <String, Color>{};
 
   ///
@@ -25,7 +23,7 @@ class _LifetimeItemSearchAlertState extends ConsumerState<LifetimeItemSearchAler
     if (c != null) {
       return c;
     }
-    final Color v = utility.getLifetimeRowBgColor(value: value, textDisplay: false);
+    final Color v = UiUtils.lifetimeRowBgColor(value: value, textDisplay: false);
     _lifetimeColorCache[value] = v;
     return v;
   }
@@ -133,7 +131,7 @@ class _LifetimeItemSearchAlertState extends ConsumerState<LifetimeItemSearchAler
 
           final String youbiStr = DateTime.parse(key).youbiStr;
 
-          final Color color = utility.getYoubiColor(date: key, youbiStr: youbiStr, holiday: holidayState.holidayList);
+          final Color color = UiUtils.youbiColor(date: key, youbiStr: youbiStr, holiday: holidayState.holidayList);
 
           list.add(
             Container(
