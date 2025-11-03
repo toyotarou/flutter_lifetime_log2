@@ -6,7 +6,7 @@ part of 'lifetime_item.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$lifetimeItemHash() => r'a1a4db11e37cfa5d967d56347d32f65312b0441f';
+String _$lifetimeItemHash() => r'9ce92b7af4521738438040b88eb06adbfd556954';
 
 /// See also [LifetimeItem].
 @ProviderFor(LifetimeItem)

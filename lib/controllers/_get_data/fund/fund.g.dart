@@ -6,7 +6,7 @@ part of 'fund.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fundHash() => r'977c170005eaf4608cb3d006f106b0c187243196';
+String _$fundHash() => r'e1acd8a3ae001f73b12c8303cbb668caf1ad454c';
 
 /// See also [Fund].
 @ProviderFor(Fund)

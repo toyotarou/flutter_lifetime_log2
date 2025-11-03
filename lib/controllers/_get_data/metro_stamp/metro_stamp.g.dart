@@ -6,7 +6,7 @@ part of 'metro_stamp.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$metroStampHash() => r'447b94a7ae511d52ef0f114e6d2d2d6dcfddec81';
+String _$metroStampHash() => r'9e6fbb15832fd073bab21e20699b485d73ed4cb5';
 
 /// See also [MetroStamp].
 @ProviderFor(MetroStamp)

@@ -6,7 +6,7 @@ part of 'spend_input.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$spendInputHash() => r'a4cd8dd349973923d8be95fe4f0d9e7d972a119d';
+String _$spendInputHash() => r'c0eeab90378b3274ac6f7a411436fb4184fda1ea';
 
 /// See also [SpendInput].
 @ProviderFor(SpendInput)

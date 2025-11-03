@@ -6,7 +6,7 @@ part of 'money_spend_item.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$moneySpendItemHash() => r'67d607f77bcec2dd701bd5960030a41338544703';
+String _$moneySpendItemHash() => r'3c5dfbf46cdc2e6351b04c7d6939c2284df1503d';
 
 /// See also [MoneySpendItem].
 @ProviderFor(MoneySpendItem)

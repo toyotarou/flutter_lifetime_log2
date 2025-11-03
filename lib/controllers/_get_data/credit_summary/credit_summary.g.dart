@@ -6,7 +6,7 @@ part of 'credit_summary.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$creditSummaryHash() => r'493e448308bfa611d4aeb958d3b09fbbe63f153c';
+String _$creditSummaryHash() => r'1fbe661f3521a24e770ac0c7efd5d87320f5ee41';
 
 /// See also [CreditSummary].
 @ProviderFor(CreditSummary)

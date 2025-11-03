@@ -17,18 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$MoneyInputState {
   List<MoneyModel> get moneyList => throw _privateConstructorUsedError;
-  Map<String, MoneyModel> get moneyMap =>
-      throw _privateConstructorUsedError; // ///
-// List<OverlayEntry>? firstEntries,
-// List<OverlayEntry>? secondEntries,
-//
-// Offset? overlayPosition,
-//
-//
-//
-//
-//
-//
+  Map<String, MoneyModel> get moneyMap => throw _privateConstructorUsedError;
   int get pos => throw _privateConstructorUsedError;
   List<String> get inputValueList => throw _privateConstructorUsedError;
   bool get isReplaceInputValueList => throw _privateConstructorUsedError;
@@ -205,17 +194,6 @@ class _$MoneyInputStateImpl implements _MoneyInputState {
     return EqualUnmodifiableMapView(_moneyMap);
   }
 
-// ///
-// List<OverlayEntry>? firstEntries,
-// List<OverlayEntry>? secondEntries,
-//
-// Offset? overlayPosition,
-//
-//
-//
-//
-//
-//
   @override
   @JsonKey()
   final int pos;
@@ -291,17 +269,7 @@ abstract class _MoneyInputState implements MoneyInputState {
   @override
   List<MoneyModel> get moneyList;
   @override
-  Map<String, MoneyModel> get moneyMap; // ///
-// List<OverlayEntry>? firstEntries,
-// List<OverlayEntry>? secondEntries,
-//
-// Offset? overlayPosition,
-//
-//
-//
-//
-//
-//
+  Map<String, MoneyModel> get moneyMap;
   @override
   int get pos;
   @override

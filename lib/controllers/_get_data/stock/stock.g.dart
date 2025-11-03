@@ -6,7 +6,7 @@ part of 'stock.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$stockHash() => r'671747d54ebe778c5e813eafaa27fd72ad30efda';
+String _$stockHash() => r'f8361d19da2c580b435ba54bd7c372ee7e84ba62';
 
 /// See also [Stock].
 @ProviderFor(Stock)

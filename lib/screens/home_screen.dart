@@ -269,6 +269,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         appParamNotifier.setKeepTempleDateTimeNameMap(map: templeDateTimeNameMap);
 
         appParamNotifier.setKeepAllDateLifetimeSummaryMap(map: allDateLifetimeSummaryMap);
+
+        appParamNotifier.setKeepMetroStamp20AnniversaryMap(map: metroStamp20AnniversaryMap);
       });
       //===========================================//
     });

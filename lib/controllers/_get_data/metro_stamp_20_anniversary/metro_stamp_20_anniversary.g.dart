@@ -7,7 +7,7 @@ part of 'metro_stamp_20_anniversary.dart';
 // **************************************************************************
 
 String _$metroStamp20AnniversaryHash() =>
-    r'40e3612c7f8caeedc673e37f212cc16a8981bbdb';
+    r'7f5d28ef1ba3b46413f5533fea281222863ef60a';
 
 /// See also [MetroStamp20Anniversary].
 @ProviderFor(MetroStamp20Anniversary)

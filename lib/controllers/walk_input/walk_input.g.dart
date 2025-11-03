@@ -6,7 +6,7 @@ part of 'walk_input.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$walkInputHash() => r'9b8db64535f9c28ed95e331e3010c758c60d4080';
+String _$walkInputHash() => r'a3d3ddc9bf635d6fe0cc2f65e0f84c0551b0a0d7';
 
 /// See also [WalkInput].
 @ProviderFor(WalkInput)

@@ -8,6 +8,7 @@ import '../../models/fund_model.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/gold_model.dart';
 import '../../models/lifetime_model.dart';
+import '../../models/metro_stamp_20_anniversary_model.dart';
 import '../../models/metro_stamp_model.dart';
 import '../../models/money_model.dart';
 import '../../models/money_spend_model.dart';
@@ -52,6 +53,8 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<TimePlaceModel>>{}) Map<String, List<TimePlaceModel>> keepTimePlaceMap,
     @Default(<String, List<AmazonPurchaseModel>>{}) Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
     @Default(<String, List<MetroStampModel>>{}) Map<String, List<MetroStampModel>> keepDateMetroStampMap,
+    @Default(<String, List<MetroStamp20AnniversaryModel>>{})
+    Map<String, List<MetroStamp20AnniversaryModel>> keepMetroStamp20AnniversaryMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -215,6 +218,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepDateMetroStampMap({required Map<String, List<MetroStampModel>> map}) =>
       state = state.copyWith(keepDateMetroStampMap: map);
+
+  ///
+  void setKeepMetroStamp20AnniversaryMap({required Map<String, List<MetroStamp20AnniversaryModel>> map}) =>
+      state = state.copyWith(keepMetroStamp20AnniversaryMap: map);
 
   //===================================================
 

@@ -6,7 +6,7 @@ part of 'lifetime_input.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$lifetimeInputHash() => r'890c79f88af033c419898c6a59510b78a4b286d7';
+String _$lifetimeInputHash() => r'd3a57432fd7e184c72bf44a8389e662139391e16';
 
 /// See also [LifetimeInput].
 @ProviderFor(LifetimeInput)

@@ -6,7 +6,7 @@ part of 'amazon_purchase.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$amazonPurchaseHash() => r'868b1f7b8688d9ec8f55b01e3d84a2381e2696e6';
+String _$amazonPurchaseHash() => r'ac2738cea602e6ca2526336fe21ea93bc1b23666';
 
 /// See also [AmazonPurchase].
 @ProviderFor(AmazonPurchase)

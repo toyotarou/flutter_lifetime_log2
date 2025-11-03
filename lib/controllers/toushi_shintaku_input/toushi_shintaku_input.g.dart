@@ -7,7 +7,7 @@ part of 'toushi_shintaku_input.dart';
 // **************************************************************************
 
 String _$toushiShintakuInputHash() =>
-    r'76bdc7ee9d9021719a48ae1ec4e3aa8fc07ee076';
+    r'd5e3e8de5493f1bd3b509ad3baeb8e58dd543a68';
 
 /// See also [ToushiShintakuInput].
 @ProviderFor(ToushiShintakuInput)
