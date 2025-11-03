@@ -1,3 +1,5 @@
+import '../extensions/extensions.dart';
+
 class StampRallyModel {
   StampRallyModel({
     required this.trainCode,
@@ -6,6 +8,8 @@ class StampRallyModel {
     required this.stationName,
     required this.lat,
     required this.lng,
+
+    ///
     this.imageFolder,
     this.imageCode,
     this.posterPosition,
@@ -20,11 +24,13 @@ class StampRallyModel {
     stationName: json['station_name'].toString(),
     lat: json['lat'].toString(),
     lng: json['lng'].toString(),
-    imageFolder: '',
-    imageCode: '',
-    posterPosition: '',
-    stampGetDate: '',
-    stampGetOrder: 0,
+
+    ///
+    imageFolder: (json['image_folder'] != null) ? json['image_folder'].toString() : '',
+    imageCode: (json['image_code'] != null) ? json['image_code'].toString() : '',
+    posterPosition: (json['poster_position'] != null) ? json['poster_position'].toString() : '',
+    stampGetDate: (json['stamp_get_date'] != null) ? json['stamp_get_date'].toString() : '',
+    stampGetOrder: (json['stamp_get_order'] != null) ? json['stamp_get_order'].toString().toInt() : 0,
   );
 
   String trainCode;
@@ -33,6 +39,8 @@ class StampRallyModel {
   String stationName;
   String lat;
   String lng;
+
+  ///
   String? imageFolder;
   String? imageCode;
   String? posterPosition;

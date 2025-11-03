@@ -76,9 +76,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final List<String> holidayList;
   final Map<String, WalkModel> walkMap;
   final Map<String, MoneyModel> moneyMap;
-
   final Map<String, LifetimeModel> lifetimeMap;
-
   final List<LifetimeItemModel> lifetimeItemList;
   final Map<String, List<GeolocModel>> geolocMap;
   final Map<String, TempleModel> templeMap;
