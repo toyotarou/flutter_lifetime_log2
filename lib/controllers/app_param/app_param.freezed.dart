@@ -60,7 +60,7 @@ mixin _$AppParamState {
       throw _privateConstructorUsedError;
   Map<String, List<AmazonPurchaseModel>> get keepAmazonPurchaseMap =>
       throw _privateConstructorUsedError;
-  Map<String, List<StationStampModel>> get keepDateStationStampMap =>
+  Map<String, List<StampRallyModel>> get keepDateStationStampMap =>
       throw _privateConstructorUsedError;
 
   ///
@@ -143,7 +143,7 @@ abstract class $AppParamStateCopyWith<$Res> {
       Map<int, List<ToushiShintakuModel>> keepToushiShintakuRelationalMap,
       Map<String, List<TimePlaceModel>> keepTimePlaceMap,
       Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
-      Map<String, List<StationStampModel>> keepDateStationStampMap,
+      Map<String, List<StampRallyModel>> keepDateStationStampMap,
       List<StationModel> keepStationList,
       Map<String, List<String>> keepTempleDateTimeBadgeMap,
       Map<String, String> keepTempleDateTimeNameMap,
@@ -330,7 +330,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
       keepDateStationStampMap: null == keepDateStationStampMap
           ? _value.keepDateStationStampMap
           : keepDateStationStampMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<StationStampModel>>,
+              as Map<String, List<StampRallyModel>>,
       keepStationList: null == keepStationList
           ? _value.keepStationList
           : keepStationList // ignore: cast_nullable_to_non_nullable
@@ -463,7 +463,7 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       Map<int, List<ToushiShintakuModel>> keepToushiShintakuRelationalMap,
       Map<String, List<TimePlaceModel>> keepTimePlaceMap,
       Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
-      Map<String, List<StationStampModel>> keepDateStationStampMap,
+      Map<String, List<StampRallyModel>> keepDateStationStampMap,
       List<StationModel> keepStationList,
       Map<String, List<String>> keepTempleDateTimeBadgeMap,
       Map<String, String> keepTempleDateTimeNameMap,
@@ -648,7 +648,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
       keepDateStationStampMap: null == keepDateStationStampMap
           ? _value._keepDateStationStampMap
           : keepDateStationStampMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<StationStampModel>>,
+              as Map<String, List<StampRallyModel>>,
       keepStationList: null == keepStationList
           ? _value._keepStationList
           : keepStationList // ignore: cast_nullable_to_non_nullable
@@ -795,7 +795,7 @@ class _$AppParamStateImpl implements _AppParamState {
       final Map<String, List<TimePlaceModel>> keepTimePlaceMap =
           const <String, List<TimePlaceModel>>{},
       final Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap = const <String, List<AmazonPurchaseModel>>{},
-      final Map<String, List<StationStampModel>> keepDateStationStampMap = const <String, List<StationStampModel>>{},
+      final Map<String, List<StampRallyModel>> keepDateStationStampMap = const <String, List<StampRallyModel>>{},
       final List<StationModel> keepStationList = const <StationModel>[],
       final Map<String, List<String>> keepTempleDateTimeBadgeMap = const <String, List<String>>{},
       final Map<String, String> keepTempleDateTimeNameMap = const <String, String>{},
@@ -1070,10 +1070,10 @@ class _$AppParamStateImpl implements _AppParamState {
     return EqualUnmodifiableMapView(_keepAmazonPurchaseMap);
   }
 
-  final Map<String, List<StationStampModel>> _keepDateStationStampMap;
+  final Map<String, List<StampRallyModel>> _keepDateStationStampMap;
   @override
   @JsonKey()
-  Map<String, List<StationStampModel>> get keepDateStationStampMap {
+  Map<String, List<StampRallyModel>> get keepDateStationStampMap {
     if (_keepDateStationStampMap is EqualUnmodifiableMapView)
       return _keepDateStationStampMap;
     // ignore: implicit_dynamic_type
@@ -1406,7 +1406,7 @@ abstract class _AppParamState implements AppParamState {
       final Map<int, List<ToushiShintakuModel>> keepToushiShintakuRelationalMap,
       final Map<String, List<TimePlaceModel>> keepTimePlaceMap,
       final Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
-      final Map<String, List<StationStampModel>> keepDateStationStampMap,
+      final Map<String, List<StampRallyModel>> keepDateStationStampMap,
       final List<StationModel> keepStationList,
       final Map<String, List<String>> keepTempleDateTimeBadgeMap,
       final Map<String, String> keepTempleDateTimeNameMap,
@@ -1480,7 +1480,7 @@ abstract class _AppParamState implements AppParamState {
   @override
   Map<String, List<AmazonPurchaseModel>> get keepAmazonPurchaseMap;
   @override
-  Map<String, List<StationStampModel>> get keepDateStationStampMap;
+  Map<String, List<StampRallyModel>> get keepDateStationStampMap;
 
   ///
   @override

@@ -13,7 +13,7 @@ import '_get_data/money/money.dart';
 import '_get_data/money_spend/money_spend.dart';
 import '_get_data/money_spend_item/money_spend_item.dart';
 import '_get_data/salary/salary.dart';
-import '_get_data/station_stamp/station_stamp.dart';
+import '_get_data/stamp_rally_metro_all_station/stamp_rally_metro_all_station.dart';
 import '_get_data/stock/stock.dart';
 import '_get_data/temple/temple.dart';
 import '_get_data/time_place/time_place.dart';
@@ -204,9 +204,10 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   //==========================================//
 
-  StationStampState get stationStampState => ref.watch(stationStampProvider);
+  StampRallyMetroAllStationState get stampRallyMetroAllStationState => ref.watch(stampRallyMetroAllStationProvider);
 
-  StationStamp get stationStampNotifier => ref.read(stationStampProvider.notifier);
+  StampRallyMetroAllStation get stampRallyMetroAllStationNotifier =>
+      ref.read(stampRallyMetroAllStationProvider.notifier);
 
   //==========================================//
   Directions get directionsNotifier => ref.read(directionsProvider.notifier);

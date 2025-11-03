@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
-import '../../models/station_stamp_model.dart';
+import '../../models/stamp_rally_model.dart';
 import '../../utility/utility.dart';
 
-class StampRallyInfoDisplayAlert extends ConsumerStatefulWidget {
-  const StampRallyInfoDisplayAlert({super.key, required this.date});
+class StampRallyMetroAllStationAlert extends ConsumerStatefulWidget {
+  const StampRallyMetroAllStationAlert({super.key, required this.date});
 
   final String date;
 
   @override
-  ConsumerState<StampRallyInfoDisplayAlert> createState() => _StampRallyInfoDisplayAlertState();
+  ConsumerState<StampRallyMetroAllStationAlert> createState() => _StampRallyMetroAllStationAlertState();
 }
 
-class _StampRallyInfoDisplayAlertState extends ConsumerState<StampRallyInfoDisplayAlert>
-    with ControllersMixin<StampRallyInfoDisplayAlert> {
+class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetroAllStationAlert>
+    with ControllersMixin<StampRallyMetroAllStationAlert> {
   Utility utility = Utility();
 
   ///
@@ -52,12 +52,12 @@ class _StampRallyInfoDisplayAlertState extends ConsumerState<StampRallyInfoDispl
   Widget displayStationStampModelList() {
     final List<Widget> list = <Widget>[];
 
-    final List<StationStampModel>? stamps = appParamState.keepDateStationStampMap[widget.date];
+    final List<StampRallyModel>? stamps = appParamState.keepDateStationStampMap[widget.date];
 
     if (stamps != null) {
-      stamps.sort((StationStampModel a, StationStampModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
+      stamps.sort((StampRallyModel a, StampRallyModel b) => a.stampGetOrder!.compareTo(b.stampGetOrder!));
 
-      for (final StationStampModel element in stamps) {
+      for (final StampRallyModel element in stamps) {
         final String stamp =
             'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';
 
@@ -106,8 +106,8 @@ class _StampRallyInfoDisplayAlertState extends ConsumerState<StampRallyInfoDispl
                                       child: Column(
                                         children: <Widget>[
                                           const Spacer(),
-                                          Text(element.imageFolder),
-                                          Text(element.imageCode),
+                                          Text(element.imageFolder!),
+                                          Text(element.imageCode!),
                                           const Spacer(),
                                         ],
                                       ),
@@ -129,7 +129,7 @@ class _StampRallyInfoDisplayAlertState extends ConsumerState<StampRallyInfoDispl
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(element.stationName),
-                                  Text(element.posterPosition, style: const TextStyle(fontSize: 8)),
+                                  Text(element.posterPosition!, style: const TextStyle(fontSize: 8)),
                                 ],
                               ),
                             ),

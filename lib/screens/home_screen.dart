@@ -14,7 +14,7 @@ import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
 import '../models/salary_model.dart';
-import '../models/station_stamp_model.dart';
+import '../models/stamp_rally_model.dart';
 import '../models/stock_model.dart';
 import '../models/temple_model.dart';
 import '../models/time_place_model.dart';
@@ -99,7 +99,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<int, List<ToushiShintakuModel>> toushiShintakuRelationalMap;
   final Map<String, List<TimePlaceModel>> timePlaceMap;
   final Map<String, List<AmazonPurchaseModel>> amazonPurchaseMap;
-  final Map<String, List<StationStampModel>> dateStationStampMap;
+  final Map<String, List<StampRallyModel>> dateStationStampMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();

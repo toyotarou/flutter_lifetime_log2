@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'station_stamp.dart';
+part of 'stamp_rally_metro_all_station.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,46 +15,49 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$StationStampState {
+mixin _$StampRallyMetroAllStationState {
   Map<String, String> get trainMap => throw _privateConstructorUsedError;
-  List<StationStampModel> get stationStampList =>
+  List<StampRallyModel> get stationStampList =>
       throw _privateConstructorUsedError;
-  Map<String, List<StationStampModel>> get stationStampMap =>
+  Map<String, List<StampRallyModel>> get stationStampMap =>
       throw _privateConstructorUsedError;
-  Map<String, List<StationStampModel>> get dateStationStampMap =>
+  Map<String, List<StampRallyModel>> get dateStationStampMap =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of StationStampState
+  /// Create a copy of StampRallyMetroAllStationState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $StationStampStateCopyWith<StationStampState> get copyWith =>
-      throw _privateConstructorUsedError;
+  $StampRallyMetroAllStationStateCopyWith<StampRallyMetroAllStationState>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $StationStampStateCopyWith<$Res> {
-  factory $StationStampStateCopyWith(
-          StationStampState value, $Res Function(StationStampState) then) =
-      _$StationStampStateCopyWithImpl<$Res, StationStampState>;
+abstract class $StampRallyMetroAllStationStateCopyWith<$Res> {
+  factory $StampRallyMetroAllStationStateCopyWith(
+          StampRallyMetroAllStationState value,
+          $Res Function(StampRallyMetroAllStationState) then) =
+      _$StampRallyMetroAllStationStateCopyWithImpl<$Res,
+          StampRallyMetroAllStationState>;
   @useResult
   $Res call(
       {Map<String, String> trainMap,
-      List<StationStampModel> stationStampList,
-      Map<String, List<StationStampModel>> stationStampMap,
-      Map<String, List<StationStampModel>> dateStationStampMap});
+      List<StampRallyModel> stationStampList,
+      Map<String, List<StampRallyModel>> stationStampMap,
+      Map<String, List<StampRallyModel>> dateStationStampMap});
 }
 
 /// @nodoc
-class _$StationStampStateCopyWithImpl<$Res, $Val extends StationStampState>
-    implements $StationStampStateCopyWith<$Res> {
-  _$StationStampStateCopyWithImpl(this._value, this._then);
+class _$StampRallyMetroAllStationStateCopyWithImpl<$Res,
+        $Val extends StampRallyMetroAllStationState>
+    implements $StampRallyMetroAllStationStateCopyWith<$Res> {
+  _$StampRallyMetroAllStationStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of StationStampState
+  /// Create a copy of StampRallyMetroAllStationState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -72,43 +75,46 @@ class _$StationStampStateCopyWithImpl<$Res, $Val extends StationStampState>
       stationStampList: null == stationStampList
           ? _value.stationStampList
           : stationStampList // ignore: cast_nullable_to_non_nullable
-              as List<StationStampModel>,
+              as List<StampRallyModel>,
       stationStampMap: null == stationStampMap
           ? _value.stationStampMap
           : stationStampMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<StationStampModel>>,
+              as Map<String, List<StampRallyModel>>,
       dateStationStampMap: null == dateStationStampMap
           ? _value.dateStationStampMap
           : dateStationStampMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<StationStampModel>>,
+              as Map<String, List<StampRallyModel>>,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$StationStampStateImplCopyWith<$Res>
-    implements $StationStampStateCopyWith<$Res> {
-  factory _$$StationStampStateImplCopyWith(_$StationStampStateImpl value,
-          $Res Function(_$StationStampStateImpl) then) =
-      __$$StationStampStateImplCopyWithImpl<$Res>;
+abstract class _$$StampRallyMetroAllStationStateImplCopyWith<$Res>
+    implements $StampRallyMetroAllStationStateCopyWith<$Res> {
+  factory _$$StampRallyMetroAllStationStateImplCopyWith(
+          _$StampRallyMetroAllStationStateImpl value,
+          $Res Function(_$StampRallyMetroAllStationStateImpl) then) =
+      __$$StampRallyMetroAllStationStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
       {Map<String, String> trainMap,
-      List<StationStampModel> stationStampList,
-      Map<String, List<StationStampModel>> stationStampMap,
-      Map<String, List<StationStampModel>> dateStationStampMap});
+      List<StampRallyModel> stationStampList,
+      Map<String, List<StampRallyModel>> stationStampMap,
+      Map<String, List<StampRallyModel>> dateStationStampMap});
 }
 
 /// @nodoc
-class __$$StationStampStateImplCopyWithImpl<$Res>
-    extends _$StationStampStateCopyWithImpl<$Res, _$StationStampStateImpl>
-    implements _$$StationStampStateImplCopyWith<$Res> {
-  __$$StationStampStateImplCopyWithImpl(_$StationStampStateImpl _value,
-      $Res Function(_$StationStampStateImpl) _then)
+class __$$StampRallyMetroAllStationStateImplCopyWithImpl<$Res>
+    extends _$StampRallyMetroAllStationStateCopyWithImpl<$Res,
+        _$StampRallyMetroAllStationStateImpl>
+    implements _$$StampRallyMetroAllStationStateImplCopyWith<$Res> {
+  __$$StampRallyMetroAllStationStateImplCopyWithImpl(
+      _$StampRallyMetroAllStationStateImpl _value,
+      $Res Function(_$StampRallyMetroAllStationStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of StationStampState
+  /// Create a copy of StampRallyMetroAllStationState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -118,7 +124,7 @@ class __$$StationStampStateImplCopyWithImpl<$Res>
     Object? stationStampMap = null,
     Object? dateStationStampMap = null,
   }) {
-    return _then(_$StationStampStateImpl(
+    return _then(_$StampRallyMetroAllStationStateImpl(
       trainMap: null == trainMap
           ? _value._trainMap
           : trainMap // ignore: cast_nullable_to_non_nullable
@@ -126,30 +132,30 @@ class __$$StationStampStateImplCopyWithImpl<$Res>
       stationStampList: null == stationStampList
           ? _value._stationStampList
           : stationStampList // ignore: cast_nullable_to_non_nullable
-              as List<StationStampModel>,
+              as List<StampRallyModel>,
       stationStampMap: null == stationStampMap
           ? _value._stationStampMap
           : stationStampMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<StationStampModel>>,
+              as Map<String, List<StampRallyModel>>,
       dateStationStampMap: null == dateStationStampMap
           ? _value._dateStationStampMap
           : dateStationStampMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<StationStampModel>>,
+              as Map<String, List<StampRallyModel>>,
     ));
   }
 }
 
 /// @nodoc
 
-class _$StationStampStateImpl implements _StationStampState {
-  const _$StationStampStateImpl(
+class _$StampRallyMetroAllStationStateImpl
+    implements _StampRallyMetroAllStationState {
+  const _$StampRallyMetroAllStationStateImpl(
       {final Map<String, String> trainMap = const <String, String>{},
-      final List<StationStampModel> stationStampList =
-          const <StationStampModel>[],
-      final Map<String, List<StationStampModel>> stationStampMap =
-          const <String, List<StationStampModel>>{},
-      final Map<String, List<StationStampModel>> dateStationStampMap =
-          const <String, List<StationStampModel>>{}})
+      final List<StampRallyModel> stationStampList = const <StampRallyModel>[],
+      final Map<String, List<StampRallyModel>> stationStampMap =
+          const <String, List<StampRallyModel>>{},
+      final Map<String, List<StampRallyModel>> dateStationStampMap =
+          const <String, List<StampRallyModel>>{}})
       : _trainMap = trainMap,
         _stationStampList = stationStampList,
         _stationStampMap = stationStampMap,
@@ -164,29 +170,29 @@ class _$StationStampStateImpl implements _StationStampState {
     return EqualUnmodifiableMapView(_trainMap);
   }
 
-  final List<StationStampModel> _stationStampList;
+  final List<StampRallyModel> _stationStampList;
   @override
   @JsonKey()
-  List<StationStampModel> get stationStampList {
+  List<StampRallyModel> get stationStampList {
     if (_stationStampList is EqualUnmodifiableListView)
       return _stationStampList;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_stationStampList);
   }
 
-  final Map<String, List<StationStampModel>> _stationStampMap;
+  final Map<String, List<StampRallyModel>> _stationStampMap;
   @override
   @JsonKey()
-  Map<String, List<StationStampModel>> get stationStampMap {
+  Map<String, List<StampRallyModel>> get stationStampMap {
     if (_stationStampMap is EqualUnmodifiableMapView) return _stationStampMap;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_stationStampMap);
   }
 
-  final Map<String, List<StationStampModel>> _dateStationStampMap;
+  final Map<String, List<StampRallyModel>> _dateStationStampMap;
   @override
   @JsonKey()
-  Map<String, List<StationStampModel>> get dateStationStampMap {
+  Map<String, List<StampRallyModel>> get dateStationStampMap {
     if (_dateStationStampMap is EqualUnmodifiableMapView)
       return _dateStationStampMap;
     // ignore: implicit_dynamic_type
@@ -195,14 +201,14 @@ class _$StationStampStateImpl implements _StationStampState {
 
   @override
   String toString() {
-    return 'StationStampState(trainMap: $trainMap, stationStampList: $stationStampList, stationStampMap: $stationStampMap, dateStationStampMap: $dateStationStampMap)';
+    return 'StampRallyMetroAllStationState(trainMap: $trainMap, stationStampList: $stationStampList, stationStampMap: $stationStampMap, dateStationStampMap: $dateStationStampMap)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$StationStampStateImpl &&
+            other is _$StampRallyMetroAllStationStateImpl &&
             const DeepCollectionEquality().equals(other._trainMap, _trainMap) &&
             const DeepCollectionEquality()
                 .equals(other._stationStampList, _stationStampList) &&
@@ -220,37 +226,40 @@ class _$StationStampStateImpl implements _StationStampState {
       const DeepCollectionEquality().hash(_stationStampMap),
       const DeepCollectionEquality().hash(_dateStationStampMap));
 
-  /// Create a copy of StationStampState
+  /// Create a copy of StampRallyMetroAllStationState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$StationStampStateImplCopyWith<_$StationStampStateImpl> get copyWith =>
-      __$$StationStampStateImplCopyWithImpl<_$StationStampStateImpl>(
-          this, _$identity);
+  _$$StampRallyMetroAllStationStateImplCopyWith<
+          _$StampRallyMetroAllStationStateImpl>
+      get copyWith => __$$StampRallyMetroAllStationStateImplCopyWithImpl<
+          _$StampRallyMetroAllStationStateImpl>(this, _$identity);
 }
 
-abstract class _StationStampState implements StationStampState {
-  const factory _StationStampState(
+abstract class _StampRallyMetroAllStationState
+    implements StampRallyMetroAllStationState {
+  const factory _StampRallyMetroAllStationState(
           {final Map<String, String> trainMap,
-          final List<StationStampModel> stationStampList,
-          final Map<String, List<StationStampModel>> stationStampMap,
-          final Map<String, List<StationStampModel>> dateStationStampMap}) =
-      _$StationStampStateImpl;
+          final List<StampRallyModel> stationStampList,
+          final Map<String, List<StampRallyModel>> stationStampMap,
+          final Map<String, List<StampRallyModel>> dateStationStampMap}) =
+      _$StampRallyMetroAllStationStateImpl;
 
   @override
   Map<String, String> get trainMap;
   @override
-  List<StationStampModel> get stationStampList;
+  List<StampRallyModel> get stationStampList;
   @override
-  Map<String, List<StationStampModel>> get stationStampMap;
+  Map<String, List<StampRallyModel>> get stationStampMap;
   @override
-  Map<String, List<StationStampModel>> get dateStationStampMap;
+  Map<String, List<StampRallyModel>> get dateStationStampMap;
 
-  /// Create a copy of StationStampState
+  /// Create a copy of StampRallyMetroAllStationState
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$StationStampStateImplCopyWith<_$StationStampStateImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$StampRallyMetroAllStationStateImplCopyWith<
+          _$StampRallyMetroAllStationStateImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
