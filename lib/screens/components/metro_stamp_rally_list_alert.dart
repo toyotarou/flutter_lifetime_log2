@@ -38,7 +38,7 @@ class _MetroStampRallyListAlertState extends ConsumerState<MetroStampRallyListAl
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                Expanded(child: displayStationStampModelList()),
+                Expanded(child: displayMetroStampModelList()),
               ],
             ),
           ),
@@ -48,7 +48,7 @@ class _MetroStampRallyListAlertState extends ConsumerState<MetroStampRallyListAl
   }
 
   ///
-  Widget displayStationStampModelList() {
+  Widget displayMetroStampModelList() {
     final List<Widget> list = <Widget>[];
 
     final List<MapEntry<String, List<MetroStampModel>>> sortedEntries =

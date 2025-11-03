@@ -39,7 +39,7 @@ class _MetroStampRallyInfoDisplayAlertState extends ConsumerState<MetroStampRall
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                Expanded(child: displayStationStampModelList()),
+                Expanded(child: displayMetroStampModelList()),
               ],
             ),
           ),
@@ -49,7 +49,7 @@ class _MetroStampRallyInfoDisplayAlertState extends ConsumerState<MetroStampRall
   }
 
   ///
-  Widget displayStationStampModelList() {
+  Widget displayMetroStampModelList() {
     final List<Widget> list = <Widget>[];
 
     final List<MetroStampModel>? stamps = appParamState.keepDateMetroStampMap[widget.date];

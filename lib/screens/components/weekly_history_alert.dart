@@ -22,13 +22,13 @@ class WeeklyHistoryAlert extends ConsumerStatefulWidget {
     required this.weeklyHistoryEvent,
     required this.weeklyHistoryBadge,
     required this.isNeedGeolocMapDisplayHeight,
-    required this.isNeedStationStampDisplayHeight,
+    required this.isNeedMetroStampDisplayHeight,
   });
 
   final List<WeeklyHistoryEventModel> weeklyHistoryEvent;
   final List<WeeklyHistoryBadgeModel> weeklyHistoryBadge;
   final bool isNeedGeolocMapDisplayHeight;
-  final bool isNeedStationStampDisplayHeight;
+  final bool isNeedMetroStampDisplayHeight;
 
   @override
   ConsumerState<WeeklyHistoryAlert> createState() => _WeeklyHistoryAlertState();
@@ -92,7 +92,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
                     events: widget.weeklyHistoryEvent,
                     badges: widget.weeklyHistoryBadge,
                     isNeedGeolocMapDisplayHeight: widget.isNeedGeolocMapDisplayHeight,
-                    isNeedStationStampDisplayHeight: widget.isNeedStationStampDisplayHeight,
+                    isNeedMetroStampDisplayHeight: widget.isNeedMetroStampDisplayHeight,
                   ),
                 ),
               ),
@@ -103,7 +103,7 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
               top:
                   appParamState.weeklyHistoryHeaderHeight +
                   (widget.isNeedGeolocMapDisplayHeight ? 30 : 0) +
-                  (widget.isNeedStationStampDisplayHeight ? 30 : 0),
+                  (widget.isNeedMetroStampDisplayHeight ? 30 : 0),
               bottom: 0,
               width: appParamState.gutterWidth,
               child: IgnorePointer(
@@ -135,7 +135,7 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
     this.events = const <WeeklyHistoryEventModel>[],
     this.badges = const <WeeklyHistoryBadgeModel>[],
     required this.isNeedGeolocMapDisplayHeight,
-    required this.isNeedStationStampDisplayHeight,
+    required this.isNeedMetroStampDisplayHeight,
   });
 
   final int startHour;
@@ -150,7 +150,7 @@ class WeeklyScheduleView extends ConsumerStatefulWidget {
 
   final bool isNeedGeolocMapDisplayHeight;
 
-  final bool isNeedStationStampDisplayHeight;
+  final bool isNeedMetroStampDisplayHeight;
 
   @override
   ConsumerState<WeeklyScheduleView> createState() => _WeeklyScheduleViewState();
@@ -183,7 +183,7 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
           height:
               appParamState.weeklyHistoryHeaderHeight +
               (widget.isNeedGeolocMapDisplayHeight ? 25 : 0) +
-              (widget.isNeedStationStampDisplayHeight ? 25 : 0),
+              (widget.isNeedMetroStampDisplayHeight ? 25 : 0),
           child: Row(
             children: <Widget>[
               SizedBox(width: appParamState.gutterWidth),
@@ -192,7 +192,7 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
                 child: WeekHeader(
                   date: appParamState.weeklyHistorySelectedDate,
                   isNeedGeolocMapDisplayHeight: widget.isNeedGeolocMapDisplayHeight,
-                  isNeedStationStampDisplayHeight: widget.isNeedStationStampDisplayHeight,
+                  isNeedMetroStampDisplayHeight: widget.isNeedMetroStampDisplayHeight,
                 ),
               ),
             ],
@@ -428,12 +428,12 @@ class WeekHeader extends ConsumerStatefulWidget {
     super.key,
     required this.date,
     required this.isNeedGeolocMapDisplayHeight,
-    required this.isNeedStationStampDisplayHeight,
+    required this.isNeedMetroStampDisplayHeight,
   });
 
   final String date;
   final bool isNeedGeolocMapDisplayHeight;
-  final bool isNeedStationStampDisplayHeight;
+  final bool isNeedMetroStampDisplayHeight;
 
   @override
   ConsumerState<WeekHeader> createState() => _WeekHeaderState();
@@ -554,7 +554,7 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                         ),
                       ],
 
-                      if (widget.isNeedStationStampDisplayHeight) ...<Widget>[
+                      if (widget.isNeedMetroStampDisplayHeight) ...<Widget>[
                         SizedBox(height: 30, child: displayWeeklyHistoryStampRallyWidget(date: date)),
                       ],
                     ],

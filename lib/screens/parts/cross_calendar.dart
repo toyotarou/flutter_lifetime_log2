@@ -979,7 +979,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                     appParamNotifier.setWeeklyHistorySelectedDate(date: date);
 
                     bool isNeedGeolocMapDisplayHeight = false;
-                    bool isNeedStationStampDisplayHeight = false;
+                    bool isNeedMetroStampDisplayHeight = false;
 
                     getWeeklyHistoryDisplayWeekDate(date: date).forEach((String key, String value) {
                       if (appParamState.keepGeolocMap[value] != null) {
@@ -988,7 +988,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
                       if (appParamState.keepDateMetroStampMap[value] != null ||
                           appParamState.keepMetroStamp20AnniversaryMap[value] != null) {
-                        isNeedStationStampDisplayHeight = true;
+                        isNeedMetroStampDisplayHeight = true;
                       }
                     });
 
@@ -1002,7 +1002,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                         weeklyHistoryEvent: weeklyHistoryEvent,
                         weeklyHistoryBadge: weeklyHistoryBadge,
                         isNeedGeolocMapDisplayHeight: isNeedGeolocMapDisplayHeight,
-                        isNeedStationStampDisplayHeight: isNeedStationStampDisplayHeight,
+                        isNeedMetroStampDisplayHeight: isNeedMetroStampDisplayHeight,
                       ),
                     );
                   },
