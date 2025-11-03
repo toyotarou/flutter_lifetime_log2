@@ -349,9 +349,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               ),
 
               const SizedBox(height: 30),
-              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-              const SizedBox(height: 30),
 
               GestureDetector(
                 onTap: () => LifetimeDialog(context: context, widget: const SpendEachYearDisplayAlert()),
@@ -363,9 +360,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                   ],
                 ),
               ),
-
-              const SizedBox(height: 30),
-              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
               const SizedBox(height: 30),
 
