@@ -25,6 +25,7 @@ import '../models/walk_model.dart';
 import '../models/weather_model.dart';
 import '../models/work_time_model.dart';
 import '../utils/date_lifetime_utils.dart';
+import '../utils/geo_utils.dart';
 import '../utils/ui_utils.dart';
 import 'components/amazon_purchase_list_alert.dart';
 import 'components/bank_data_input_alert.dart';
@@ -194,12 +195,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
       //-------------------------------------------------- allDateLifetimeSummaryMap/e
 
-      //-------------------------------------------------- /s
+      //-------------------------------------------------- metroStamp20AnniversaryMap/s
+
+      final List<String> sortedKeys = widget.metroStamp20AnniversaryMap.keys.toList()
+        ..sort((String a, String b) => DateTime.parse(a).compareTo(DateTime.parse(b)));
 
       final Map<String, List<MetroStamp20AnniversaryModel>> metroStamp20AnniversaryMap =
           <String, List<MetroStamp20AnniversaryModel>>{};
 
-      widget.metroStamp20AnniversaryMap.forEach((String key, List<MetroStamp20AnniversaryModel> value) {
+      for (final String key in sortedKeys) {
+        final List<MetroStamp20AnniversaryModel> value =
+            widget.metroStamp20AnniversaryMap[key] ?? <MetroStamp20AnniversaryModel>[];
+
         final List<MetroStamp20AnniversaryModel> list = <MetroStamp20AnniversaryModel>[];
 
         for (final MetroStamp20AnniversaryModel element in value) {
@@ -207,6 +214,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             final StationModel stationModel = widget.stationList.firstWhere(
               (StationModel element2) => element2.id == element.stationId,
             );
+
+            String nearestGeolocTime = '';
+
+            final List<GeolocModel>? oneDayGeolocModelList = widget.geolocMap[element.getDate];
+
+            if (oneDayGeolocModelList != null && oneDayGeolocModelList.isNotEmpty) {
+              final String latStr = stationModel.lat;
+              final String lonStr = stationModel.lng;
+
+              final List<GeolocModel> cleaned = oneDayGeolocModelList.where((GeolocModel g) {
+                final double? lat = double.tryParse(g.latitude.trim().replaceAll(',', '.'));
+                final double? lon = double.tryParse(g.longitude.trim().replaceAll(',', '.'));
+                return lat != null && lon != null;
+              }).toList();
+
+              if (cleaned.isNotEmpty) {
+                final GeolocModel? nearestGeoloc = GeoUtils.findNearestGeoloc(
+                  geolocModelList: cleaned,
+                  latStr: latStr,
+                  lonStr: lonStr,
+                );
+
+                if (nearestGeoloc != null) {
+                  nearestGeolocTime = nearestGeoloc.time;
+                }
+              }
+            }
 
             final MetroStamp20AnniversaryModel metroStamp20AnniversaryModel = MetroStamp20AnniversaryModel(
               id: element.id,
@@ -216,6 +250,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               stamp: element.stamp,
               latitude: stationModel.lat,
               longitude: stationModel.lng,
+              time: nearestGeolocTime,
             );
 
             list.add(metroStamp20AnniversaryModel);
@@ -223,29 +258,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         }
 
         metroStamp20AnniversaryMap[key] = list;
-      });
+      }
 
-      print('-----------------');
-
-      metroStamp20AnniversaryMap.forEach((String key, List<MetroStamp20AnniversaryModel> value) {
-        if (value.isNotEmpty) {
-          print(key);
-          print('-----');
-          for (final MetroStamp20AnniversaryModel element in value) {
-            print(element.id);
-            print(element.stationId);
-            print(element.stationName);
-            print(element.getDate);
-            print(element.stamp);
-            print(element.latitude);
-            print(element.longitude);
-          }
-        }
-      });
-
-      print('-----------------');
-
-      //-------------------------------------------------- /e
+      //-------------------------------------------------- metroStamp20AnniversaryMap/e
 
       // ignore: always_specify_types
       Future(() {

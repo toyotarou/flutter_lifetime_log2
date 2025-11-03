@@ -9,6 +9,7 @@ class MetroStamp20AnniversaryModel {
     required this.stamp,
     required this.latitude,
     required this.longitude,
+    required this.time,
   });
 
   factory MetroStamp20AnniversaryModel.fromJson(Map<String, dynamic> json) => MetroStamp20AnniversaryModel(
@@ -19,6 +20,7 @@ class MetroStamp20AnniversaryModel {
     stamp: json['stamp'].toString(),
     latitude: '',
     longitude: '',
+    time: '',
   );
   int id;
   int stationId;
@@ -27,6 +29,7 @@ class MetroStamp20AnniversaryModel {
   String stamp;
   String latitude;
   String longitude;
+  String time;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
     'id': id,
@@ -36,5 +39,6 @@ class MetroStamp20AnniversaryModel {
     'stamp': stamp,
     'latitude': latitude,
     'longitude': longitude,
+    'time': time,
   };
 }

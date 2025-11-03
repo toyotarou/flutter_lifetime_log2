@@ -67,8 +67,9 @@ class GeoUtils {
     required String latStr,
     required String lonStr,
   }) {
-    final double? targetLat = double.tryParse(latStr);
-    final double? targetLon = double.tryParse(lonStr);
+    final double? targetLat = double.tryParse(latStr.trim().replaceAll(',', '.'));
+    final double? targetLon = double.tryParse(lonStr.trim().replaceAll(',', '.'));
+
     if (targetLat == null || targetLon == null || geolocModelList.isEmpty) {
       return null;
     }
@@ -78,8 +79,8 @@ class GeoUtils {
     double best = double.infinity;
 
     for (final GeolocModel e in geolocModelList) {
-      final double? lat = double.tryParse(e.latitude);
-      final double? lon = double.tryParse(e.longitude);
+      final double? lat = double.tryParse(e.latitude.trim().replaceAll(',', '.'));
+      final double? lon = double.tryParse(e.longitude.trim().replaceAll(',', '.'));
       if (lat == null || lon == null) {
         continue;
       }
