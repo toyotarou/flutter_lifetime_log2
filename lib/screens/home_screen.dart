@@ -31,6 +31,7 @@ import 'components/amazon_purchase_list_alert.dart';
 import 'components/bank_data_input_alert.dart';
 import 'components/lifetime_item_search_alert.dart';
 import 'components/lifetime_summary_alert.dart';
+import 'components/metro_stamp_rally_20_anniversary_list_alert.dart';
 import 'components/metro_stamp_rally_list_alert.dart';
 import 'components/money_in_possession_display_alert.dart';
 import 'components/salary_list_alert.dart';
@@ -465,7 +466,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                   children: <Widget>[
                     Icon(FontAwesomeIcons.stamp),
                     SizedBox(width: 20),
-                    Expanded(child: Text('station stamp rally list')),
+                    Expanded(child: Text('metro stamp rally list')),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              GestureDetector(
+                onTap: () => LifetimeDialog(context: context, widget: const MetroStampRally20AnniversaryListAlert()),
+                child: const Row(
+                  children: <Widget>[
+                    Icon(FontAwesomeIcons.stamp),
+                    SizedBox(width: 20),
+                    Expanded(child: Text('metro stamp rally 20 anniversary list')),
                   ],
                 ),
               ),
