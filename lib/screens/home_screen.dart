@@ -32,6 +32,7 @@ import 'components/lifetime_summary_alert.dart';
 import 'components/money_in_possession_display_alert.dart';
 import 'components/salary_list_alert.dart';
 import 'components/spend_each_year_display_alert.dart';
+import 'components/stamp_rally_metro_all_station_list_alert.dart';
 import 'page/monthly_lifetime_display_page.dart';
 import 'parts/lifetime_dialog.dart';
 
@@ -368,6 +369,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                     Icon(FontAwesomeIcons.amazon),
                     SizedBox(width: 20),
                     Expanded(child: Text('amazon purchase list')),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+              const SizedBox(height: 30),
+
+              GestureDetector(
+                onTap: () => LifetimeDialog(context: context, widget: const StampRallyMetroAllStationListAlert()),
+                child: const Row(
+                  children: <Widget>[
+                    Icon(FontAwesomeIcons.stamp),
+                    SizedBox(width: 20),
+                    Expanded(child: Text('metro stamp rally list')),
                   ],
                 ),
               ),

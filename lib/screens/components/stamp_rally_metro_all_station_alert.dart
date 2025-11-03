@@ -34,7 +34,7 @@ class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetro
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[const Text('stamp rally info'), Text(widget.date)],
+                  children: <Widget>[const Text('東京メトロ　全駅スタンプラリー'), Text(widget.date)],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
