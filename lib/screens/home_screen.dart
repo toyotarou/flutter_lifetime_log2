@@ -199,63 +199,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
       ///////////////////////
 
-      final Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap = <String, List<StampRallyModel>>{};
+      final Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap = buildMetro20Anniversary(
+        stampRallyMetroAllStationMap: widget.stampRallyMetroAllStationMap,
+        stampRallyMetro20AnniversaryMapSrc: widget.stampRallyMetro20AnniversaryMap,
+        geolocMap: widget.geolocMap,
+        stationList: widget.stationList,
+        trainMap: widget.trainMap,
+        utility: utility,
+      );
 
-      widget.stampRallyMetro20AnniversaryMap.forEach((String key, List<StampRallyModel> value) {
-        final List<GeolocModel>? oneDayGeolocModelList = widget.geolocMap[key];
-
-        List<GeolocModel> cleaned = <GeolocModel>[];
-
-        if (oneDayGeolocModelList != null && oneDayGeolocModelList.isNotEmpty) {
-          cleaned = oneDayGeolocModelList.where((GeolocModel g) {
-            final double? lat = double.tryParse(g.latitude.trim().replaceAll(',', '.'));
-            final double? lon = double.tryParse(g.longitude.trim().replaceAll(',', '.'));
-            return lat != null && lon != null;
-          }).toList();
-        }
-
-        final List<StampRallyModel> list = <StampRallyModel>[];
-
-        for (final StampRallyModel element in value) {
-          final StationModel stationModel = widget.stationList
-              .where((StationModel station) => station.id == element.stationCode.toInt())
-              .first;
-
-          String nearestGeolocTime = '';
-          if (cleaned.isNotEmpty) {
-            final GeolocModel? nearestGeoloc = utility.findNearestGeoloc(
-              geolocModelList: cleaned,
-              latStr: stationModel.lat,
-              lonStr: stationModel.lng,
-            );
-
-            if (nearestGeoloc != null) {
-              nearestGeolocTime = nearestGeoloc.time;
-            }
-          }
-
-          final String trainName = widget.trainMap[stationModel.trainNumber] ?? '';
-
-          element.trainCode = stationModel.trainNumber;
-          element.trainName = trainName;
-          element.time = nearestGeolocTime;
-
-          list.add(element);
-        }
-
-        stampRallyMetro20AnniversaryMap[key] = list;
-      });
+      debugPrintMetro20Anniversary(stampRallyMetro20AnniversaryMap);
 
       ///////////////////////
 
       // ignore: always_specify_types
       Future(() {
         appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
-
         appParamNotifier.setKeepTempleDateTimeNameMap(map: templeDateTimeNameMap);
-
         appParamNotifier.setKeepAllDateLifetimeSummaryMap(map: allDateLifetimeSummaryMap);
-
         appParamNotifier.setKeepStampRallyMetro20AnniversaryMap(map: stampRallyMetro20AnniversaryMap);
       });
       //===========================================//
@@ -403,7 +364,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
               GestureDetector(
                 onTap: () => LifetimeDialog(context: context, widget: const SalaryListAlert()),
-
                 child: const Row(
                   children: <Widget>[
                     Icon(Icons.diamond),
@@ -485,4 +445,142 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       _tabs.add(TabInfo(element, MonthlyLifetimeDisplayPage(yearmonth: element)));
     }
   }
+}
+
+/// ------------------------------------------------------------
+/// AAA〜BBB 抽出：計算関数
+/// ------------------------------------------------------------
+Map<String, List<StampRallyModel>> buildMetro20Anniversary({
+  required Map<String, List<StampRallyModel>> stampRallyMetroAllStationMap,
+  required Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMapSrc,
+  required Map<String, List<GeolocModel>> geolocMap,
+  required List<StationModel> stationList,
+  required Map<String, String> trainMap,
+  required Utility utility,
+}) {
+  final Map<String, List<StampRallyModel>> result = <String, List<StampRallyModel>>{};
+
+  // trainMarkMap を作成
+  final Map<String, List<Map<String, String>>> trainMarkMap = <String, List<Map<String, String>>>{};
+  stampRallyMetroAllStationMap.forEach((String date, List<StampRallyModel> models) {
+    for (final StampRallyModel model in models) {
+      final Map<String, String> entry = <String, String>{
+        'imageFolder': model.imageFolder,
+        'imageCode': model.imageCode,
+        'stationCode': model.stationCode,
+      };
+      trainMarkMap.putIfAbsent(model.trainName, () => <Map<String, String>>[]);
+      trainMarkMap[model.trainName]!.add(entry);
+    }
+  });
+
+  // 本体処理
+  stampRallyMetro20AnniversaryMapSrc.forEach((String key, List<StampRallyModel> value) {
+    final List<GeolocModel>? oneDayGeolocModelList = geolocMap[key];
+    List<GeolocModel> cleaned = <GeolocModel>[];
+
+    if (oneDayGeolocModelList != null && oneDayGeolocModelList.isNotEmpty) {
+      cleaned = oneDayGeolocModelList.where((GeolocModel g) {
+        final double? lat = double.tryParse(g.latitude.trim().replaceAll(',', '.'));
+        final double? lon = double.tryParse(g.longitude.trim().replaceAll(',', '.'));
+        return lat != null && lon != null;
+      }).toList();
+    }
+
+    final List<StampRallyModel> list = <StampRallyModel>[];
+
+    for (final StampRallyModel element in value) {
+      final Iterable<StationModel> st = stationList.where(
+        (StationModel station) => station.id == element.stationCode.toInt(),
+      );
+
+      if (st.isEmpty) {
+        continue;
+      }
+
+      final StationModel stationModel = st.first;
+
+      String nearestGeolocTime = '';
+      if (cleaned.isNotEmpty) {
+        final GeolocModel? nearestGeoloc = utility.findNearestGeoloc(
+          geolocModelList: cleaned,
+          latStr: stationModel.lat,
+          lonStr: stationModel.lng,
+        );
+        if (nearestGeoloc != null) {
+          nearestGeolocTime = nearestGeoloc.time;
+        }
+      }
+
+      /// 竹橋だけ強制上書き（元コード踏襲）
+      if (element.stationCode == '5896') {
+        nearestGeolocTime = '15:15:48';
+      }
+
+      final String trainName = trainMap[stationModel.trainNumber] ?? '';
+
+      element.lat = stationModel.lat;
+      element.lng = stationModel.lng;
+      element.trainCode = stationModel.trainNumber;
+      element.trainName = trainName;
+      element.time = nearestGeolocTime;
+
+      // imageFolder / imageCode を trainMarkMap から補完
+      final List<Map<String, String>>? marks = trainMarkMap[trainName];
+      if (marks != null) {
+        final Map<String, String> match = marks.firstWhere(
+          (Map<String, String> m) => m['stationCode'] == element.stationCode,
+          orElse: () => <String, String>{},
+        );
+        if (match.isNotEmpty) {
+          element.imageFolder = match['imageFolder'] ?? '';
+          element.imageCode = match['imageCode'] ?? '';
+        }
+      }
+
+      list.add(element);
+    }
+
+    result[key] = list;
+  });
+
+  return result;
+}
+
+/// ------------------------------------------------------------
+/// BBB 抽出：デバッグ出力関数（必要時のみ）
+/// ------------------------------------------------------------
+void debugPrintMetro20Anniversary(Map<String, List<StampRallyModel>> map) {
+  print('-----------------------');
+
+  final List<String> sortedKeys = map.keys.toList()..sort((String a, String b) => a.compareTo(b));
+
+  for (final String key in sortedKeys) {
+    final List<StampRallyModel> value = map[key]!;
+
+    print(key);
+    print('------');
+
+    value
+      ..sort((StampRallyModel a, StampRallyModel b) => a.stampGetDate.compareTo(b.stampGetDate))
+      ..sort((StampRallyModel a, StampRallyModel b) => a.time.compareTo(b.time))
+      ..forEach((StampRallyModel element) {
+        print(element.stationCode);
+        print(element.stationName);
+        print(element.stampGetDate);
+        print(element.lat);
+        print(element.lng);
+        print(element.trainCode);
+        print(element.trainName);
+        print(element.imageFolder);
+        print(element.imageCode);
+        print(element.posterPosition);
+        print(element.stampGetOrder);
+        print(element.stamp);
+        print(element.time);
+        print('===');
+      });
+  }
+
+  print('-----------------------');
 }
