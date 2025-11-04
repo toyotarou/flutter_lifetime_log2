@@ -48,18 +48,27 @@ class StampRallyMetroAllStation extends _$StampRallyMetroAllStation {
       // ignore: avoid_dynamic_calls
       for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
         final StampRallyModel val = StampRallyModel(
-          // ignore: avoid_dynamic_calls
-          trainCode: value['data'][i]['train_code'].toString(),
-          // ignore: avoid_dynamic_calls
-          trainName: value['data'][i]['train_name'].toString(),
+          ///
           // ignore: avoid_dynamic_calls
           stationCode: value['data'][i]['station_code'].toString(),
           // ignore: avoid_dynamic_calls
           stationName: value['data'][i]['station_name'].toString(),
           // ignore: avoid_dynamic_calls
+          stampGetDate: value['data'][i]['stamp_get_date'].toString(),
+
+          ///
+          // ignore: avoid_dynamic_calls
           lat: value['data'][i]['lat'].toString(),
           // ignore: avoid_dynamic_calls
           lng: value['data'][i]['lng'].toString(),
+
+          ///
+          // ignore: avoid_dynamic_calls
+          trainCode: value['data'][i]['train_code'].toString(),
+          // ignore: avoid_dynamic_calls
+          trainName: value['data'][i]['train_name'].toString(),
+
+          ///
           // ignore: avoid_dynamic_calls
           imageFolder: value['data'][i]['image_folder'].toString(),
           // ignore: avoid_dynamic_calls
@@ -67,9 +76,11 @@ class StampRallyMetroAllStation extends _$StampRallyMetroAllStation {
           // ignore: avoid_dynamic_calls
           posterPosition: value['data'][i]['poster_position'].toString(),
           // ignore: avoid_dynamic_calls
-          stampGetDate: value['data'][i]['stamp_get_date'].toString(),
-          // ignore: avoid_dynamic_calls
           stampGetOrder: value['data'][i]['stamp_get_order'].toString().toInt(),
+
+          ///
+          stamp: '',
+          time: '',
         );
 
         list.add(val);

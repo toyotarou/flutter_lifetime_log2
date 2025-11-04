@@ -7,7 +7,7 @@ part of 'stamp_rally_metro_all_station.dart';
 // **************************************************************************
 
 String _$stampRallyMetroAllStationHash() =>
-    r'2ad357edec9e64d89a73ec9ebfec38a9bf27e5ea';
+    r'b84d19a69f7da2e3f9be9185223e3a662706e59b';
 
 /// See also [StampRallyMetroAllStation].
 @ProviderFor(StampRallyMetroAllStation)

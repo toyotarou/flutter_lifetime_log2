@@ -18,6 +18,8 @@ class TransportationState with _$TransportationState {
     @Default(<String, TransportationModel>{}) Map<String, TransportationModel> transportationMap,
 
     @Default(<StationModel>[]) List<StationModel> stationList,
+
+    @Default(<String, String>{}) Map<String, String> trainMap,
   }) = _TransportationState;
 }
 
@@ -90,7 +92,7 @@ class Transportation extends _$Transportation {
 
       //---------------------------------------------------------------------------//
 
-      final List<StationModel> stationList1 = <StationModel>[];
+      final List<StationModel> stationList = <StationModel>[];
 
       final dynamic value2 = await client.getByPath(path: 'http://49.212.175.205:3000/api/v1/station');
 
@@ -111,7 +113,7 @@ class Transportation extends _$Transportation {
 
         stationMap1[val.stationName] = val;
 
-        stationList1.add(val);
+        stationList.add(val);
       }
 
       //---------------------------------------------------------------------------//
@@ -188,7 +190,12 @@ class Transportation extends _$Transportation {
 
       //---------------------------------------------------------------------------//
 
-      return state.copyWith(transportationList: list, transportationMap: map, stationList: stationList1);
+      return state.copyWith(
+        transportationList: list,
+        transportationMap: map,
+        stationList: stationList,
+        trainMap: trainMap,
+      );
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
       rethrow; // これにより呼び出し元でキャッチできる
