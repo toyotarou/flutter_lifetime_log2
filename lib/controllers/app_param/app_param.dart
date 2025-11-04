@@ -66,6 +66,8 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<Map<String, dynamic>>>{})
     Map<String, List<Map<String, dynamic>>> keepAllDateLifetimeSummaryMap,
 
+    @Default(<String, List<StampRallyModel>>{}) Map<String, List<StampRallyModel>> keepStampRallyMetro20AnniversaryMap,
+
     ///
     List<OverlayEntry>? firstEntries,
     List<OverlayEntry>? secondEntries,
@@ -220,6 +222,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepStampRallyMetroAllStationMap({required Map<String, List<StampRallyModel>> map}) =>
       state = state.copyWith(keepStampRallyMetroAllStationMap: map);
+
+  ///
+  void setKeepStampRallyMetro20AnniversaryMap({required Map<String, List<StampRallyModel>> map}) =>
+      state = state.copyWith(keepStampRallyMetro20AnniversaryMap: map);
 
   //===================================================
 

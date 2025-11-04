@@ -264,6 +264,42 @@ class Utility {
     // ignore: always_specify_types
     return list.fold<int>(0, (int sum, element) => sum + selector(element));
   }
+
+  ///
+  GeolocModel? findNearestGeoloc({
+    required List<GeolocModel> geolocModelList,
+    required String latStr,
+    required String lonStr,
+  }) {
+    final double? targetLat = double.tryParse(latStr.trim().replaceAll(',', '.'));
+    final double? targetLon = double.tryParse(lonStr.trim().replaceAll(',', '.'));
+
+    if (targetLat == null || targetLon == null || geolocModelList.isEmpty) {
+      return null;
+    }
+
+    final LatLng target = LatLng(targetLat, targetLon);
+    GeolocModel? nearest;
+    double best = double.infinity;
+
+    for (final GeolocModel e in geolocModelList) {
+      final double? lat = double.tryParse(e.latitude.trim().replaceAll(',', '.'));
+      final double? lon = double.tryParse(e.longitude.trim().replaceAll(',', '.'));
+      if (lat == null || lon == null) {
+        continue;
+      }
+
+      final double d = calculateDistance(target, LatLng(lat, lon));
+      if (d < best) {
+        best = d;
+        nearest = e;
+        if (d == 0) {
+          break;
+        }
+      }
+    }
+    return nearest;
+  }
 }
 
 class NavigationService {

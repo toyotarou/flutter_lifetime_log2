@@ -65,6 +65,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.stockMap,
     required this.toushiShintakuMap,
     required this.stationList,
+    required this.trainMap,
     required this.creditSummaryMap,
     required this.fundRelationMap,
     required this.stockTickerMap,
@@ -72,6 +73,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.timePlaceMap,
     required this.amazonPurchaseMap,
     required this.stampRallyMetroAllStationMap,
+    required this.stampRallyMetro20AnniversaryMap,
   });
 
   final List<String> holidayList;
@@ -92,6 +94,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<StockModel>> stockMap;
   final Map<String, List<ToushiShintakuModel>> toushiShintakuMap;
   final List<StationModel> stationList;
+  final Map<String, String> trainMap;
   final Map<String, List<CreditSummaryModel>> creditSummaryMap;
   final Map<int, List<FundModel>> fundRelationMap;
   final Map<String, List<StockModel>> stockTickerMap;
@@ -99,6 +102,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<TimePlaceModel>> timePlaceMap;
   final Map<String, List<AmazonPurchaseModel>> amazonPurchaseMap;
   final Map<String, List<StampRallyModel>> stampRallyMetroAllStationMap;
+  final Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -142,6 +146,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepStampRallyMetroAllStationMap(map: widget.stampRallyMetroAllStationMap);
 
       //===========================================//
+
+      ///////////////////////
+
       final Map<String, List<String>> templeDateTimeBadgeMap = <String, List<String>>{};
 
       final Map<String, String> templeDateTimeNameMap = <String, String>{};
@@ -172,6 +179,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         }
       });
 
+      ///////////////////////
+
+      ///////////////////////
+
       final Map<String, List<Map<String, dynamic>>> allDateLifetimeSummaryMap = <String, List<Map<String, dynamic>>>{};
 
       widget.lifetimeMap.forEach((String key, LifetimeModel value) {
@@ -184,6 +195,59 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         allDateLifetimeSummaryMap[key] = startEndTitleList;
       });
 
+      ///////////////////////
+
+      ///////////////////////
+
+      final Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap = <String, List<StampRallyModel>>{};
+
+      widget.stampRallyMetro20AnniversaryMap.forEach((String key, List<StampRallyModel> value) {
+        final List<GeolocModel>? oneDayGeolocModelList = widget.geolocMap[key];
+
+        List<GeolocModel> cleaned = <GeolocModel>[];
+
+        if (oneDayGeolocModelList != null && oneDayGeolocModelList.isNotEmpty) {
+          cleaned = oneDayGeolocModelList.where((GeolocModel g) {
+            final double? lat = double.tryParse(g.latitude.trim().replaceAll(',', '.'));
+            final double? lon = double.tryParse(g.longitude.trim().replaceAll(',', '.'));
+            return lat != null && lon != null;
+          }).toList();
+        }
+
+        final List<StampRallyModel> list = <StampRallyModel>[];
+
+        for (final StampRallyModel element in value) {
+          final StationModel stationModel = widget.stationList
+              .where((StationModel station) => station.id == element.stationCode.toInt())
+              .first;
+
+          String nearestGeolocTime = '';
+          if (cleaned.isNotEmpty) {
+            final GeolocModel? nearestGeoloc = utility.findNearestGeoloc(
+              geolocModelList: cleaned,
+              latStr: stationModel.lat,
+              lonStr: stationModel.lng,
+            );
+
+            if (nearestGeoloc != null) {
+              nearestGeolocTime = nearestGeoloc.time;
+            }
+          }
+
+          final String trainName = widget.trainMap[stationModel.trainNumber] ?? '';
+
+          element.trainCode = stationModel.trainNumber;
+          element.trainName = trainName;
+          element.time = nearestGeolocTime;
+
+          list.add(element);
+        }
+
+        stampRallyMetro20AnniversaryMap[key] = list;
+      });
+
+      ///////////////////////
+
       // ignore: always_specify_types
       Future(() {
         appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
@@ -191,6 +255,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         appParamNotifier.setKeepTempleDateTimeNameMap(map: templeDateTimeNameMap);
 
         appParamNotifier.setKeepAllDateLifetimeSummaryMap(map: allDateLifetimeSummaryMap);
+
+        appParamNotifier.setKeepStampRallyMetro20AnniversaryMap(map: stampRallyMetro20AnniversaryMap);
       });
       //===========================================//
     });

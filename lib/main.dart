@@ -71,6 +71,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     timePlaceNotifier.getAllTimePlaceData();
     amazonPurchaseNotifier.getAllAmazonPurchaseData();
     stampRallyMetroAllStationNotifier.getAllStampRallyMetroAllStationData();
+    stampRallyMetro20AnniversaryNotifier.getAllMetroStamp20AnniversaryData();
   }
 
   ///
@@ -119,6 +120,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           stockMap: stockState.stockMap,
           toushiShintakuMap: toushiShintakuState.toushiShintakuMap,
           stationList: transportationState.stationList,
+          trainMap: transportationState.trainMap,
           creditSummaryMap: creditSummaryState.creditSummaryMap,
           fundRelationMap: fundState.fundRelationMap,
           stockTickerMap: stockState.stockTickerMap,
@@ -126,6 +128,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           timePlaceMap: timePlaceState.timePlaceMap,
           amazonPurchaseMap: amazonPurchaseState.amazonPurchaseMap,
           stampRallyMetroAllStationMap: stampRallyMetroAllStationState.dateStationStampMap,
+          stampRallyMetro20AnniversaryMap: stampRallyMetro20AnniversaryState.dateStationStampMap,
         ),
       ),
     );
