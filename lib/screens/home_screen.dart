@@ -208,7 +208,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         utility: utility,
       );
 
-      debugPrintMetro20Anniversary(stampRallyMetro20AnniversaryMap);
+      // debugPrintMetro20Anniversary(stampRallyMetro20AnniversaryMap);
+      //
+      //
+      //
+      //
 
       ///////////////////////
 
@@ -447,9 +451,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
   }
 }
 
-/// ------------------------------------------------------------
-/// AAA〜BBB 抽出：計算関数
-/// ------------------------------------------------------------
+///
 Map<String, List<StampRallyModel>> buildMetro20Anniversary({
   required Map<String, List<StampRallyModel>> stampRallyMetroAllStationMap,
   required Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMapSrc,
@@ -547,40 +549,46 @@ Map<String, List<StampRallyModel>> buildMetro20Anniversary({
   return result;
 }
 
-/// ------------------------------------------------------------
-/// BBB 抽出：デバッグ出力関数（必要時のみ）
-/// ------------------------------------------------------------
-void debugPrintMetro20Anniversary(Map<String, List<StampRallyModel>> map) {
-  print('-----------------------');
-
-  final List<String> sortedKeys = map.keys.toList()..sort((String a, String b) => a.compareTo(b));
-
-  for (final String key in sortedKeys) {
-    final List<StampRallyModel> value = map[key]!;
-
-    print(key);
-    print('------');
-
-    value
-      ..sort((StampRallyModel a, StampRallyModel b) => a.stampGetDate.compareTo(b.stampGetDate))
-      ..sort((StampRallyModel a, StampRallyModel b) => a.time.compareTo(b.time))
-      ..forEach((StampRallyModel element) {
-        print(element.stationCode);
-        print(element.stationName);
-        print(element.stampGetDate);
-        print(element.lat);
-        print(element.lng);
-        print(element.trainCode);
-        print(element.trainName);
-        print(element.imageFolder);
-        print(element.imageCode);
-        print(element.posterPosition);
-        print(element.stampGetOrder);
-        print(element.stamp);
-        print(element.time);
-        print('===');
-      });
-  }
-
-  print('-----------------------');
-}
+//
+//
+//
+//
+// ///
+// void debugPrintMetro20Anniversary(Map<String, List<StampRallyModel>> map) {
+//   print('-----------------------');
+//
+//   final List<String> sortedKeys = map.keys.toList()..sort((String a, String b) => a.compareTo(b));
+//
+//   for (final String key in sortedKeys) {
+//     final List<StampRallyModel> value = map[key]!;
+//
+//     print(key);
+//     print('------');
+//
+//     value
+//       ..sort((StampRallyModel a, StampRallyModel b) => a.stampGetDate.compareTo(b.stampGetDate))
+//       ..sort((StampRallyModel a, StampRallyModel b) => a.time.compareTo(b.time))
+//       ..forEach((StampRallyModel element) {
+//         print(element.stationCode);
+//         print(element.stationName);
+//         print(element.stampGetDate);
+//         print(element.lat);
+//         print(element.lng);
+//         print(element.trainCode);
+//         print(element.trainName);
+//         print(element.imageFolder);
+//         print(element.imageCode);
+//         print(element.posterPosition);
+//         print(element.stampGetOrder);
+//         print(element.stamp);
+//         print(element.time);
+//         print('===');
+//       });
+//   }
+//
+//   print('-----------------------');
+// }
+//
+//
+//
+//

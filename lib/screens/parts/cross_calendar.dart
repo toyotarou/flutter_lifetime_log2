@@ -5,6 +5,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/stamp_rally_model.dart';
 import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
 import '../../utility/functions.dart';
@@ -1085,6 +1086,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     for (int i = 0; i < 7; i++) {
       final String genDate = DateTime.parse(date).add(Duration(days: i)).yyyymmdd;
 
+      //////////////////////////
       if (appParamState.keepTempleDateTimeBadgeMap[genDate] != null) {
         for (final String element in appParamState.keepTempleDateTimeBadgeMap[genDate]!) {
           final List<String> exElement = element.split(':');
@@ -1102,6 +1104,25 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
           );
         }
       }
+      //////////////////////////
+
+      //////////////////////////
+      if (appParamState.keepStampRallyMetro20AnniversaryMap[genDate] != null) {
+        for (final StampRallyModel element in appParamState.keepStampRallyMetro20AnniversaryMap[genDate]!) {
+          final List<String> exTime = element.time.split(':');
+
+          list.add(
+            WeeklyHistoryBadgeModel(
+              dayIndex: i,
+              minutesOfDay: exTime[0].toInt() * 60 + exTime[1].toInt(),
+              icon: FontAwesomeIcons.stamp,
+              tooltip: element.stationName,
+            ),
+          );
+        }
+      }
+
+      //////////////////////////
     }
 
     return list;
