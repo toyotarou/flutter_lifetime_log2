@@ -556,7 +556,7 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                       if (widget.isNeedStationStampDisplayHeight) ...<Widget>[
                         SizedBox(
                           height: 30,
-                          child: (appParamState.keepDateStationStampMap[date] != null)
+                          child: (appParamState.keepStampRallyMetroAllStationMap[date] != null)
                               ? GestureDetector(
                                   child: Icon(
                                     FontAwesomeIcons.stamp,

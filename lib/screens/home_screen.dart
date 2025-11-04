@@ -71,7 +71,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.toushiShintakuRelationalMap,
     required this.timePlaceMap,
     required this.amazonPurchaseMap,
-    required this.dateStationStampMap,
+    required this.stampRallyMetroAllStationMap,
   });
 
   final List<String> holidayList;
@@ -98,7 +98,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<int, List<ToushiShintakuModel>> toushiShintakuRelationalMap;
   final Map<String, List<TimePlaceModel>> timePlaceMap;
   final Map<String, List<AmazonPurchaseModel>> amazonPurchaseMap;
-  final Map<String, List<StampRallyModel>> dateStationStampMap;
+  final Map<String, List<StampRallyModel>> stampRallyMetroAllStationMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -139,7 +139,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepToushiShintakuRelationalMap(map: widget.toushiShintakuRelationalMap);
       appParamNotifier.setKeepTimePlaceMap(map: widget.timePlaceMap);
       appParamNotifier.setKeepAmazonPurchaseMap(map: widget.amazonPurchaseMap);
-      appParamNotifier.setKeepDateStationStampMap(map: widget.dateStationStampMap);
+      appParamNotifier.setKeepStampRallyMetroAllStationMap(map: widget.stampRallyMetroAllStationMap);
 
       //===========================================//
       final Map<String, List<String>> templeDateTimeBadgeMap = <String, List<String>>{};

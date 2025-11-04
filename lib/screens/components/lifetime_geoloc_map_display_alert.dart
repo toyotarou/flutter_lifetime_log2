@@ -244,7 +244,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Expanded(
-                      child: (appParamState.keepDateStationStampMap[widget.date] != null)
+                      child: (appParamState.keepStampRallyMetroAllStationMap[widget.date] != null)
                           ? Container(
                               margin: const EdgeInsets.only(right: 20),
                               child: DefaultTextStyle(
@@ -830,9 +830,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeStampRallyStationMarker() {
     stampRallyStationMarkerList.clear();
 
-    if (appParamState.keepDateStationStampMap[widget.date] != null) {
-      for (int i = 0; i < appParamState.keepDateStationStampMap[widget.date]!.length; i++) {
-        final StampRallyModel element = appParamState.keepDateStationStampMap[widget.date]![i];
+    if (appParamState.keepStampRallyMetroAllStationMap[widget.date] != null) {
+      for (int i = 0; i < appParamState.keepStampRallyMetroAllStationMap[widget.date]!.length; i++) {
+        final StampRallyModel element = appParamState.keepStampRallyMetroAllStationMap[widget.date]![i];
 
         stampRallyStationMarkerList.add(
           Marker(

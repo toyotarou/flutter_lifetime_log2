@@ -52,7 +52,7 @@ class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetro
   Widget displayStationStampModelList() {
     final List<Widget> list = <Widget>[];
 
-    final List<StampRallyModel>? stamps = appParamState.keepDateStationStampMap[widget.date];
+    final List<StampRallyModel>? stamps = appParamState.keepStampRallyMetroAllStationMap[widget.date];
 
     if (stamps != null) {
       stamps.sort((StampRallyModel a, StampRallyModel b) => a.stampGetOrder!.compareTo(b.stampGetOrder!));

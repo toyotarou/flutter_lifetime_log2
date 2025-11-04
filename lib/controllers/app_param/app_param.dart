@@ -54,7 +54,7 @@ class AppParamState with _$AppParamState {
     @Default(<int, List<ToushiShintakuModel>>{}) Map<int, List<ToushiShintakuModel>> keepToushiShintakuRelationalMap,
     @Default(<String, List<TimePlaceModel>>{}) Map<String, List<TimePlaceModel>> keepTimePlaceMap,
     @Default(<String, List<AmazonPurchaseModel>>{}) Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
-    @Default(<String, List<StampRallyModel>>{}) Map<String, List<StampRallyModel>> keepDateStationStampMap,
+    @Default(<String, List<StampRallyModel>>{}) Map<String, List<StampRallyModel>> keepStampRallyMetroAllStationMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -218,8 +218,8 @@ class AppParam extends _$AppParam {
       state = state.copyWith(keepAllDateLifetimeSummaryMap: map);
 
   ///
-  void setKeepDateStationStampMap({required Map<String, List<StampRallyModel>> map}) =>
-      state = state.copyWith(keepDateStationStampMap: map);
+  void setKeepStampRallyMetroAllStationMap({required Map<String, List<StampRallyModel>> map}) =>
+      state = state.copyWith(keepStampRallyMetroAllStationMap: map);
 
   //===================================================
 

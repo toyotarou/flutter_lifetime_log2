@@ -60,7 +60,7 @@ mixin _$AppParamState {
       throw _privateConstructorUsedError;
   Map<String, List<AmazonPurchaseModel>> get keepAmazonPurchaseMap =>
       throw _privateConstructorUsedError;
-  Map<String, List<StampRallyModel>> get keepDateStationStampMap =>
+  Map<String, List<StampRallyModel>> get keepStampRallyMetroAllStationMap =>
       throw _privateConstructorUsedError;
 
   ///
@@ -143,7 +143,7 @@ abstract class $AppParamStateCopyWith<$Res> {
       Map<int, List<ToushiShintakuModel>> keepToushiShintakuRelationalMap,
       Map<String, List<TimePlaceModel>> keepTimePlaceMap,
       Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
-      Map<String, List<StampRallyModel>> keepDateStationStampMap,
+      Map<String, List<StampRallyModel>> keepStampRallyMetroAllStationMap,
       List<StationModel> keepStationList,
       Map<String, List<String>> keepTempleDateTimeBadgeMap,
       Map<String, String> keepTempleDateTimeNameMap,
@@ -208,7 +208,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? keepToushiShintakuRelationalMap = null,
     Object? keepTimePlaceMap = null,
     Object? keepAmazonPurchaseMap = null,
-    Object? keepDateStationStampMap = null,
+    Object? keepStampRallyMetroAllStationMap = null,
     Object? keepStationList = null,
     Object? keepTempleDateTimeBadgeMap = null,
     Object? keepTempleDateTimeNameMap = null,
@@ -327,9 +327,9 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.keepAmazonPurchaseMap
           : keepAmazonPurchaseMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<AmazonPurchaseModel>>,
-      keepDateStationStampMap: null == keepDateStationStampMap
-          ? _value.keepDateStationStampMap
-          : keepDateStationStampMap // ignore: cast_nullable_to_non_nullable
+      keepStampRallyMetroAllStationMap: null == keepStampRallyMetroAllStationMap
+          ? _value.keepStampRallyMetroAllStationMap
+          : keepStampRallyMetroAllStationMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<StampRallyModel>>,
       keepStationList: null == keepStationList
           ? _value.keepStationList
@@ -463,7 +463,7 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       Map<int, List<ToushiShintakuModel>> keepToushiShintakuRelationalMap,
       Map<String, List<TimePlaceModel>> keepTimePlaceMap,
       Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
-      Map<String, List<StampRallyModel>> keepDateStationStampMap,
+      Map<String, List<StampRallyModel>> keepStampRallyMetroAllStationMap,
       List<StationModel> keepStationList,
       Map<String, List<String>> keepTempleDateTimeBadgeMap,
       Map<String, String> keepTempleDateTimeNameMap,
@@ -526,7 +526,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? keepToushiShintakuRelationalMap = null,
     Object? keepTimePlaceMap = null,
     Object? keepAmazonPurchaseMap = null,
-    Object? keepDateStationStampMap = null,
+    Object? keepStampRallyMetroAllStationMap = null,
     Object? keepStationList = null,
     Object? keepTempleDateTimeBadgeMap = null,
     Object? keepTempleDateTimeNameMap = null,
@@ -645,9 +645,9 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value._keepAmazonPurchaseMap
           : keepAmazonPurchaseMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<AmazonPurchaseModel>>,
-      keepDateStationStampMap: null == keepDateStationStampMap
-          ? _value._keepDateStationStampMap
-          : keepDateStationStampMap // ignore: cast_nullable_to_non_nullable
+      keepStampRallyMetroAllStationMap: null == keepStampRallyMetroAllStationMap
+          ? _value._keepStampRallyMetroAllStationMap
+          : keepStampRallyMetroAllStationMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<StampRallyModel>>,
       keepStationList: null == keepStationList
           ? _value._keepStationList
@@ -795,7 +795,7 @@ class _$AppParamStateImpl implements _AppParamState {
       final Map<String, List<TimePlaceModel>> keepTimePlaceMap =
           const <String, List<TimePlaceModel>>{},
       final Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap = const <String, List<AmazonPurchaseModel>>{},
-      final Map<String, List<StampRallyModel>> keepDateStationStampMap = const <String, List<StampRallyModel>>{},
+      final Map<String, List<StampRallyModel>> keepStampRallyMetroAllStationMap = const <String, List<StampRallyModel>>{},
       final List<StationModel> keepStationList = const <StationModel>[],
       final Map<String, List<String>> keepTempleDateTimeBadgeMap = const <String, List<String>>{},
       final Map<String, String> keepTempleDateTimeNameMap = const <String, String>{},
@@ -843,7 +843,7 @@ class _$AppParamStateImpl implements _AppParamState {
         _keepToushiShintakuRelationalMap = keepToushiShintakuRelationalMap,
         _keepTimePlaceMap = keepTimePlaceMap,
         _keepAmazonPurchaseMap = keepAmazonPurchaseMap,
-        _keepDateStationStampMap = keepDateStationStampMap,
+        _keepStampRallyMetroAllStationMap = keepStampRallyMetroAllStationMap,
         _keepStationList = keepStationList,
         _keepTempleDateTimeBadgeMap = keepTempleDateTimeBadgeMap,
         _keepTempleDateTimeNameMap = keepTempleDateTimeNameMap,
@@ -1070,14 +1070,14 @@ class _$AppParamStateImpl implements _AppParamState {
     return EqualUnmodifiableMapView(_keepAmazonPurchaseMap);
   }
 
-  final Map<String, List<StampRallyModel>> _keepDateStationStampMap;
+  final Map<String, List<StampRallyModel>> _keepStampRallyMetroAllStationMap;
   @override
   @JsonKey()
-  Map<String, List<StampRallyModel>> get keepDateStationStampMap {
-    if (_keepDateStationStampMap is EqualUnmodifiableMapView)
-      return _keepDateStationStampMap;
+  Map<String, List<StampRallyModel>> get keepStampRallyMetroAllStationMap {
+    if (_keepStampRallyMetroAllStationMap is EqualUnmodifiableMapView)
+      return _keepStampRallyMetroAllStationMap;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_keepDateStationStampMap);
+    return EqualUnmodifiableMapView(_keepStampRallyMetroAllStationMap);
   }
 
   ///
@@ -1217,7 +1217,7 @@ class _$AppParamStateImpl implements _AppParamState {
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepDateStationStampMap: $keepDateStationStampMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, keepTempleDateTimeNameMap: $keepTempleDateTimeNameMap, keepAllDateLifetimeSummaryMap: $keepAllDateLifetimeSummaryMap, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, selectedToushiGraphItemName: $selectedToushiGraphItemName, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate, selectedCrossCalendarYear: $selectedCrossCalendarYear, gutterWidth: $gutterWidth)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStampRallyMetroAllStationMap: $keepStampRallyMetroAllStationMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, keepTempleDateTimeNameMap: $keepTempleDateTimeNameMap, keepAllDateLifetimeSummaryMap: $keepAllDateLifetimeSummaryMap, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, selectedToushiGraphItemName: $selectedToushiGraphItemName, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate, selectedCrossCalendarYear: $selectedCrossCalendarYear, gutterWidth: $gutterWidth)';
   }
 
   @override
@@ -1273,7 +1273,8 @@ class _$AppParamStateImpl implements _AppParamState {
             const DeepCollectionEquality()
                 .equals(other._keepAmazonPurchaseMap, _keepAmazonPurchaseMap) &&
             const DeepCollectionEquality().equals(
-                other._keepDateStationStampMap, _keepDateStationStampMap) &&
+                other._keepStampRallyMetroAllStationMap,
+                _keepStampRallyMetroAllStationMap) &&
             const DeepCollectionEquality()
                 .equals(other._keepStationList, _keepStationList) &&
             const DeepCollectionEquality().equals(
@@ -1306,8 +1307,7 @@ class _$AppParamStateImpl implements _AppParamState {
             (identical(other.selectedTempleDirection, selectedTempleDirection) ||
                 other.selectedTempleDirection == selectedTempleDirection) &&
             (identical(other.isMonthlySpendSummaryMinusJogai, isMonthlySpendSummaryMinusJogai) ||
-                other.isMonthlySpendSummaryMinusJogai ==
-                    isMonthlySpendSummaryMinusJogai) &&
+                other.isMonthlySpendSummaryMinusJogai == isMonthlySpendSummaryMinusJogai) &&
             (identical(other.selectedToushiGraphItemName, selectedToushiGraphItemName) || other.selectedToushiGraphItemName == selectedToushiGraphItemName) &&
             (identical(other.yearlyAllSpendSelectedYear, yearlyAllSpendSelectedYear) || other.yearlyAllSpendSelectedYear == yearlyAllSpendSelectedYear) &&
             (identical(other.yearlyAllSpendSelectedPrice, yearlyAllSpendSelectedPrice) || other.yearlyAllSpendSelectedPrice == yearlyAllSpendSelectedPrice) &&
@@ -1345,7 +1345,7 @@ class _$AppParamStateImpl implements _AppParamState {
         const DeepCollectionEquality().hash(_keepToushiShintakuRelationalMap),
         const DeepCollectionEquality().hash(_keepTimePlaceMap),
         const DeepCollectionEquality().hash(_keepAmazonPurchaseMap),
-        const DeepCollectionEquality().hash(_keepDateStationStampMap),
+        const DeepCollectionEquality().hash(_keepStampRallyMetroAllStationMap),
         const DeepCollectionEquality().hash(_keepStationList),
         const DeepCollectionEquality().hash(_keepTempleDateTimeBadgeMap),
         const DeepCollectionEquality().hash(_keepTempleDateTimeNameMap),
@@ -1406,7 +1406,7 @@ abstract class _AppParamState implements AppParamState {
       final Map<int, List<ToushiShintakuModel>> keepToushiShintakuRelationalMap,
       final Map<String, List<TimePlaceModel>> keepTimePlaceMap,
       final Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
-      final Map<String, List<StampRallyModel>> keepDateStationStampMap,
+      final Map<String, List<StampRallyModel>> keepStampRallyMetroAllStationMap,
       final List<StationModel> keepStationList,
       final Map<String, List<String>> keepTempleDateTimeBadgeMap,
       final Map<String, String> keepTempleDateTimeNameMap,
@@ -1480,7 +1480,7 @@ abstract class _AppParamState implements AppParamState {
   @override
   Map<String, List<AmazonPurchaseModel>> get keepAmazonPurchaseMap;
   @override
-  Map<String, List<StampRallyModel>> get keepDateStationStampMap;
+  Map<String, List<StampRallyModel>> get keepStampRallyMetroAllStationMap;
 
   ///
   @override
