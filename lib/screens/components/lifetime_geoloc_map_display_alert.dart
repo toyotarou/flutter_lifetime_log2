@@ -853,7 +853,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 FontAwesomeIcons.stamp,
                 size: 20,
                 color: getStationInnerOuterColor(
-                  posterPosition: element.posterPosition!,
+                  posterPosition: element.posterPosition,
                   stationName: element.stationName,
                 ),
               ),

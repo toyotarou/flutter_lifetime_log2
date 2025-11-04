@@ -77,7 +77,7 @@ class _StampRallyMetroAllStationListAlertState extends ConsumerState<StampRallyM
         ),
       );
 
-      value.sort((StampRallyModel a, StampRallyModel b) => a.stampGetOrder!.compareTo(b.stampGetOrder!));
+      value.sort((StampRallyModel a, StampRallyModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
 
       final Set<String> stationNames = <String>{};
       final List<Widget> list2 = <Widget>[];
@@ -145,8 +145,8 @@ class _StampRallyMetroAllStationListAlertState extends ConsumerState<StampRallyM
                                         child: Column(
                                           children: <Widget>[
                                             const Spacer(),
-                                            Text(element.imageFolder!),
-                                            Text(element.imageCode!),
+                                            Text(element.imageFolder),
+                                            Text(element.imageCode),
                                             const Spacer(),
                                           ],
                                         ),
@@ -168,7 +168,7 @@ class _StampRallyMetroAllStationListAlertState extends ConsumerState<StampRallyM
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Text(element.stationName),
-                                    Text(element.posterPosition!, style: const TextStyle(fontSize: 8)),
+                                    Text(element.posterPosition, style: const TextStyle(fontSize: 8)),
                                   ],
                                 ),
                               ),
