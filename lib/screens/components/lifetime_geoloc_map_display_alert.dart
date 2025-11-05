@@ -80,9 +80,11 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
   final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
 
-  List<Marker> stampRallyStationMarkerList = <Marker>[];
+  List<Marker> stampRallyMetroAllStationMarkerList = <Marker>[];
 
   List<GlobalKey> globalKeyList = <GlobalKey>[];
+
+  List<Marker> stampRallyMetro20AnniversaryMarkerList = <Marker>[];
 
   ///
   @override
@@ -147,7 +149,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
     makeDisplayTimeMarker();
 
-    makeStampRallyStationMarker();
+    makeStampRallyMetroAllStationMarker();
+
+    makeStampRallyMetro20AnniversaryMarker();
 
     return Scaffold(
       body: Stack(
@@ -185,7 +189,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
               MarkerLayer(markers: displayTimeMarkerList),
 
-              MarkerLayer(markers: stampRallyStationMarkerList),
+              MarkerLayer(markers: stampRallyMetroAllStationMarkerList),
+
+              MarkerLayer(markers: stampRallyMetro20AnniversaryMarkerList),
             ],
           ),
 
@@ -827,14 +833,14 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   }
 
   ///
-  void makeStampRallyStationMarker() {
-    stampRallyStationMarkerList.clear();
+  void makeStampRallyMetroAllStationMarker() {
+    stampRallyMetroAllStationMarkerList.clear();
 
     if (appParamState.keepStampRallyMetroAllStationMap[widget.date] != null) {
       for (int i = 0; i < appParamState.keepStampRallyMetroAllStationMap[widget.date]!.length; i++) {
         final StampRallyModel element = appParamState.keepStampRallyMetroAllStationMap[widget.date]![i];
 
-        stampRallyStationMarkerList.add(
+        stampRallyMetroAllStationMarkerList.add(
           Marker(
             key: globalKeyList[i + 100],
 
@@ -879,6 +885,37 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       return Colors.indigo;
     } else {
       return Colors.black;
+    }
+  }
+
+  ///
+  void makeStampRallyMetro20AnniversaryMarker() {
+    stampRallyMetro20AnniversaryMarkerList.clear();
+
+    if (appParamState.keepStampRallyMetro20AnniversaryMap[widget.date] != null) {
+      for (int i = 0; i < appParamState.keepStampRallyMetro20AnniversaryMap[widget.date]!.length; i++) {
+        final StampRallyModel element = appParamState.keepStampRallyMetro20AnniversaryMap[widget.date]![i];
+
+        stampRallyMetro20AnniversaryMarkerList.add(
+          Marker(
+            key: globalKeyList[i + 200],
+
+            point: LatLng(element.lat.toDouble(), element.lng.toDouble()),
+            child: GestureDetector(
+              onTap: () {
+                iconToolChipDisplayOverlay(
+                  type: 'lifetime_geoloc_map_display_alert_icon',
+                  context: context,
+                  buttonKey: globalKeyList[i + 200],
+                  message: element.stationName,
+                  displayDuration: const Duration(seconds: 2),
+                );
+              },
+              child: const Icon(FontAwesomeIcons.stamp, size: 20, color: Colors.indigo),
+            ),
+          ),
+        );
+      }
     }
   }
 }
