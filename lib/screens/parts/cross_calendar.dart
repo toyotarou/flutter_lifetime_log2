@@ -752,7 +752,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       displayIcons.add(Icon(Icons.train, size: 20, color: Colors.white.withValues(alpha: 0.3)));
     }
 
-    if (appParamState.keepStampRallyMetroAllStationMap[date] != null) {
+    if (appParamState.keepStampRallyMetroAllStationMap[date] != null ||
+        appParamState.keepStampRallyMetro20AnniversaryMap[date] != null) {
       displayIcons.add(Icon(FontAwesomeIcons.stamp, size: 15, color: Colors.white.withValues(alpha: 0.3)));
     }
 

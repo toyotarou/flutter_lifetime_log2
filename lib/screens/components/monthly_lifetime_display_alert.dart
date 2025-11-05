@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -67,6 +68,36 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
             ? utility.getYoubiColor(date: key, youbiStr: youbi, holiday: appParamState.keepHolidayList)
             : Colors.white.withValues(alpha: 0.1);
 
+        //
+        //
+        //
+        // final Map<String, List<Map<String, String>>> displayTemples = <String, List<Map<String, String>>>{};
+        // if (appParamState.keepTempleDateTimeBadgeMap[key] != null) {
+        //   for (final String element in appParamState.keepTempleDateTimeBadgeMap[key]!) {
+        //     final String? templeName = appParamState.keepTempleDateTimeNameMap['$key|$element'];
+        //
+        //     if (templeName != null) {
+        //       (displayTemples[key.split('-')[2]] ??= <Map<String, String>>[]).add(<String, String>{
+        //         element.split(':')[0]: templeName,
+        //       });
+        //     }
+        //   }
+        // }
+        //
+        //
+        //
+        //
+
+        final Map<String, List<String>> displayTemples = <String, List<String>>{};
+        if (appParamState.keepTempleDateTimeBadgeMap[key] != null) {
+          for (final String element in appParamState.keepTempleDateTimeBadgeMap[key]!) {
+            final String? templeName = appParamState.keepTempleDateTimeNameMap['$key|$element'];
+            if (templeName != null) {
+              (displayTemples[element.split(':')[0]] ??= <String>[]).add(templeName);
+            }
+          }
+        }
+
         list.add(
           DefaultTextStyle(
             style: const TextStyle(fontSize: 10),
@@ -88,7 +119,7 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
                   ),
                 ),
 
-                displayLifetimeTimeItem(dispValList: dispValList, oneWidth: oneWidth),
+                displayLifetimeTimeItem(dispValList: dispValList, oneWidth: oneWidth, displayTemples: displayTemples),
               ],
             ),
           ),
@@ -109,7 +140,11 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
   }
 
   ///
-  Widget displayLifetimeTimeItem({required List<String> dispValList, required double oneWidth}) {
+  Widget displayLifetimeTimeItem({
+    required List<String> dispValList,
+    required double oneWidth,
+    required Map<String, List<String>> displayTemples,
+  }) {
     final List<Widget> list = <Widget>[];
 
     for (int i = 0; i < dispValList.length; i++) {
@@ -130,6 +165,23 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
                 children: <Widget>[const SizedBox.shrink(), Text((i % 6 == 0) ? i.toString().padLeft(2, '0') : '')],
               ),
               Text(dispValList[i]),
+
+              if (displayTemples[i.toString().padLeft(2, '0')] != null) ...<Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    const SizedBox.shrink(),
+                    Row(
+                      children: displayTemples[i.toString().padLeft(2, '0')]!.map((String e) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 3),
+                          child: Icon(FontAwesomeIcons.toriiGate, size: 10, color: Color(0xFFFBB6CE)),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),
