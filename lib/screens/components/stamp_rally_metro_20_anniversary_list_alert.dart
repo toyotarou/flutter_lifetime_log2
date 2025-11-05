@@ -8,15 +8,15 @@ import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'stamp_rally_stamp_display_alert.dart';
 
-class StampRallyMetroAllStationListAlert extends ConsumerStatefulWidget {
-  const StampRallyMetroAllStationListAlert({super.key});
+class StampRallyMetro20AnniversaryListAlert extends ConsumerStatefulWidget {
+  const StampRallyMetro20AnniversaryListAlert({super.key});
 
   @override
-  ConsumerState<StampRallyMetroAllStationListAlert> createState() => _StampRallyMetroAllStationListAlertState();
+  ConsumerState<StampRallyMetro20AnniversaryListAlert> createState() => _StampRallyMetro20AnniversaryListAlertState();
 }
 
-class _StampRallyMetroAllStationListAlertState extends ConsumerState<StampRallyMetroAllStationListAlert>
-    with ControllersMixin<StampRallyMetroAllStationListAlert> {
+class _StampRallyMetro20AnniversaryListAlertState extends ConsumerState<StampRallyMetro20AnniversaryListAlert>
+    with ControllersMixin<StampRallyMetro20AnniversaryListAlert> {
   Utility utility = Utility();
 
   ///
@@ -54,7 +54,7 @@ class _StampRallyMetroAllStationListAlertState extends ConsumerState<StampRallyM
     final List<Widget> list = <Widget>[];
 
     final List<MapEntry<String, List<StampRallyModel>>> sortedEntries =
-        appParamState.keepStampRallyMetroAllStationMap.entries.toList()..sort(
+        appParamState.keepStampRallyMetro20AnniversaryMap.entries.toList()..sort(
           (MapEntry<String, List<StampRallyModel>> a, MapEntry<String, List<StampRallyModel>> b) =>
               a.key.compareTo(b.key),
         );
@@ -85,7 +85,7 @@ class _StampRallyMetroAllStationListAlertState extends ConsumerState<StampRallyM
       for (final StampRallyModel element in value) {
         if (stationNames.add(element.stationName)) {
           final String stamp =
-              'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';
+              'http://toyohide.work/BrainLog/public/metro_stamp_20_anniversary/metro_stamp_20_${element.stamp}.png';
 
           list.add(
             Container(

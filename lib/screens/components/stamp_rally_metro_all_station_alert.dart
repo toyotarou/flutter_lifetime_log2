@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../utility/utility.dart';
+import '../parts/lifetime_dialog.dart';
+import 'stamp_rally_stamp_display_alert.dart';
 
 class StampRallyMetroAllStationAlert extends ConsumerStatefulWidget {
   const StampRallyMetroAllStationAlert({super.key, required this.date});
@@ -79,15 +81,24 @@ class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetro
 
             child: Row(
               children: <Widget>[
-                SizedBox(
-                  width: 80,
-                  child: Opacity(
-                    opacity: 0.6,
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/images/no_image.png',
-                      image: stamp,
-                      imageErrorBuilder: (BuildContext c, Object o, StackTrace? s) =>
-                          Image.asset('assets/images/no_image.png'),
+                GestureDetector(
+                  onTap: () {
+                    LifetimeDialog(
+                      context: context,
+                      widget: StampRallyStampDisplayAlert(imageUrl: stamp),
+                    );
+                  },
+
+                  child: SizedBox(
+                    width: 80,
+                    child: Opacity(
+                      opacity: 0.6,
+                      child: FadeInImage.assetNetwork(
+                        placeholder: 'assets/images/no_image.png',
+                        image: stamp,
+                        imageErrorBuilder: (BuildContext c, Object o, StackTrace? s) =>
+                            Image.asset('assets/images/no_image.png'),
+                      ),
                     ),
                   ),
                 ),

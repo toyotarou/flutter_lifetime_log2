@@ -32,6 +32,7 @@ import 'components/lifetime_summary_alert.dart';
 import 'components/money_in_possession_display_alert.dart';
 import 'components/salary_list_alert.dart';
 import 'components/spend_each_year_display_alert.dart';
+import 'components/stamp_rally_metro_20_anniversary_list_alert.dart';
 import 'components/stamp_rally_metro_all_station_list_alert.dart';
 import 'page/monthly_lifetime_display_page.dart';
 import 'parts/lifetime_dialog.dart';
@@ -207,12 +208,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         trainMap: widget.trainMap,
         utility: utility,
       );
-
-      // debugPrintMetro20Anniversary(stampRallyMetro20AnniversaryMap);
-      //
-      //
-      //
-      //
 
       ///////////////////////
 
@@ -415,7 +410,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                   children: <Widget>[
                     Icon(FontAwesomeIcons.stamp),
                     SizedBox(width: 20),
-                    Expanded(child: Text('metro stamp rally list')),
+                    Expanded(child: Text('stamp rally metro all station')),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              GestureDetector(
+                onTap: () => LifetimeDialog(context: context, widget: const StampRallyMetro20AnniversaryListAlert()),
+                child: const Row(
+                  children: <Widget>[
+                    Icon(FontAwesomeIcons.stamp),
+                    SizedBox(width: 20),
+                    Expanded(child: Text('stamp rally metro 20 anniversary')),
                   ],
                 ),
               ),
@@ -548,47 +556,3 @@ Map<String, List<StampRallyModel>> buildMetro20Anniversary({
 
   return result;
 }
-
-//
-//
-//
-//
-// ///
-// void debugPrintMetro20Anniversary(Map<String, List<StampRallyModel>> map) {
-//   print('-----------------------');
-//
-//   final List<String> sortedKeys = map.keys.toList()..sort((String a, String b) => a.compareTo(b));
-//
-//   for (final String key in sortedKeys) {
-//     final List<StampRallyModel> value = map[key]!;
-//
-//     print(key);
-//     print('------');
-//
-//     value
-//       ..sort((StampRallyModel a, StampRallyModel b) => a.stampGetDate.compareTo(b.stampGetDate))
-//       ..sort((StampRallyModel a, StampRallyModel b) => a.time.compareTo(b.time))
-//       ..forEach((StampRallyModel element) {
-//         print(element.stationCode);
-//         print(element.stationName);
-//         print(element.stampGetDate);
-//         print(element.lat);
-//         print(element.lng);
-//         print(element.trainCode);
-//         print(element.trainName);
-//         print(element.imageFolder);
-//         print(element.imageCode);
-//         print(element.posterPosition);
-//         print(element.stampGetOrder);
-//         print(element.stamp);
-//         print(element.time);
-//         print('===');
-//       });
-//   }
-//
-//   print('-----------------------');
-// }
-//
-//
-//
-//
