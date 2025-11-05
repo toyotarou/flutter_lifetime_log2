@@ -5,21 +5,29 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/salary_model.dart';
 import '../../models/work_time_model.dart';
+import '../parts/lifetime_dialog.dart';
+import 'work_info_yearly_display_alert.dart';
 
-class MonthlyWorkTimeDisplayAlert extends ConsumerStatefulWidget {
-  const MonthlyWorkTimeDisplayAlert({super.key, required this.yearmonth});
+class WorkInfoMonthlyDisplayAlert extends ConsumerStatefulWidget {
+  const WorkInfoMonthlyDisplayAlert({super.key, required this.yearmonth});
 
   final String yearmonth;
 
   @override
-  ConsumerState<MonthlyWorkTimeDisplayAlert> createState() => _MonthlyWorkTimeDisplayAlertState();
+  ConsumerState<WorkInfoMonthlyDisplayAlert> createState() => _WorkInfoMonthlyDisplayAlertState();
 }
 
-class _MonthlyWorkTimeDisplayAlertState extends ConsumerState<MonthlyWorkTimeDisplayAlert>
-    with ControllersMixin<MonthlyWorkTimeDisplayAlert> {
+class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDisplayAlert>
+    with ControllersMixin<WorkInfoMonthlyDisplayAlert> {
   ///
   @override
   Widget build(BuildContext context) {
+    final String startYearMonth = appParamState.keepWorkTimeMap.keys.reduce(
+      (String a, String b) => a.compareTo(b) < 0 ? a : b,
+    );
+
+    final int yearRange = DateTime.now().year - startYearMonth.split('-')[0].toInt() + 1;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
 
@@ -33,7 +41,23 @@ class _MonthlyWorkTimeDisplayAlertState extends ConsumerState<MonthlyWorkTimeDis
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.yearmonth), const SizedBox.shrink()],
+                  children: <Widget>[
+                    Text(widget.yearmonth),
+                    GestureDetector(
+                      onTap: () {
+                        LifetimeDialog(
+                          context: context,
+                          widget: WorkInfoYearlyDisplayAlert(
+                            startYear: startYearMonth.split('-')[0].toInt(),
+                            years: yearRange,
+                            initialScrollYear: widget.yearmonth.split('-')[0].toInt(),
+                          ),
+                        );
+                      },
+
+                      child: Icon(Icons.table_chart, color: Colors.white.withValues(alpha: 0.4)),
+                    ),
+                  ],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),

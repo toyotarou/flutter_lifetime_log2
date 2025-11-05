@@ -15,8 +15,8 @@ import '../components/monthly_assets_display_alert.dart';
 import '../components/monthly_geoloc_map_display_alert.dart';
 import '../components/monthly_lifetime_display_alert.dart';
 import '../components/monthly_money_spend_display_alert.dart';
-import '../components/monthly_work_time_display_alert.dart';
 import '../components/walk_data_input_alert.dart';
+import '../components/work_info_monthly_display_alert.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 
@@ -202,7 +202,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                   LifetimeDialog(
                                     context: context,
-                                    widget: MonthlyWorkTimeDisplayAlert(yearmonth: widget.yearmonth),
+                                    widget: WorkInfoMonthlyDisplayAlert(yearmonth: widget.yearmonth),
                                   );
                                 },
                                 child: Icon(Icons.work, color: Colors.white.withValues(alpha: 0.3)),
