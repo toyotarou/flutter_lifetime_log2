@@ -989,7 +989,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                         isNeedGeolocMapDisplayHeight = true;
                       }
 
-                      if (appParamState.keepStampRallyMetroAllStationMap[value] != null) {
+                      if (appParamState.keepStampRallyMetroAllStationMap[value] != null ||
+                          appParamState.keepStampRallyMetro20AnniversaryMap[value] != null) {
                         isNeedStationStampDisplayHeight = true;
                       }
                     });

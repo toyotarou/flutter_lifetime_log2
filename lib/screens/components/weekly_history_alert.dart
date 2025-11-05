@@ -11,6 +11,7 @@ import '../parts/icon_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import 'lifetime_geoloc_map_display_alert.dart';
 import 'lifetime_input_alert.dart';
+import 'stamp_rally_metro_20_anniversary_alert.dart';
 import 'stamp_rally_metro_all_station_alert.dart';
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -556,7 +557,9 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                       if (widget.isNeedStationStampDisplayHeight) ...<Widget>[
                         SizedBox(
                           height: 30,
-                          child: (appParamState.keepStampRallyMetroAllStationMap[date] != null)
+                          child:
+                              (appParamState.keepStampRallyMetroAllStationMap[date] != null ||
+                                  appParamState.keepStampRallyMetro20AnniversaryMap[date] != null)
                               ? GestureDetector(
                                   child: Icon(
                                     FontAwesomeIcons.stamp,
@@ -566,7 +569,9 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                                   onTap: () {
                                     LifetimeDialog(
                                       context: context,
-                                      widget: StampRallyMetroAllStationAlert(date: date),
+                                      widget: (appParamState.keepStampRallyMetroAllStationMap[date] != null)
+                                          ? StampRallyMetroAllStationAlert(date: date)
+                                          : StampRallyMetro20AnniversaryAlert(date: date),
                                     );
                                   },
                                 )

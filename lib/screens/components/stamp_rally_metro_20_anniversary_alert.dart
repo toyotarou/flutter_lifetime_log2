@@ -5,17 +5,17 @@ import '../../controllers/controllers_mixin.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../utility/utility.dart';
 
-class StampRallyMetroAllStationAlert extends ConsumerStatefulWidget {
-  const StampRallyMetroAllStationAlert({super.key, required this.date});
+class StampRallyMetro20AnniversaryAlert extends ConsumerStatefulWidget {
+  const StampRallyMetro20AnniversaryAlert({super.key, required this.date});
 
   final String date;
 
   @override
-  ConsumerState<StampRallyMetroAllStationAlert> createState() => _StampRallyMetroAllStationAlertState();
+  ConsumerState<StampRallyMetro20AnniversaryAlert> createState() => _StampRallyMetro20AnniversaryAlertState();
 }
 
-class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetroAllStationAlert>
-    with ControllersMixin<StampRallyMetroAllStationAlert> {
+class _StampRallyMetro20AnniversaryAlertState extends ConsumerState<StampRallyMetro20AnniversaryAlert>
+    with ControllersMixin<StampRallyMetro20AnniversaryAlert> {
   Utility utility = Utility();
 
   ///
@@ -36,7 +36,7 @@ class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetro
                   children: <Widget>[
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[Text('東京メトロ　全駅スタンプラリー'), SizedBox.shrink()],
+                      children: <Widget>[Text('東京メトロ　20周年スタンプラリー'), SizedBox.shrink()],
                     ),
 
                     Row(
@@ -61,14 +61,14 @@ class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetro
   Widget displayStampRallyModelList() {
     final List<Widget> list = <Widget>[];
 
-    final List<StampRallyModel>? stamps = appParamState.keepStampRallyMetroAllStationMap[widget.date];
+    final List<StampRallyModel>? stamps = appParamState.keepStampRallyMetro20AnniversaryMap[widget.date];
 
     if (stamps != null) {
-      stamps.sort((StampRallyModel a, StampRallyModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
+      stamps.sort((StampRallyModel a, StampRallyModel b) => a.time.compareTo(b.time));
 
       for (final StampRallyModel element in stamps) {
         final String stamp =
-            'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';
+            'http://toyohide.work/BrainLog/public/metro_stamp_20_anniversary/metro_stamp_20_${element.stamp}.png';
 
         list.add(
           Container(
