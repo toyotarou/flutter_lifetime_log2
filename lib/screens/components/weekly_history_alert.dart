@@ -205,10 +205,7 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
               height: gridHeight,
               child: Row(
                 children: <Widget>[
-                  SizedBox(
-                    width: appParamState.gutterWidth,
-                    child: TimeLabels(startHour: weeklyHistoryStartTime, endHour: 24, pxPerMinute: 1),
-                  ),
+                  SizedBox(width: appParamState.gutterWidth),
 
                   Expanded(
                     child: LayoutBuilder(
