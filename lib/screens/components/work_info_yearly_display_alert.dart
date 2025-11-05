@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
-///
+import '../../models/yearly_history_event.dart';
+import '../../models/yearly_span_item.dart';
+
 class WorkInfoYearlyDisplayAlert extends StatefulWidget {
   const WorkInfoYearlyDisplayAlert({
     super.key,
     required this.startYear,
     required this.years,
     required this.initialScrollYear,
+    required this.workInfoList,
   });
 
   final int startYear;
-
   final int years;
-
   final int initialScrollYear;
+  final List<YearlyHistoryEvent> workInfoList;
 
   @override
   State<WorkInfoYearlyDisplayAlert> createState() => _WorkInfoYearlyDisplayAlertState();
@@ -52,22 +54,33 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
   }
 
   ///
-  List<YearRangeSpan> _demoRanges() {
-    return <YearRangeSpan>[
-      YearRangeSpan(start: DateTime(2023, 3), end: DateTime(2023, 7, 31), color: Colors.teal, label: '妊娠中期'),
-      YearRangeSpan(start: DateTime(2024, 11, 10), end: DateTime(2025, 2, 5), color: Colors.orange, label: 'つわりがピーク'),
-      YearRangeSpan(start: DateTime(2025, 9), end: DateTime(2025, 10, 31), color: Colors.pinkAccent, label: '検診強化'),
-      YearRangeSpan(start: DateTime(2026, 4), end: DateTime(2028, 2, 28), color: Colors.indigoAccent, label: 'プロジェクトX'),
-    ];
+  bool _isInvalidName(String s) {
+    final String norm = s
+        .replaceAll(RegExp(r'[\u200B-\u200D\uFEFF]'), '')
+        .replaceAll(RegExp(r'[\uFE0E\uFE0F]'), '')
+        .replaceAll(RegExp(r'[\u3000\s]+'), '')
+        .trim();
+
+    if (norm.isEmpty) {
+      return true;
+    }
+
+    const Set<String> banned = <String>{'×', '✕', '✖', '╳', '✗', '✘', '❌', 'x', 'X'};
+
+    return banned.contains(norm);
   }
 
   ///
-  List<YearSpan> _spansForYear(int year, List<YearRangeSpan> ranges) {
-    final List<YearSpan> result = <YearSpan>[];
+  List<YearlySpanItem> _spansForYear(int year, List<YearlyHistoryEvent> ranges) {
+    final List<YearlySpanItem> result = <YearlySpanItem>[];
     final DateTime yearStart = DateTime(year);
     final DateTime yearEnd = DateTime(year, 12, 31, 23, 59, 59, 999);
 
-    for (final YearRangeSpan r in ranges) {
+    for (final YearlyHistoryEvent r in ranges) {
+      if (_isInvalidName(r.agentName) || _isInvalidName(r.genbaName)) {
+        continue;
+      }
+
       final bool overlaps = r.start.isBefore(yearEnd) && r.end.isAfter(yearStart);
       if (!overlaps) {
         continue;
@@ -76,7 +89,15 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
       final DateTime clippedStart = r.start.isBefore(yearStart) ? yearStart : r.start;
       final DateTime clippedEnd = r.end.isAfter(yearEnd) ? yearEnd : r.end;
 
-      result.add(YearSpan(startMonth: clippedStart.month, endMonth: clippedEnd.month, color: r.color, label: r.label));
+      result.add(
+        YearlySpanItem(
+          startMonth: clippedStart.month,
+          endMonth: clippedEnd.month,
+          color: r.color,
+          agentName: r.agentName,
+          genbaName: r.genbaName,
+        ),
+      );
     }
     return result;
   }
@@ -84,9 +105,8 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
   ///
   @override
   Widget build(BuildContext context) {
-    final List<YearRangeSpan> ranges = _demoRanges();
     final double screenH = MediaQuery.of(context).size.height;
-    final double oneYearHeight = screenH / 3;
+    final double oneYearHeight = screenH / 10;
 
     return Column(
       children: <Widget>[
@@ -96,7 +116,7 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
             children: <Widget>[
               Expanded(
                 child: Text(
-                  '年タイムライン（${widget.startYear}〜${widget.startYear + widget.years - 1}）',
+                  '勤務履歴（${widget.startYear}〜${widget.startYear + widget.years - 1}）',
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -117,7 +137,7 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
             itemCount: widget.years,
             itemBuilder: (BuildContext context, int index) {
               final int year = widget.startYear + index;
-              final List<YearSpan> spansThisYear = _spansForYear(year, ranges);
+              final List<YearlySpanItem> spansThisYear = _spansForYear(year, widget.workInfoList);
 
               return AutoScrollTag(
                 // ignore: always_specify_types
@@ -137,40 +157,15 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
     );
   }
 }
-////////////////////////////////////////////////////////////////////////////////
-
-///
-class YearRangeSpan {
-  YearRangeSpan({required this.start, required this.end, required this.color, required this.label});
-
-  final DateTime start;
-  final DateTime end;
-  final Color color;
-  final String label;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 
-///
-class YearSpan {
-  YearSpan({required this.startMonth, required this.endMonth, required this.color, required this.label});
-
-  final int startMonth;
-
-  final int endMonth;
-
-  final Color color;
-  final String label;
-}
-////////////////////////////////////////////////////////////////////////////////
-
-///
 class YearRow extends StatelessWidget {
   const YearRow({super.key, required this.year, required this.height, required this.spans});
 
   final int year;
   final double height;
-  final List<YearSpan> spans;
+  final List<YearlySpanItem> spans;
 
   ///
   @override
@@ -198,7 +193,7 @@ class YearTimeline extends StatelessWidget {
     this.labelStyle = const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
   });
 
-  final List<YearSpan> spans;
+  final List<YearlySpanItem> spans;
   final double height;
   final Color gridColor;
   final TextStyle labelStyle;
@@ -209,7 +204,21 @@ class YearTimeline extends StatelessWidget {
     return LayoutBuilder(
       builder: (BuildContext ctx, BoxConstraints constraints) {
         final double totalW = constraints.maxWidth;
+
         final double colW = totalW / 12.0;
+
+        const double headerHeight = 18;
+
+        const double vPadding = 4;
+
+        const double targetBandHeight = 30.0;
+
+        final double available = height - headerHeight - vPadding * 2;
+        final double bandHeight = available >= targetBandHeight
+            ? targetBandHeight
+            : available.clamp(18.0, targetBandHeight);
+
+        final double bandTop = height - vPadding - bandHeight;
 
         return Stack(
           children: <Widget>[
@@ -231,7 +240,7 @@ class YearTimeline extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 4),
+                      padding: const EdgeInsets.only(top: 2),
                       child: Text('${i + 1}月', style: const TextStyle(fontSize: 10, color: Colors.white70)),
                     ),
                   ),
@@ -239,18 +248,34 @@ class YearTimeline extends StatelessWidget {
               ),
             ),
 
-            ...spans.map((YearSpan s) {
+            ...spans.map((YearlySpanItem s) {
               final double left = (s.startMonth - 1) * colW;
-              final double width = (s.endMonth - s.startMonth + 1) * colW;
+              double width = (s.endMonth - s.startMonth + 1) * colW;
+
+              const double minWidth = 14.0;
+              if (width < minWidth) {
+                width = minWidth;
+              }
+
+              final bool isNarrow = width < 56;
+              final bool isUltraNarrow = width < 36;
 
               return Positioned(
                 left: left,
                 width: width,
-                top: 28,
+                top: bandTop,
 
-                height: height - 40,
+                height: bandHeight,
 
-                child: _Band(color: s.color, label: s.label, labelStyle: labelStyle),
+                child: isNarrow
+                    ? _BandCompact(
+                        color: s.color,
+                        agent: s.agentName,
+                        genba: s.genbaName,
+                        labelStyle: labelStyle,
+                        maxLetters: isUltraNarrow ? 1 : 2,
+                      )
+                    : _BandTwoLines(color: s.color, agent: s.agentName, genba: s.genbaName, labelStyle: labelStyle),
               );
             }),
           ],
@@ -262,26 +287,129 @@ class YearTimeline extends StatelessWidget {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-///
-class _Band extends StatelessWidget {
-  const _Band({required this.color, required this.label, required this.labelStyle});
+class _BandTwoLines extends StatelessWidget {
+  const _BandTwoLines({required this.color, required this.agent, required this.genba, required this.labelStyle});
 
   final Color color;
-  final String label;
+  final String agent;
+  final String genba;
   final TextStyle labelStyle;
 
   ///
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.18),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.55)),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.18),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: color.withOpacity(0.55)),
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                genba,
+                style: labelStyle,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+              ),
+              Text(
+                agent,
+                style: labelStyle.copyWith(fontWeight: FontWeight.w500, color: Colors.white.withOpacity(0.85)),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+              ),
+            ],
+          ),
+        ),
       ),
-      child: Text(label, style: labelStyle, overflow: TextOverflow.ellipsis),
     );
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+class _BandCompact extends StatelessWidget {
+  const _BandCompact({
+    required this.color,
+    required this.agent,
+    required this.genba,
+    required this.labelStyle,
+    this.maxLetters = 2,
+  });
+
+  final Color color;
+  final String agent;
+  final String genba;
+  final TextStyle labelStyle;
+  final int maxLetters;
+
+  @override
+  Widget build(BuildContext context) {
+    final String abbrGenba = _abbr(genba, maxLetters);
+    final String abbrAgent = _abbr(agent, maxLetters);
+
+    final Widget face = Container(
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.22),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.75)),
+      ),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              abbrGenba,
+              style: labelStyle.copyWith(fontSize: 11),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              softWrap: false,
+            ),
+            Text(
+              abbrAgent,
+              style: labelStyle.copyWith(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Colors.white.withOpacity(0.85),
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              softWrap: false,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return Tooltip(message: '$genba\n$agent', waitDuration: const Duration(milliseconds: 200), child: face);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+String _abbr(String s, int n) {
+  if (s.isEmpty || n <= 0) {
+    return '';
+  }
+  final String trimmed = s.trim();
+  if (trimmed.length <= n) {
+    return trimmed;
+  }
+  return trimmed.substring(0, n);
 }

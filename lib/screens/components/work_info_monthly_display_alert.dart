@@ -5,6 +5,8 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/salary_model.dart';
 import '../../models/work_time_model.dart';
+import '../../models/yearly_history_event.dart';
+import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'work_info_yearly_display_alert.dart';
 
@@ -19,6 +21,8 @@ class WorkInfoMonthlyDisplayAlert extends ConsumerStatefulWidget {
 
 class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDisplayAlert>
     with ControllersMixin<WorkInfoMonthlyDisplayAlert> {
+  Utility utility = Utility();
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -45,12 +49,17 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
                     Text(widget.yearmonth),
                     GestureDetector(
                       onTap: () {
+                        final List<YearlyHistoryEvent> workInfoList = _buildYearlyHistoryEvents(
+                          appParamState.keepWorkTimeMap,
+                        );
+
                         LifetimeDialog(
                           context: context,
                           widget: WorkInfoYearlyDisplayAlert(
                             startYear: startYearMonth.split('-')[0].toInt(),
                             years: yearRange,
                             initialScrollYear: widget.yearmonth.split('-')[0].toInt(),
+                            workInfoList: workInfoList,
                           ),
                         );
                       },
@@ -271,5 +280,109 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
     } catch (_) {
       return Duration.zero;
     }
+  }
+
+  ///
+  DateTime _ymToDate(String ym) => DateTime.parse('${ym.trim()}-01');
+
+  ///
+  DateTime _endOfMonth(DateTime d) {
+    final DateTime nextMonth = DateTime(d.year, d.month + 1);
+    return nextMonth.subtract(const Duration(days: 1));
+  }
+
+  ///
+  DateTime _addMonths(DateTime d, int months) => DateTime(d.year, d.month + months);
+
+  ///
+  List<YearlyHistoryEvent> _buildYearlyHistoryEvents(Map<String, WorkTimeModel> keepWorkTimeMap) {
+    if (keepWorkTimeMap.isEmpty) {
+      return const <YearlyHistoryEvent>[];
+    }
+
+    final List<WorkTimeModel> valuesSorted = keepWorkTimeMap.values.toList()
+      ..sort((WorkTimeModel a, WorkTimeModel b) => _ymToDate(a.yearmonth).compareTo(_ymToDate(b.yearmonth)));
+
+    final Map<String, List<WorkTimeModel>> grouped = <String, List<WorkTimeModel>>{};
+
+    for (final WorkTimeModel w in valuesSorted) {
+      final String key = '${w.agentName}|${w.genbaName}';
+
+      (grouped[key] ??= <WorkTimeModel>[]).add(w);
+    }
+
+    final List<YearlyHistoryEvent> events = <YearlyHistoryEvent>[];
+    int colorIndex = 0;
+
+    final List<Color> twentyFourColor = utility.getTwentyFourColor();
+
+    for (final MapEntry<String, List<WorkTimeModel>> entry in grouped.entries) {
+      final List<WorkTimeModel> list = entry.value;
+      if (list.isEmpty) {
+        continue;
+      }
+
+      final String agentName = list.first.agentName;
+      final String genbaName = list.first.genbaName;
+
+      list.sort((WorkTimeModel a, WorkTimeModel b) => _ymToDate(a.yearmonth).compareTo(_ymToDate(b.yearmonth)));
+
+      DateTime? rangeStart;
+
+      DateTime? prevMonth;
+
+      for (final WorkTimeModel item in list) {
+        final DateTime currentMonth = _ymToDate(item.yearmonth);
+
+        if (rangeStart == null) {
+          rangeStart = currentMonth;
+          prevMonth = currentMonth;
+          continue;
+        }
+
+        final DateTime expectedNext = _addMonths(prevMonth!, 1);
+
+        final bool isContinuous =
+            (currentMonth.year == expectedNext.year) && (currentMonth.month == expectedNext.month);
+
+        if (isContinuous) {
+          prevMonth = currentMonth;
+        } else {
+          events.add(
+            YearlyHistoryEvent(
+              start: rangeStart,
+              end: _endOfMonth(prevMonth),
+              color: twentyFourColor[colorIndex % 24],
+              agentName: agentName,
+              genbaName: genbaName,
+            ),
+          );
+
+          colorIndex++;
+
+          rangeStart = currentMonth;
+
+          prevMonth = currentMonth;
+        }
+      }
+
+      if (rangeStart != null && prevMonth != null) {
+        events.add(
+          YearlyHistoryEvent(
+            start: rangeStart,
+            end: _endOfMonth(prevMonth),
+            color: twentyFourColor[colorIndex % 24],
+            agentName: agentName,
+            genbaName: genbaName,
+          ),
+        );
+
+        colorIndex++;
+      }
+    }
+
+    events.sort((YearlyHistoryEvent a, YearlyHistoryEvent b) => a.start.compareTo(b.start));
+
+    return events;
   }
 }
