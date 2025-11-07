@@ -29,6 +29,7 @@ import 'components/amazon_purchase_list_alert.dart';
 import 'components/bank_data_input_alert.dart';
 import 'components/lifetime_item_search_alert.dart';
 import 'components/lifetime_summary_alert.dart';
+import 'components/money_count_list_alert.dart';
 import 'components/money_in_possession_display_alert.dart';
 import 'components/salary_list_alert.dart';
 import 'components/spend_each_year_display_alert.dart';
@@ -111,8 +112,31 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<HomeScreen> {
   final List<TabInfo> _tabs = <TabInfo>[];
+  final Utility utility = Utility();
 
-  Utility utility = Utility();
+  TabController? _tabController;
+
+  ///
+  void _onTabChanged() {
+    final TabController? c = _tabController;
+
+    if (c != null && !c.indexIsChanging) {
+      final int index = c.index;
+
+      final String ym = _tabs.isInRange(index) ? _tabs[index].label : '';
+
+      if (ym.isNotEmpty) {
+        appParamNotifier.setHomeTabYearMonth(yearmonth: ym);
+      }
+    }
+  }
+
+  ///
+  @override
+  void dispose() {
+    _tabController?.removeListener(_onTabChanged);
+    super.dispose();
+  }
 
   ///
   @override
@@ -120,6 +144,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
     _makeTab();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) {
+        return;
+      }
+
       appParamNotifier.setKeepHolidayList(list: widget.holidayList);
       appParamNotifier.setKeepWalkModelMap(map: widget.walkMap);
       appParamNotifier.setKeepMoneyMap(map: widget.moneyMap);
@@ -223,55 +251,70 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
     return DefaultTabController(
       length: _tabs.length,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(80),
-          child: AppBar(
+      child: Builder(
+        builder: (BuildContext tabScopeContext) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) {
+              return;
+            }
+            final TabController newController = DefaultTabController.of(tabScopeContext);
+            if (newController != _tabController) {
+              _tabController?.removeListener(_onTabChanged);
+              _tabController = newController;
+              _tabController?.addListener(_onTabChanged);
+
+              if (_tabController != null && _tabs.isInRange(_tabController!.index)) {
+                appParamNotifier.setHomeTabYearMonth(yearmonth: _tabs[_tabController!.index].label);
+              }
+            }
+          });
+
+          return Scaffold(
             backgroundColor: Colors.transparent,
-
-            title: const Text('LIFETIME LOG'),
-            centerTitle: true,
-
-            leading: IconButton(
-              onPressed: () => context.findAncestorStateOfType<AppRootState>()?.restartApp(),
-              icon: const Icon(Icons.refresh),
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(80),
+              child: AppBar(
+                backgroundColor: Colors.transparent,
+                title: const Text('LIFETIME LOG'),
+                centerTitle: true,
+                leading: IconButton(
+                  onPressed: () => context.findAncestorStateOfType<AppRootState>()?.restartApp(),
+                  icon: const Icon(Icons.refresh),
+                ),
+                bottom: TabBar(
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  indicatorColor: Colors.blueAccent,
+                  tabs: _tabs.map((TabInfo tab) {
+                    return Tab(
+                      child: Text(
+                        tab.label,
+                        style: TextStyle(fontSize: 14, color: tab.highlight ? Colors.greenAccent : Colors.white),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
-
-            bottom: TabBar(
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              indicatorColor: Colors.blueAccent,
-              tabs: _tabs.map((TabInfo tab) {
-                return Tab(
-                  child: Text(
-                    tab.label,
-                    style: TextStyle(fontSize: 14, color: tab.highlight ? Colors.greenAccent : Colors.white),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ),
-        body: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            utility.getBackGround(),
-
-            Container(
-              width: context.screenSize.width,
-              height: context.screenSize.height,
-              decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.6)),
-            ),
-
-            Column(
+            body: Stack(
+              fit: StackFit.expand,
               children: <Widget>[
-                Expanded(child: TabBarView(children: _tabs.map((TabInfo tab) => tab.widget).toList())),
+                utility.getBackGround(),
+                Container(
+                  width: context.screenSize.width,
+                  height: context.screenSize.height,
+                  decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.6)),
+                ),
+                Column(
+                  children: <Widget>[
+                    Expanded(child: TabBarView(children: _tabs.map((TabInfo tab) => tab.widget).toList())),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
-        endDrawer: _dispDrawer(),
+            endDrawer: _dispDrawer(),
+          );
+        },
       ),
     );
   }
@@ -332,6 +375,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
               const SizedBox(height: 30),
               Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+              const SizedBox(height: 30),
+
+              GestureDetector(
+                onTap: () {
+                  final List<MapEntry<String, MoneyModel>> moneyEntries = appParamState.keepMoneyMap.entries.toList();
+
+                  final int pos = moneyEntries.indexWhere(
+                    (MapEntry<String, MoneyModel> entry) => entry.key == '${appParamState.homeTabYearMonth}-01',
+                  );
+
+                  LifetimeDialog(
+                    context: context,
+                    widget: MoneyCountListAlert(initialRowIndex: pos, moneyEntries: moneyEntries),
+                  );
+                },
+                child: const Row(
+                  children: <Widget>[
+                    Icon(FontAwesomeIcons.coins),
+                    SizedBox(width: 20),
+                    Expanded(child: Text('money count list')),
+                  ],
+                ),
+              ),
 
               const SizedBox(height: 30),
 

@@ -119,3 +119,8 @@ extension StringEx on String {
     return string.join();
   }
 }
+
+// ignore: strict_raw_type, always_specify_types
+extension ListIndexCheck on List {
+  bool isInRange(int i) => i >= 0 && i < length;
+}

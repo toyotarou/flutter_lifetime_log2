@@ -75,6 +75,9 @@ mixin _$AppParamState {
       throw _privateConstructorUsedError;
 
   ///
+  String get homeTabYearMonth => throw _privateConstructorUsedError;
+
+  ///
   List<OverlayEntry>? get firstEntries => throw _privateConstructorUsedError;
   List<OverlayEntry>? get secondEntries => throw _privateConstructorUsedError;
   Offset? get overlayPosition => throw _privateConstructorUsedError;
@@ -151,6 +154,7 @@ abstract class $AppParamStateCopyWith<$Res> {
       Map<String, String> keepTempleDateTimeNameMap,
       Map<String, List<Map<String, dynamic>>> keepAllDateLifetimeSummaryMap,
       Map<String, List<StampRallyModel>> keepStampRallyMetro20AnniversaryMap,
+      String homeTabYearMonth,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
       Offset? overlayPosition,
@@ -217,6 +221,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? keepTempleDateTimeNameMap = null,
     Object? keepAllDateLifetimeSummaryMap = null,
     Object? keepStampRallyMetro20AnniversaryMap = null,
+    Object? homeTabYearMonth = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
     Object? overlayPosition = freezed,
@@ -356,6 +361,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.keepStampRallyMetro20AnniversaryMap
           : keepStampRallyMetro20AnniversaryMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<StampRallyModel>>,
+      homeTabYearMonth: null == homeTabYearMonth
+          ? _value.homeTabYearMonth
+          : homeTabYearMonth // ignore: cast_nullable_to_non_nullable
+              as String,
       firstEntries: freezed == firstEntries
           ? _value.firstEntries
           : firstEntries // ignore: cast_nullable_to_non_nullable
@@ -478,6 +487,7 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       Map<String, String> keepTempleDateTimeNameMap,
       Map<String, List<Map<String, dynamic>>> keepAllDateLifetimeSummaryMap,
       Map<String, List<StampRallyModel>> keepStampRallyMetro20AnniversaryMap,
+      String homeTabYearMonth,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
       Offset? overlayPosition,
@@ -542,6 +552,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? keepTempleDateTimeNameMap = null,
     Object? keepAllDateLifetimeSummaryMap = null,
     Object? keepStampRallyMetro20AnniversaryMap = null,
+    Object? homeTabYearMonth = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
     Object? overlayPosition = freezed,
@@ -681,6 +692,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value._keepStampRallyMetro20AnniversaryMap
           : keepStampRallyMetro20AnniversaryMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<StampRallyModel>>,
+      homeTabYearMonth: null == homeTabYearMonth
+          ? _value.homeTabYearMonth
+          : homeTabYearMonth // ignore: cast_nullable_to_non_nullable
+              as String,
       firstEntries: freezed == firstEntries
           ? _value._firstEntries
           : firstEntries // ignore: cast_nullable_to_non_nullable
@@ -817,6 +832,7 @@ class _$AppParamStateImpl implements _AppParamState {
       final Map<String, String> keepTempleDateTimeNameMap = const <String, String>{},
       final Map<String, List<Map<String, dynamic>>> keepAllDateLifetimeSummaryMap = const <String, List<Map<String, dynamic>>>{},
       final Map<String, List<StampRallyModel>> keepStampRallyMetro20AnniversaryMap = const <String, List<StampRallyModel>>{},
+      this.homeTabYearMonth = '',
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
       this.overlayPosition,
@@ -1152,6 +1168,11 @@ class _$AppParamStateImpl implements _AppParamState {
   }
 
   ///
+  @override
+  @JsonKey()
+  final String homeTabYearMonth;
+
+  ///
   final List<OverlayEntry>? _firstEntries;
 
   ///
@@ -1246,7 +1267,7 @@ class _$AppParamStateImpl implements _AppParamState {
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStampRallyMetroAllStationMap: $keepStampRallyMetroAllStationMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, keepTempleDateTimeNameMap: $keepTempleDateTimeNameMap, keepAllDateLifetimeSummaryMap: $keepAllDateLifetimeSummaryMap, keepStampRallyMetro20AnniversaryMap: $keepStampRallyMetro20AnniversaryMap, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, selectedToushiGraphItemName: $selectedToushiGraphItemName, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate, selectedCrossCalendarYear: $selectedCrossCalendarYear, gutterWidth: $gutterWidth)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStampRallyMetroAllStationMap: $keepStampRallyMetroAllStationMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, keepTempleDateTimeNameMap: $keepTempleDateTimeNameMap, keepAllDateLifetimeSummaryMap: $keepAllDateLifetimeSummaryMap, keepStampRallyMetro20AnniversaryMap: $keepStampRallyMetro20AnniversaryMap, homeTabYearMonth: $homeTabYearMonth, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, selectedToushiGraphItemName: $selectedToushiGraphItemName, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate, selectedCrossCalendarYear: $selectedCrossCalendarYear, gutterWidth: $gutterWidth)';
   }
 
   @override
@@ -1317,6 +1338,8 @@ class _$AppParamStateImpl implements _AppParamState {
             const DeepCollectionEquality().equals(
                 other._keepStampRallyMetro20AnniversaryMap,
                 _keepStampRallyMetro20AnniversaryMap) &&
+            (identical(other.homeTabYearMonth, homeTabYearMonth) ||
+                other.homeTabYearMonth == homeTabYearMonth) &&
             const DeepCollectionEquality()
                 .equals(other._firstEntries, _firstEntries) &&
             const DeepCollectionEquality()
@@ -1334,8 +1357,7 @@ class _$AppParamStateImpl implements _AppParamState {
                 _monthlyGeolocMapSelectedDateList) &&
             (identical(other.selectedGraphYear, selectedGraphYear) ||
                 other.selectedGraphYear == selectedGraphYear) &&
-            (identical(other.selectedTemple, selectedTemple) ||
-                other.selectedTemple == selectedTemple) &&
+            (identical(other.selectedTemple, selectedTemple) || other.selectedTemple == selectedTemple) &&
             (identical(other.selectedTempleDirection, selectedTempleDirection) || other.selectedTempleDirection == selectedTempleDirection) &&
             (identical(other.isMonthlySpendSummaryMinusJogai, isMonthlySpendSummaryMinusJogai) || other.isMonthlySpendSummaryMinusJogai == isMonthlySpendSummaryMinusJogai) &&
             (identical(other.selectedToushiGraphItemName, selectedToushiGraphItemName) || other.selectedToushiGraphItemName == selectedToushiGraphItemName) &&
@@ -1382,6 +1404,7 @@ class _$AppParamStateImpl implements _AppParamState {
         const DeepCollectionEquality().hash(_keepAllDateLifetimeSummaryMap),
         const DeepCollectionEquality()
             .hash(_keepStampRallyMetro20AnniversaryMap),
+        homeTabYearMonth,
         const DeepCollectionEquality().hash(_firstEntries),
         const DeepCollectionEquality().hash(_secondEntries),
         overlayPosition,
@@ -1446,6 +1469,7 @@ abstract class _AppParamState implements AppParamState {
           keepAllDateLifetimeSummaryMap,
       final Map<String, List<StampRallyModel>>
           keepStampRallyMetro20AnniversaryMap,
+      final String homeTabYearMonth,
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
       final Offset? overlayPosition,
@@ -1527,6 +1551,10 @@ abstract class _AppParamState implements AppParamState {
   Map<String, List<Map<String, dynamic>>> get keepAllDateLifetimeSummaryMap;
   @override
   Map<String, List<StampRallyModel>> get keepStampRallyMetro20AnniversaryMap;
+
+  ///
+  @override
+  String get homeTabYearMonth;
 
   ///
   @override

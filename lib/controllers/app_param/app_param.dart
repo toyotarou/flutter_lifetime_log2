@@ -67,6 +67,9 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<StampRallyModel>>{}) Map<String, List<StampRallyModel>> keepStampRallyMetro20AnniversaryMap,
 
     ///
+    @Default('') String homeTabYearMonth,
+
+    ///
     List<OverlayEntry>? firstEntries,
     List<OverlayEntry>? secondEntries,
 
@@ -118,7 +121,10 @@ class AppParam extends _$AppParam {
   ///
   @override
   AppParamState build() {
-    return AppParamState(selectedCrossCalendarYear: DateTime.now().year);
+    return AppParamState(
+      selectedCrossCalendarYear: DateTime.now().year,
+      homeTabYearMonth: '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}',
+    );
   }
 
   ///
@@ -224,6 +230,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepStampRallyMetro20AnniversaryMap({required Map<String, List<StampRallyModel>> map}) =>
       state = state.copyWith(keepStampRallyMetro20AnniversaryMap: map);
+
+  //===================================================
+
+  void setHomeTabYearMonth({required String yearmonth}) => state = state.copyWith(homeTabYearMonth: yearmonth);
 
   //===================================================
 
