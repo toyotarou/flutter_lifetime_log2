@@ -26,6 +26,8 @@ class _MoneyCountListAlertState extends ConsumerState<MoneyCountListAlert> with 
 
   int? _initialRowIndexSafe;
 
+  FlexibleTableController? _tableCtl;
+
   static const List<FlexibleColumn> headerContents = <FlexibleColumn>[
     FlexibleColumn(title: '10000', width: 80),
     FlexibleColumn(title: '5000', width: 80),
@@ -75,76 +77,100 @@ class _MoneyCountListAlertState extends ConsumerState<MoneyCountListAlert> with 
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
+          child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  TextButton.icon(
+                    onPressed: () => _tableCtl?.scrollToTop(),
+                    icon: const Icon(Icons.arrow_upward),
+                    label: const Text('先頭へ'),
+                  ),
 
-          child: FlexibleTable(
-            rowCount: _entries.length,
-            headerContents: headerContents,
-
-            leftHeader: FlexibleTable.headerCell(
-              text: 'DATE',
-              width: dateCellWidth,
-              height: 30,
-
-              /// 「DATE」のセルの装飾
-              decoration: BoxDecoration(
-                color: Colors.blueAccent.withValues(alpha: 0.3),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                  TextButton.icon(
+                    onPressed: () {
+                      final int target = _initialRowIndexSafe ?? 0;
+                      _tableCtl?.scrollToRow(target);
+                    },
+                    icon: const Icon(Icons.my_location_outlined),
+                    label: const Text('該当行へ'),
+                  ),
+                ],
               ),
-            ),
+              const SizedBox(height: 8),
 
-            initialScrollToRow: _initialRowIndexSafe,
-            autoScrollDuration: const Duration(milliseconds: 450),
+              Expanded(
+                child: FlexibleTable(
+                  rowCount: _entries.length,
+                  headerContents: headerContents,
 
-            buildLeftCell: (BuildContext context, int row) {
-              final String text = (row >= 0 && row < _entries.length) ? _entries[row].key : '';
+                  leftHeader: FlexibleTable.headerCell(
+                    text: 'DATE',
+                    width: dateCellWidth,
+                    height: 30,
 
-              final bool isMonthStart = text.endsWith('-01');
+                    /// 「DATE」のセルの装飾
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent.withValues(alpha: 0.3),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                    ),
+                  ),
 
-              /// 日付セル
-              return FlexibleTable.bodyCell(
-                text: text,
-                width: dateCellWidth,
-                height: 50,
-                textStyle: const TextStyle(fontSize: 8),
-                decoration: BoxDecoration(
-                  color: isMonthStart ? Colors.yellow.withOpacity(0.1) : Colors.transparent,
+                  initialScrollToRow: _initialRowIndexSafe,
+                  autoScrollDuration: const Duration(milliseconds: 450),
 
-                  border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.3)),
+                  buildLeftCell: (BuildContext context, int row) {
+                    final String text = (row >= 0 && row < _entries.length) ? _entries[row].key : '';
+
+                    final bool isMonthStart = text.endsWith('-01');
+
+                    /// 日付セル
+                    return FlexibleTable.bodyCell(
+                      text: text,
+                      width: dateCellWidth,
+                      height: 50,
+                      textStyle: const TextStyle(fontSize: 8),
+                      decoration: BoxDecoration(
+                        color: isMonthStart ? Colors.yellow.withOpacity(0.1) : Colors.transparent,
+                        border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.3)),
+                      ),
+                      holiday: appParamState.keepHolidayList,
+                    );
+                  },
+
+                  buildCell: (BuildContext context, int row, int colIndex) {
+                    final MapEntry<String, MoneyModel> entries = widget.moneyEntries[row];
+
+                    final String value = getDisplayValue(entries: entries, colIndex: colIndex);
+
+                    final bool isMonthStart = entries.key.endsWith('-01');
+
+                    return Container(
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      decoration: BoxDecoration(
+                        /// 右のテーブル部分の罫線
+                        border: Border.fromBorderSide(BorderSide(color: Colors.blueGrey.withValues(alpha: 0.3))),
+                        color: isMonthStart ? Colors.yellow.withOpacity(0.1) : Colors.transparent,
+                      ),
+                      child: Text(value, style: const TextStyle(fontSize: 10)),
+                    );
+                  },
+
+                  /// 右側のヘッダーの装飾
+                  headerDecoration: BoxDecoration(
+                    color: Colors.blueAccent.withValues(alpha: 0.3),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                  ),
+
+                  /// 右側のテーブルセルの装飾
+                  bodyCellDecoration: BoxDecoration(border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.2))),
+
+                  onControllerReady: (FlexibleTableController ctl) => _tableCtl = ctl,
                 ),
-
-                holiday: appParamState.keepHolidayList,
-              );
-            },
-
-            buildCell: (BuildContext context, int row, int colIndex) {
-              final MapEntry<String, MoneyModel> entries = widget.moneyEntries[row];
-
-              final String value = getDisplayValue(entries: entries, colIndex: colIndex);
-
-              final bool isMonthStart = entries.key.endsWith('-01');
-
-              return Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                decoration: BoxDecoration(
-                  /// 右のテーブル部分の罫線
-                  border: Border.fromBorderSide(BorderSide(color: Colors.blueGrey.withValues(alpha: 0.3))),
-
-                  color: isMonthStart ? Colors.yellow.withOpacity(0.1) : Colors.transparent,
-                ),
-
-                child: Text(value, style: const TextStyle(fontSize: 10)),
-              );
-            },
-
-            /// 右側のヘッダーの装飾
-            headerDecoration: BoxDecoration(
-              color: Colors.blueAccent.withValues(alpha: 0.3),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-            ),
-
-            /// 右側のテーブルセルの装飾
-            bodyCellDecoration: BoxDecoration(border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.2))),
+              ),
+            ],
           ),
         ),
       ),
@@ -217,7 +243,7 @@ class FlexibleColumn {
 
 // ignore: must_be_immutable
 class FlexibleTable extends StatefulWidget {
-  const FlexibleTable({
+  FlexibleTable({
     super.key,
     required this.rowCount,
     required this.headerContents,
@@ -240,7 +266,11 @@ class FlexibleTable extends StatefulWidget {
     this.initialScrollToRow,
     this.autoScrollDuration = const Duration(milliseconds: 400),
     this.cacheExtentRows = 12,
+
+    this.onControllerReady,
   });
+
+  FlexibleTableController? _tableCtl;
 
   final int rowCount;
   final List<FlexibleColumn> headerContents;
@@ -255,6 +285,8 @@ class FlexibleTable extends StatefulWidget {
   final int? initialScrollToRow;
   final Duration autoScrollDuration;
   final int cacheExtentRows;
+
+  final void Function(FlexibleTableController controller)? onControllerReady;
 
   ///
   @override
@@ -318,6 +350,46 @@ class FlexibleTable extends StatefulWidget {
     );
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+class FlexibleTableController {
+  FlexibleTableController._(this._state);
+
+  final _FlexibleTableState _state;
+
+  ///
+  Future<void> scrollToTop({Duration? duration, Curve curve = Curves.easeOut}) async {
+    if (!_state._rightVertical.hasClients) {
+      return;
+    }
+    final Duration d = duration ?? _state.widget.autoScrollDuration;
+    await _state._rightVertical.animateTo(0, duration: d, curve: curve);
+  }
+
+  ///
+  Future<void> scrollToRow(int row, {Duration? duration, Curve curve = Curves.easeOut}) async {
+    if (!_state._rightVertical.hasClients) {
+      return;
+    }
+    final double raw = _state.widget.rowHeight * row.toDouble();
+    final double max = _state._rightVertical.position.maxScrollExtent;
+    final double target = raw.clamp(0.0, max);
+    final Duration d = duration ?? _state.widget.autoScrollDuration;
+    await _state._rightVertical.animateTo(target, duration: d, curve: curve);
+  }
+
+  ///
+  Future<void> scrollToBottom({Duration? duration, Curve curve = Curves.easeOut}) async {
+    if (!_state._rightVertical.hasClients) {
+      return;
+    }
+    final Duration d = duration ?? _state.widget.autoScrollDuration;
+    await _state._rightVertical.animateTo(_state._rightVertical.position.maxScrollExtent, duration: d, curve: curve);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
 
 class _FlexibleTableState extends State<FlexibleTable> {
   late final ScrollController _headerHorizontalScrollController;
@@ -391,6 +463,9 @@ class _FlexibleTableState extends State<FlexibleTable> {
       }
       _syncing = false;
     });
+
+    widget._tableCtl = FlexibleTableController._(this);
+    widget.onControllerReady?.call(widget._tableCtl!);
   }
 
   ///
@@ -458,7 +533,6 @@ class _FlexibleTableState extends State<FlexibleTable> {
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
                     width: rightContentWidth,
-
                     height: widget.headerHeight,
                     child: Row(
                       // ignore: always_specify_types
@@ -511,9 +585,7 @@ class _FlexibleTableState extends State<FlexibleTable> {
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
                       width: rightContentWidth,
-
                       height: bodyHeight,
-
                       child: Scrollbar(
                         controller: _rightVertical,
                         thumbVisibility: true,
@@ -522,7 +594,6 @@ class _FlexibleTableState extends State<FlexibleTable> {
                           itemCount: widget.rowCount,
                           itemExtent: widget.rowHeight,
                           cacheExtent: widget.rowHeight * widget.cacheExtentRows,
-
                           primary: false,
                           itemBuilder: (BuildContext context, int row) {
                             return Row(
