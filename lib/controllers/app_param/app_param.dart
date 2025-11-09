@@ -66,6 +66,8 @@ class AppParamState with _$AppParamState {
 
     @Default(<String, List<StampRallyModel>>{}) Map<String, List<StampRallyModel>> keepStampRallyMetro20AnniversaryMap,
 
+    @Default(<int, Map<String, int>>{}) Map<int, Map<String, int>> keepCreditSummaryTotalMap,
+
     ///
     @Default('') String homeTabYearMonth,
 
@@ -230,6 +232,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepStampRallyMetro20AnniversaryMap({required Map<String, List<StampRallyModel>> map}) =>
       state = state.copyWith(keepStampRallyMetro20AnniversaryMap: map);
+
+  ///
+  void setKeepCreditSummaryTotalMap({required Map<int, Map<String, int>> map}) =>
+      state = state.copyWith(keepCreditSummaryTotalMap: map);
 
   //===================================================
 

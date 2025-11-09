@@ -5,6 +5,8 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/credit_summary_model.dart';
 import '../../utility/utility.dart';
+import '../parts/lifetime_dialog.dart';
+import 'monthly_credit_bar_chart_alert.dart';
 
 class MonthlyCreditSummaryAlert extends ConsumerStatefulWidget {
   const MonthlyCreditSummaryAlert({super.key, required this.yearmonth});
@@ -46,7 +48,12 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[const Text('クレジット'), Text(widget.yearmonth)],
                     ),
-                    const SizedBox.shrink(),
+                    GestureDetector(
+                      onTap: () {
+                        LifetimeDialog(context: context, widget: const MonthlyCreditBarChartAlert());
+                      },
+                      child: const Icon(Icons.bar_chart),
+                    ),
                   ],
                 ),
 
@@ -72,42 +79,6 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
   }
 
   ///
-  List<String> getCreditItemList() {
-    final List<String> ret = <String>[];
-
-    const String str = '''
-    楽天キャッシュ
-    食費
-    交通費
-    交際費
-    支払い
-    遊興費
-    教育費
-    設備費
-    投資
-    ジム会費
-    ふるさと納税
-    衣料費
-    雑費
-    美容費
-    医療費
-    水道光熱費
-    通信費
-    不明
-    ''';
-
-    final List<String> exStr = str.split('\n');
-
-    for (final String element in exStr) {
-      if (element != '') {
-        ret.add(element.trim());
-      }
-    }
-
-    return ret;
-  }
-
-  ///
   Widget displayCreditSummaryList() {
     listSum = 0;
 
@@ -115,7 +86,7 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
 
     final Map<String, int> totalMap = <String, int>{};
 
-    getCreditItemList().forEach((String element2) {
+    utility.getCreditItemList().forEach((String element2) {
       creditSummaryMap.forEach((String key, List<int> value) {
         if (element2 == key) {
           int sum = 0;
@@ -164,6 +135,8 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
 
   ///
   void makeCreditSummaryMap() {
+    creditSummaryMap = <String, List<int>>{};
+
     appParamState.keepCreditSummaryMap[widget.yearmonth]?.forEach((CreditSummaryModel element) {
       (creditSummaryMap[element.item] ??= <int>[]).add(element.price);
     });

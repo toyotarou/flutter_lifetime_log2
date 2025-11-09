@@ -141,6 +141,31 @@ class Utility {
         : Colors.black.withOpacity(0.3);
   }
 
+  List<String> getCreditItemList() {
+    const String str = '''
+    楽天キャッシュ
+    食費
+    交通費
+    交際費
+    支払い
+    遊興費
+    教育費
+    設備費
+    投資
+    ジム会費
+    ふるさと納税
+    衣料費
+    雑費
+    美容費
+    医療費
+    水道光熱費
+    通信費
+    不明
+    ''';
+
+    return str.split('\n').map((String e) => e.trim()).where((String e) => e.isNotEmpty).toList();
+  }
+
   /// 銀行名取得
   Map<String, String> getBankName() {
     final Map<String, String> bankNames = <String, String>{};

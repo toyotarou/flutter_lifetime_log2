@@ -239,12 +239,53 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
       ///////////////////////
 
+      ///////////////////////
+
+      final Map<int, Map<String, int>> creditSummaryTotalMap = <int, Map<String, int>>{};
+
+      final Map<int, Map<String, List<int>>> creditSummaryListMap = <int, Map<String, List<int>>>{};
+
+      final List<String> creditItemList = utility.getCreditItemList();
+
+      widget.creditSummaryMap.forEach((String key, List<CreditSummaryModel> value) {
+        if (appParamState.homeTabYearMonth.split('-')[0] == key.split('-')[0]) {
+          final Map<String, List<int>> creditListMap = <String, List<int>>{};
+
+          for (final String element2 in creditItemList) {
+            for (final CreditSummaryModel element in value) {
+              if (element2 == element.item) {
+                (creditListMap[element2] ??= <int>[]).add(element.price);
+              }
+            }
+          }
+
+          creditSummaryListMap[key.split('-')[1].toInt()] = creditListMap;
+        }
+      });
+
+      creditSummaryListMap.forEach((int key, Map<String, List<int>> value) {
+        final Map<String, int> creditCategoryTotalMap = <String, int>{};
+        value.forEach((String key2, List<int> value2) {
+          int total = 0;
+          for (final int element in value2) {
+            total += element;
+          }
+
+          creditCategoryTotalMap[key2] = total;
+        });
+
+        creditSummaryTotalMap[key] = creditCategoryTotalMap;
+      });
+
+      ///////////////////////
+
       // ignore: always_specify_types
       Future(() {
         appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
         appParamNotifier.setKeepTempleDateTimeNameMap(map: templeDateTimeNameMap);
         appParamNotifier.setKeepAllDateLifetimeSummaryMap(map: allDateLifetimeSummaryMap);
         appParamNotifier.setKeepStampRallyMetro20AnniversaryMap(map: stampRallyMetro20AnniversaryMap);
+        appParamNotifier.setKeepCreditSummaryTotalMap(map: creditSummaryTotalMap);
       });
       //===========================================//
     });
