@@ -117,7 +117,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
   void _setChartData() {
     _flspots = <FlSpot>[];
 
-    final List<int> list = <int>[];
+    final List<int> monthlyAssetValueList = <int>[];
     final List<String> dateList = <String>[];
 
     int lastTotal = 0;
@@ -127,7 +127,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
     for (final int key in sortedKeys) {
       final int value = widget.monthlyGraphAssetsMap[key]!;
       _flspots.add(FlSpot(key.toDouble(), value.toDouble()));
-      list.add(value);
+      monthlyAssetValueList.add(value);
       dateList.add('${widget.yearmonth}-${key.toString().padLeft(2, '0')}');
       if (value > 0) {
         lastTotal = value;
@@ -140,17 +140,17 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
 
     _lastDayOfMonth = DateTime(y, m + 1, 0).day;
 
-    if (list.isNotEmpty) {
+    if (monthlyAssetValueList.isNotEmpty) {
       for (int d = (sortedKeys.isEmpty ? 1 : (sortedKeys.last + 1)); d <= _lastDayOfMonth; d++) {
         _flspots.add(FlSpot(d.toDouble(), lastTotal.toDouble()));
         dateList.add('${widget.yearmonth}-${d.toString().padLeft(2, '0')}');
       }
     }
 
-    if (list.isNotEmpty) {
+    if (monthlyAssetValueList.isNotEmpty) {
       const int step = 500000;
-      final int minValue = list.reduce(min);
-      final int maxValue = list.reduce(max);
+      final int minValue = monthlyAssetValueList.reduce(min);
+      final int maxValue = monthlyAssetValueList.reduce(max);
 
       graphMin = ((minValue / step).floor()) * step;
       graphMax = ((maxValue / step).ceil()) * step;
@@ -210,7 +210,10 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 );
-                final String price = s.y.round().toString().split('.')[0].toCurrency();
+
+                final int price = s.y.round().toString().split('.')[0].toInt();
+
+                final String displayPrice = price.toString().toCurrency();
 
                 final int day = s.x.toInt().clamp(1, _lastDayOfMonth);
                 final String date = '${widget.yearmonth}-${day.toString().padLeft(2, '0')}';
@@ -220,7 +223,17 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                   date.split('-')[2].toInt(),
                 ).youbiStr.substring(0, 3);
 
-                list.add(LineTooltipItem('$date($youbi)\n$price', textStyle, textAlign: TextAlign.end));
+                final int diff = monthlyAssetValueList.first - price;
+
+                final String kigou = (diff > 0) ? '-' : '+';
+
+                list.add(
+                  LineTooltipItem(
+                    '$date($youbi)\n$displayPrice\n$kigou${diff.abs().toString().toCurrency()}',
+                    textStyle,
+                    textAlign: TextAlign.end,
+                  ),
+                );
               }
               return list;
             },
