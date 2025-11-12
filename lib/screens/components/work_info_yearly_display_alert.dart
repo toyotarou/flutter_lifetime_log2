@@ -103,6 +103,29 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
   }
 
   ///
+  String? _findOriginalStartYearMonth({required int rowYear, required YearlySpanItem span}) {
+    final DateTime probe = DateTime(rowYear, span.startMonth);
+
+    for (final YearlyHistoryEvent ev in widget.workInfoList) {
+      if (_isInvalidName(ev.agentName) || _isInvalidName(ev.genbaName)) {
+        continue;
+      }
+
+      if (ev.agentName != span.agentName || ev.genbaName != span.genbaName) {
+        continue;
+      }
+
+      if (probe.isBefore(ev.start) || probe.isAfter(ev.end)) {
+        continue;
+      }
+
+      return _formatYearMonth(ev.start.year, ev.start.month);
+    }
+
+    return null;
+  }
+
+  ///
   @override
   Widget build(BuildContext context) {
     final double screenH = MediaQuery.of(context).size.height;
@@ -147,7 +170,35 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
                 highlightColor: Colors.yellow.withOpacity(0.08),
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: YearRow(year: year, height: oneYearHeight, spans: spansThisYear),
+                  child: YearRow(
+                    year: year,
+                    height: oneYearHeight,
+                    spans: spansThisYear,
+
+                    onSpanTap: (YearlySpanItem span) {
+                      final String? origin = _findOriginalStartYearMonth(rowYear: year, span: span);
+
+                      final String ym = origin ?? _formatYearMonth(year, span.startMonth);
+
+                      //////////////////
+                      //////////////////
+                      //////////////////
+                      //////////////////
+                      //////////////////
+                      //////////////////
+                      //////////////////
+
+                      print('Tapped span start yearmonth: $ym');
+
+                      //////////////////
+                      //////////////////
+                      //////////////////
+                      //////////////////
+                      //////////////////
+                      //////////////////
+                      //////////////////
+                    },
+                  ),
                 ),
               );
             },
@@ -161,11 +212,12 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
 ////////////////////////////////////////////////////////////////////////////////
 
 class YearRow extends StatelessWidget {
-  const YearRow({super.key, required this.year, required this.height, required this.spans});
+  const YearRow({super.key, required this.year, required this.height, required this.spans, required this.onSpanTap});
 
   final int year;
   final double height;
   final List<YearlySpanItem> spans;
+  final void Function(YearlySpanItem span) onSpanTap;
 
   ///
   @override
@@ -175,7 +227,7 @@ class YearRow extends StatelessWidget {
       children: <Widget>[
         Text('$year 年', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
-        YearTimeline(height: height, spans: spans, gridColor: const Color(0xFF2A2F36)),
+        YearTimeline(height: height, spans: spans, gridColor: const Color(0xFF2A2F36), onSpanTap: onSpanTap),
       ],
     );
   }
@@ -188,12 +240,14 @@ class YearTimeline extends StatelessWidget {
   const YearTimeline({
     super.key,
     required this.spans,
+    required this.onSpanTap,
     this.height = 140,
     this.gridColor = const Color(0xFFE5E7EB),
     this.labelStyle = const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
   });
 
   final List<YearlySpanItem> spans;
+  final void Function(YearlySpanItem span) onSpanTap;
   final double height;
   final Color gridColor;
   final TextStyle labelStyle;
@@ -260,22 +314,22 @@ class YearTimeline extends StatelessWidget {
               final bool isNarrow = width < 56;
               final bool isUltraNarrow = width < 36;
 
+              final Widget bandChild = isNarrow
+                  ? _BandCompact(
+                      color: s.color,
+                      agent: s.agentName,
+                      genba: s.genbaName,
+                      labelStyle: labelStyle,
+                      maxLetters: isUltraNarrow ? 1 : 2,
+                    )
+                  : _BandTwoLines(color: s.color, agent: s.agentName, genba: s.genbaName, labelStyle: labelStyle);
+
               return Positioned(
                 left: left,
                 width: width,
                 top: bandTop,
-
                 height: bandHeight,
-
-                child: isNarrow
-                    ? _BandCompact(
-                        color: s.color,
-                        agent: s.agentName,
-                        genba: s.genbaName,
-                        labelStyle: labelStyle,
-                        maxLetters: isUltraNarrow ? 1 : 2,
-                      )
-                    : _BandTwoLines(color: s.color, agent: s.agentName, genba: s.genbaName, labelStyle: labelStyle),
+                child: GestureDetector(onTap: () => onSpanTap(s), child: bandChild),
               );
             }),
           ],
@@ -403,6 +457,7 @@ class _BandCompact extends StatelessWidget {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+///
 String _abbr(String s, int n) {
   if (s.isEmpty || n <= 0) {
     return '';
@@ -412,4 +467,10 @@ String _abbr(String s, int n) {
     return trimmed;
   }
   return trimmed.substring(0, n);
+}
+
+///
+String _formatYearMonth(int year, int month) {
+  final String m = month.toString().padLeft(2, '0');
+  return '$year-$m';
 }
