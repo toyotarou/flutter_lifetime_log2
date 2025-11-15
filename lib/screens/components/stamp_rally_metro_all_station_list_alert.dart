@@ -6,6 +6,7 @@ import '../../extensions/extensions.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
+import 'stamp_rally_map_alert.dart';
 import 'stamp_rally_stamp_display_alert.dart';
 
 class StampRallyMetroAllStationListAlert extends ConsumerStatefulWidget {
@@ -33,9 +34,27 @@ class _StampRallyMetroAllStationListAlertState extends ConsumerState<StampRallyM
             padding: const EdgeInsets.all(20),
             child: Column(
               children: <Widget>[
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text('東京メトロ　全駅スタンプラリー'), SizedBox.shrink()],
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text('東京メトロ　全駅スタンプラリー'),
+                    GestureDetector(
+                      onTap: () {
+                        LifetimeDialog(
+                          context: context,
+                          widget: StampRallyMapAlert(type: 'metro_all_station'),
+                        );
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Text('全${appParamState.keepStampRallyMetroAllStationMap.length}回'),
+                          const Icon(Icons.map),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),

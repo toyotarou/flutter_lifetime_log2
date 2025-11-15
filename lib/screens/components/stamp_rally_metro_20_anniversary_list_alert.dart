@@ -6,6 +6,7 @@ import '../../extensions/extensions.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
+import 'stamp_rally_map_alert.dart';
 import 'stamp_rally_stamp_display_alert.dart';
 
 class StampRallyMetro20AnniversaryListAlert extends ConsumerStatefulWidget {
@@ -33,9 +34,26 @@ class _StampRallyMetro20AnniversaryListAlertState extends ConsumerState<StampRal
             padding: const EdgeInsets.all(20),
             child: Column(
               children: <Widget>[
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text('東京メトロ　20周年スタンプラリー'), SizedBox.shrink()],
+                  children: <Widget>[
+                    const Text('東京メトロ　20周年スタンプラリー'),
+                    GestureDetector(
+                      onTap: () {
+                        LifetimeDialog(
+                          context: context,
+                          widget: const StampRallyMapAlert(type: 'metro_20_anniversary'),
+                        );
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Text('全${appParamState.keepStampRallyMetro20AnniversaryMap.length}回'),
+                          const Icon(Icons.map),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),

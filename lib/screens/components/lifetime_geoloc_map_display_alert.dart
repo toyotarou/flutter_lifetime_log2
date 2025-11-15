@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../const/const.dart';
 import '../../controllers/_get_data/lat_lng_address/lat_lng_address.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -161,7 +162,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
             options: MapOptions(
               initialCenter: (widget.geolocList != null)
                   ? LatLng(widget.geolocList![0].latitude.toDouble(), widget.geolocList![0].longitude.toDouble())
-                  : const LatLng(35.718532, 139.586639),
+                  : const LatLng(zenpukujiLat, zenpukujiLng),
               initialZoom: currentZoomEightTeen,
               onPositionChanged: (MapCamera position, bool isMoving) {
                 if (isMoving) {

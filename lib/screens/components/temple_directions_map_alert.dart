@@ -6,6 +6,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../const/const.dart';
 import '../../controllers/_get_data/directions/directions.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -121,7 +122,7 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
             FlutterMap(
               mapController: mapController,
               options: MapOptions(
-                initialCenter: const LatLng(35.718532, 139.586639),
+                initialCenter: const LatLng(zenpukujiLat, zenpukujiLng),
 
                 initialZoom: currentZoomEightTeen,
 

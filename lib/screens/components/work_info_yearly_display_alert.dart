@@ -102,28 +102,28 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
     return result;
   }
 
-  ///
-  String? _findOriginalStartYearMonth({required int rowYear, required YearlySpanItem span}) {
-    final DateTime probe = DateTime(rowYear, span.startMonth);
-
-    for (final YearlyHistoryEvent ev in widget.workInfoList) {
-      if (_isInvalidName(ev.agentName) || _isInvalidName(ev.genbaName)) {
-        continue;
-      }
-
-      if (ev.agentName != span.agentName || ev.genbaName != span.genbaName) {
-        continue;
-      }
-
-      if (probe.isBefore(ev.start) || probe.isAfter(ev.end)) {
-        continue;
-      }
-
-      return _formatYearMonth(ev.start.year, ev.start.month);
-    }
-
-    return null;
-  }
+  // ///
+  // String? _findOriginalStartYearMonth({required int rowYear, required YearlySpanItem span}) {
+  //   final DateTime probe = DateTime(rowYear, span.startMonth);
+  //
+  //   for (final YearlyHistoryEvent ev in widget.workInfoList) {
+  //     if (_isInvalidName(ev.agentName) || _isInvalidName(ev.genbaName)) {
+  //       continue;
+  //     }
+  //
+  //     if (ev.agentName != span.agentName || ev.genbaName != span.genbaName) {
+  //       continue;
+  //     }
+  //
+  //     if (probe.isBefore(ev.start) || probe.isAfter(ev.end)) {
+  //       continue;
+  //     }
+  //
+  //     return _formatYearMonth(ev.start.year, ev.start.month);
+  //   }
+  //
+  //   return null;
+  // }
 
   ///
   @override
@@ -176,9 +176,9 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
                     spans: spansThisYear,
 
                     onSpanTap: (YearlySpanItem span) {
-                      final String? origin = _findOriginalStartYearMonth(rowYear: year, span: span);
+//                      final String? origin = _findOriginalStartYearMonth(rowYear: year, span: span);
 
-                      final String ym = origin ?? _formatYearMonth(year, span.startMonth);
+//                      final String ym = origin ?? _formatYearMonth(year, span.startMonth);
 
                       //////////////////
                       //////////////////
@@ -188,7 +188,7 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
                       //////////////////
                       //////////////////
 
-                      print('Tapped span start yearmonth: $ym');
+//                      print('Tapped span start yearmonth: $ym');
 
                       //////////////////
                       //////////////////
@@ -469,8 +469,8 @@ String _abbr(String s, int n) {
   return trimmed.substring(0, n);
 }
 
-///
-String _formatYearMonth(int year, int month) {
-  final String m = month.toString().padLeft(2, '0');
-  return '$year-$m';
-}
+// ///
+// String _formatYearMonth(int year, int month) {
+//   final String m = month.toString().padLeft(2, '0');
+//   return '$year-$m';
+// }
