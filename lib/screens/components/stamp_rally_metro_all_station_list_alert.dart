@@ -43,7 +43,7 @@ class _StampRallyMetroAllStationListAlertState extends ConsumerState<StampRallyM
                       onTap: () {
                         LifetimeDialog(
                           context: context,
-                          widget: StampRallyMapAlert(type: 'metro_all_station'),
+                          widget: const StampRallyMapAlert(type: 'metro_all_station'),
                         );
                       },
                       child: Column(
