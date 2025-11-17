@@ -12,6 +12,7 @@ import '../../extensions/extensions.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../utility/tile_provider.dart';
 import '../../utility/utility.dart';
+import '../parts/icon_toolchip_display_overlay.dart';
 
 class StampRallyMapAlert extends ConsumerStatefulWidget {
   const StampRallyMapAlert({super.key, required this.type});
@@ -45,6 +46,8 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert> with Co
 
   List<Color> twentyFourColor = <Color>[];
 
+  List<GlobalKey> globalKeyList = <GlobalKey>[];
+
   ///
   Map<String, List<StampRallyModel>> get _currentStampMap {
     switch (widget.type) {
@@ -63,6 +66,9 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert> with Co
     super.initState();
 
     twentyFourColor = utility.getTwentyFourColor();
+
+    // ignore: always_specify_types
+    globalKeyList = List.generate(1000, (int index) => GlobalKey());
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() => isLoading = true);
@@ -168,16 +174,36 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert> with Co
     stampMarkerList.clear();
 
     int i = 0;
+    int j = 0;
+
     _currentStampMap.forEach((String key, List<StampRallyModel> value) {
       final List<Marker> list = <Marker>[];
 
       for (final StampRallyModel element in value) {
+        final int markerIndex = j;
+
         list.add(
           Marker(
             point: LatLng(element.lat.toDouble(), element.lng.toDouble()),
-            child: Icon(FontAwesomeIcons.stamp, color: twentyFourColor[i % 24]),
+            child: GestureDetector(
+              onTap: () {
+                iconToolChipDisplayOverlay(
+                  type: 'stamp_rally_map_alert_icon',
+                  context: context,
+                  buttonKey: globalKeyList[markerIndex],
+                  message: element.stationName,
+                  displayDuration: const Duration(seconds: 2),
+                );
+              },
+              child: Container(
+                key: globalKeyList[markerIndex],
+                child: Icon(FontAwesomeIcons.stamp, color: twentyFourColor[i % 24]),
+              ),
+            ),
           ),
         );
+
+        j++;
       }
 
       stampMarkerList.add(list);

@@ -203,16 +203,14 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
           touchTooltipData: LineTouchTooltipData(
             tooltipRoundedRadius: 2,
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
-              final List<LineTooltipItem> list = <LineTooltipItem>[];
-              for (final LineBarSpot s in touchedSpots.where((LineBarSpot e) => e.barIndex == 0)) {
-                final TextStyle textStyle = TextStyle(
+              return touchedSpots.map((LineBarSpot s) {
+                final TextStyle baseStyle = TextStyle(
                   color: s.bar.gradient?.colors.first ?? s.bar.color ?? Colors.blueGrey,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 );
 
-                final int price = s.y.round().toString().split('.')[0].toInt();
-
+                final int price = s.y.round();
                 final String displayPrice = price.toString().toCurrency();
 
                 final int day = s.x.toInt().clamp(1, _lastDayOfMonth);
@@ -223,19 +221,50 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                   date.split('-')[2].toInt(),
                 ).youbiStr.substring(0, 3);
 
-                final int diff = monthlyAssetValueList.first - price;
+                final int diffFromStart = monthlyAssetValueList.first - price;
+                final String kigouFromStart = (diffFromStart > 0) ? '-' : '+';
+                final String diffFromStartText = '$kigouFromStart${diffFromStart.abs().toString().toCurrency()}';
 
-                final String kigou = (diff > 0) ? '-' : '+';
+                int? prevPrice;
+                if (day > 1) {
+                  for (int d = day - 1; d >= 1; d--) {
+                    final int? v = widget.monthlyGraphAssetsMap[d];
+                    if (v != null) {
+                      prevPrice = v;
+                      break;
+                    }
+                  }
+                }
 
-                list.add(
-                  LineTooltipItem(
-                    '$date($youbi)\n$displayPrice\n$kigou${diff.abs().toString().toCurrency()}',
-                    textStyle,
-                    textAlign: TextAlign.end,
-                  ),
+                String diffFromPrevText = '';
+                Color diffColor = Colors.white;
+
+                if (prevPrice != null) {
+                  final int diffFromPrev = price - prevPrice;
+                  final String sign = diffFromPrev > 0 ? '+' : (diffFromPrev < 0 ? '-' : '±');
+                  diffFromPrevText = '$sign${diffFromPrev.abs().toString().toCurrency()}';
+
+                  if (diffFromPrev > 0) {
+                    diffColor = Colors.yellowAccent;
+                  } else if (diffFromPrev < 0) {
+                    diffColor = Colors.lightBlueAccent;
+                  }
+                }
+
+                return LineTooltipItem(
+                  '$date($youbi)\n$displayPrice\n$diffFromStartText',
+                  baseStyle,
+                  textAlign: TextAlign.end,
+
+                  children: <TextSpan>[
+                    const TextSpan(text: '\n'),
+                    TextSpan(
+                      text: diffFromPrevText,
+                      style: TextStyle(color: diffColor),
+                    ),
+                  ],
                 );
-              }
-              return list;
+              }).toList();
             },
           ),
         ),

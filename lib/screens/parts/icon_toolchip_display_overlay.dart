@@ -42,6 +42,7 @@ void iconToolChipDisplayOverlay({
       );
 
     case 'lifetime_geoloc_map_display_alert_icon':
+    case 'stamp_rally_map_alert_icon':
       overlayEntry = getOverlayContents(
         type: type,
         buttonOffset: buttonOffset,
@@ -107,6 +108,7 @@ OverlayEntry? getOverlayContents({
       );
 
     case 'lifetime_geoloc_map_display_alert_icon':
+    case 'stamp_rally_map_alert_icon':
       return OverlayEntry(
         builder: (BuildContext context) {
           return Positioned(
