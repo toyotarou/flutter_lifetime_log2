@@ -15,6 +15,7 @@ import '_get_data/money_spend_item/money_spend_item.dart';
 import '_get_data/salary/salary.dart';
 import '_get_data/stamp_rally_metro_20_anniversary/stamp_rally_metro_20_anniversary.dart';
 import '_get_data/stamp_rally_metro_all_station/stamp_rally_metro_all_station.dart';
+import '_get_data/stamp_rally_metro_pokepoke/stamp_rally_metro_pokepoke.dart';
 import '_get_data/stock/stock.dart';
 import '_get_data/temple/temple.dart';
 import '_get_data/time_place/time_place.dart';
@@ -217,6 +218,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   StampRallyMetro20Anniversary get stampRallyMetro20AnniversaryNotifier =>
       ref.read(stampRallyMetro20AnniversaryProvider.notifier);
+
+  //==========================================//
+
+  StampRallyMetroPokepokeState get stampRallyMetroPokepokeState => ref.watch(stampRallyMetroPokepokeProvider);
+
+  StampRallyMetroPokepoke get stampRallyMetroPokepokeNotifier => ref.read(stampRallyMetroPokepokeProvider.notifier);
 
   //==========================================//
   Directions get directionsNotifier => ref.read(directionsProvider.notifier);

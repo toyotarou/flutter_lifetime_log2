@@ -32,6 +32,7 @@ enum APIPath {
   updateToushiShintakuRelationalId,
   getAmazonData,
   getStationStamp,
+  getMetroStampPokePoke,
 }
 
 extension APIPathExtension on APIPath {
@@ -126,6 +127,8 @@ extension APIPathExtension on APIPath {
         return 'getAmazonData';
       case APIPath.getStationStamp:
         return 'getStationStamp';
+      case APIPath.getMetroStampPokePoke:
+        return 'getMetroStampPokePoke';
     }
   }
 }

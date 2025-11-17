@@ -76,6 +76,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.amazonPurchaseMap,
     required this.stampRallyMetroAllStationMap,
     required this.stampRallyMetro20AnniversaryMap,
+    required this.stampRallyMetroPokepokeMap,
   });
 
   final List<String> holidayList;
@@ -105,6 +106,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<AmazonPurchaseModel>> amazonPurchaseMap;
   final Map<String, List<StampRallyModel>> stampRallyMetroAllStationMap;
   final Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap;
+  final Map<String, List<StampRallyModel>> stampRallyMetroPokepokeMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -399,7 +401,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               GestureDetector(
                 onTap: () {
@@ -414,10 +416,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               GestureDetector(
                 onTap: () {
@@ -441,7 +443,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               GestureDetector(
                 onTap: () => LifetimeDialog(context: context, widget: const MoneyInPossessionDisplayAlert()),
@@ -454,7 +456,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               GestureDetector(
                 onTap: () => LifetimeDialog(context: context, widget: const BankDataInputAlert()),
@@ -467,7 +469,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               GestureDetector(
                 onTap: () => LifetimeDialog(context: context, widget: const SalaryListAlert()),
@@ -480,7 +482,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               GestureDetector(
                 onTap: () => LifetimeDialog(context: context, widget: const SpendEachYearDisplayAlert()),
@@ -493,7 +495,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               GestureDetector(
                 onTap: () => LifetimeDialog(context: context, widget: const AmazonPurchaseListAlert()),
@@ -506,11 +508,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               GestureDetector(
                 onTap: () => LifetimeDialog(context: context, widget: const StampRallyMetroAllStationListAlert()),
@@ -523,7 +525,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               GestureDetector(
                 onTap: () => LifetimeDialog(context: context, widget: const StampRallyMetro20AnniversaryListAlert()),
