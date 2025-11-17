@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
-import '../../../extensions/extensions.dart';
 import '../../../models/stamp_rally_model.dart';
 import '../../../utility/utility.dart';
 
@@ -30,56 +29,50 @@ class StampRallyMetroPokepoke extends _$StampRallyMetroPokepoke {
 
   //============================================== api
 
-  ///
   Future<StampRallyMetroPokepokeState> fetchAllStampRallyMetroPokepokeData() async {
     final HttpClient client = ref.read(httpClientProvider);
 
-    try {
-      final List<StampRallyModel> list = <StampRallyModel>[];
-      final Map<String, List<StampRallyModel>> map = <String, List<StampRallyModel>>{};
-      final Map<String, List<StampRallyModel>> map2 = <String, List<StampRallyModel>>{};
+    final List<StampRallyModel> list = <StampRallyModel>[];
+    final Map<String, List<StampRallyModel>> map = <String, List<StampRallyModel>>{};
+    final Map<String, List<StampRallyModel>> map2 = <String, List<StampRallyModel>>{};
 
-      final dynamic value = await client.post(path: APIPath.getMetroStampPokePoke);
+    final dynamic value = await client.post(path: APIPath.getMetroStampPokePoke);
 
-      // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-        final StampRallyModel val = StampRallyModel(
-          // ignore: avoid_dynamic_calls
-          stationCode: value[i]['station_id'].toString(),
-          // ignore: avoid_dynamic_calls
-          stationName: value[i]['station_name'].toString(),
-          // ignore: avoid_dynamic_calls
-          stampGetDate: value[i]['get_date'].toString(),
-          // ignore: avoid_dynamic_calls
-          stamp: value[i]['stamp'].toString(),
-          // ignore: avoid_dynamic_calls
-          posterPosition: value[i]['in_out'].toString(),
+    // ignore: avoid_dynamic_calls
+    final List<dynamic> data = value['data'] as List<dynamic>;
 
-          ///
-          lat: '',
-          lng: '',
-          trainCode: '',
-          trainName: '',
-          imageFolder: '',
-          imageCode: '',
-          stampGetOrder: 0,
+    for (int i = 0; i < data.length; i++) {
+      final dynamic row = data[i];
 
-          ///
-          time: '',
-        );
+      final StampRallyModel val = StampRallyModel(
+        // ignore: avoid_dynamic_calls
+        stationCode: row['station_id'].toString(),
+        // ignore: avoid_dynamic_calls
+        stationName: row['station_name'].toString(),
+        // ignore: avoid_dynamic_calls
+        stampGetDate: row['get_date'].toString(),
+        // ignore: avoid_dynamic_calls
+        stamp: row['stamp'].toString(),
+        // ignore: avoid_dynamic_calls
+        posterPosition: row['in_out'].toString(),
 
-        list.add(val);
+        lat: '',
+        lng: '',
+        trainCode: '',
+        trainName: '',
+        imageFolder: '',
+        imageCode: '',
+        stampGetOrder: 0,
+        time: '',
+      );
 
-        (map[val.stationName] ??= <StampRallyModel>[]).add(val);
+      list.add(val);
 
-        (map2[val.stampGetDate] ??= <StampRallyModel>[]).add(val);
-      }
-
-      return state.copyWith(stationStampList: list, stationStampMap: map, dateStationStampMap: map2);
-    } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
-      rethrow; // これにより呼び出し元でキャッチできる
+      (map[val.stationName] ??= <StampRallyModel>[]).add(val);
+      (map2[val.stampGetDate] ??= <StampRallyModel>[]).add(val);
     }
+
+    return state.copyWith(stationStampList: list, stationStampMap: map, dateStationStampMap: map2);
   }
 
   ///

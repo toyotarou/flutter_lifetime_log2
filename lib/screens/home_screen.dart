@@ -35,6 +35,7 @@ import 'components/salary_list_alert.dart';
 import 'components/spend_each_year_display_alert.dart';
 import 'components/stamp_rally_metro_20_anniversary_list_alert.dart';
 import 'components/stamp_rally_metro_all_station_list_alert.dart';
+import 'components/stamp_rally_metro_pokepoke_list_alert.dart';
 import 'page/monthly_lifetime_display_page.dart';
 import 'parts/lifetime_dialog.dart';
 
@@ -230,9 +231,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
       ///////////////////////
 
-      final Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap = buildMetro20Anniversary(
+      final Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap = makeStampRallyDisplayDataMap(
         stampRallyMetroAllStationMap: widget.stampRallyMetroAllStationMap,
+        type: 'Metro20Anniversary',
         stampRallyMetro20AnniversaryMapSrc: widget.stampRallyMetro20AnniversaryMap,
+        stampRallyMetroPokepokeMapSrc: <String, List<StampRallyModel>>{},
+        geolocMap: widget.geolocMap,
+        stationList: widget.stationList,
+        trainMap: widget.trainMap,
+        utility: utility,
+      );
+
+      ///////////////////////
+
+      ///////////////////////
+
+      final Map<String, List<StampRallyModel>> stampRallyMetroPokepokeMap = makeStampRallyDisplayDataMap(
+        stampRallyMetroAllStationMap: widget.stampRallyMetroAllStationMap,
+        type: 'MetroPokepoke',
+        stampRallyMetro20AnniversaryMapSrc: <String, List<StampRallyModel>>{},
+        stampRallyMetroPokepokeMapSrc: widget.stampRallyMetroPokepokeMap,
         geolocMap: widget.geolocMap,
         stationList: widget.stationList,
         trainMap: widget.trainMap,
@@ -287,6 +305,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         appParamNotifier.setKeepTempleDateTimeNameMap(map: templeDateTimeNameMap);
         appParamNotifier.setKeepAllDateLifetimeSummaryMap(map: allDateLifetimeSummaryMap);
         appParamNotifier.setKeepStampRallyMetro20AnniversaryMap(map: stampRallyMetro20AnniversaryMap);
+        appParamNotifier.setKeepStampRallyMetroPokepokeMap(map: stampRallyMetroPokepokeMap);
         appParamNotifier.setKeepCreditSummaryTotalMap(map: creditSummaryTotalMap);
       });
       //===========================================//
@@ -537,6 +556,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                   ],
                 ),
               ),
+
+              const SizedBox(height: 20),
+
+              GestureDetector(
+                onTap: () => LifetimeDialog(context: context, widget: const StampRallyMetroPokepokeListAlert()),
+                child: const Row(
+                  children: <Widget>[
+                    Icon(FontAwesomeIcons.stamp),
+                    SizedBox(width: 20),
+                    Expanded(child: Text('stamp rally metro pokepoke')),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -570,9 +602,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 }
 
 ///
-Map<String, List<StampRallyModel>> buildMetro20Anniversary({
+Map<String, List<StampRallyModel>> makeStampRallyDisplayDataMap({
   required Map<String, List<StampRallyModel>> stampRallyMetroAllStationMap,
+  required String type,
   required Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMapSrc,
+  required Map<String, List<StampRallyModel>> stampRallyMetroPokepokeMapSrc,
   required Map<String, List<GeolocModel>> geolocMap,
   required List<StationModel> stationList,
   required Map<String, String> trainMap,
@@ -594,8 +628,20 @@ Map<String, List<StampRallyModel>> buildMetro20Anniversary({
     }
   });
 
-  // 本体処理
-  stampRallyMetro20AnniversaryMapSrc.forEach((String key, List<StampRallyModel> value) {
+  late final Map<String, List<StampRallyModel>> targetSourceMap;
+
+  switch (type) {
+    case 'Metro20Anniversary':
+      targetSourceMap = stampRallyMetro20AnniversaryMapSrc;
+
+    case 'MetroPokepoke':
+      targetSourceMap = stampRallyMetroPokepokeMapSrc;
+
+    default:
+      targetSourceMap = stampRallyMetro20AnniversaryMapSrc;
+  }
+
+  targetSourceMap.forEach((String key, List<StampRallyModel> value) {
     final List<GeolocModel>? oneDayGeolocModelList = geolocMap[key];
     List<GeolocModel> cleaned = <GeolocModel>[];
 
@@ -632,9 +678,23 @@ Map<String, List<StampRallyModel>> buildMetro20Anniversary({
         }
       }
 
-      /// 竹橋だけ強制上書き（元コード踏襲）
-      if (element.stationCode == '5896') {
-        nearestGeolocTime = '15:15:48';
+      if (type == 'Metro20Anniversary') {
+        if (element.stationCode == '5896') {
+          /// 竹橋
+          nearestGeolocTime = '15:15:48';
+        }
+      }
+
+      if (type == 'MetroPokepoke') {
+        if (element.stationCode == '5895') {
+          /// 九段下
+          nearestGeolocTime = '12:25:08';
+        }
+
+        if (element.stationCode == '5894') {
+          /// 飯田橋
+          nearestGeolocTime = '13:14:10';
+        }
       }
 
       final String trainName = trainMap[stationModel.trainNumber] ?? '';
