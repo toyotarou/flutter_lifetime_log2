@@ -13,6 +13,7 @@ import '../models/gold_model.dart';
 import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
+import '../models/municipal_model.dart';
 import '../models/salary_model.dart';
 import '../models/stamp_rally_model.dart';
 import '../models/stock_model.dart';
@@ -81,6 +82,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.toushiShintakuRelationalMap,
     required this.timePlaceMap,
     required this.amazonPurchaseMap,
+    required this.tokyoMunicipalMap,
     required this.stampRallyMetroAllStationMap,
     required this.stampRallyMetro20AnniversaryMap,
     required this.stampRallyMetroPokepokeMap,
@@ -114,6 +116,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<StampRallyModel>> stampRallyMetroAllStationMap;
   final Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap;
   final Map<String, List<StampRallyModel>> stampRallyMetroPokepokeMap;
+  final Map<String, MunicipalModel> tokyoMunicipalMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();

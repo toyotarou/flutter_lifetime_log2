@@ -19,6 +19,7 @@ import '_get_data/stamp_rally_metro_pokepoke/stamp_rally_metro_pokepoke.dart';
 import '_get_data/stock/stock.dart';
 import '_get_data/temple/temple.dart';
 import '_get_data/time_place/time_place.dart';
+import '_get_data/tokyo_municipal/tokyo_municipal.dart';
 import '_get_data/toushi_shintaku/toushi_shintaku.dart';
 import '_get_data/transportation/transportation.dart';
 import '_get_data/walk/walk.dart';
@@ -203,6 +204,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   AmazonPurchaseState get amazonPurchaseState => ref.watch(amazonPurchaseProvider);
 
   AmazonPurchase get amazonPurchaseNotifier => ref.read(amazonPurchaseProvider.notifier);
+
+  //==========================================//
+
+  TokyoMunicipalState get tokyoMunicipalState => ref.watch(tokyoMunicipalProvider);
+
+  TokyoMunicipal get tokyoMunicipalNotifier => ref.read(tokyoMunicipalProvider.notifier);
 
   //==========================================//
 

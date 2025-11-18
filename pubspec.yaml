@@ -67,6 +67,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/json/
     - .env
 
 flutter_native_splash:

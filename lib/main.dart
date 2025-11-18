@@ -80,6 +80,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     stampRallyMetroAllStationNotifier.getAllStampRallyMetroAllStationData();
     stampRallyMetro20AnniversaryNotifier.getAllMetroStamp20AnniversaryData();
     stampRallyMetroPokepokeNotifier.getAllStampRallyMetroPokepokeData();
+    tokyoMunicipalNotifier.getAllTokyoMunicipalData();
   }
 
   ///
@@ -135,6 +136,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           toushiShintakuRelationalMap: toushiShintakuState.toushiShintakuRelationalMap,
           timePlaceMap: timePlaceState.timePlaceMap,
           amazonPurchaseMap: amazonPurchaseState.amazonPurchaseMap,
+          tokyoMunicipalMap: tokyoMunicipalState.tokyoMunicipalMap,
           stampRallyMetroAllStationMap: stampRallyMetroAllStationState.dateStationStampMap,
           stampRallyMetro20AnniversaryMap: stampRallyMetro20AnniversaryState.dateStationStampMap,
           stampRallyMetroPokepokeMap: stampRallyMetroPokepokeState.dateStationStampMap,
