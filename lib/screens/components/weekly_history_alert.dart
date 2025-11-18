@@ -11,8 +11,13 @@ import '../parts/icon_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import 'lifetime_geoloc_map_display_alert.dart';
 import 'lifetime_input_alert.dart';
-import 'stamp_rally_metro_20_anniversary_alert.dart';
-import 'stamp_rally_metro_all_station_alert.dart';
+import 'stamp_rally_date_alert.dart';
+
+// import 'stamp_rally_metro_20_anniversary_alert.dart';
+// import 'stamp_rally_metro_all_station_alert.dart';
+//
+//
+//
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -567,8 +572,11 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                                     LifetimeDialog(
                                       context: context,
                                       widget: (appParamState.keepStampRallyMetroAllStationMap[date] != null)
-                                          ? StampRallyMetroAllStationAlert(date: date)
-                                          : StampRallyMetro20AnniversaryAlert(date: date),
+                                          ? StampRallyDateAlert(date: date, kind: StampRallyAlertKind.metroAllStation)
+                                          : StampRallyDateAlert(
+                                              date: date,
+                                              kind: StampRallyAlertKind.metro20Anniversary,
+                                            ),
                                     );
                                   },
                                 )

@@ -33,9 +33,15 @@ import 'components/money_count_list_alert.dart';
 import 'components/money_in_possession_display_alert.dart';
 import 'components/salary_list_alert.dart';
 import 'components/spend_each_year_display_alert.dart';
-import 'components/stamp_rally_metro_20_anniversary_list_alert.dart';
-import 'components/stamp_rally_metro_all_station_list_alert.dart';
-import 'components/stamp_rally_metro_pokepoke_list_alert.dart';
+
+// import 'components/stamp_rally_metro_20_anniversary_list_alert.dart';
+// import 'components/stamp_rally_metro_all_station_list_alert.dart';
+// import 'components/stamp_rally_metro_pokepoke_list_alert.dart';
+//
+//
+//
+
+import 'components/stamp_rally_list_alert.dart';
 import 'page/monthly_lifetime_display_page.dart';
 import 'parts/lifetime_dialog.dart';
 
@@ -534,7 +540,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               const SizedBox(height: 20),
 
               GestureDetector(
-                onTap: () => LifetimeDialog(context: context, widget: const StampRallyMetroAllStationListAlert()),
+                onTap: () => LifetimeDialog(
+                  context: context,
+                  widget: const StampRallyListAlert(kind: StampRallyListAlertKind.metroAllStation),
+                ),
                 child: const Row(
                   children: <Widget>[
                     Icon(FontAwesomeIcons.stamp),
@@ -547,7 +556,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               const SizedBox(height: 20),
 
               GestureDetector(
-                onTap: () => LifetimeDialog(context: context, widget: const StampRallyMetro20AnniversaryListAlert()),
+                onTap: () => LifetimeDialog(
+                  context: context,
+                  widget: const StampRallyListAlert(kind: StampRallyListAlertKind.metro20Anniversary),
+                ),
                 child: const Row(
                   children: <Widget>[
                     Icon(FontAwesomeIcons.stamp),
@@ -560,7 +572,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               const SizedBox(height: 20),
 
               GestureDetector(
-                onTap: () => LifetimeDialog(context: context, widget: const StampRallyMetroPokepokeListAlert()),
+                onTap: () => LifetimeDialog(
+                  context: context,
+                  widget: const StampRallyListAlert(kind: StampRallyListAlertKind.metroPokepoke),
+                ),
                 child: const Row(
                   children: <Widget>[
                     Icon(FontAwesomeIcons.stamp),

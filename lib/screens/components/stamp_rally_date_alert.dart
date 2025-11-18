@@ -5,52 +5,73 @@ import '../../controllers/controllers_mixin.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
-import 'stamp_rally_stamp_display_alert.dart';
+import 'stamp_rally_stamp_alert.dart';
 
-class StampRallyMetroAllStationAlert extends ConsumerStatefulWidget {
-  const StampRallyMetroAllStationAlert({super.key, required this.date});
+///
+enum StampRallyAlertKind { metro20Anniversary, metroAllStation }
 
+class StampRallyDateAlert extends ConsumerStatefulWidget {
+  const StampRallyDateAlert({super.key, required this.date, required this.kind});
+
+  /// 対象日付（YYYY-MM-DD）
   final String date;
 
+  /// 20周年 or 全駅 などの種別
+  final StampRallyAlertKind kind;
+
   @override
-  ConsumerState<StampRallyMetroAllStationAlert> createState() => _StampRallyMetroAllStationAlertState();
+  ConsumerState<StampRallyDateAlert> createState() => _StampRallyAlertState();
 }
 
-class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetroAllStationAlert>
-    with ControllersMixin<StampRallyMetroAllStationAlert> {
-  Utility utility = Utility();
+class _StampRallyAlertState extends ConsumerState<StampRallyDateAlert> with ControllersMixin<StampRallyDateAlert> {
+  final Utility utility = Utility();
+
+  ///
+  String get _title {
+    switch (widget.kind) {
+      case StampRallyAlertKind.metro20Anniversary:
+        return '東京メトロ　20周年スタンプラリー';
+      case StampRallyAlertKind.metroAllStation:
+        return '東京メトロ　全駅スタンプラリー';
+    }
+  }
+
+  ///
+  Map<String, List<StampRallyModel>> get _stampMap {
+    switch (widget.kind) {
+      case StampRallyAlertKind.metro20Anniversary:
+        return appParamState.keepStampRallyMetro20AnniversaryMap;
+      case StampRallyAlertKind.metroAllStation:
+        return appParamState.keepStampRallyMetroAllStationMap;
+    }
+  }
 
   ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-
       body: SafeArea(
         child: DefaultTextStyle(
           style: const TextStyle(color: Colors.white),
-
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               children: <Widget>[
                 Stack(
                   children: <Widget>[
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[Text('東京メトロ　全駅スタンプラリー'), SizedBox.shrink()],
+                      children: <Widget>[Text(_title), const SizedBox.shrink()],
                     ),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[const SizedBox.shrink(), Text(widget.date)],
                     ),
                   ],
                 ),
-
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-                Expanded(child: displayStampRallyModelList()),
+                Expanded(child: _displayStampRallyModelList()),
               ],
             ),
           ),
@@ -60,17 +81,24 @@ class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetro
   }
 
   ///
-  Widget displayStampRallyModelList() {
+  Widget _displayStampRallyModelList() {
     final List<Widget> list = <Widget>[];
 
-    final List<StampRallyModel>? stamps = appParamState.keepStampRallyMetroAllStationMap[widget.date];
+    final List<StampRallyModel>? stamps = _stampMap[widget.date];
 
     if (stamps != null) {
-      stamps.sort((StampRallyModel a, StampRallyModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
+      // 並び順だけ種別で切り替え
+      switch (widget.kind) {
+        case StampRallyAlertKind.metro20Anniversary:
+          stamps.sort((StampRallyModel a, StampRallyModel b) => a.time.compareTo(b.time));
+          break;
+        case StampRallyAlertKind.metroAllStation:
+          stamps.sort((StampRallyModel a, StampRallyModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
+          break;
+      }
 
       for (final StampRallyModel element in stamps) {
-        final String stamp =
-            'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';
+        final String stampUrl = _buildStampImageUrl(element);
 
         list.add(
           Container(
@@ -78,31 +106,28 @@ class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetro
               border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
             ),
             padding: const EdgeInsets.all(5),
-
             child: Row(
               children: <Widget>[
                 GestureDetector(
                   onTap: () {
                     LifetimeDialog(
                       context: context,
-                      widget: StampRallyStampDisplayAlert(imageUrl: stamp),
+                      widget: StampRallyStampAlert(imageUrl: stampUrl),
                     );
                   },
-
                   child: SizedBox(
                     width: 80,
                     child: Opacity(
                       opacity: 0.6,
                       child: FadeInImage.assetNetwork(
                         placeholder: 'assets/images/no_image.png',
-                        image: stamp,
+                        image: stampUrl,
                         imageErrorBuilder: (BuildContext c, Object o, StackTrace? s) =>
                             Image.asset('assets/images/no_image.png'),
                       ),
                     ),
                   ),
                 ),
-
                 Expanded(
                   child: DefaultTextStyle(
                     style: const TextStyle(fontSize: 12),
@@ -113,7 +138,6 @@ class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetro
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             const SizedBox(width: 10),
-
                             Column(
                               children: <Widget>[
                                 CircleAvatar(
@@ -134,16 +158,13 @@ class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetro
                                     ),
                                   ),
                                 ),
-
                                 Text(
                                   element.trainName.replaceAll('東京メトロ', ''),
                                   style: TextStyle(fontSize: 10, color: Colors.white.withValues(alpha: 0.8)),
                                 ),
                               ],
                             ),
-
                             const SizedBox(width: 10),
-
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,5 +197,15 @@ class _StampRallyMetroAllStationAlertState extends ConsumerState<StampRallyMetro
         ),
       ],
     );
+  }
+
+  ///
+  String _buildStampImageUrl(StampRallyModel element) {
+    switch (widget.kind) {
+      case StampRallyAlertKind.metro20Anniversary:
+        return 'http://toyohide.work/BrainLog/public/metro_stamp_20_anniversary/metro_stamp_20_${element.stamp}.png';
+      case StampRallyAlertKind.metroAllStation:
+        return 'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';
+    }
   }
 }

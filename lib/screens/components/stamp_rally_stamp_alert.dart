@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class StampRallyStampDisplayAlert extends StatelessWidget {
-  const StampRallyStampDisplayAlert({super.key, required this.imageUrl});
+class StampRallyStampAlert extends StatelessWidget {
+  const StampRallyStampAlert({super.key, required this.imageUrl});
 
   final String imageUrl;
 
