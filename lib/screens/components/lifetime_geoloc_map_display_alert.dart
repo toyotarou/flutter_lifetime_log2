@@ -87,6 +87,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   List<Marker> stampRallyMetro20AnniversaryMarkerList = <Marker>[];
 
+  List<Marker> stampRallyMetroPokepokeMarkerList = <Marker>[];
+
   ///
   @override
   void initState() {
@@ -154,6 +156,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
     makeStampRallyMetro20AnniversaryMarker();
 
+    makeStampRallyMetroPokepokeMarker();
+
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -193,6 +197,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               MarkerLayer(markers: stampRallyMetroAllStationMarkerList),
 
               MarkerLayer(markers: stampRallyMetro20AnniversaryMarkerList),
+
+              MarkerLayer(markers: stampRallyMetroPokepokeMarkerList),
             ],
           ),
 
@@ -835,40 +841,69 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   ///
   void makeStampRallyMetroAllStationMarker() {
-    stampRallyMetroAllStationMarkerList.clear();
+    stampRallyMetroAllStationMarkerList = _buildStampMarkerList(
+      data: appParamState.keepStampRallyMetroAllStationMap[widget.date],
+      keyOffset: 100,
+      colorOf: (StampRallyModel e) =>
+          getStationInnerOuterColor(posterPosition: e.posterPosition, stationName: e.stationName),
+    );
+  }
 
-    if (appParamState.keepStampRallyMetroAllStationMap[widget.date] != null) {
-      for (int i = 0; i < appParamState.keepStampRallyMetroAllStationMap[widget.date]!.length; i++) {
-        final StampRallyModel element = appParamState.keepStampRallyMetroAllStationMap[widget.date]![i];
+  ///
+  void makeStampRallyMetro20AnniversaryMarker() {
+    stampRallyMetro20AnniversaryMarkerList = _buildStampMarkerList(
+      data: appParamState.keepStampRallyMetro20AnniversaryMap[widget.date],
+      keyOffset: 200,
+      colorOf: (_) => Colors.indigo,
+    );
+  }
 
-        stampRallyMetroAllStationMarkerList.add(
-          Marker(
-            key: globalKeyList[i + 100],
+  ///
+  void makeStampRallyMetroPokepokeMarker() {
+    stampRallyMetroPokepokeMarkerList = _buildStampMarkerList(
+      data: appParamState.keepStampRallyMetroPokepokeMap[widget.date],
+      keyOffset: 300,
+      colorOf: (_) => Colors.indigo,
+    );
+  }
 
-            point: LatLng(element.lat.toDouble(), element.lng.toDouble()),
-            child: GestureDetector(
-              onTap: () {
-                iconToolChipDisplayOverlay(
-                  type: 'lifetime_geoloc_map_display_alert_icon',
-                  context: context,
-                  buttonKey: globalKeyList[i + 100],
-                  message: element.stationName,
-                  displayDuration: const Duration(seconds: 2),
-                );
-              },
-              child: Icon(
-                FontAwesomeIcons.stamp,
-                size: 20,
-                color: getStationInnerOuterColor(
-                  posterPosition: element.posterPosition,
-                  stationName: element.stationName,
-                ),
-              ),
-            ),
-          ),
-        );
-      }
+  ///
+  List<Marker> _buildStampMarkerList({
+    required List<StampRallyModel>? data,
+    required int keyOffset,
+    required Color Function(StampRallyModel) colorOf,
+  }) {
+    if (data == null || data.isEmpty) {
+      return <Marker>[];
     }
+
+    final List<Marker> list = <Marker>[];
+
+    for (int i = 0; i < data.length; i++) {
+      final StampRallyModel element = data[i];
+      final int keyIndex = i + keyOffset;
+
+      list.add(
+        Marker(
+          key: globalKeyList[keyIndex],
+          point: LatLng(element.lat.toDouble(), element.lng.toDouble()),
+          child: GestureDetector(
+            onTap: () {
+              iconToolChipDisplayOverlay(
+                type: 'lifetime_geoloc_map_display_alert_icon',
+                context: context,
+                buttonKey: globalKeyList[keyIndex],
+                message: element.stationName,
+                displayDuration: const Duration(seconds: 2),
+              );
+            },
+            child: Icon(FontAwesomeIcons.stamp, size: 20, color: colorOf(element)),
+          ),
+        ),
+      );
+    }
+
+    return list;
   }
 
   ///
@@ -886,37 +921,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       return Colors.indigo;
     } else {
       return Colors.black;
-    }
-  }
-
-  ///
-  void makeStampRallyMetro20AnniversaryMarker() {
-    stampRallyMetro20AnniversaryMarkerList.clear();
-
-    if (appParamState.keepStampRallyMetro20AnniversaryMap[widget.date] != null) {
-      for (int i = 0; i < appParamState.keepStampRallyMetro20AnniversaryMap[widget.date]!.length; i++) {
-        final StampRallyModel element = appParamState.keepStampRallyMetro20AnniversaryMap[widget.date]![i];
-
-        stampRallyMetro20AnniversaryMarkerList.add(
-          Marker(
-            key: globalKeyList[i + 200],
-
-            point: LatLng(element.lat.toDouble(), element.lng.toDouble()),
-            child: GestureDetector(
-              onTap: () {
-                iconToolChipDisplayOverlay(
-                  type: 'lifetime_geoloc_map_display_alert_icon',
-                  context: context,
-                  buttonKey: globalKeyList[i + 200],
-                  message: element.stationName,
-                  displayDuration: const Duration(seconds: 2),
-                );
-              },
-              child: const Icon(FontAwesomeIcons.stamp, size: 20, color: Colors.indigo),
-            ),
-          ),
-        );
-      }
     }
   }
 }
