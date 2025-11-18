@@ -8,7 +8,7 @@ import '../parts/lifetime_dialog.dart';
 import 'stamp_rally_stamp_alert.dart';
 
 ///
-enum StampRallyAlertKind { metro20Anniversary, metroAllStation }
+enum StampRallyAlertKind { metro20Anniversary, metroAllStation, metroPokepoke }
 
 class StampRallyDateAlert extends ConsumerStatefulWidget {
   const StampRallyDateAlert({super.key, required this.date, required this.kind});
@@ -29,20 +29,24 @@ class _StampRallyAlertState extends ConsumerState<StampRallyDateAlert> with Cont
   ///
   String get _title {
     switch (widget.kind) {
-      case StampRallyAlertKind.metro20Anniversary:
-        return '東京メトロ　20周年スタンプラリー';
       case StampRallyAlertKind.metroAllStation:
         return '東京メトロ　全駅スタンプラリー';
+      case StampRallyAlertKind.metro20Anniversary:
+        return '東京メトロ　20周年スタンプラリー';
+      case StampRallyAlertKind.metroPokepoke:
+        return '東京メトロ　ポケポケ';
     }
   }
 
   ///
   Map<String, List<StampRallyModel>> get _stampMap {
     switch (widget.kind) {
-      case StampRallyAlertKind.metro20Anniversary:
-        return appParamState.keepStampRallyMetro20AnniversaryMap;
       case StampRallyAlertKind.metroAllStation:
         return appParamState.keepStampRallyMetroAllStationMap;
+      case StampRallyAlertKind.metro20Anniversary:
+        return appParamState.keepStampRallyMetro20AnniversaryMap;
+      case StampRallyAlertKind.metroPokepoke:
+        return appParamState.keepStampRallyMetroPokepokeMap;
     }
   }
 
@@ -89,12 +93,12 @@ class _StampRallyAlertState extends ConsumerState<StampRallyDateAlert> with Cont
     if (stamps != null) {
       // 並び順だけ種別で切り替え
       switch (widget.kind) {
-        case StampRallyAlertKind.metro20Anniversary:
-          stamps.sort((StampRallyModel a, StampRallyModel b) => a.time.compareTo(b.time));
-          break;
         case StampRallyAlertKind.metroAllStation:
           stamps.sort((StampRallyModel a, StampRallyModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
-          break;
+
+        case StampRallyAlertKind.metro20Anniversary:
+        case StampRallyAlertKind.metroPokepoke:
+          stamps.sort((StampRallyModel a, StampRallyModel b) => a.time.compareTo(b.time));
       }
 
       for (final StampRallyModel element in stamps) {
@@ -202,10 +206,12 @@ class _StampRallyAlertState extends ConsumerState<StampRallyDateAlert> with Cont
   ///
   String _buildStampImageUrl(StampRallyModel element) {
     switch (widget.kind) {
+      case StampRallyAlertKind.metroAllStation:
+      case StampRallyAlertKind.metroPokepoke:
+        return 'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';
+
       case StampRallyAlertKind.metro20Anniversary:
         return 'http://toyohide.work/BrainLog/public/metro_stamp_20_anniversary/metro_stamp_20_${element.stamp}.png';
-      case StampRallyAlertKind.metroAllStation:
-        return 'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';
     }
   }
 }

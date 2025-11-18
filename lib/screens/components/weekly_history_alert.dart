@@ -13,12 +13,6 @@ import 'lifetime_geoloc_map_display_alert.dart';
 import 'lifetime_input_alert.dart';
 import 'stamp_rally_date_alert.dart';
 
-// import 'stamp_rally_metro_20_anniversary_alert.dart';
-// import 'stamp_rally_metro_all_station_alert.dart';
-//
-//
-//
-
 /////////////////////////////////////////////////////////////////////////////////////////
 
 class WeeklyHistoryAlert extends ConsumerStatefulWidget {
@@ -453,6 +447,20 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
   }
 
   ///
+  StampRallyAlertKind? _stampKindForDate(String date) {
+    if (appParamState.keepStampRallyMetroAllStationMap[date] != null) {
+      return StampRallyAlertKind.metroAllStation;
+    }
+    if (appParamState.keepStampRallyMetro20AnniversaryMap[date] != null) {
+      return StampRallyAlertKind.metro20Anniversary;
+    }
+    if (appParamState.keepStampRallyMetroPokepokeMap[date] != null) {
+      return StampRallyAlertKind.metroPokepoke;
+    }
+    return null;
+  }
+
+  ///
   @override
   Widget build(BuildContext context) {
     final String displayWeekDayStr = '${widget.date} / ${weeklyHistoryDisplayWeekDate.entries.last.value}';
@@ -559,28 +567,29 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                       if (widget.isNeedStationStampDisplayHeight) ...<Widget>[
                         SizedBox(
                           height: 30,
-                          child:
-                              (appParamState.keepStampRallyMetroAllStationMap[date] != null ||
-                                  appParamState.keepStampRallyMetro20AnniversaryMap[date] != null)
-                              ? GestureDetector(
-                                  child: Icon(
-                                    FontAwesomeIcons.stamp,
-                                    size: 15,
-                                    color: Colors.white.withValues(alpha: 0.4),
-                                  ),
-                                  onTap: () {
-                                    LifetimeDialog(
-                                      context: context,
-                                      widget: (appParamState.keepStampRallyMetroAllStationMap[date] != null)
-                                          ? StampRallyDateAlert(date: date, kind: StampRallyAlertKind.metroAllStation)
-                                          : StampRallyDateAlert(
-                                              date: date,
-                                              kind: StampRallyAlertKind.metro20Anniversary,
-                                            ),
-                                    );
-                                  },
-                                )
-                              : null,
+                          child: Builder(
+                            builder: (BuildContext context) {
+                              final StampRallyAlertKind? kind = _stampKindForDate(date);
+
+                              if (kind == null) {
+                                return const SizedBox.shrink();
+                              }
+
+                              return GestureDetector(
+                                child: Icon(
+                                  FontAwesomeIcons.stamp,
+                                  size: 15,
+                                  color: Colors.white.withValues(alpha: 0.4),
+                                ),
+                                onTap: () {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: StampRallyDateAlert(date: date, kind: kind),
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ],

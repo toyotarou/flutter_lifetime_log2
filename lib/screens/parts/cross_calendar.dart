@@ -753,7 +753,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     }
 
     if (appParamState.keepStampRallyMetroAllStationMap[date] != null ||
-        appParamState.keepStampRallyMetro20AnniversaryMap[date] != null) {
+        appParamState.keepStampRallyMetro20AnniversaryMap[date] != null ||
+        appParamState.keepStampRallyMetroPokepokeMap[date] != null) {
       displayIcons.add(Icon(FontAwesomeIcons.stamp, size: 15, color: Colors.white.withValues(alpha: 0.3)));
     }
 
@@ -991,7 +992,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                       }
 
                       if (appParamState.keepStampRallyMetroAllStationMap[value] != null ||
-                          appParamState.keepStampRallyMetro20AnniversaryMap[value] != null) {
+                          appParamState.keepStampRallyMetro20AnniversaryMap[value] != null ||
+                          appParamState.keepStampRallyMetroPokepokeMap[value] != null) {
                         isNeedStationStampDisplayHeight = true;
                       }
                     });
@@ -1082,6 +1084,36 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   }
 
   ///
+  void _appendStampBadges({
+    required List<WeeklyHistoryBadgeModel> dst,
+    required int dayIndex,
+    required List<StampRallyModel>? stamps,
+  }) {
+    if (stamps == null || stamps.isEmpty) {
+      return;
+    }
+
+    for (final StampRallyModel element in stamps) {
+      final List<String> exTime = element.time.split(':');
+      if (exTime.length < 2) {
+        continue;
+      }
+
+      final int hour = exTime[0].toInt();
+      final int minute = exTime[1].toInt();
+
+      dst.add(
+        WeeklyHistoryBadgeModel(
+          dayIndex: dayIndex,
+          minutesOfDay: hour * 60 + minute,
+          icon: FontAwesomeIcons.stamp,
+          tooltip: element.stationName,
+        ),
+      );
+    }
+  }
+
+  ///
   List<WeeklyHistoryBadgeModel> getWeeklyHistoryBadges({required String date}) {
     final List<WeeklyHistoryBadgeModel> list = <WeeklyHistoryBadgeModel>[];
 
@@ -1108,21 +1140,9 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       }
       //////////////////////////
 
-      //////////////////////////
-      if (appParamState.keepStampRallyMetro20AnniversaryMap[genDate] != null) {
-        for (final StampRallyModel element in appParamState.keepStampRallyMetro20AnniversaryMap[genDate]!) {
-          final List<String> exTime = element.time.split(':');
+      _appendStampBadges(dst: list, dayIndex: i, stamps: appParamState.keepStampRallyMetro20AnniversaryMap[genDate]);
 
-          list.add(
-            WeeklyHistoryBadgeModel(
-              dayIndex: i,
-              minutesOfDay: exTime[0].toInt() * 60 + exTime[1].toInt(),
-              icon: FontAwesomeIcons.stamp,
-              tooltip: element.stationName,
-            ),
-          );
-        }
-      }
+      _appendStampBadges(dst: list, dayIndex: i, stamps: appParamState.keepStampRallyMetroPokepokeMap[genDate]);
 
       //////////////////////////
     }
