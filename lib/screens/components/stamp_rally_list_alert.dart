@@ -56,23 +56,12 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
   ///
   String? get _mapAlertType {
     switch (widget.kind) {
+      case StampRallyListAlertKind.metroAllStation:
+        return 'metro_all_station';
       case StampRallyListAlertKind.metro20Anniversary:
         return 'metro_20_anniversary';
       case StampRallyListAlertKind.metroPokepoke:
-        return null;
-      case StampRallyListAlertKind.metroAllStation:
-        return 'metro_all_station';
-    }
-  }
-
-  ///
-  EdgeInsets get _headerPadding {
-    switch (widget.kind) {
-      case StampRallyListAlertKind.metro20Anniversary:
-        return const EdgeInsets.symmetric(vertical: 3, horizontal: 8);
-      case StampRallyListAlertKind.metroPokepoke:
-      case StampRallyListAlertKind.metroAllStation:
-        return const EdgeInsets.symmetric(vertical: 3);
+        return 'metro_pokepoke';
     }
   }
 
@@ -148,7 +137,7 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
             color: utility.getYoubiColor(date: key, youbiStr: youbiStr, holiday: appParamState.keepHolidayList),
           ),
           margin: const EdgeInsets.symmetric(vertical: 3),
-          padding: _headerPadding,
+          padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
           child: Text('$key ${youbiStr.substring(0, 3)}'),
         ),
       );

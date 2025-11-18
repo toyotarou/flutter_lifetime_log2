@@ -55,6 +55,8 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert> with Co
         return appParamState.keepStampRallyMetroAllStationMap;
       case 'metro_20_anniversary':
         return appParamState.keepStampRallyMetro20AnniversaryMap;
+      case 'metro_pokepoke':
+        return appParamState.keepStampRallyMetroPokepokeMap;
       default:
         return <String, List<StampRallyModel>>{};
     }
@@ -130,9 +132,11 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert> with Co
     lngList.clear();
 
     _currentStampMap.forEach((String key, List<StampRallyModel> value) {
-      for (final StampRallyModel element in value) {
-        latList.add(element.lat.toDouble());
-        lngList.add(element.lng.toDouble());
+      if (key != 'null') {
+        for (final StampRallyModel element in value) {
+          latList.add(element.lat.toDouble());
+          lngList.add(element.lng.toDouble());
+        }
       }
     });
 
@@ -177,53 +181,71 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert> with Co
     int j = 0;
 
     _currentStampMap.forEach((String key, List<StampRallyModel> value) {
-      final List<Marker> list = <Marker>[];
+      if (key != 'null') {
+        final List<Marker> list = <Marker>[];
 
-      for (final StampRallyModel element in value) {
-        final int markerIndex = j;
+        for (final StampRallyModel element in value) {
+          final int markerIndex = j;
 
-        list.add(
-          Marker(
-            point: LatLng(element.lat.toDouble(), element.lng.toDouble()),
-            child: GestureDetector(
-              onTap: () {
-                iconToolChipDisplayOverlay(
-                  type: 'stamp_rally_map_alert_icon',
-                  context: context,
-                  buttonKey: globalKeyList[markerIndex],
-                  message: element.stationName,
-                  displayDuration: const Duration(seconds: 2),
-                );
-              },
-              child: Container(
-                key: globalKeyList[markerIndex],
-                child: Icon(FontAwesomeIcons.stamp, color: twentyFourColor[i % 24]),
+          list.add(
+            Marker(
+              point: LatLng(element.lat.toDouble(), element.lng.toDouble()),
+              child: GestureDetector(
+                onTap: () {
+                  iconToolChipDisplayOverlay(
+                    type: 'stamp_rally_map_alert_icon',
+                    context: context,
+                    buttonKey: globalKeyList[markerIndex],
+                    message: element.stationName,
+                    displayDuration: const Duration(seconds: 2),
+                  );
+                },
+                child: Container(
+                  key: globalKeyList[markerIndex],
+                  child: Icon(FontAwesomeIcons.stamp, color: twentyFourColor[i % 24]),
+                ),
               ),
             ),
-          ),
-        );
+          );
 
-        j++;
+          j++;
+        }
+
+        stampMarkerList.add(list);
+        i++;
       }
-
-      stampMarkerList.add(list);
-      i++;
     });
   }
 
   ///
   // ignore: always_specify_types
   List<Polyline<Object>> makeTransportationPolyline() {
-    final List<MapEntry<String, List<StampRallyModel>>> entries = _currentStampMap.entries.toList();
+    final List<MapEntry<String, List<StampRallyModel>>> validEntries = _currentStampMap.entries
+        .where((MapEntry<String, List<StampRallyModel>> e) => e.key != 'null')
+        .toList();
 
     return <Polyline<Object>>[
-      for (int i = 0; i < entries.length; i++)
-        // ignore: always_specify_types
-        Polyline(
-          points: entries[i].value.map((StampRallyModel t) => LatLng(t.lat.toDouble(), t.lng.toDouble())).toList(),
+      for (int i = 0; i < validEntries.length; i++)
+        Polyline<Object>(
+          points: _sortedLatLngList(validEntries[i].value),
           color: twentyFourColor[i % 24],
           strokeWidth: 5,
         ),
     ];
+  }
+
+  ///
+  List<LatLng> _sortedLatLngList(List<StampRallyModel> list) {
+    final List<StampRallyModel> sorted = List<StampRallyModel>.from(list);
+
+    sorted.sort((StampRallyModel a, StampRallyModel b) {
+      if (widget.type == 'metro_all_station') {
+        return a.stampGetOrder.compareTo(b.stampGetOrder);
+      } else {
+        return a.time.compareTo(b.time);
+      }
+    });
+
+    return sorted.map((StampRallyModel t) => LatLng(t.lat.toDouble(), t.lng.toDouble())).toList();
   }
 }
