@@ -305,11 +305,10 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
                   type: 'weekly_history_alert_badge',
                   context: context,
                   buttonKey: globalKeyList[i],
-                  message: widget.badges[i].tooltip ?? 'badge',
                   displayDuration: const Duration(seconds: 2),
-
                   dayIndex: widget.badges[i].dayIndex,
                   timeGutterWidth: timeGutterWidth,
+                  weeklyHistoryBadgeModel: widget.badges[i],
                 );
               },
               child: Container(

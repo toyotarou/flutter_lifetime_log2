@@ -298,7 +298,18 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                                 ),
                               ),
                             )
-                          : const SizedBox.shrink(),
+                          : Row(
+                              children: [
+                                Container(
+                                  width: context.screenSize.width * 0.6,
+                                  height: context.screenSize.height * 0.1,
+                                  decoration: BoxDecoration(color: Colors.redAccent),
+                                  child: Text('aaa'),
+                                ),
+
+                                SizedBox.shrink(),
+                              ],
+                            ),
                     ),
 
                     Column(
@@ -759,8 +770,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   type: 'lifetime_geoloc_map_display_alert_icon',
                   context: context,
                   buttonKey: globalKeyList[i],
-                  message: widget.temple!.templeDataList[i].name,
                   displayDuration: const Duration(seconds: 2),
+                  templeDataModel: widget.temple!.templeDataList[i],
                 );
               },
               child: Stack(
@@ -893,8 +904,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 type: 'lifetime_geoloc_map_display_alert_icon',
                 context: context,
                 buttonKey: globalKeyList[keyIndex],
-                message: element.stationName,
                 displayDuration: const Duration(seconds: 2),
+                stampRallyModel: element,
               );
             },
             child: Icon(FontAwesomeIcons.stamp, size: 20, color: colorOf(element)),

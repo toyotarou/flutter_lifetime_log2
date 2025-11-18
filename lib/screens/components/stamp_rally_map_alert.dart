@@ -196,8 +196,8 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert> with Co
                     type: 'stamp_rally_map_alert_icon',
                     context: context,
                     buttonKey: globalKeyList[markerIndex],
-                    message: element.stationName,
                     displayDuration: const Duration(seconds: 2),
+                    stampRallyModel: element,
                   );
                 },
                 child: Container(

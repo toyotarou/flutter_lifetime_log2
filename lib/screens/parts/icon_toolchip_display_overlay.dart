@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 
+import '../../models/stamp_rally_model.dart';
+import '../../models/temple_model.dart';
+import '../../models/weekly_history_badge_model.dart';
+
 void iconToolChipDisplayOverlay({
   required String type,
-
   required BuildContext context,
   required GlobalKey buttonKey,
-  required String message,
   Duration displayDuration = const Duration(seconds: 1),
   Duration fadeDuration = const Duration(milliseconds: 300),
-
   double? timeGutterWidth,
   int? dayIndex,
+  TempleDataModel? templeDataModel,
+  StampRallyModel? stampRallyModel,
+  WeeklyHistoryBadgeModel? weeklyHistoryBadgeModel,
 }) {
   final OverlayState overlayState = Overlay.of(context);
 
@@ -36,9 +40,9 @@ void iconToolChipDisplayOverlay({
         type: type,
         buttonOffset: buttonOffset,
         curvedAnimation: curvedAnimation,
-        message: message,
         timeGutterWidth: timeGutterWidth,
         dayIndex: dayIndex,
+        weeklyHistoryBadgeModel: weeklyHistoryBadgeModel,
       );
 
     case 'lifetime_geoloc_map_display_alert_icon':
@@ -47,7 +51,8 @@ void iconToolChipDisplayOverlay({
         type: type,
         buttonOffset: buttonOffset,
         curvedAnimation: curvedAnimation,
-        message: message,
+        templeDataModel: templeDataModel,
+        stampRallyModel: stampRallyModel,
       );
   }
 
@@ -69,9 +74,11 @@ OverlayEntry? getOverlayContents({
   required String type,
   required Offset buttonOffset,
   required CurvedAnimation curvedAnimation,
-  required String message,
   double? timeGutterWidth,
   int? dayIndex,
+  WeeklyHistoryBadgeModel? weeklyHistoryBadgeModel,
+  TempleDataModel? templeDataModel,
+  StampRallyModel? stampRallyModel,
 }) {
   switch (type) {
     case 'weekly_history_alert_badge':
@@ -93,7 +100,7 @@ OverlayEntry? getOverlayContents({
                       if (<int>[1, 2, 3, 4, 5, 6].contains(dayIndex)) ...<Widget>[const SizedBox.shrink()],
 
                       Text(
-                        message,
+                        weeklyHistoryBadgeModel!.tooltip ?? '',
                         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
                       ),
 
@@ -120,7 +127,7 @@ OverlayEntry? getOverlayContents({
                 opacity: curvedAnimation,
 
                 child: Text(
-                  message,
+                  displayText(templeDataModel: templeDataModel, stampRallyModel: stampRallyModel),
                   style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 12),
                 ),
               ),
@@ -131,4 +138,15 @@ OverlayEntry? getOverlayContents({
   }
 
   return null;
+}
+
+///
+String displayText({TempleDataModel? templeDataModel, StampRallyModel? stampRallyModel}) {
+  if (templeDataModel != null) {
+    return templeDataModel.name;
+  } else if (stampRallyModel != null) {
+    return stampRallyModel.stationName;
+  }
+
+  return '';
 }
