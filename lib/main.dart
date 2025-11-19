@@ -136,6 +136,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           toushiShintakuRelationalMap: toushiShintakuState.toushiShintakuRelationalMap,
           timePlaceMap: timePlaceState.timePlaceMap,
           amazonPurchaseMap: amazonPurchaseState.amazonPurchaseMap,
+          tokyoMunicipalList: tokyoMunicipalState.tokyoMunicipalList,
           tokyoMunicipalMap: tokyoMunicipalState.tokyoMunicipalMap,
           stampRallyMetroAllStationMap: stampRallyMetroAllStationState.dateStationStampMap,
           stampRallyMetro20AnniversaryMap: stampRallyMetro20AnniversaryState.dateStationStampMap,

@@ -16,6 +16,7 @@ import '../../models/lat_lng_address.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../models/temple_model.dart';
 import '../../models/transportation_model.dart';
+import '../../utility/functions.dart';
 import '../../utility/tile_provider.dart';
 import '../../utility/utility.dart';
 import '../parts/icon_toolchip_display_overlay.dart';
@@ -89,6 +90,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   List<Marker> stampRallyMetroPokepokeMarkerList = <Marker>[];
 
+  Set<String> dateMunicipalNameSet = <String>{};
+
   ///
   @override
   void initState() {
@@ -104,9 +107,18 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
       if (widget.geolocList != null) {
         final LatLngBounds bounds = LatLngBounds.fromPoints(
-          widget.geolocList!
-              .map((GeolocModel marker) => LatLng(marker.latitude.toDouble(), marker.longitude.toDouble()))
-              .toList(),
+          widget.geolocList!.map((GeolocModel geolocModel) {
+            dateMunicipalNameSet.add(
+              findMunicipalityForPoint(
+                    geolocModel.latitude.toDouble(),
+                    geolocModel.longitude.toDouble(),
+                    appParamState.keepTokyoMunicipalList,
+                  ) ??
+                  '',
+            );
+
+            return LatLng(geolocModel.latitude.toDouble(), geolocModel.longitude.toDouble());
+          }).toList(),
         );
 
         final double latDiff = (bounds.north - bounds.south).abs();
@@ -157,6 +169,18 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     makeStampRallyMetro20AnniversaryMarker();
 
     makeStampRallyMetroPokepokeMarker();
+
+    /*
+
+
+
+    print(dateMunicipalNameSet);
+    {杉並区, 練馬区, 中野区, 新宿区, 千代田区, 中央区, 江東区, 江戸川区, , 文京区, 港区, 豊島区, 板橋区}
+
+
+
+
+    */
 
     return Scaffold(
       body: Stack(
@@ -289,7 +313,11 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                                 Expanded(
                                   child: Container(
                                     padding: const EdgeInsets.only(top: 10, left: 10),
-                                    child: const Text('aaa'),
+
+                                    child: const Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[Text('aaa')],
+                                    ),
                                   ),
                                 ),
 

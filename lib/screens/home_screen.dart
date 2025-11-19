@@ -86,6 +86,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.stampRallyMetroAllStationMap,
     required this.stampRallyMetro20AnniversaryMap,
     required this.stampRallyMetroPokepokeMap,
+    required this.tokyoMunicipalList,
   });
 
   final List<String> holidayList;
@@ -116,6 +117,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<StampRallyModel>> stampRallyMetroAllStationMap;
   final Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap;
   final Map<String, List<StampRallyModel>> stampRallyMetroPokepokeMap;
+  final List<MunicipalModel> tokyoMunicipalList;
   final Map<String, MunicipalModel> tokyoMunicipalMap;
 
   @override
@@ -185,6 +187,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepTimePlaceMap(map: widget.timePlaceMap);
       appParamNotifier.setKeepAmazonPurchaseMap(map: widget.amazonPurchaseMap);
       appParamNotifier.setKeepStampRallyMetroAllStationMap(map: widget.stampRallyMetroAllStationMap);
+
+      appParamNotifier.setKeepTokyoMunicipalList(list: widget.tokyoMunicipalList);
+      appParamNotifier.setKeepTokyoMunicipalMap(map: widget.tokyoMunicipalMap);
 
       //===========================================//
 

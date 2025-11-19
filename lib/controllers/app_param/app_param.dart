@@ -10,6 +10,7 @@ import '../../models/gold_model.dart';
 import '../../models/lifetime_model.dart';
 import '../../models/money_model.dart';
 import '../../models/money_spend_model.dart';
+import '../../models/municipal_model.dart';
 import '../../models/salary_model.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../models/stock_model.dart';
@@ -53,6 +54,9 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<TimePlaceModel>>{}) Map<String, List<TimePlaceModel>> keepTimePlaceMap,
     @Default(<String, List<AmazonPurchaseModel>>{}) Map<String, List<AmazonPurchaseModel>> keepAmazonPurchaseMap,
     @Default(<String, List<StampRallyModel>>{}) Map<String, List<StampRallyModel>> keepStampRallyMetroAllStationMap,
+
+    @Default(<MunicipalModel>[]) List<MunicipalModel> keepTokyoMunicipalList,
+    @Default(<String, MunicipalModel>{}) Map<String, MunicipalModel> keepTokyoMunicipalMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -187,6 +191,14 @@ class AppParam extends _$AppParam {
   ///
   void setKeepToushiShintakuMap({required Map<String, List<ToushiShintakuModel>> map}) =>
       state = state.copyWith(keepToushiShintakuMap: map);
+
+  ///
+  void setKeepTokyoMunicipalList({required List<MunicipalModel> list}) =>
+      state = state.copyWith(keepTokyoMunicipalList: list);
+
+  ///
+  void setKeepTokyoMunicipalMap({required Map<String, MunicipalModel> map}) =>
+      state = state.copyWith(keepTokyoMunicipalMap: map);
 
   ///
   void setKeepStationList({required List<StationModel> list}) => state = state.copyWith(keepStationList: list);

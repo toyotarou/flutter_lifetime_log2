@@ -7,7 +7,7 @@ part of 'stamp_rally_metro_pokepoke.dart';
 // **************************************************************************
 
 String _$stampRallyMetroPokepokeHash() =>
-    r'93c2aaa521701abf44b05e73d0a92af903549c5b';
+    r'a55cedee59eddb0dd8a10c8d328856e61ffb0693';
 
 /// See also [StampRallyMetroPokepoke].
 @ProviderFor(StampRallyMetroPokepoke)
