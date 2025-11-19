@@ -420,19 +420,21 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     final List<Widget> list = <Widget>[];
 
     cityTownNames.split('\n').forEach((String element) {
-      if (dateMunicipalNameSet.contains(element)) {
-        list.add(
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.blueAccent.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            margin: const EdgeInsets.all(3),
-            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+      if (element != '') {
+        if (dateMunicipalNameSet.contains(element)) {
+          list.add(
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.blueAccent.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              margin: const EdgeInsets.all(3),
+              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
 
-            child: Text(element, style: const TextStyle(fontSize: 10)),
-          ),
-        );
+              child: Text(element, style: const TextStyle(fontSize: 10)),
+            ),
+          );
+        }
       }
     });
 
