@@ -170,18 +170,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
     makeStampRallyMetroPokepokeMarker();
 
-    /*
-
-
-
-    print(dateMunicipalNameSet);
-    {杉並区, 練馬区, 中野区, 新宿区, 千代田区, 中央区, 江東区, 江戸川区, , 文京区, 港区, 豊島区, 板橋区}
-
-
-
-
-    */
-
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -276,15 +264,18 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                             ),
                           ],
 
-                          Expanded(
-                            child: Container(
-                              alignment: Alignment.topRight,
-                              child: GestureDetector(
-                                onTap: () {},
-                                child: Icon(Icons.location_on_outlined, color: Colors.white.withValues(alpha: 0.8)),
+                          if (!appParamState.isDisplayMunicipalNameOnLifetimeGeolocMap) ...<Widget>[
+                            Expanded(
+                              child: Container(
+                                alignment: Alignment.topRight,
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      appParamNotifier.setIsDisplayMunicipalNameOnLifetimeGeolocMap(flag: true),
+                                  child: Icon(Icons.location_on_outlined, color: Colors.white.withValues(alpha: 0.8)),
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                     ],
@@ -299,41 +290,45 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                     Expanded(
                       child: Row(
                         children: <Widget>[
-                          Container(
-                            width: context.screenSize.width * 0.6,
-                            height: context.screenSize.height * 0.1,
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                          if (appParamState.isDisplayMunicipalNameOnLifetimeGeolocMap) ...<Widget>[
+                            Container(
+                              width: context.screenSize.width * 0.6,
+                              height: context.screenSize.height * 0.1,
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
 
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.only(top: 10, left: 10),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.only(top: 10, left: 10),
 
-                                    child: const Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[Text('aaa')],
+                                      child: SingleChildScrollView(child: displayDateMunicipalNameWidget()),
                                     ),
                                   ),
-                                ),
 
-                                Column(
-                                  children: <Widget>[
-                                    const Spacer(),
-                                    Icon(Icons.location_on_outlined, color: Colors.white.withValues(alpha: 0.8)),
-                                    const SizedBox(height: 15),
-                                  ],
-                                ),
-                                const SizedBox(width: 10),
-                              ],
+                                  Column(
+                                    children: <Widget>[
+                                      const Spacer(),
+                                      GestureDetector(
+                                        onTap: () =>
+                                            appParamNotifier.setIsDisplayMunicipalNameOnLifetimeGeolocMap(flag: false),
+                                        child: Icon(
+                                          Icons.location_on_outlined,
+                                          color: Colors.white.withValues(alpha: 0.8),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 15),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 10),
+                                ],
+                              ),
                             ),
-                          ),
-
-                          const SizedBox.shrink(),
+                          ],
                         ],
                       ),
                     ),
@@ -418,6 +413,30 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         ],
       ),
     );
+  }
+
+  ///
+  Widget displayDateMunicipalNameWidget() {
+    final List<Widget> list = <Widget>[];
+
+    cityTownNames.split('\n').forEach((String element) {
+      if (dateMunicipalNameSet.contains(element)) {
+        list.add(
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.blueAccent.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            margin: const EdgeInsets.all(3),
+            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+
+            child: Text(element, style: const TextStyle(fontSize: 10)),
+          ),
+        );
+      }
+    });
+
+    return Wrap(children: list);
   }
 
   ///

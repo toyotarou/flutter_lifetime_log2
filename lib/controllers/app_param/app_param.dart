@@ -119,6 +119,8 @@ class AppParamState with _$AppParamState {
     @Default(0) int selectedCrossCalendarYear,
 
     @Default(56) double gutterWidth,
+
+    @Default(true) bool isDisplayMunicipalNameOnLifetimeGeolocMap,
   }) = _AppParamState;
 }
 
@@ -335,4 +337,8 @@ class AppParam extends _$AppParam {
 
   ///
   void setSelectedCrossCalendarYear({required int year}) => state = state.copyWith(selectedCrossCalendarYear: year);
+
+  ///
+  void setIsDisplayMunicipalNameOnLifetimeGeolocMap({required bool flag}) =>
+      state = state.copyWith(isDisplayMunicipalNameOnLifetimeGeolocMap: flag);
 }
