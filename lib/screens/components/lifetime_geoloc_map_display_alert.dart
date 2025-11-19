@@ -240,13 +240,29 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
                       if (widget.temple != null) ...<Widget>[const SizedBox(height: 10), displayTempleNameList()],
 
-                      if (widget.transportation != null &&
-                          widget.transportation!.stationRouteList.isNotEmpty) ...<Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: widget.transportation!.stationRouteList.map((String e) => Text(e)).toList(),
-                        ),
-                      ],
+                      Row(
+                        children: <Widget>[
+                          if (widget.transportation != null &&
+                              widget.transportation!.stationRouteList.isNotEmpty) ...<Widget>[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: widget.transportation!.stationRouteList
+                                  .map((String e) => Text(e, style: const TextStyle(fontSize: 12)))
+                                  .toList(),
+                            ),
+                          ],
+
+                          Expanded(
+                            child: Container(
+                              alignment: Alignment.topRight,
+                              child: GestureDetector(
+                                onTap: () {},
+                                child: Icon(Icons.location_on_outlined, color: Colors.white.withValues(alpha: 0.8)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -257,59 +273,41 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Expanded(
-                      child: (appParamState.keepStampRallyMetroAllStationMap[widget.date] != null)
-                          ? Container(
-                              margin: const EdgeInsets.only(right: 20),
-                              child: DefaultTextStyle(
-                                style: const TextStyle(fontSize: 12),
-                                child: Row(
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                            width: context.screenSize.width * 0.6,
+                            height: context.screenSize.height * 0.1,
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.only(top: 10, left: 10),
+                                    child: const Text('aaa'),
+                                  ),
+                                ),
+
+                                Column(
                                   children: <Widget>[
-                                    const Icon(FontAwesomeIcons.stamp, color: Colors.black),
-
-                                    const SizedBox(width: 10),
-
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.deepOrange,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-                                      child: const Text('特殊'),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.indigo,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-                                      child: const Text('改札外'),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.pinkAccent,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-                                      child: const Text('改札内'),
-                                    ),
+                                    const Spacer(),
+                                    Icon(Icons.location_on_outlined, color: Colors.white.withValues(alpha: 0.8)),
+                                    const SizedBox(height: 15),
                                   ],
                                 ),
-                              ),
-                            )
-                          : Row(
-                              children: [
-                                Container(
-                                  width: context.screenSize.width * 0.6,
-                                  height: context.screenSize.height * 0.1,
-                                  decoration: BoxDecoration(color: Colors.redAccent),
-                                  child: Text('aaa'),
-                                ),
-
-                                SizedBox.shrink(),
+                                const SizedBox(width: 10),
                               ],
                             ),
+                          ),
+
+                          const SizedBox.shrink(),
+                        ],
+                      ),
                     ),
 
                     Column(
@@ -855,8 +853,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     stampRallyMetroAllStationMarkerList = _buildStampMarkerList(
       data: appParamState.keepStampRallyMetroAllStationMap[widget.date],
       keyOffset: 100,
-      colorOf: (StampRallyModel e) =>
-          getStationInnerOuterColor(posterPosition: e.posterPosition, stationName: e.stationName),
+      colorOf: (_) => Colors.indigo,
     );
   }
 
@@ -915,23 +912,5 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     }
 
     return list;
-  }
-
-  ///
-  Color getStationInnerOuterColor({required String posterPosition, required String stationName}) {
-    final RegExp reg = RegExp('改札内');
-    final RegExp reg2 = RegExp('改札外');
-
-    final List<String> specialStation = <String>['中目黒', '中野', '西船橋', '代々木上原', '和光市', '目黒'];
-
-    if (specialStation.contains(stationName)) {
-      return Colors.deepOrange;
-    } else if (reg.firstMatch(posterPosition) != null) {
-      return Colors.pinkAccent;
-    } else if (reg2.firstMatch(posterPosition) != null) {
-      return Colors.indigo;
-    } else {
-      return Colors.black;
-    }
   }
 }

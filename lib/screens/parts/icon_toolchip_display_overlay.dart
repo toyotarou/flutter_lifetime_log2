@@ -145,7 +145,22 @@ String displayText({TempleDataModel? templeDataModel, StampRallyModel? stampRall
   if (templeDataModel != null) {
     return templeDataModel.name;
   } else if (stampRallyModel != null) {
-    return stampRallyModel.stationName;
+    final List<String> textList = <String>[stampRallyModel.stationName];
+
+    final RegExp reg = RegExp('改札内');
+    final RegExp reg2 = RegExp('改札外');
+
+    final List<String> specialStation = <String>['中目黒', '中野', '西船橋', '代々木上原', '和光市', '目黒'];
+
+    if (specialStation.contains(stampRallyModel.stationName)) {
+      textList.add('（特殊）');
+    } else if (reg.firstMatch(stampRallyModel.posterPosition) != null) {
+      textList.add('（改札内）');
+    } else if (reg2.firstMatch(stampRallyModel.posterPosition) != null) {
+      textList.add('（改札外）');
+    }
+
+    return textList.join();
   }
 
   return '';
