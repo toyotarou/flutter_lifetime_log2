@@ -31,6 +31,10 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
   int startPrice = 0;
   int endPrice = 0;
 
+  final TransformationController transformationController = TransformationController();
+
+  bool zoomMode = false;
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -45,7 +49,30 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(width: context.screenSize.width),
-              const Text('money in possession'),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  const Text('money in possession'),
+
+                  Row(
+                    children: <Widget>[
+                      if (zoomMode) ...<Widget>[
+                        IconButton(
+                          onPressed: () => transformationController.value = Matrix4.identity(),
+                          icon: const Icon(Icons.lock_reset),
+                        ),
+                      ],
+
+                      IconButton(
+                        onPressed: () => zoomMode = !zoomMode,
+                        icon: Icon(Icons.expand, color: zoomMode ? Colors.yellowAccent : Colors.white),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
               Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
               Expanded(
                 child: LayoutBuilder(
@@ -69,9 +96,25 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
 
                     return Stack(
                       children: <Widget>[
-                        LineChart(graphData2),
-                        LineChart(graphData3),
-                        LineChart(graphData),
+                        if (zoomMode)
+                          InteractiveViewer(
+                            transformationController: transformationController,
+
+                            panEnabled: zoomMode,
+                            scaleEnabled: zoomMode,
+
+                            minScale: 1.0,
+                            maxScale: 10.0,
+
+                            child: AbsorbPointer(
+                              child: Stack(
+                                children: <Widget>[LineChart(graphData2), LineChart(graphData3), LineChart(graphData)],
+                              ),
+                            ),
+                          )
+                        else
+                          Stack(children: <Widget>[LineChart(graphData2), LineChart(graphData3), LineChart(graphData)]),
+
                         Positioned(
                           left: pixelX + 20,
                           top: pixelY - 20,

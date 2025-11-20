@@ -41,6 +41,10 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
   List<String> toushiGraphSelectYearList = <String>[];
 
+  final TransformationController transformationController = TransformationController();
+
+  bool zoomMode = false;
+
   ///
   @override
   void initState() {
@@ -78,7 +82,22 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      const SizedBox.shrink(),
+                      Row(
+                        children: <Widget>[
+                          if (zoomMode) ...<Widget>[
+                            IconButton(
+                              onPressed: () => transformationController.value = Matrix4.identity(),
+                              icon: const Icon(Icons.lock_reset),
+                            ),
+                          ],
+
+                          IconButton(
+                            onPressed: () => zoomMode = !zoomMode,
+                            icon: Icon(Icons.expand, color: zoomMode ? Colors.yellowAccent : Colors.white),
+                          ),
+                        ],
+                      ),
+
                       GestureDetector(
                         onTap: () {
                           appParamNotifier.setSelectedToushiGraphItemName(name: '');
@@ -97,8 +116,22 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                   height: (widget.title == 'gold') ? context.screenSize.height * 0.7 : context.screenSize.height * 0.5,
                   child: Stack(
                     children: <Widget>[
-                      LineChart(graphData2),
-                      LineChart(graphData),
+                      if (zoomMode)
+                        InteractiveViewer(
+                          transformationController: transformationController,
+
+                          panEnabled: zoomMode,
+                          scaleEnabled: zoomMode,
+
+                          minScale: 1.0,
+                          maxScale: 10.0,
+
+                          child: AbsorbPointer(
+                            child: Stack(children: <Widget>[LineChart(graphData2), LineChart(graphData)]),
+                          ),
+                        )
+                      else
+                        Stack(children: <Widget>[LineChart(graphData2), LineChart(graphData)]),
 
                       Positioned(
                         top: 5,
