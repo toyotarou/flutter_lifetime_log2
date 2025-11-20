@@ -35,6 +35,10 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
 
   double get _arrowX => _endDay + 0.25;
 
+  final TransformationController transformationController = TransformationController();
+
+  bool zoomMode = false;
+
   ///
   @override
   void initState() {
@@ -72,21 +76,73 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(width: context.screenSize.width),
-              const Text('monthly assets graph'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('monthly assets graph'),
+
+                  Row(
+                    children: <Widget>[
+                      if (zoomMode) ...<Widget>[
+                        IconButton(
+                          onPressed: () => setState(() => transformationController.value = Matrix4.identity()),
+                          icon: const Icon(Icons.lock_reset),
+                        ),
+                      ],
+
+                      IconButton(
+                        onPressed: () => setState(() => zoomMode = !zoomMode),
+                        icon: Icon(Icons.expand, color: zoomMode ? Colors.yellowAccent : Colors.white),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
               Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
               Expanded(
                 child: Stack(
                   children: <Widget>[
-                    LineChart(graphData2),
+                    if (zoomMode)
+                      InteractiveViewer(
+                        transformationController: transformationController,
 
-                    AnimatedBuilder(
-                      animation: _animationController,
-                      builder: (BuildContext context, _) {
-                        final double t = Curves.easeOutCubic.transform(_animationController.value);
-                        return LineChart(_animatedData(graphData, t));
-                      },
-                    ),
+                        panEnabled: zoomMode,
+                        scaleEnabled: zoomMode,
+
+                        minScale: 1.0,
+                        maxScale: 10.0,
+
+                        child: AbsorbPointer(
+                          child: Stack(
+                            children: [
+                              LineChart(graphData2),
+
+                              AnimatedBuilder(
+                                animation: _animationController,
+                                builder: (BuildContext context, _) {
+                                  final double t = Curves.easeOutCubic.transform(_animationController.value);
+                                  return LineChart(_animatedData(graphData, t));
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      Stack(
+                        children: [
+                          LineChart(graphData2),
+
+                          AnimatedBuilder(
+                            animation: _animationController,
+                            builder: (BuildContext context, _) {
+                              final double t = Curves.easeOutCubic.transform(_animationController.value);
+                              return LineChart(_animatedData(graphData, t));
+                            },
+                          ),
+                        ],
+                      ),
 
                     if (_startY != null && _endY != null)
                       Align(
