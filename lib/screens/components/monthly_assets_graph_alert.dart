@@ -21,6 +21,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
   LineChartData graphData2 = LineChartData();
 
   List<FlSpot> _flspots = <FlSpot>[];
+  List<String> _dateList = <String>[];
 
   int graphMin = 0;
   int graphMax = 0;
@@ -39,17 +40,39 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
 
   bool zoomMode = false;
 
+  bool _showPointLabels = false;
+
   ///
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 700))..forward();
+
+    transformationController.addListener(_onTransformChanged);
+  }
+
+  ///
+  void _onTransformChanged() {
+    if (!zoomMode) {
+      return;
+    }
+
+    final double scale = transformationController.value.getMaxScaleOnAxis();
+
+    final bool shouldShow = scale >= 5.0;
+
+    if (shouldShow != _showPointLabels) {
+      setState(() {
+        _showPointLabels = shouldShow;
+      });
+    }
   }
 
   ///
   @override
   void dispose() {
     _animationController.dispose();
+    transformationController.dispose();
     super.dispose();
   }
 
@@ -78,20 +101,29 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
               Container(width: context.screenSize.width),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   const Text('monthly assets graph'),
-
                   Row(
                     children: <Widget>[
                       if (zoomMode) ...<Widget>[
                         IconButton(
-                          onPressed: () => setState(() => transformationController.value = Matrix4.identity()),
+                          onPressed: () => setState(() {
+                            transformationController.value = Matrix4.identity();
+                            _showPointLabels = false;
+                          }),
                           icon: const Icon(Icons.lock_reset),
                         ),
                       ],
-
                       IconButton(
-                        onPressed: () => setState(() => zoomMode = !zoomMode),
+                        onPressed: () {
+                          setState(() {
+                            zoomMode = !zoomMode;
+                            if (!zoomMode) {
+                              transformationController.value = Matrix4.identity();
+                              _showPointLabels = false;
+                            }
+                          });
+                        },
                         icon: Icon(Icons.expand, color: zoomMode ? Colors.yellowAccent : Colors.white),
                       ),
                     ],
@@ -99,25 +131,20 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                 ],
               ),
               Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
               Expanded(
                 child: Stack(
                   children: <Widget>[
                     if (zoomMode)
                       InteractiveViewer(
                         transformationController: transformationController,
-
                         panEnabled: zoomMode,
                         scaleEnabled: zoomMode,
-
                         minScale: 1.0,
                         maxScale: 10.0,
-
                         child: AbsorbPointer(
                           child: Stack(
-                            children: [
+                            children: <Widget>[
                               LineChart(graphData2),
-
                               AnimatedBuilder(
                                 animation: _animationController,
                                 builder: (BuildContext context, _) {
@@ -131,9 +158,8 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                       )
                     else
                       Stack(
-                        children: [
+                        children: <Widget>[
                           LineChart(graphData2),
-
                           AnimatedBuilder(
                             animation: _animationController,
                             builder: (BuildContext context, _) {
@@ -143,7 +169,6 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                           ),
                         ],
                       ),
-
                     if (_startY != null && _endY != null)
                       Align(
                         alignment: yToAlign(midY),
@@ -172,9 +197,9 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
   ///
   void _setChartData() {
     _flspots = <FlSpot>[];
+    _dateList = <String>[];
 
     final List<int> monthlyAssetValueList = <int>[];
-    final List<String> dateList = <String>[];
 
     int lastTotal = 0;
 
@@ -184,7 +209,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
       final int value = widget.monthlyGraphAssetsMap[key]!;
       _flspots.add(FlSpot(key.toDouble(), value.toDouble()));
       monthlyAssetValueList.add(value);
-      dateList.add('${widget.yearmonth}-${key.toString().padLeft(2, '0')}');
+      _dateList.add('${widget.yearmonth}-${key.toString().padLeft(2, '0')}');
       if (value > 0) {
         lastTotal = value;
       }
@@ -199,7 +224,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
     if (monthlyAssetValueList.isNotEmpty) {
       for (int d = (sortedKeys.isEmpty ? 1 : (sortedKeys.last + 1)); d <= _lastDayOfMonth; d++) {
         _flspots.add(FlSpot(d.toDouble(), lastTotal.toDouble()));
-        dateList.add('${widget.yearmonth}-${d.toString().padLeft(2, '0')}');
+        _dateList.add('${widget.yearmonth}-${d.toString().padLeft(2, '0')}');
       }
     }
 
@@ -241,7 +266,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
       _startY = startY;
       _endY = endY;
 
-      final List<List<int>> weeks = getSplitWeeksByIndex(dateList: dateList);
+      final List<List<int>> weeks = getSplitWeeksByIndex(dateList: _dateList);
       final List<VerticalRangeAnnotation> verticalRanges = buildWeekBandsByWeeks(
         weeks: weeks,
         paintEvenWeeks: true,
@@ -249,12 +274,28 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
         opacity: 0.1,
       );
 
+      int? todayIndex;
+      if (isCurrentMonth) {
+        final String todayStr = '${widget.yearmonth}-${DateTime.now().day.toString().padLeft(2, '0')}';
+        for (int i = 0; i < _dateList.length; i++) {
+          if (_dateList[i] == todayStr) {
+            todayIndex = i;
+            break;
+          }
+        }
+      }
+
+      final List<LineChartBarData> weeklyMomentumLines = _buildWeeklyMomentumLines(
+        weeks: weeks,
+        spots: _flspots,
+        todayIndex: todayIndex,
+      );
+
       graphData = LineChartData(
         minX: 1,
         maxX: _lastDayOfMonth.toDouble(),
         minY: graphMin.toDouble(),
         maxY: graphMax.toDouble(),
-
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
             tooltipRoundedRadius: 2,
@@ -311,7 +352,6 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                   '$date($youbi)\n$displayPrice\n$diffFromStartText',
                   baseStyle,
                   textAlign: TextAlign.end,
-
                   children: <TextSpan>[
                     const TextSpan(text: '\n'),
                     TextSpan(
@@ -324,9 +364,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
             },
           ),
         ),
-
         rangeAnnotations: RangeAnnotations(verticalRangeAnnotations: verticalRanges),
-
         gridData: FlGridData(
           verticalInterval: 1,
           getDrawingHorizontalLine: (double value) => FlLine(
@@ -354,17 +392,36 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
             );
           },
         ),
-
         titlesData: const FlTitlesData(show: false),
         borderData: FlBorderData(show: false),
-
         lineBarsData: <LineChartBarData>[
           LineChartBarData(
             spots: _flspots,
             color: Colors.greenAccent,
-            dotData: const FlDotData(show: false),
             barWidth: 1,
+            dotData: FlDotData(
+              show: _showPointLabels,
+              getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int index) {
+                if (_isFuture(spot)) {
+                  return ValueDotPainter(
+                    color: Colors.greenAccent,
+                    radius: 0.8,
+                    textStyle: const TextStyle(fontSize: 2, color: Colors.transparent),
+                    labelBuilder: (_) => '',
+                  );
+                }
+
+                return ValueDotPainter(
+                  color: Colors.greenAccent,
+                  radius: 0.8,
+                  backgroundColor: Colors.blue.withOpacity(0.5),
+                  textStyle: const TextStyle(fontSize: 1, color: Colors.white),
+                  labelBuilder: _buildSpotLabel,
+                );
+              },
+            ),
           ),
+          ...weeklyMomentumLines,
           if (_startY != null && _endY != null)
             LineChartBarData(
               barWidth: 2.5,
@@ -375,7 +432,6 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
               show: false,
             ),
         ],
-
         extraLinesData: ExtraLinesData(
           horizontalLines: <HorizontalLine>[
             if (_startY != null)
@@ -476,6 +532,28 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
   }
 
   ///
+  String _buildSpotLabel(FlSpot spot) {
+    final int day = spot.x.toInt().clamp(1, _lastDayOfMonth);
+    final String date = '${widget.yearmonth}-${day.toString().padLeft(2, '0')}';
+    final String price = spot.y.round().toString().toCurrency();
+    return '$date\n$price';
+  }
+
+  ///
+  bool _isFuture(FlSpot spot) {
+    final List<String> parts = widget.yearmonth.split('-');
+    final int year = parts[0].toInt();
+    final int month = parts[1].toInt();
+    final int day = spot.x.toInt().clamp(1, _lastDayOfMonth);
+
+    final DateTime date = DateTime(year, month, day);
+    final DateTime now = DateTime.now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
+
+    return date.isAfter(today);
+  }
+
+  ///
   List<List<int>> getSplitWeeksByIndex({required List<String> dateList}) {
     if (dateList.isEmpty) {
       return <List<int>>[];
@@ -517,4 +595,143 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
     }
     return ranges;
   }
+
+  ///
+  List<LineChartBarData> _buildWeeklyMomentumLines({
+    required List<List<int>> weeks,
+    required List<FlSpot> spots,
+    required int? todayIndex,
+  }) {
+    final List<LineChartBarData> result = <LineChartBarData>[];
+
+    int? currentWeekIndex;
+    if (todayIndex != null) {
+      for (int i = 0; i < weeks.length; i++) {
+        if (weeks[i].contains(todayIndex)) {
+          currentWeekIndex = i;
+          break;
+        }
+      }
+    }
+
+    for (int i = 0; i < weeks.length; i++) {
+      final List<int> w = weeks[i];
+      if (w.isEmpty) {
+        continue;
+      }
+
+      if (todayIndex != null && w.first > todayIndex) {
+        continue;
+      }
+
+      final int startIndex = w.first;
+      int endIndex;
+
+      if (currentWeekIndex != null && todayIndex != null && i == currentWeekIndex) {
+        endIndex = todayIndex;
+      } else {
+        if (i < weeks.length - 1) {
+          endIndex = weeks[i + 1].first;
+        } else {
+          endIndex = w.last;
+        }
+      }
+
+      if (todayIndex != null && endIndex > todayIndex) {
+        endIndex = todayIndex;
+      }
+
+      if (endIndex <= startIndex) {
+        continue;
+      }
+
+      final FlSpot start = spots[startIndex];
+      final FlSpot end = spots[endIndex];
+
+      final Color color = Colors.white.withValues(alpha: 0.2);
+
+      result.add(
+        LineChartBarData(
+          spots: <FlSpot>[start, end],
+          barWidth: 10,
+          color: color,
+          dotData: const FlDotData(show: false),
+          isStrokeCapRound: true,
+        ),
+      );
+    }
+
+    return result;
+  }
+}
+
+///
+class ValueDotPainter extends FlDotPainter {
+  ValueDotPainter({
+    required this.color,
+    required this.radius,
+    required this.textStyle,
+    required this.labelBuilder,
+    this.backgroundColor,
+  });
+
+  final Color color;
+  final double radius;
+  final TextStyle textStyle;
+  final String Function(FlSpot spot) labelBuilder;
+  final Color? backgroundColor;
+
+  @override
+  Color get mainColor => color;
+
+  @override
+  List<Object?> get props => <Object?>[color, radius, textStyle, backgroundColor];
+
+  ///
+  @override
+  void draw(Canvas canvas, FlSpot spot, Offset offsetInCanvas) {
+    final Paint dotPaint = Paint()..color = color;
+    canvas.drawCircle(offsetInCanvas, radius, dotPaint);
+
+    final String label = labelBuilder(spot);
+    if (label.isEmpty) {
+      return;
+    }
+
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(text: label, style: textStyle),
+
+      textAlign: TextAlign.right,
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: 36);
+
+    final Offset textOffset = offsetInCanvas - Offset(textPainter.width, textPainter.height + radius + 1);
+
+    if (backgroundColor != null) {
+      final Rect bgRect = Rect.fromLTWH(
+        textOffset.dx - 1,
+        textOffset.dy - 1,
+        textPainter.width + 2,
+        textPainter.height + 2,
+      );
+      final RRect rRect = RRect.fromRectAndRadius(bgRect, const Radius.circular(2));
+      final Paint bgPaint = Paint()..color = backgroundColor!;
+      canvas.drawRRect(rRect, bgPaint);
+    }
+
+    textPainter.paint(canvas, textOffset);
+  }
+
+  ///
+  @override
+  Size getSize(FlSpot spot) => Size(radius * 2, radius * 2);
+
+  ///
+  @override
+  bool hitTest(FlSpot spot, Offset touched, Offset center, double extraThreshold) =>
+      (touched - center).distance <= radius + extraThreshold;
+
+  ///
+  @override
+  FlDotPainter lerp(FlDotPainter a, FlDotPainter b, double t) => this;
 }
