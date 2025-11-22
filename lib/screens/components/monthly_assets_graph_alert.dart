@@ -39,9 +39,8 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
   final TransformationController transformationController = TransformationController();
 
   bool zoomMode = false;
-  bool _showPointLabels = false;
 
-  late LineChartBarData _mainLineBar;
+  bool _showPointLabels = false;
 
   ///
   @override
@@ -59,6 +58,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
     }
 
     final double scale = transformationController.value.getMaxScaleOnAxis();
+
     final bool shouldShow = scale >= 5.0;
 
     if (shouldShow != _showPointLabels) {
@@ -291,44 +291,23 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
         todayIndex: todayIndex,
       );
 
-      _mainLineBar = LineChartBarData(
-        spots: _flspots,
-        color: Colors.greenAccent,
-        barWidth: 1,
-        dotData: FlDotData(
-          show: _showPointLabels,
-          getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int index) {
-            if (_isFuture(spot)) {
-              return ValueDotPainter(
-                color: Colors.greenAccent,
-                radius: 0.8,
-                textStyle: const TextStyle(fontSize: 2, color: Colors.transparent),
-                labelBuilder: (_) => '',
-              );
-            }
-
-            return ValueDotPainter(
-              color: Colors.greenAccent,
-              radius: 0.8,
-              backgroundColor: Colors.blue.withOpacity(0.5),
-              textStyle: const TextStyle(fontSize: 1, color: Colors.white),
-              labelBuilder: _buildSpotLabel,
-            );
-          },
-        ),
-      );
-
       graphData = LineChartData(
         minX: 1,
         maxX: _lastDayOfMonth.toDouble(),
         minY: graphMin.toDouble(),
         maxY: graphMax.toDouble(),
         lineTouchData: LineTouchData(
-          enabled: true,
           touchTooltipData: LineTouchTooltipData(
             tooltipRoundedRadius: 2,
+            // ★ 修正：touchedSpots と同じ長さのリストを返しつつ、
+            // barIndex != 0（モメンタム線など）は null で非表示にする
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
               return touchedSpots.map((LineBarSpot s) {
+                if (s.barIndex != 0) {
+                  // メイン線以外はツールチップ非表示
+                  return null;
+                }
+
                 final TextStyle baseStyle = TextStyle(
                   color: s.bar.gradient?.colors.first ?? s.bar.color ?? Colors.blueGrey,
                   fontWeight: FontWeight.bold,
@@ -391,24 +370,6 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
               }).toList();
             },
           ),
-          getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
-            return spotIndexes.map((int index) {
-              return TouchedSpotIndicatorData(
-                const FlLine(color: Colors.white70, strokeWidth: 1),
-                FlDotData(
-                  show: true,
-                  getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int _) {
-                    return FlDotCirclePainter(
-                      radius: 4,
-                      color: Colors.greenAccent,
-                      strokeWidth: 2,
-                      strokeColor: Colors.black54,
-                    );
-                  },
-                ),
-              );
-            }).toList();
-          },
         ),
         rangeAnnotations: RangeAnnotations(verticalRangeAnnotations: verticalRanges),
         gridData: FlGridData(
@@ -441,7 +402,33 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
         titlesData: const FlTitlesData(show: false),
         borderData: FlBorderData(show: false),
         lineBarsData: <LineChartBarData>[
-          _mainLineBar,
+          LineChartBarData(
+            spots: _flspots,
+            color: Colors.greenAccent,
+            barWidth: 1,
+            dotData: FlDotData(
+              show: _showPointLabels,
+              getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int index) {
+                if (_isFuture(spot)) {
+                  return ValueDotPainter(
+                    color: Colors.greenAccent,
+                    radius: 0.8,
+                    textStyle: const TextStyle(fontSize: 2, color: Colors.transparent),
+                    labelBuilder: (_) => '',
+                  );
+                }
+
+                return ValueDotPainter(
+                  color: Colors.greenAccent,
+                  radius: 0.8,
+                  backgroundColor: Colors.blue.withOpacity(0.5),
+                  textStyle: const TextStyle(fontSize: 1, color: Colors.white),
+                  labelBuilder: _buildSpotLabel,
+                );
+              },
+            ),
+          ),
+          ...weeklyMomentumLines,
           if (_startY != null && _endY != null)
             LineChartBarData(
               barWidth: 2.5,
@@ -527,7 +514,6 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
             ),
           ),
         ),
-        lineBarsData: weeklyMomentumLines,
       );
     }
   }
