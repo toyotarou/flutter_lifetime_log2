@@ -19,6 +19,7 @@ class MonthlyAssetsGraphAlert extends ConsumerStatefulWidget {
 class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAlert> with SingleTickerProviderStateMixin {
   LineChartData graphData = LineChartData();
   LineChartData graphData2 = LineChartData();
+  LineChartData graphData3 = LineChartData();
 
   List<FlSpot> _flspots = <FlSpot>[];
   List<String> _dateList = <String>[];
@@ -145,6 +146,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                           child: Stack(
                             children: <Widget>[
                               LineChart(graphData2),
+                              LineChart(graphData3),
                               AnimatedBuilder(
                                 animation: _animationController,
                                 builder: (BuildContext context, _) {
@@ -160,6 +162,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                       Stack(
                         children: <Widget>[
                           LineChart(graphData2),
+                          LineChart(graphData3),
                           AnimatedBuilder(
                             animation: _animationController,
                             builder: (BuildContext context, _) {
@@ -371,7 +374,6 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
             },
           ),
         ),
-        rangeAnnotations: RangeAnnotations(verticalRangeAnnotations: verticalRanges),
         gridData: FlGridData(
           verticalInterval: 1,
           getDrawingHorizontalLine: (double value) => FlLine(
@@ -428,7 +430,6 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
               },
             ),
           ),
-          ...weeklyMomentumLines,
           if (_startY != null && _endY != null)
             LineChartBarData(
               barWidth: 2.5,
@@ -514,6 +515,19 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
             ),
           ),
         ),
+      );
+
+      graphData3 = LineChartData(
+        minX: 1,
+        maxX: _lastDayOfMonth.toDouble(),
+        minY: graphMin.toDouble(),
+        maxY: graphMax.toDouble(),
+        lineTouchData: const LineTouchData(enabled: false),
+        rangeAnnotations: RangeAnnotations(verticalRangeAnnotations: verticalRanges),
+        gridData: const FlGridData(show: false),
+        titlesData: const FlTitlesData(show: false),
+        borderData: FlBorderData(show: false),
+        lineBarsData: weeklyMomentumLines,
       );
     }
   }
