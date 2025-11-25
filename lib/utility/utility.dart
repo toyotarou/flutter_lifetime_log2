@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../enums/stamp_rally_kind.dart';
 import '../extensions/extensions.dart';
 import '../models/bounding_box_info_model.dart';
 import '../models/geoloc_model.dart';
 import '../models/temple_model.dart';
 import '../models/transportation_model.dart';
-import '../screens/components/stamp_rally_list_alert.dart';
 
 class Utility {
   /// 背景取得
@@ -341,10 +341,10 @@ class Utility {
   }
 
   ///
-  Map<StampRallyListAlertKind, List<String>> getSpecialStampGuideMap() {
-    return <StampRallyListAlertKind, List<String>>{
-      StampRallyListAlertKind.metroAllStation: <String>['G', 'M', 'H', 'T', 'C', 'Y', 'Z', 'N', 'F'],
-      StampRallyListAlertKind.metroPokepoke: <String>['05', '10', '15', '20', '25', '30'],
+  Map<StampRallyKind, List<String>> getSpecialStampGuideMap() {
+    return <StampRallyKind, List<String>>{
+      StampRallyKind.metroAllStation: <String>['G', 'M', 'H', 'T', 'C', 'Y', 'Z', 'N', 'F'],
+      StampRallyKind.metroPokepoke: <String>['05', '10', '15', '20', '25', '30'],
     };
   }
 }

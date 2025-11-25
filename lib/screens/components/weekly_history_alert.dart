@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../enums/stamp_rally_kind.dart';
 import '../../extensions/extensions.dart';
 import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
@@ -446,15 +447,15 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
   }
 
   ///
-  StampRallyAlertKind? _stampKindForDate(String date) {
+  StampRallyKind? _stampKindForDate(String date) {
     if (appParamState.keepStampRallyMetroAllStationMap[date] != null) {
-      return StampRallyAlertKind.metroAllStation;
+      return StampRallyKind.metroAllStation;
     }
     if (appParamState.keepStampRallyMetro20AnniversaryMap[date] != null) {
-      return StampRallyAlertKind.metro20Anniversary;
+      return StampRallyKind.metro20Anniversary;
     }
     if (appParamState.keepStampRallyMetroPokepokeMap[date] != null) {
-      return StampRallyAlertKind.metroPokepoke;
+      return StampRallyKind.metroPokepoke;
     }
     return null;
   }
@@ -568,7 +569,7 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                           height: 30,
                           child: Builder(
                             builder: (BuildContext context) {
-                              final StampRallyAlertKind? kind = _stampKindForDate(date);
+                              final StampRallyKind? kind = _stampKindForDate(date);
 
                               if (kind == null) {
                                 return const SizedBox.shrink();

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../controllers/controllers_mixin.dart';
+import '../enums/stamp_rally_kind.dart';
 import '../extensions/extensions.dart';
 import '../main.dart';
 import '../models/amazon_purchase_model.dart';
@@ -550,7 +551,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               GestureDetector(
                 onTap: () => LifetimeDialog(
                   context: context,
-                  widget: const StampRallyListAlert(kind: StampRallyListAlertKind.metroAllStation),
+                  widget: const StampRallyListAlert(kind: StampRallyKind.metroAllStation),
                 ),
                 child: const Row(
                   children: <Widget>[
@@ -566,7 +567,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               GestureDetector(
                 onTap: () => LifetimeDialog(
                   context: context,
-                  widget: const StampRallyListAlert(kind: StampRallyListAlertKind.metro20Anniversary),
+                  widget: const StampRallyListAlert(kind: StampRallyKind.metro20Anniversary),
                 ),
                 child: const Row(
                   children: <Widget>[
@@ -582,7 +583,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               GestureDetector(
                 onTap: () => LifetimeDialog(
                   context: context,
-                  widget: const StampRallyListAlert(kind: StampRallyListAlertKind.metroPokepoke),
+                  widget: const StampRallyListAlert(kind: StampRallyKind.metroPokepoke),
                 ),
                 child: const Row(
                   children: <Widget>[

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../enums/stamp_rally_kind.dart';
 import '../../utility/utility.dart';
-import 'stamp_rally_list_alert.dart';
 
 class StampRallyExtraStampListAlert extends ConsumerStatefulWidget {
   const StampRallyExtraStampListAlert({super.key, required this.kind, required this.title});
 
-  final StampRallyListAlertKind kind;
+  final StampRallyKind kind;
   final String title;
 
   @override
@@ -23,7 +23,7 @@ class _StampRallyExtraStampListAlertState extends ConsumerState<StampRallyExtraS
   void initState() {
     super.initState();
 
-    final Map<StampRallyListAlertKind, List<String>> specialStampGuideMap = utility.getSpecialStampGuideMap();
+    final Map<StampRallyKind, List<String>> specialStampGuideMap = utility.getSpecialStampGuideMap();
     specialStampGuideList = specialStampGuideMap[widget.kind] ?? <String>[];
   }
 

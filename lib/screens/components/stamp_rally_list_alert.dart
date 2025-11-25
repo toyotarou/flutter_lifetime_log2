@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../enums/stamp_rally_kind.dart';
 import '../../extensions/extensions.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../utility/utility.dart';
@@ -11,17 +12,10 @@ import 'stamp_rally_map_alert.dart';
 import 'stamp_rally_stamp_alert.dart';
 
 ///
-enum StampRallyListAlertKind {
-  metro20Anniversary, // 東京メトロ 20周年スタンプラリー
-  metroPokepoke, // 東京メトロ ポケポケ
-  metroAllStation, // 東京メトロ 全駅スタンプラリー
-}
-
-///
 class StampRallyListAlert extends ConsumerStatefulWidget {
   const StampRallyListAlert({super.key, required this.kind});
 
-  final StampRallyListAlertKind kind;
+  final StampRallyKind kind;
 
   @override
   ConsumerState<StampRallyListAlert> createState() => _StampRallyListAlertState();
@@ -33,11 +27,11 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
   ///
   String get _title {
     switch (widget.kind) {
-      case StampRallyListAlertKind.metro20Anniversary:
+      case StampRallyKind.metro20Anniversary:
         return '東京メトロ　20周年スタンプラリー';
-      case StampRallyListAlertKind.metroPokepoke:
+      case StampRallyKind.metroPokepoke:
         return '東京メトロ　ポケポケ';
-      case StampRallyListAlertKind.metroAllStation:
+      case StampRallyKind.metroAllStation:
         return '東京メトロ　全駅スタンプラリー';
     }
   }
@@ -45,11 +39,11 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
   ///
   Map<String, List<StampRallyModel>> get _stampMap {
     switch (widget.kind) {
-      case StampRallyListAlertKind.metro20Anniversary:
+      case StampRallyKind.metro20Anniversary:
         return appParamState.keepStampRallyMetro20AnniversaryMap;
-      case StampRallyListAlertKind.metroPokepoke:
+      case StampRallyKind.metroPokepoke:
         return appParamState.keepStampRallyMetroPokepokeMap;
-      case StampRallyListAlertKind.metroAllStation:
+      case StampRallyKind.metroAllStation:
         return appParamState.keepStampRallyMetroAllStationMap;
     }
   }
@@ -57,11 +51,11 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
   ///
   String? get _mapAlertType {
     switch (widget.kind) {
-      case StampRallyListAlertKind.metroAllStation:
+      case StampRallyKind.metroAllStation:
         return 'metro_all_station';
-      case StampRallyListAlertKind.metro20Anniversary:
+      case StampRallyKind.metro20Anniversary:
         return 'metro_20_anniversary';
-      case StampRallyListAlertKind.metroPokepoke:
+      case StampRallyKind.metroPokepoke:
         return 'metro_pokepoke';
     }
   }
@@ -89,8 +83,8 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
                       children: <Widget>[
                         Text(_title),
 
-                        if (widget.kind == StampRallyListAlertKind.metroAllStation ||
-                            widget.kind == StampRallyListAlertKind.metroPokepoke) ...<Widget>[
+                        if (widget.kind == StampRallyKind.metroAllStation ||
+                            widget.kind == StampRallyKind.metroPokepoke) ...<Widget>[
                           GestureDetector(
                             onTap: () {
                               LifetimeDialog(
@@ -166,7 +160,7 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
       );
 
       switch (widget.kind) {
-        case StampRallyListAlertKind.metro20Anniversary:
+        case StampRallyKind.metro20Anniversary:
           value.sort((StampRallyModel a, StampRallyModel b) {
             final int t = a.time.compareTo(b.time);
             if (t != 0) {
@@ -175,10 +169,10 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
             return a.stampGetOrder.compareTo(b.stampGetOrder);
           });
 
-        case StampRallyListAlertKind.metroPokepoke:
+        case StampRallyKind.metroPokepoke:
           value.sort((StampRallyModel a, StampRallyModel b) => a.time.compareTo(b.time));
 
-        case StampRallyListAlertKind.metroAllStation:
+        case StampRallyKind.metroAllStation:
           value.sort((StampRallyModel a, StampRallyModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
       }
 
@@ -207,7 +201,7 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
                     );
                   },
                   child: SizedBox(
-                    width: (widget.kind == StampRallyListAlertKind.metroPokepoke) ? 40 : 80,
+                    width: (widget.kind == StampRallyKind.metroPokepoke) ? 40 : 80,
                     child: Opacity(
                       opacity: 0.6,
                       child: Hero(
@@ -296,13 +290,13 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
   ///
   String _buildStampImageUrl(StampRallyModel element) {
     switch (widget.kind) {
-      case StampRallyListAlertKind.metroAllStation:
+      case StampRallyKind.metroAllStation:
         return 'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';
 
-      case StampRallyListAlertKind.metro20Anniversary:
+      case StampRallyKind.metro20Anniversary:
         return 'http://toyohide.work/BrainLog/public/metro_stamp_20_anniversary/metro_stamp_20_${element.stamp}.png';
 
-      case StampRallyListAlertKind.metroPokepoke:
+      case StampRallyKind.metroPokepoke:
         return 'http://toyohide.work/BrainLog/metro_stamp_pokepoke/stamp${element.stamp}.png';
     }
   }

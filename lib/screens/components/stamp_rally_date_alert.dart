@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../enums/stamp_rally_kind.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'stamp_rally_stamp_alert.dart';
-
-///
-enum StampRallyAlertKind { metro20Anniversary, metroAllStation, metroPokepoke }
 
 class StampRallyDateAlert extends ConsumerStatefulWidget {
   const StampRallyDateAlert({super.key, required this.date, required this.kind});
@@ -17,7 +15,7 @@ class StampRallyDateAlert extends ConsumerStatefulWidget {
   final String date;
 
   /// 20周年 or 全駅 などの種別
-  final StampRallyAlertKind kind;
+  final StampRallyKind kind;
 
   @override
   ConsumerState<StampRallyDateAlert> createState() => _StampRallyAlertState();
@@ -29,11 +27,11 @@ class _StampRallyAlertState extends ConsumerState<StampRallyDateAlert> with Cont
   ///
   String get _title {
     switch (widget.kind) {
-      case StampRallyAlertKind.metroAllStation:
+      case StampRallyKind.metroAllStation:
         return '東京メトロ　全駅スタンプラリー';
-      case StampRallyAlertKind.metro20Anniversary:
+      case StampRallyKind.metro20Anniversary:
         return '東京メトロ　20周年スタンプラリー';
-      case StampRallyAlertKind.metroPokepoke:
+      case StampRallyKind.metroPokepoke:
         return '東京メトロ　ポケポケ';
     }
   }
@@ -41,11 +39,11 @@ class _StampRallyAlertState extends ConsumerState<StampRallyDateAlert> with Cont
   ///
   Map<String, List<StampRallyModel>> get _stampMap {
     switch (widget.kind) {
-      case StampRallyAlertKind.metroAllStation:
+      case StampRallyKind.metroAllStation:
         return appParamState.keepStampRallyMetroAllStationMap;
-      case StampRallyAlertKind.metro20Anniversary:
+      case StampRallyKind.metro20Anniversary:
         return appParamState.keepStampRallyMetro20AnniversaryMap;
-      case StampRallyAlertKind.metroPokepoke:
+      case StampRallyKind.metroPokepoke:
         return appParamState.keepStampRallyMetroPokepokeMap;
     }
   }
@@ -93,11 +91,11 @@ class _StampRallyAlertState extends ConsumerState<StampRallyDateAlert> with Cont
     if (stamps != null) {
       // 並び順だけ種別で切り替え
       switch (widget.kind) {
-        case StampRallyAlertKind.metroAllStation:
+        case StampRallyKind.metroAllStation:
           stamps.sort((StampRallyModel a, StampRallyModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
 
-        case StampRallyAlertKind.metro20Anniversary:
-        case StampRallyAlertKind.metroPokepoke:
+        case StampRallyKind.metro20Anniversary:
+        case StampRallyKind.metroPokepoke:
           stamps.sort((StampRallyModel a, StampRallyModel b) => a.time.compareTo(b.time));
       }
 
@@ -120,7 +118,8 @@ class _StampRallyAlertState extends ConsumerState<StampRallyDateAlert> with Cont
                     );
                   },
                   child: SizedBox(
-                    width: 80,
+                    width: (widget.kind == StampRallyKind.metroPokepoke) ? 40 : 80,
+
                     child: Opacity(
                       opacity: 0.6,
                       child: FadeInImage.assetNetwork(
@@ -206,12 +205,14 @@ class _StampRallyAlertState extends ConsumerState<StampRallyDateAlert> with Cont
   ///
   String _buildStampImageUrl(StampRallyModel element) {
     switch (widget.kind) {
-      case StampRallyAlertKind.metroAllStation:
-      case StampRallyAlertKind.metroPokepoke:
+      case StampRallyKind.metroAllStation:
         return 'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';
 
-      case StampRallyAlertKind.metro20Anniversary:
+      case StampRallyKind.metro20Anniversary:
         return 'http://toyohide.work/BrainLog/public/metro_stamp_20_anniversary/metro_stamp_20_${element.stamp}.png';
+
+      case StampRallyKind.metroPokepoke:
+        return 'http://toyohide.work/BrainLog/metro_stamp_pokepoke/stamp${element.stamp}.png';
     }
   }
 }
