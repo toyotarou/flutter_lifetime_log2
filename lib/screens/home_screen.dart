@@ -701,24 +701,7 @@ Map<String, List<StampRallyModel>> makeStampRallyDisplayDataMap({
         }
       }
 
-      if (type == 'Metro20Anniversary') {
-        if (element.stationCode == '5896') {
-          /// 竹橋
-          nearestGeolocTime = '15:15:48';
-        }
-      }
-
-      if (type == 'MetroPokepoke') {
-        if (element.stationCode == '5895') {
-          /// 九段下
-          nearestGeolocTime = '12:25:08';
-        }
-
-        if (element.stationCode == '5894') {
-          /// 飯田橋
-          nearestGeolocTime = '13:14:10';
-        }
-      }
+      nearestGeolocTime = utility.getStampNearestGeolocTimeAdjustMap()[type]?[element.stationCode] ?? nearestGeolocTime;
 
       final String trainName = trainMap[stationModel.trainNumber] ?? '';
 

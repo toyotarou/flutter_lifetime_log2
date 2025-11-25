@@ -325,6 +325,19 @@ class Utility {
     }
     return nearest;
   }
+
+  ///
+  Map<String, Map<String, String>> getStampNearestGeolocTimeAdjustMap() {
+    return <String, Map<String, String>>{
+      'Metro20Anniversary': <String, String>{
+        '5896': '15:15:48', // 竹橋
+      },
+      'MetroPokepoke': <String, String>{
+        '5895': '12:25:08', // 九段下
+        '5894': '13:14:10', // 飯田橋
+      },
+    };
+  }
 }
 
 class NavigationService {
