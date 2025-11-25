@@ -83,7 +83,18 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(_title),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(_title),
+
+                        if (widget.kind == StampRallyListAlertKind.metroAllStation ||
+                            widget.kind == StampRallyListAlertKind.metroPokepoke) ...<Widget>[
+                          Icon(Icons.add_box, color: Colors.white.withValues(alpha: 0.3)),
+                          const SizedBox(width: 10),
+                        ],
+                      ],
+                    ),
                     GestureDetector(
                       onTap: _mapAlertType == null
                           ? null
@@ -95,7 +106,10 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
                             },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[Text('全$totalCount回'), const Icon(Icons.map)],
+                        children: <Widget>[
+                          Text('全$totalCount回'),
+                          Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+                        ],
                       ),
                     ),
                   ],
@@ -184,7 +198,7 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
                     );
                   },
                   child: SizedBox(
-                    width: 80,
+                    width: (widget.kind == StampRallyListAlertKind.metroPokepoke) ? 40 : 80,
                     child: Opacity(
                       opacity: 0.6,
                       child: Hero(
@@ -273,11 +287,14 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
   ///
   String _buildStampImageUrl(StampRallyModel element) {
     switch (widget.kind) {
-      case StampRallyListAlertKind.metro20Anniversary:
-        return 'http://toyohide.work/BrainLog/public/metro_stamp_20_anniversary/metro_stamp_20_${element.stamp}.png';
-      case StampRallyListAlertKind.metroPokepoke:
       case StampRallyListAlertKind.metroAllStation:
         return 'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';
+
+      case StampRallyListAlertKind.metro20Anniversary:
+        return 'http://toyohide.work/BrainLog/public/metro_stamp_20_anniversary/metro_stamp_20_${element.stamp}.png';
+
+      case StampRallyListAlertKind.metroPokepoke:
+        return 'http://toyohide.work/BrainLog/metro_stamp_pokepoke/stamp${element.stamp}.png';
     }
   }
 }
