@@ -6,6 +6,7 @@ import '../../extensions/extensions.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
+import 'stamp_rally_extra_stamp_list_alert.dart';
 import 'stamp_rally_map_alert.dart';
 import 'stamp_rally_stamp_alert.dart';
 
@@ -90,7 +91,15 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
 
                         if (widget.kind == StampRallyListAlertKind.metroAllStation ||
                             widget.kind == StampRallyListAlertKind.metroPokepoke) ...<Widget>[
-                          Icon(Icons.add_box, color: Colors.white.withValues(alpha: 0.3)),
+                          GestureDetector(
+                            onTap: () {
+                              LifetimeDialog(
+                                context: context,
+                                widget: StampRallyExtraStampListAlert(kind: widget.kind, title: _title),
+                              );
+                            },
+                            child: Icon(Icons.add_box, color: Colors.white.withValues(alpha: 0.3)),
+                          ),
                           const SizedBox(width: 10),
                         ],
                       ],

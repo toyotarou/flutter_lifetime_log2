@@ -9,6 +9,7 @@ import '../models/bounding_box_info_model.dart';
 import '../models/geoloc_model.dart';
 import '../models/temple_model.dart';
 import '../models/transportation_model.dart';
+import '../screens/components/stamp_rally_list_alert.dart';
 
 class Utility {
   /// 背景取得
@@ -336,6 +337,14 @@ class Utility {
         '5895': '12:25:08', // 九段下
         '5894': '13:14:10', // 飯田橋
       },
+    };
+  }
+
+  ///
+  Map<StampRallyListAlertKind, List<String>> getSpecialStampGuideMap() {
+    return <StampRallyListAlertKind, List<String>>{
+      StampRallyListAlertKind.metroAllStation: <String>['G', 'M', 'H', 'T', 'C', 'Y', 'Z', 'N', 'F'],
+      StampRallyListAlertKind.metroPokepoke: <String>['05', '10', '15', '20', '25', '30'],
     };
   }
 }
