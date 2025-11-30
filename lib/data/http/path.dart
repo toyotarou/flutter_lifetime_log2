@@ -34,6 +34,7 @@ enum APIPath {
   getStationStamp,
   getMetroStampPokePoke,
   getWorkTruth,
+  getWorkContract,
 }
 
 extension APIPathExtension on APIPath {
@@ -130,8 +131,11 @@ extension APIPathExtension on APIPath {
         return 'getStationStamp';
       case APIPath.getMetroStampPokePoke:
         return 'getMetroStampPokePoke';
+
       case APIPath.getWorkTruth:
         return 'getWorkTruth';
+      case APIPath.getWorkContract:
+        return 'getWorkContract';
     }
   }
 }

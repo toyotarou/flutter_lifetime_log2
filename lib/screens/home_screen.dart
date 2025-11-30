@@ -89,7 +89,6 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.stampRallyMetro20AnniversaryMap,
     required this.stampRallyMetroPokepokeMap,
     required this.tokyoMunicipalList,
-    required this.workTruthModelMap,
   });
 
   final List<String> holidayList;
@@ -122,7 +121,6 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<StampRallyModel>> stampRallyMetroPokepokeMap;
   final List<MunicipalModel> tokyoMunicipalList;
   final Map<String, MunicipalModel> tokyoMunicipalMap;
-  final Map<String, WorkTruthModel> workTruthModelMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -193,7 +191,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepStampRallyMetroAllStationMap(map: widget.stampRallyMetroAllStationMap);
       appParamNotifier.setKeepTokyoMunicipalList(list: widget.tokyoMunicipalList);
       appParamNotifier.setKeepTokyoMunicipalMap(map: widget.tokyoMunicipalMap);
-      appParamNotifier.setKeepWorkTruthModelMap(map: widget.workTruthModelMap);
 
       //===========================================//
 

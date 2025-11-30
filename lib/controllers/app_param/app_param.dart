@@ -57,7 +57,6 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<StampRallyModel>>{}) Map<String, List<StampRallyModel>> keepStampRallyMetroAllStationMap,
     @Default(<MunicipalModel>[]) List<MunicipalModel> keepTokyoMunicipalList,
     @Default(<String, MunicipalModel>{}) Map<String, MunicipalModel> keepTokyoMunicipalMap,
-    @Default(<String, WorkTruthModel>{}) Map<String, WorkTruthModel> keepWorkTruthModelMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -202,10 +201,6 @@ class AppParam extends _$AppParam {
   ///
   void setKeepTokyoMunicipalMap({required Map<String, MunicipalModel> map}) =>
       state = state.copyWith(keepTokyoMunicipalMap: map);
-
-  ///
-  void setKeepWorkTruthModelMap({required Map<String, WorkTruthModel> map}) =>
-      state = state.copyWith(keepWorkTruthModelMap: map);
 
   ///
   void setKeepStationList({required List<StationModel> list}) => state = state.copyWith(keepStationList: list);

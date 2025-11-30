@@ -81,7 +81,6 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     stampRallyMetro20AnniversaryNotifier.getAllMetroStamp20AnniversaryData();
     stampRallyMetroPokepokeNotifier.getAllStampRallyMetroPokepokeData();
     tokyoMunicipalNotifier.getAllTokyoMunicipalData();
-    workTruthNotifier.getAllWorkTruthData();
   }
 
   ///
@@ -142,7 +141,6 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           stampRallyMetroAllStationMap: stampRallyMetroAllStationState.dateStationStampMap,
           stampRallyMetro20AnniversaryMap: stampRallyMetro20AnniversaryState.dateStationStampMap,
           stampRallyMetroPokepokeMap: stampRallyMetroPokepokeState.dateStationStampMap,
-          workTruthModelMap: workTruthState.workTruthModelMap,
         ),
       ),
     );
