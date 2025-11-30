@@ -49,6 +49,8 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
                     Text(widget.yearmonth),
                     GestureDetector(
                       onTap: () {
+                        /////////
+
                         final List<YearlyHistoryEvent> workInfoList = _buildYearlyHistoryEvents(
                           appParamState.keepWorkTimeMap,
                         );
@@ -294,6 +296,8 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
   ///
   DateTime _addMonths(DateTime d, int months) => DateTime(d.year, d.month + months);
 
+  /////////
+
   ///
   List<YearlyHistoryEvent> _buildYearlyHistoryEvents(Map<String, WorkTimeModel> keepWorkTimeMap) {
     if (keepWorkTimeMap.isEmpty) {
@@ -385,4 +389,6 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
 
     return events;
   }
+
+  /////
 }

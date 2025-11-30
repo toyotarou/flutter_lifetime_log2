@@ -26,6 +26,7 @@ import '_get_data/walk/walk.dart';
 import '_get_data/weather/weather.dart';
 import '_get_data/work_time/work_time.dart';
 
+import '_get_data/work_truth/work_truth.dart';
 import 'app_param/app_param.dart';
 
 import 'bank_input/bank_input.dart';
@@ -231,6 +232,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   StampRallyMetroPokepokeState get stampRallyMetroPokepokeState => ref.watch(stampRallyMetroPokepokeProvider);
 
   StampRallyMetroPokepoke get stampRallyMetroPokepokeNotifier => ref.read(stampRallyMetroPokepokeProvider.notifier);
+
+  //==========================================//
+
+  WorkTruthState get workTruthState => ref.watch(workTruthProvider);
+
+  WorkTruth get workTruthNotifier => ref.read(workTruthProvider.notifier);
 
   //==========================================//
   Directions get directionsNotifier => ref.read(directionsProvider.notifier);

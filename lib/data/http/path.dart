@@ -33,6 +33,7 @@ enum APIPath {
   getAmazonData,
   getStationStamp,
   getMetroStampPokePoke,
+  getWorkTruth,
 }
 
 extension APIPathExtension on APIPath {
@@ -129,6 +130,8 @@ extension APIPathExtension on APIPath {
         return 'getStationStamp';
       case APIPath.getMetroStampPokePoke:
         return 'getMetroStampPokePoke';
+      case APIPath.getWorkTruth:
+        return 'getWorkTruth';
     }
   }
 }
