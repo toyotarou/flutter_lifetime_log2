@@ -2,6 +2,7 @@ import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -26,6 +27,10 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
   int monthlySum = 0;
 
+  List<Widget> monthlyMoneySpendList = <Widget>[];
+
+  final AutoScrollController autoScrollController = AutoScrollController();
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -43,7 +48,29 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(widget.yearmonth),
+                    Row(
+                      children: <Widget>[
+                        SizedBox(width: 60, child: Text(widget.yearmonth)),
+
+                        Row(
+                          children: <Widget>[
+                            IconButton(
+                              onPressed: () {
+                                autoScrollController.scrollToIndex(monthlyMoneySpendList.length);
+                              },
+                              icon: Icon(Icons.arrow_downward, color: Colors.white.withValues(alpha: 0.3)),
+                            ),
+
+                            IconButton(
+                              onPressed: () {
+                                autoScrollController.scrollToIndex(0);
+                              },
+                              icon: Icon(Icons.arrow_upward, color: Colors.white.withValues(alpha: 0.3)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
 
                     ChoiceChip(
                       label: const Text('summary', style: TextStyle(fontSize: 10)),
@@ -90,7 +117,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
   ///
   Widget displayMonthlyMoneySpendList() {
-    final List<Widget> list = <Widget>[];
+    monthlyMoneySpendList.clear();
 
     final int endNum = DateTime(
       widget.yearmonth.split('-')[0].toInt(),
@@ -131,108 +158,115 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
       }
 
       if (date == DateTime.now().yyyymmdd) {
-        list.add(const DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3));
+        monthlyMoneySpendList.add(const DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3));
       }
 
-      list.add(
-        Stack(
-          children: <Widget>[
-            if (appParamState.keepAmazonPurchaseMap[date] != null) ...<Widget>[
-              Positioned(
-                right: 30,
-                bottom: 5,
-                child: Icon(FontAwesomeIcons.amazon, color: Colors.white.withValues(alpha: 0.4)),
-              ),
-            ],
+      monthlyMoneySpendList.add(
+        AutoScrollTag(
+          // ignore: always_specify_types
+          key: ValueKey(i),
+          index: i,
+          controller: autoScrollController,
 
-            if (date == DateTime.now().yyyymmdd) ...<Widget>[
-              const Positioned(
-                left: 3,
-                bottom: 3,
-                child: Text('TODAY', style: TextStyle(fontSize: 10, color: Colors.orangeAccent)),
-              ),
-            ],
+          child: Stack(
+            children: <Widget>[
+              if (appParamState.keepAmazonPurchaseMap[date] != null) ...<Widget>[
+                Positioned(
+                  right: 30,
+                  bottom: 5,
+                  child: Icon(FontAwesomeIcons.amazon, color: Colors.white.withValues(alpha: 0.4)),
+                ),
+              ],
 
-            Container(
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
-              ),
-              padding: const EdgeInsets.all(5),
-              child: DefaultTextStyle(
-                style: const TextStyle(fontSize: 12),
+              if (date == DateTime.now().yyyymmdd) ...<Widget>[
+                const Positioned(
+                  left: 3,
+                  bottom: 3,
+                  child: Text('TODAY', style: TextStyle(fontSize: 10, color: Colors.orangeAccent)),
+                ),
+              ],
 
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    if (inputDisplay)
-                      GestureDetector(
-                        onTap: () => LifetimeDialog(
-                          context: context,
-                          widget: SpendDateInputAlert(date: date),
-                        ),
-                        child: Icon(
-                          Icons.input,
-                          color: (diff != 0)
-                              ? Colors.greenAccent.withValues(alpha: 0.4)
-                              : Colors.white.withValues(alpha: 0.4),
-                        ),
-                      )
-                    else
-                      const Icon(Icons.square_outlined, color: Colors.transparent),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
+                ),
+                padding: const EdgeInsets.all(5),
+                child: DefaultTextStyle(
+                  style: const TextStyle(fontSize: 12),
 
-                    const SizedBox(width: 20),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      if (inputDisplay)
+                        GestureDetector(
+                          onTap: () => LifetimeDialog(
+                            context: context,
+                            widget: SpendDateInputAlert(date: date),
+                          ),
+                          child: Icon(
+                            Icons.input,
+                            color: (diff != 0)
+                                ? Colors.greenAccent.withValues(alpha: 0.4)
+                                : Colors.white.withValues(alpha: 0.4),
+                          ),
+                        )
+                      else
+                        const Icon(Icons.square_outlined, color: Colors.transparent),
 
-                    Expanded(
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            decoration: BoxDecoration(color: headColor),
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            margin: const EdgeInsets.symmetric(vertical: 2),
+                      const SizedBox(width: 20),
 
-                            child: Row(
+                      Expanded(
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(color: headColor),
+                              padding: const EdgeInsets.symmetric(vertical: 2),
+                              margin: const EdgeInsets.symmetric(vertical: 2),
+
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      Text(i.toString().padLeft(2, '0')),
+                                      const SizedBox(width: 5),
+                                      Text(youbi),
+                                    ],
+                                  ),
+                                  Text(spend.toString().toCurrency()),
+                                ],
+                              ),
+                            ),
+
+                            if (appParamState.keepMoneySpendMap[date] != null) ...<Widget>[
+                              displayDateMoneySpendList(date: date),
+                            ],
+
+                            const SizedBox(height: 5),
+
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    Text(i.toString().padLeft(2, '0')),
-                                    const SizedBox(width: 5),
-                                    Text(youbi),
-                                  ],
+                                const SizedBox.shrink(),
+                                Text(
+                                  diff.toString().toCurrency(),
+                                  style: TextStyle(
+                                    color: (diff != 0)
+                                        ? Colors.yellowAccent.withValues(alpha: 0.5)
+                                        : Colors.pinkAccent.withValues(alpha: 0.5),
+                                  ),
                                 ),
-                                Text(spend.toString().toCurrency()),
                               ],
                             ),
-                          ),
-
-                          if (appParamState.keepMoneySpendMap[date] != null) ...<Widget>[
-                            displayDateMoneySpendList(date: date),
                           ],
-
-                          const SizedBox(height: 5),
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              const SizedBox.shrink(),
-                              Text(
-                                diff.toString().toCurrency(),
-                                style: TextStyle(
-                                  color: (diff != 0)
-                                      ? Colors.yellowAccent.withValues(alpha: 0.5)
-                                      : Colors.pinkAccent.withValues(alpha: 0.5),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }
@@ -242,11 +276,13 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
     setState(() => monthlySum = listSum);
 
     return CustomScrollView(
+      controller: autoScrollController,
+
       slivers: <Widget>[
         SliverList(
           delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) => list[index],
-            childCount: list.length,
+            (BuildContext context, int index) => monthlyMoneySpendList[index],
+            childCount: monthlyMoneySpendList.length,
           ),
         ),
       ],

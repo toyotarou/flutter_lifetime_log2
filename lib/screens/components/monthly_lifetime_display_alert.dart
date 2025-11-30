@@ -22,7 +22,7 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
     with ControllersMixin<MonthlyLifetimeDisplayAlert> {
   Utility utility = Utility();
 
-  List<Widget> monthlyLifetimeList = [];
+  List<Widget> monthlyLifetimeList = <Widget>[];
 
   final AutoScrollController autoScrollController = AutoScrollController(axis: Axis.horizontal);
 
