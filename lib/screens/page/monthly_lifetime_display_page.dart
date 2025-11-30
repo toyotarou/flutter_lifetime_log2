@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -36,6 +37,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   List<Map<String, String>> insuranceDataList = <Map<String, String>>[];
 
   List<Map<String, String>> nenkinKikinDataList = <Map<String, String>>[];
+
+  final AutoScrollController autoScrollController = AutoScrollController();
 
   ///
   @override
@@ -200,6 +203,26 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                   ],
                 ),
 
+                Row(
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: () {
+                        autoScrollController.scrollToIndex(
+                          DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day,
+                        );
+                      },
+                      icon: Icon(Icons.arrow_downward, color: Colors.white.withValues(alpha: 0.3)),
+                    ),
+
+                    IconButton(
+                      onPressed: () {
+                        autoScrollController.scrollToIndex(0);
+                      },
+                      icon: Icon(Icons.arrow_upward, color: Colors.white.withValues(alpha: 0.3)),
+                    ),
+                  ],
+                ),
+
                 const SizedBox(height: 10),
 
                 Expanded(child: _displayMonthlyLifetimeList()),
@@ -278,427 +301,449 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
       //////////////////////////////////////////////////////////////////////
 
       list.add(
-        Card(
-          margin: (DateTime.parse(date).isBeforeOrSameDate(DateTime.now()))
-              ? null
-              : EdgeInsets.only(right: context.screenSize.width * 0.5),
+        AutoScrollTag(
+          // ignore: always_specify_types
+          key: ValueKey(i),
+          index: i,
+          controller: autoScrollController,
 
-          color: cardColor,
-          child: DefaultTextStyle(
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constrainedBoxHeight),
-              child: Stack(
-                children: <Widget>[
-                  if (appParamState.keepWorkTimeDateMap[date] != null &&
-                      appParamState.keepWorkTimeDateMap[date]!['start'] != '' &&
-                      appParamState.keepWorkTimeDateMap[date]!['end'] != '') ...<Widget>[
-                    Positioned(
-                      bottom: 10,
-                      right: 10,
-                      child: DefaultTextStyle(
-                        style: TextStyle(color: Colors.grey.withValues(alpha: 0.3)),
+          child: Card(
+            margin: (DateTime.parse(date).isBeforeOrSameDate(DateTime.now()))
+                ? null
+                : EdgeInsets.only(right: context.screenSize.width * 0.5),
+
+            color: cardColor,
+            child: DefaultTextStyle(
+              style: const TextStyle(color: Colors.white, fontSize: 12),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constrainedBoxHeight),
+                child: Stack(
+                  children: <Widget>[
+                    if (appParamState.keepWorkTimeDateMap[date] != null &&
+                        appParamState.keepWorkTimeDateMap[date]!['start'] != '' &&
+                        appParamState.keepWorkTimeDateMap[date]!['end'] != '') ...<Widget>[
+                      Positioned(
+                        bottom: 10,
+                        right: 10,
+                        child: DefaultTextStyle(
+                          style: TextStyle(color: Colors.grey.withValues(alpha: 0.3)),
+                          child: Row(
+                            children: <Widget>[
+                              const Text('🔨'),
+                              const SizedBox(width: 20),
+                              Text(appParamState.keepWorkTimeDateMap[date]!['start'] ?? ''),
+                              const Text(' - '),
+                              Text(appParamState.keepWorkTimeDateMap[date]!['end'] ?? ''),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
+                      Positioned(
+                        bottom: 10,
+                        left: 10,
+                        child: DefaultTextStyle(
+                          style: TextStyle(color: Colors.grey.withValues(alpha: 0.3)),
+                          child: Text(
+                            (appParamState.keepWeatherMap[date] != null)
+                                ? appParamState.keepWeatherMap[date]!.weather
+                                : '',
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    if (appParamState.keepSalaryMap[date] != null) ...<Widget>[
+                      Positioned(
+                        bottom: 30,
+                        right: 10,
+                        left: 10,
+
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            const Text('🔨'),
-                            const SizedBox(width: 20),
-                            Text(appParamState.keepWorkTimeDateMap[date]!['start'] ?? ''),
-                            const Text(' - '),
-                            Text(appParamState.keepWorkTimeDateMap[date]!['end'] ?? ''),
+                            const SizedBox.shrink(),
+
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Icon(Icons.diamond, color: Colors.yellowAccent.withValues(alpha: 0.3)),
+
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: appParamState.keepSalaryMap[date]!.map((SalaryModel e) {
+                                    return Text(
+                                      e.salary.toString().toCurrency(),
+
+                                      style: TextStyle(color: Colors.yellowAccent.withValues(alpha: 0.3)),
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
 
-                  if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
-                    Positioned(
-                      bottom: 10,
-                      left: 10,
-                      child: DefaultTextStyle(
-                        style: TextStyle(color: Colors.grey.withValues(alpha: 0.3)),
-                        child: Text(
-                          (appParamState.keepWeatherMap[date] != null)
-                              ? appParamState.keepWeatherMap[date]!.weather
-                              : '',
-                        ),
-                      ),
-                    ),
-                  ],
-
-                  if (appParamState.keepSalaryMap[date] != null) ...<Widget>[
-                    Positioned(
-                      bottom: 30,
-                      right: 10,
-                      left: 10,
-
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
                         children: <Widget>[
-                          const SizedBox.shrink(),
-
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Icon(Icons.diamond, color: Colors.yellowAccent.withValues(alpha: 0.3)),
+                              SizedBox(
+                                width: context.screenSize.width * 0.3,
 
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: appParamState.keepSalaryMap[date]!.map((SalaryModel e) {
-                                  return Text(
-                                    e.salary.toString().toCurrency(),
-
-                                    style: TextStyle(color: Colors.yellowAccent.withValues(alpha: 0.3)),
-                                  );
-                                }).toList(),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(
-                              width: context.screenSize.width * 0.3,
-
-                              child: Stack(
-                                children: <Widget>[
-                                  Positioned(
-                                    top: 5,
-                                    right: 10,
-                                    child: Column(
-                                      children: <Widget>[
-                                        if (appParamState.keepTempleMap[date] != null) ...<Widget>[
-                                          Column(
-                                            children: <Widget>[
-                                              Icon(
-                                                FontAwesomeIcons.toriiGate,
-                                                size: 20,
-                                                color: Colors.white.withValues(alpha: 0.3),
-                                              ),
-                                              const SizedBox(height: 5),
-                                              Text(
-                                                appParamState.keepTempleMap[date]!.templeDataList.length.toString(),
-                                                style: const TextStyle(fontSize: 8),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 10),
-                                        ],
-
-                                        if (appParamState.keepTransportationMap[date] != null) ...<Widget>[
-                                          Icon(Icons.train, size: 20, color: Colors.white.withValues(alpha: 0.3)),
-                                        ],
-                                      ],
-                                    ),
-                                  ),
-
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-
-                                    children: <Widget>[
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                child: Stack(
+                                  children: <Widget>[
+                                    Positioned(
+                                      top: 5,
+                                      right: 10,
+                                      child: Column(
                                         children: <Widget>[
-                                          Row(
-                                            crossAxisAlignment: CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Text(i.toString().padLeft(2, '0'), style: const TextStyle(fontSize: 20)),
-                                              const SizedBox(width: 5),
-                                              Text(youbi),
-                                            ],
-                                          ),
-                                          const SizedBox.shrink(),
+                                          if (appParamState.keepTempleMap[date] != null) ...<Widget>[
+                                            Column(
+                                              children: <Widget>[
+                                                Icon(
+                                                  FontAwesomeIcons.toriiGate,
+                                                  size: 20,
+                                                  color: Colors.white.withValues(alpha: 0.3),
+                                                ),
+                                                const SizedBox(height: 5),
+                                                Text(
+                                                  appParamState.keepTempleMap[date]!.templeDataList.length.toString(),
+                                                  style: const TextStyle(fontSize: 8),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 10),
+                                          ],
+
+                                          if (appParamState.keepTransportationMap[date] != null) ...<Widget>[
+                                            Icon(Icons.train, size: 20, color: Colors.white.withValues(alpha: 0.3)),
+                                          ],
                                         ],
                                       ),
+                                    ),
 
-                                      if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
-                                        const SizedBox(height: 10),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
 
+                                      children: <Widget>[
                                         Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: <Widget>[
-                                            GestureDetector(
-                                              onTap: () {
-                                                if (appParamState.keepLifetimeItemList.isEmpty) {
-                                                  // ignore: always_specify_types
-                                                  Future.delayed(
-                                                    Duration.zero,
-                                                    () => error_dialog(
-                                                      // ignore: use_build_context_synchronously
-                                                      context: context,
-                                                      title: '表示できません。',
-                                                      content: 'appParamState.keepLifetimeItemListが作成されていません。',
-                                                    ),
-                                                  );
-
-                                                  return;
-                                                }
-
-                                                LifetimeDialog(
-                                                  context: context,
-                                                  widget: LifetimeInputAlert(
-                                                    date: date,
-                                                    dateLifetime: appParamState.keepLifetimeMap[date],
-                                                    isReloadHomeScreen: true,
-                                                  ),
-                                                );
-                                              },
-
-                                              child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
+                                            Row(
+                                              crossAxisAlignment: CrossAxisAlignment.end,
+                                              children: <Widget>[
+                                                Text(
+                                                  i.toString().padLeft(2, '0'),
+                                                  style: const TextStyle(fontSize: 20),
+                                                ),
+                                                const SizedBox(width: 5),
+                                                Text(youbi),
+                                              ],
                                             ),
+                                            const SizedBox.shrink(),
+                                          ],
+                                        ),
 
-                                            const SizedBox(width: 20),
+                                        if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
+                                          const SizedBox(height: 10),
 
-                                            if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
                                               GestureDetector(
                                                 onTap: () {
-                                                  appParamNotifier.setSelectedGeolocTime(time: '');
+                                                  if (appParamState.keepLifetimeItemList.isEmpty) {
+                                                    // ignore: always_specify_types
+                                                    Future.delayed(
+                                                      Duration.zero,
+                                                      () => error_dialog(
+                                                        // ignore: use_build_context_synchronously
+                                                        context: context,
+                                                        title: '表示できません。',
+                                                        content: 'appParamState.keepLifetimeItemListが作成されていません。',
+                                                      ),
+                                                    );
+
+                                                    return;
+                                                  }
 
                                                   LifetimeDialog(
                                                     context: context,
-                                                    widget: LifetimeGeolocMapDisplayAlert(
+                                                    widget: LifetimeInputAlert(
                                                       date: date,
-                                                      geolocList: appParamState.keepGeolocMap[date],
-                                                      temple: appParamState.keepTempleMap[date],
-                                                      transportation: appParamState.keepTransportationMap[date],
+                                                      dateLifetime: appParamState.keepLifetimeMap[date],
+                                                      isReloadHomeScreen: true,
                                                     ),
-
-                                                    executeFunctionWhenDialogClose: true,
-                                                    from: 'LifetimeGeolocMapDisplayAlert',
-                                                    ref: ref,
                                                   );
                                                 },
-                                                child: Column(
-                                                  children: <Widget>[
-                                                    Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
-                                                    const SizedBox(height: 5),
-                                                    Text(
-                                                      appParamState.keepGeolocMap[date]!.length.toString(),
-                                                      style: const TextStyle(fontSize: 8),
-                                                    ),
-                                                  ],
-                                                ),
+
+                                                child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
                                               ),
-                                            ],
 
-                                            if (appParamState.keepGeolocMap[date] == null) ...<Widget>[
-                                              const SizedBox(height: 38),
-                                            ],
-                                          ],
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
+                                              const SizedBox(width: 20),
 
-                            Expanded(
-                              child: Column(
-                                children: <Widget>[
-                                  if (appParamState.keepLifetimeMap[date] != null) ...<Widget>[
-                                    Row(
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Text('🦶', style: TextStyle(color: Colors.white.withValues(alpha: 0.4))),
-                                              Container(
-                                                alignment: Alignment.topRight,
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                                              if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    appParamNotifier.setSelectedGeolocTime(time: '');
+
+                                                    LifetimeDialog(
+                                                      context: context,
+                                                      widget: LifetimeGeolocMapDisplayAlert(
+                                                        date: date,
+                                                        geolocList: appParamState.keepGeolocMap[date],
+                                                        temple: appParamState.keepTempleMap[date],
+                                                        transportation: appParamState.keepTransportationMap[date],
+                                                      ),
+
+                                                      executeFunctionWhenDialogClose: true,
+                                                      from: 'LifetimeGeolocMapDisplayAlert',
+                                                      ref: ref,
+                                                    );
+                                                  },
+                                                  child: Column(
+                                                    children: <Widget>[
+                                                      Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+                                                      const SizedBox(height: 5),
+                                                      Text(
+                                                        appParamState.keepGeolocMap[date]!.length.toString(),
+                                                        style: const TextStyle(fontSize: 8),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                                padding: const EdgeInsets.all(5),
-                                                child: Text(
-                                                  (appParamState.keepWalkModelMap[date] != null)
-                                                      ? appParamState.keepWalkModelMap[date]!.step
-                                                            .toString()
-                                                            .toCurrency()
-                                                      : '',
-                                                ),
-                                              ),
+                                              ],
+
+                                              if (appParamState.keepGeolocMap[date] == null) ...<Widget>[
+                                                const SizedBox(height: 38),
+                                              ],
                                             ],
                                           ),
-                                        ),
-                                        const SizedBox(width: 5),
-
-                                        Expanded(
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Text('🚩', style: TextStyle(color: Colors.white.withValues(alpha: 0.4))),
-                                              Container(
-                                                alignment: Alignment.topRight,
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
-                                                  ),
-                                                ),
-                                                padding: const EdgeInsets.all(5),
-                                                child: Text(
-                                                  (appParamState.keepWalkModelMap[date] != null)
-                                                      ? appParamState.keepWalkModelMap[date]!.distance
-                                                            .toString()
-                                                            .toCurrency()
-                                                      : '',
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        SizedBox(
-                                          width: 30,
-                                          child: Container(
-                                            alignment: Alignment.topRight,
-                                            child: GestureDetector(
-                                              onTap: () => LifetimeDialog(
-                                                context: context,
-                                                widget: WalkDataInputAlert(
-                                                  date: date,
-                                                  step: (appParamState.keepWalkModelMap[date] != null)
-                                                      ? appParamState.keepWalkModelMap[date]!.step.toString()
-                                                      : '',
-                                                  distance: (appParamState.keepWalkModelMap[date] != null)
-                                                      ? appParamState.keepWalkModelMap[date]!.distance.toString()
-                                                      : '',
-                                                ),
-                                              ),
-                                              child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    const SizedBox(height: 10),
-
-                                    Row(
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Text('👛', style: TextStyle(color: Colors.white.withValues(alpha: 0.4))),
-
-                                              Container(
-                                                alignment: Alignment.topRight,
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
-                                                  ),
-                                                ),
-                                                padding: const EdgeInsets.all(5),
-                                                child: Text(
-                                                  (appParamState.keepWalkModelMap[date] != null)
-                                                      ? (appParamState.keepWalkModelMap[date]!.spend == '0')
-                                                            ? '0 円'
-                                                            : appParamState.keepWalkModelMap[date]!.spend
-                                                      : '${sumDiff.toString().toCurrency()} 円',
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(width: 5),
-
-                                        Expanded(
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Text('➡️', style: TextStyle(color: Colors.white.withValues(alpha: 0.4))),
-
-                                              Container(
-                                                alignment: Alignment.topRight,
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
-                                                  ),
-                                                ),
-                                                padding: const EdgeInsets.all(5),
-                                                child: Text(
-                                                  (appParamState.keepMoneyMap[date] != null)
-                                                      ? '${appParamState.keepMoneyMap[date]!.sum.toCurrency()} 円'
-                                                      : '',
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        SizedBox(
-                                          width: 30,
-
-                                          child: Container(
-                                            alignment: Alignment.topRight,
-
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                moneyInputNotifier.setIsReplaceInputValueList(flag: false);
-
-                                                moneyInputNotifier.setPos(pos: -1);
-
-                                                LifetimeDialog(
-                                                  context: context,
-                                                  widget: MoneyDataInputAlert(date: date),
-                                                  executeFunctionWhenDialogClose: true,
-                                                  from: 'MoneyDataInputAlert',
-                                                  ref: ref,
-                                                );
-                                              },
-                                              child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
-                                            ),
-                                          ),
-                                        ),
+                                        ],
                                       ],
                                     ),
                                   ],
-                                ],
+                                ),
                               ),
+
+                              Expanded(
+                                child: Column(
+                                  children: <Widget>[
+                                    if (appParamState.keepLifetimeMap[date] != null) ...<Widget>[
+                                      Row(
+                                        children: <Widget>[
+                                          Expanded(
+                                            child: Stack(
+                                              children: <Widget>[
+                                                Text(
+                                                  '🦶',
+                                                  style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
+                                                ),
+                                                Container(
+                                                  alignment: Alignment.topRight,
+                                                  decoration: BoxDecoration(
+                                                    border: Border(
+                                                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                                                    ),
+                                                  ),
+                                                  padding: const EdgeInsets.all(5),
+                                                  child: Text(
+                                                    (appParamState.keepWalkModelMap[date] != null)
+                                                        ? appParamState.keepWalkModelMap[date]!.step
+                                                              .toString()
+                                                              .toCurrency()
+                                                        : '',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(width: 5),
+
+                                          Expanded(
+                                            child: Stack(
+                                              children: <Widget>[
+                                                Text(
+                                                  '🚩',
+                                                  style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
+                                                ),
+                                                Container(
+                                                  alignment: Alignment.topRight,
+                                                  decoration: BoxDecoration(
+                                                    border: Border(
+                                                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                                                    ),
+                                                  ),
+                                                  padding: const EdgeInsets.all(5),
+                                                  child: Text(
+                                                    (appParamState.keepWalkModelMap[date] != null)
+                                                        ? appParamState.keepWalkModelMap[date]!.distance
+                                                              .toString()
+                                                              .toCurrency()
+                                                        : '',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          SizedBox(
+                                            width: 30,
+                                            child: Container(
+                                              alignment: Alignment.topRight,
+                                              child: GestureDetector(
+                                                onTap: () => LifetimeDialog(
+                                                  context: context,
+                                                  widget: WalkDataInputAlert(
+                                                    date: date,
+                                                    step: (appParamState.keepWalkModelMap[date] != null)
+                                                        ? appParamState.keepWalkModelMap[date]!.step.toString()
+                                                        : '',
+                                                    distance: (appParamState.keepWalkModelMap[date] != null)
+                                                        ? appParamState.keepWalkModelMap[date]!.distance.toString()
+                                                        : '',
+                                                  ),
+                                                ),
+                                                child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+
+                                      const SizedBox(height: 10),
+
+                                      Row(
+                                        children: <Widget>[
+                                          Expanded(
+                                            child: Stack(
+                                              children: <Widget>[
+                                                Text(
+                                                  '👛',
+                                                  style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
+                                                ),
+
+                                                Container(
+                                                  alignment: Alignment.topRight,
+                                                  decoration: BoxDecoration(
+                                                    border: Border(
+                                                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                                                    ),
+                                                  ),
+                                                  padding: const EdgeInsets.all(5),
+                                                  child: Text(
+                                                    (appParamState.keepWalkModelMap[date] != null)
+                                                        ? (appParamState.keepWalkModelMap[date]!.spend == '0')
+                                                              ? '0 円'
+                                                              : appParamState.keepWalkModelMap[date]!.spend
+                                                        : '${sumDiff.toString().toCurrency()} 円',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(width: 5),
+
+                                          Expanded(
+                                            child: Stack(
+                                              children: <Widget>[
+                                                Text(
+                                                  '➡️',
+                                                  style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
+                                                ),
+
+                                                Container(
+                                                  alignment: Alignment.topRight,
+                                                  decoration: BoxDecoration(
+                                                    border: Border(
+                                                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                                                    ),
+                                                  ),
+                                                  padding: const EdgeInsets.all(5),
+                                                  child: Text(
+                                                    (appParamState.keepMoneyMap[date] != null)
+                                                        ? '${appParamState.keepMoneyMap[date]!.sum.toCurrency()} 円'
+                                                        : '',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          SizedBox(
+                                            width: 30,
+
+                                            child: Container(
+                                              alignment: Alignment.topRight,
+
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  moneyInputNotifier.setIsReplaceInputValueList(flag: false);
+
+                                                  moneyInputNotifier.setPos(pos: -1);
+
+                                                  LifetimeDialog(
+                                                    context: context,
+                                                    widget: MoneyDataInputAlert(date: date),
+                                                    executeFunctionWhenDialogClose: true,
+                                                    from: 'MoneyDataInputAlert',
+                                                    ref: ref,
+                                                  );
+                                                },
+                                                child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          if (appParamState.keepLifetimeMap[date] != null) ...<Widget>[
+                            const SizedBox(height: 10),
+                            Row(
+                              // ignore: always_specify_types
+                              children: List.generate(24, (index) => index).map((e) {
+                                return getLifetimeDisplayCell(date: date, num: e);
+                              }).toList(),
                             ),
                           ],
-                        ),
-
-                        if (appParamState.keepLifetimeMap[date] != null) ...<Widget>[
-                          const SizedBox(height: 10),
-                          Row(
-                            // ignore: always_specify_types
-                            children: List.generate(24, (index) => index).map((e) {
-                              return getLifetimeDisplayCell(date: date, num: e);
-                            }).toList(),
-                          ),
                         ],
-                      ],
-                    ),
-                  ),
-
-                  if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
-                    Positioned(
-                      top: 45,
-                      left: 70,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white.withValues(alpha: 0.1),
-                        radius: 14,
-
-                        child: Text(
-                          (appParamState.keepTimePlaceMap[date] != null)
-                              ? appParamState.keepTimePlaceMap[date]!.length.toString()
-                              : '',
-
-                          style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
-                        ),
                       ),
                     ),
+
+                    if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
+                      Positioned(
+                        top: 45,
+                        left: 70,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white.withValues(alpha: 0.1),
+                          radius: 14,
+
+                          child: Text(
+                            (appParamState.keepTimePlaceMap[date] != null)
+                                ? appParamState.keepTimePlaceMap[date]!.length.toString()
+                                : '',
+
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),
@@ -707,6 +752,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     }
 
     return CustomScrollView(
+      controller: autoScrollController,
+
       slivers: <Widget>[
         SliverList(
           delegate: SliverChildBuilderDelegate(
