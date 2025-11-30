@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -21,6 +22,10 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
     with ControllersMixin<MonthlyLifetimeDisplayAlert> {
   Utility utility = Utility();
 
+  List<Widget> monthlyLifetimeList = [];
+
+  final AutoScrollController autoScrollController = AutoScrollController(axis: Axis.horizontal);
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -37,7 +42,27 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.yearmonth), const SizedBox.shrink()],
+                  children: <Widget>[
+                    Text(widget.yearmonth),
+
+                    Row(
+                      children: <Widget>[
+                        IconButton(
+                          onPressed: () {
+                            autoScrollController.scrollToIndex(0);
+                          },
+                          icon: Icon(Icons.arrow_left, color: Colors.white.withValues(alpha: 0.3)),
+                        ),
+
+                        IconButton(
+                          onPressed: () {
+                            autoScrollController.scrollToIndex(monthlyLifetimeList.length);
+                          },
+                          icon: Icon(Icons.arrow_right, color: Colors.white.withValues(alpha: 0.3)),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
@@ -53,10 +78,11 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
 
   ///
   Widget displayLifetime() {
-    final List<Widget> list = <Widget>[];
+    monthlyLifetimeList.clear();
 
     const double oneWidth = 120.0;
 
+    int i = 0;
     appParamState.keepLifetimeMap.forEach((String key, LifetimeModel value) {
       if ('${key.split('-')[0]}-${key.split('-')[1]}' == widget.yearmonth) {
         final List<String> dispValList = getLifetimeData(lifetimeModel: value);
@@ -68,26 +94,6 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
             ? utility.getYoubiColor(date: key, youbiStr: youbi, holiday: appParamState.keepHolidayList)
             : Colors.white.withValues(alpha: 0.1);
 
-        //
-        //
-        //
-        // final Map<String, List<Map<String, String>>> displayTemples = <String, List<Map<String, String>>>{};
-        // if (appParamState.keepTempleDateTimeBadgeMap[key] != null) {
-        //   for (final String element in appParamState.keepTempleDateTimeBadgeMap[key]!) {
-        //     final String? templeName = appParamState.keepTempleDateTimeNameMap['$key|$element'];
-        //
-        //     if (templeName != null) {
-        //       (displayTemples[key.split('-')[2]] ??= <Map<String, String>>[]).add(<String, String>{
-        //         element.split(':')[0]: templeName,
-        //       });
-        //     }
-        //   }
-        // }
-        //
-        //
-        //
-        //
-
         final Map<String, List<String>> displayTemples = <String, List<String>>{};
         if (appParamState.keepTempleDateTimeBadgeMap[key] != null) {
           for (final String element in appParamState.keepTempleDateTimeBadgeMap[key]!) {
@@ -98,32 +104,41 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
           }
         }
 
-        list.add(
-          DefaultTextStyle(
-            style: const TextStyle(fontSize: 10),
-            child: Column(
-              children: <Widget>[
-                Container(
-                  width: oneWidth,
+        monthlyLifetimeList.add(
+          AutoScrollTag(
+            // ignore: always_specify_types
+            key: ValueKey(i),
+            index: i,
+            controller: autoScrollController,
 
-                  decoration: BoxDecoration(color: headColor),
-                  margin: const EdgeInsets.all(2),
-                  padding: const EdgeInsets.all(2),
+            child: DefaultTextStyle(
+              style: const TextStyle(fontSize: 10),
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    width: oneWidth,
 
-                  child: Row(
-                    children: <Widget>[
-                      Text(key.split('-')[2], style: const TextStyle(fontSize: 20)),
-                      const SizedBox(width: 5),
-                      Text(youbi),
-                    ],
+                    decoration: BoxDecoration(color: headColor),
+                    margin: const EdgeInsets.all(2),
+                    padding: const EdgeInsets.all(2),
+
+                    child: Row(
+                      children: <Widget>[
+                        Text(key.split('-')[2], style: const TextStyle(fontSize: 20)),
+                        const SizedBox(width: 5),
+                        Text(youbi),
+                      ],
+                    ),
                   ),
-                ),
 
-                displayLifetimeTimeItem(dispValList: dispValList, oneWidth: oneWidth, displayTemples: displayTemples),
-              ],
+                  displayLifetimeTimeItem(dispValList: dispValList, oneWidth: oneWidth, displayTemples: displayTemples),
+                ],
+              ),
             ),
           ),
         );
+
+        i++;
       }
     });
 
@@ -132,8 +147,9 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
         height: context.screenSize.height * 0.7,
 
         child: SingleChildScrollView(
+          controller: autoScrollController,
           scrollDirection: Axis.horizontal,
-          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: list),
+          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: monthlyLifetimeList),
         ),
       ),
     );
