@@ -122,6 +122,8 @@ class AppParamState with _$AppParamState {
     @Default(56) double gutterWidth,
 
     @Default(true) bool isDisplayMunicipalNameOnLifetimeGeolocMap,
+
+    WorkHistoryModel? selectedWorkHistoryModel,
   }) = _AppParamState;
 }
 
@@ -346,4 +348,8 @@ class AppParam extends _$AppParam {
   ///
   void setIsDisplayMunicipalNameOnLifetimeGeolocMap({required bool flag}) =>
       state = state.copyWith(isDisplayMunicipalNameOnLifetimeGeolocMap: flag);
+
+  ///
+  void setSelectedWorkHistoryModel({WorkHistoryModel? model}) =>
+      state = state.copyWith(selectedWorkHistoryModel: model);
 }

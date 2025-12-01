@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../controllers/controllers_mixin.dart';
+import '../../models/common/work_history_model.dart';
 import '../../models/yearly_history_event.dart';
 import '../../models/yearly_span_item.dart';
 
-class WorkInfoYearlyDisplayAlert extends StatefulWidget {
+class WorkInfoYearlyDisplayAlert extends ConsumerStatefulWidget {
   const WorkInfoYearlyDisplayAlert({
     super.key,
     required this.startYear,
@@ -19,24 +22,25 @@ class WorkInfoYearlyDisplayAlert extends StatefulWidget {
   final List<YearlyHistoryEvent> workInfoList;
 
   @override
-  State<WorkInfoYearlyDisplayAlert> createState() => _WorkInfoYearlyDisplayAlertState();
+  ConsumerState<WorkInfoYearlyDisplayAlert> createState() => _WorkInfoYearlyDisplayAlertState();
 }
 
-class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert> {
-  late final AutoScrollController _autoCtrl;
+class _WorkInfoYearlyDisplayAlertState extends ConsumerState<WorkInfoYearlyDisplayAlert>
+    with ControllersMixin<WorkInfoYearlyDisplayAlert> {
+  late final AutoScrollController autoScrollController;
 
   ///
   @override
   void initState() {
     super.initState();
-    _autoCtrl = AutoScrollController(axis: Axis.vertical);
+    autoScrollController = AutoScrollController(axis: Axis.vertical);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // ignore: inference_failure_on_instance_creation, always_specify_types
       await Future.delayed(const Duration(milliseconds: 30));
       final int? targetIndex = _yearToIndex(widget.initialScrollYear);
       if (targetIndex != null) {
-        await _autoCtrl.scrollToIndex(
+        await autoScrollController.scrollToIndex(
           targetIndex,
           preferPosition: AutoScrollPosition.begin,
           duration: const Duration(milliseconds: 500),
@@ -174,9 +178,77 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
+                Row(
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            autoScrollController.scrollToIndex(widget.workInfoList.length);
+                          },
+                          child: const Icon(Icons.arrow_downward),
+                        ),
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () {
+                            autoScrollController.scrollToIndex(0);
+                          },
+                          child: const Icon(Icons.arrow_upward),
+                        ),
+                      ],
+                    ),
+
+                    Expanded(
+                      child: (appParamState.selectedWorkHistoryModel != null)
+                          ? DefaultTextStyle(
+                              style: const TextStyle(fontSize: 10),
+                              child: Container(
+                                margin: const EdgeInsets.only(top: 5, left: 20, bottom: 5, right: 5),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Text(
+                                          '${appParamState.selectedWorkHistoryModel!.year}-${appParamState.selectedWorkHistoryModel!.month}',
+                                        ),
+
+                                        Text(appParamState.selectedWorkHistoryModel!.endYm ?? ''),
+                                      ],
+                                    ),
+                                    Text(
+                                      appParamState.selectedWorkHistoryModel!.workTruthName,
+
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      appParamState.selectedWorkHistoryModel!.workContractName,
+
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                ),
+
+                Divider(color: Colors.white.withOpacity(0.4), thickness: 3),
+
                 Expanded(
                   child: ListView.builder(
-                    controller: _autoCtrl,
+                    controller: autoScrollController,
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     itemCount: widget.years,
                     itemBuilder: (BuildContext context, int index) {
@@ -186,7 +258,7 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
                       return AutoScrollTag(
                         // ignore: always_specify_types
                         key: ValueKey(index),
-                        controller: _autoCtrl,
+                        controller: autoScrollController,
                         index: index,
                         highlightColor: Colors.yellow.withOpacity(0.08),
                         child: Padding(
@@ -204,8 +276,17 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
                                   _findOriginalEndYearMonth(rowYear: year, span: span) ??
                                   _formatYearMonth(year, span.endMonth);
 
-                              print('Tapped span start yearmonth: $startYm');
-                              print('Tapped span end   yearmonth: $endYm');
+                              setState(() {
+                                appParamNotifier.setSelectedWorkHistoryModel(
+                                  model: WorkHistoryModel(
+                                    year: startYm.split('-')[0],
+                                    month: startYm.split('-')[1],
+                                    workTruthName: span.genbaName,
+                                    workContractName: span.agentName,
+                                    endYm: endYm,
+                                  ),
+                                );
+                              });
                             },
                           ),
                         ),
@@ -328,10 +409,18 @@ class YearTimeline extends StatelessWidget {
                       color: s.color,
                       agent: s.agentName,
                       genba: s.genbaName,
+                      startMonth: s.startMonth,
+
                       labelStyle: labelStyle,
                       maxLetters: isUltraNarrow ? 1 : 2,
                     )
-                  : _BandTwoLines(color: s.color, agent: s.agentName, genba: s.genbaName, labelStyle: labelStyle);
+                  : _BandTwoLines(
+                      color: s.color,
+                      agent: s.agentName,
+                      genba: s.genbaName,
+                      startMonth: s.startMonth,
+                      labelStyle: labelStyle,
+                    );
 
               return Positioned(
                 left: left,
@@ -350,14 +439,26 @@ class YearTimeline extends StatelessWidget {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class _BandTwoLines extends StatelessWidget {
-  const _BandTwoLines({required this.color, required this.agent, required this.genba, required this.labelStyle});
+class _BandTwoLines extends ConsumerStatefulWidget {
+  const _BandTwoLines({
+    required this.color,
+    required this.agent,
+    required this.genba,
+    required this.labelStyle,
+    required this.startMonth,
+  });
 
   final Color color;
   final String agent;
   final String genba;
   final TextStyle labelStyle;
+  final int startMonth;
 
+  @override
+  ConsumerState<_BandTwoLines> createState() => _BandTwoLinesState();
+}
+
+class _BandTwoLinesState extends ConsumerState<_BandTwoLines> with ControllersMixin<_BandTwoLines> {
   ///
   @override
   Widget build(BuildContext context) {
@@ -367,9 +468,15 @@ class _BandTwoLines extends StatelessWidget {
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.18),
+          color: widget.color.withOpacity(0.18),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: color.withOpacity(0.55)),
+
+          border:
+              (appParamState.selectedWorkHistoryModel != null &&
+                  widget.agent == appParamState.selectedWorkHistoryModel!.workContractName &&
+                  widget.genba == appParamState.selectedWorkHistoryModel!.workTruthName)
+              ? Border.all(color: Colors.yellowAccent, width: 2)
+              : Border.all(color: widget.color.withOpacity(0.55)),
         ),
         child: FittedBox(
           fit: BoxFit.scaleDown,
@@ -377,16 +484,16 @@ class _BandTwoLines extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                genba,
-                style: labelStyle,
+                widget.genba,
+                style: widget.labelStyle,
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 softWrap: false,
               ),
               Text(
-                agent,
-                style: labelStyle.copyWith(fontWeight: FontWeight.w500, color: Colors.white.withOpacity(0.85)),
+                widget.agent,
+                style: widget.labelStyle.copyWith(fontWeight: FontWeight.w500, color: Colors.white.withOpacity(0.85)),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -402,13 +509,14 @@ class _BandTwoLines extends StatelessWidget {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class _BandCompact extends StatelessWidget {
+class _BandCompact extends ConsumerStatefulWidget {
   const _BandCompact({
     required this.color,
     required this.agent,
     required this.genba,
     required this.labelStyle,
     this.maxLetters = 2,
+    required this.startMonth,
   });
 
   final Color color;
@@ -416,19 +524,31 @@ class _BandCompact extends StatelessWidget {
   final String genba;
   final TextStyle labelStyle;
   final int maxLetters;
+  final int startMonth;
 
   @override
+  ConsumerState<_BandCompact> createState() => _BandCompactState();
+}
+
+class _BandCompactState extends ConsumerState<_BandCompact> with ControllersMixin<_BandCompact> {
+  @override
   Widget build(BuildContext context) {
-    final String abbrGenba = _abbr(genba, maxLetters);
-    final String abbrAgent = _abbr(agent, maxLetters);
+    final String abbrGenba = _abbr(widget.genba, widget.maxLetters);
+    final String abbrAgent = _abbr(widget.agent, widget.maxLetters);
 
     final Widget face = Container(
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.22),
+        color: widget.color.withOpacity(0.22),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.75)),
+
+        border:
+            (appParamState.selectedWorkHistoryModel != null &&
+                widget.agent == appParamState.selectedWorkHistoryModel!.workContractName &&
+                widget.genba == appParamState.selectedWorkHistoryModel!.workTruthName)
+            ? Border.all(color: Colors.yellowAccent, width: 2)
+            : Border.all(color: widget.color.withOpacity(0.75)),
       ),
       child: FittedBox(
         fit: BoxFit.scaleDown,
@@ -437,7 +557,7 @@ class _BandCompact extends StatelessWidget {
           children: <Widget>[
             Text(
               abbrGenba,
-              style: labelStyle.copyWith(fontSize: 11),
+              style: widget.labelStyle.copyWith(fontSize: 11),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -445,7 +565,7 @@ class _BandCompact extends StatelessWidget {
             ),
             Text(
               abbrAgent,
-              style: labelStyle.copyWith(
+              style: widget.labelStyle.copyWith(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
                 color: Colors.white.withOpacity(0.85),
@@ -460,7 +580,11 @@ class _BandCompact extends StatelessWidget {
       ),
     );
 
-    return Tooltip(message: '$genba\n$agent', waitDuration: const Duration(milliseconds: 200), child: face);
+    return Tooltip(
+      message: '${widget.genba}\n${widget.agent}',
+      waitDuration: const Duration(milliseconds: 200),
+      child: face,
+    );
   }
 }
 
