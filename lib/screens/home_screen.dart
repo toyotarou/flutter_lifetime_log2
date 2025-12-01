@@ -7,6 +7,7 @@ import '../enums/stamp_rally_kind.dart';
 import '../extensions/extensions.dart';
 import '../main.dart';
 import '../models/amazon_purchase_model.dart';
+import '../models/common/work_history_model.dart';
 import '../models/credit_summary_model.dart';
 import '../models/fund_model.dart';
 import '../models/geoloc_model.dart';
@@ -25,7 +26,6 @@ import '../models/transportation_model.dart';
 import '../models/walk_model.dart';
 import '../models/weather_model.dart';
 import '../models/work_time_model.dart';
-import '../models/work_truth_model.dart';
 import '../utility/functions.dart';
 import '../utility/utility.dart';
 import 'components/amazon_purchase_list_alert.dart';
@@ -89,6 +89,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.stampRallyMetro20AnniversaryMap,
     required this.stampRallyMetroPokepokeMap,
     required this.tokyoMunicipalList,
+    required this.workHistoryModelMap,
   });
 
   final List<String> holidayList;
@@ -121,6 +122,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<StampRallyModel>> stampRallyMetroPokepokeMap;
   final List<MunicipalModel> tokyoMunicipalList;
   final Map<String, MunicipalModel> tokyoMunicipalMap;
+  final Map<String, WorkHistoryModel> workHistoryModelMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -191,6 +193,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepStampRallyMetroAllStationMap(map: widget.stampRallyMetroAllStationMap);
       appParamNotifier.setKeepTokyoMunicipalList(list: widget.tokyoMunicipalList);
       appParamNotifier.setKeepTokyoMunicipalMap(map: widget.tokyoMunicipalMap);
+      appParamNotifier.setKeepWorkHistoryModelMap(map: widget.workHistoryModelMap);
 
       //===========================================//
 

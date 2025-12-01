@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../models/amazon_purchase_model.dart';
+import '../../models/common/work_history_model.dart';
 import '../../models/credit_summary_model.dart';
 import '../../models/fund_model.dart';
 import '../../models/geoloc_model.dart';
@@ -21,7 +22,6 @@ import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
 import '../../models/weather_model.dart';
 import '../../models/work_time_model.dart';
-import '../../models/work_truth_model.dart';
 import '../../utility/utility.dart';
 
 part 'app_param.freezed.dart';
@@ -57,6 +57,7 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<StampRallyModel>>{}) Map<String, List<StampRallyModel>> keepStampRallyMetroAllStationMap,
     @Default(<MunicipalModel>[]) List<MunicipalModel> keepTokyoMunicipalList,
     @Default(<String, MunicipalModel>{}) Map<String, MunicipalModel> keepTokyoMunicipalMap,
+    @Default(<String, WorkHistoryModel>{}) Map<String, WorkHistoryModel> keepWorkHistoryModelMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -201,6 +202,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepTokyoMunicipalMap({required Map<String, MunicipalModel> map}) =>
       state = state.copyWith(keepTokyoMunicipalMap: map);
+
+  ///
+  void setKeepWorkHistoryModelMap({required Map<String, WorkHistoryModel> map}) =>
+      state = state.copyWith(keepWorkHistoryModelMap: map);
 
   ///
   void setKeepStationList({required List<StationModel> list}) => state = state.copyWith(keepStationList: list);

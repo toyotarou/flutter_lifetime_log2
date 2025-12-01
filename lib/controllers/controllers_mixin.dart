@@ -24,6 +24,7 @@ import '_get_data/toushi_shintaku/toushi_shintaku.dart';
 import '_get_data/transportation/transportation.dart';
 import '_get_data/walk/walk.dart';
 import '_get_data/weather/weather.dart';
+import '_get_data/work_history/work_history.dart';
 import '_get_data/work_time/work_time.dart';
 
 import 'app_param/app_param.dart';
@@ -231,6 +232,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   StampRallyMetroPokepokeState get stampRallyMetroPokepokeState => ref.watch(stampRallyMetroPokepokeProvider);
 
   StampRallyMetroPokepoke get stampRallyMetroPokepokeNotifier => ref.read(stampRallyMetroPokepokeProvider.notifier);
+
+  //==========================================//
+
+  WorkHistoryState get workHistoryState => ref.watch(workHistoryProvider);
+
+  WorkHistory get workHistoryNotifier => ref.read(workHistoryProvider.notifier);
 
   //==========================================//
   Directions get directionsNotifier => ref.read(directionsProvider.notifier);
