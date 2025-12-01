@@ -102,28 +102,51 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
     return result;
   }
 
-  // ///
-  // String? _findOriginalStartYearMonth({required int rowYear, required YearlySpanItem span}) {
-  //   final DateTime probe = DateTime(rowYear, span.startMonth);
-  //
-  //   for (final YearlyHistoryEvent ev in widget.workInfoList) {
-  //     if (_isInvalidName(ev.agentName) || _isInvalidName(ev.genbaName)) {
-  //       continue;
-  //     }
-  //
-  //     if (ev.agentName != span.agentName || ev.genbaName != span.genbaName) {
-  //       continue;
-  //     }
-  //
-  //     if (probe.isBefore(ev.start) || probe.isAfter(ev.end)) {
-  //       continue;
-  //     }
-  //
-  //     return _formatYearMonth(ev.start.year, ev.start.month);
-  //   }
-  //
-  //   return null;
-  // }
+  ///
+  String? _findOriginalStartYearMonth({required int rowYear, required YearlySpanItem span}) {
+    final DateTime probe = DateTime(rowYear, span.startMonth);
+
+    for (final YearlyHistoryEvent ev in widget.workInfoList) {
+      if (_isInvalidName(ev.agentName) || _isInvalidName(ev.genbaName)) {
+        continue;
+      }
+
+      if (ev.agentName != span.agentName || ev.genbaName != span.genbaName) {
+        continue;
+      }
+
+      if (probe.isBefore(ev.start) || probe.isAfter(ev.end)) {
+        continue;
+      }
+
+      return _formatYearMonth(ev.start.year, ev.start.month);
+    }
+
+    return null;
+  }
+
+  ///
+  String? _findOriginalEndYearMonth({required int rowYear, required YearlySpanItem span}) {
+    final DateTime probe = DateTime(rowYear, span.startMonth);
+
+    for (final YearlyHistoryEvent ev in widget.workInfoList) {
+      if (_isInvalidName(ev.agentName) || _isInvalidName(ev.genbaName)) {
+        continue;
+      }
+
+      if (ev.agentName != span.agentName || ev.genbaName != span.genbaName) {
+        continue;
+      }
+
+      if (probe.isBefore(ev.start) || probe.isAfter(ev.end)) {
+        continue;
+      }
+
+      return _formatYearMonth(ev.end.year, ev.end.month);
+    }
+
+    return null;
+  }
 
   ///
   @override
@@ -131,80 +154,70 @@ class _WorkInfoYearlyDisplayAlertState extends State<WorkInfoYearlyDisplayAlert>
     final double screenH = MediaQuery.of(context).size.height;
     final double oneYearHeight = screenH / 10;
 
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  '勤務履歴（${widget.startYear}〜${widget.startYear + widget.years - 1}）',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: DefaultTextStyle(
+          style: const TextStyle(color: Colors.white),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text('勤務履歴（${widget.startYear}〜${widget.startYear + widget.years - 1}）'),
+                    const SizedBox.shrink(),
+                  ],
                 ),
-              ),
-              IconButton(
-                visualDensity: VisualDensity.compact,
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          ),
-        ),
-        const Divider(height: 1),
 
-        Expanded(
-          child: ListView.builder(
-            controller: _autoCtrl,
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            itemCount: widget.years,
-            itemBuilder: (BuildContext context, int index) {
-              final int year = widget.startYear + index;
-              final List<YearlySpanItem> spansThisYear = _spansForYear(year, widget.workInfoList);
+                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-              return AutoScrollTag(
-                // ignore: always_specify_types
-                key: ValueKey(index),
-                controller: _autoCtrl,
-                index: index,
-                highlightColor: Colors.yellow.withOpacity(0.08),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: YearRow(
-                    year: year,
-                    height: oneYearHeight,
-                    spans: spansThisYear,
+                Expanded(
+                  child: ListView.builder(
+                    controller: _autoCtrl,
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    itemCount: widget.years,
+                    itemBuilder: (BuildContext context, int index) {
+                      final int year = widget.startYear + index;
+                      final List<YearlySpanItem> spansThisYear = _spansForYear(year, widget.workInfoList);
 
-                    onSpanTap: (YearlySpanItem span) {
-//                      final String? origin = _findOriginalStartYearMonth(rowYear: year, span: span);
+                      return AutoScrollTag(
+                        // ignore: always_specify_types
+                        key: ValueKey(index),
+                        controller: _autoCtrl,
+                        index: index,
+                        highlightColor: Colors.yellow.withOpacity(0.08),
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: YearRow(
+                            year: year,
+                            height: oneYearHeight,
+                            spans: spansThisYear,
+                            onSpanTap: (YearlySpanItem span) {
+                              final String startYm =
+                                  _findOriginalStartYearMonth(rowYear: year, span: span) ??
+                                  _formatYearMonth(year, span.startMonth);
 
-//                      final String ym = origin ?? _formatYearMonth(year, span.startMonth);
+                              final String endYm =
+                                  _findOriginalEndYearMonth(rowYear: year, span: span) ??
+                                  _formatYearMonth(year, span.endMonth);
 
-                      //////////////////
-                      //////////////////
-                      //////////////////
-                      //////////////////
-                      //////////////////
-                      //////////////////
-                      //////////////////
-
-//                      print('Tapped span start yearmonth: $ym');
-
-                      //////////////////
-                      //////////////////
-                      //////////////////
-                      //////////////////
-                      //////////////////
-                      //////////////////
-                      //////////////////
+                              print('Tapped span start yearmonth: $startYm');
+                              print('Tapped span end   yearmonth: $endYm');
+                            },
+                          ),
+                        ),
+                      );
                     },
                   ),
                 ),
-              );
-            },
+              ],
+            ),
           ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -235,7 +248,6 @@ class YearRow extends StatelessWidget {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-///
 class YearTimeline extends StatelessWidget {
   const YearTimeline({
     super.key,
@@ -262,9 +274,7 @@ class YearTimeline extends StatelessWidget {
         final double colW = totalW / 12.0;
 
         const double headerHeight = 18;
-
         const double vPadding = 4;
-
         const double targetBandHeight = 30.0;
 
         final double available = height - headerHeight - vPadding * 2;
@@ -301,7 +311,6 @@ class YearTimeline extends StatelessWidget {
                 ),
               ),
             ),
-
             ...spans.map((YearlySpanItem s) {
               final double left = (s.startMonth - 1) * colW;
               double width = (s.endMonth - s.startMonth + 1) * colW;
@@ -457,7 +466,6 @@ class _BandCompact extends StatelessWidget {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-///
 String _abbr(String s, int n) {
   if (s.isEmpty || n <= 0) {
     return '';
@@ -469,8 +477,7 @@ String _abbr(String s, int n) {
   return trimmed.substring(0, n);
 }
 
-// ///
-// String _formatYearMonth(int year, int month) {
-//   final String m = month.toString().padLeft(2, '0');
-//   return '$year-$m';
-// }
+String _formatYearMonth(int year, int month) {
+  final String m = month.toString().padLeft(2, '0');
+  return '$year-$m';
+}
