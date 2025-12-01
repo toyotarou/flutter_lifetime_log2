@@ -48,6 +48,8 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
                     Text(widget.yearmonth),
                     GestureDetector(
                       onTap: () {
+                        appParamNotifier.setSelectedWorkHistoryModel();
+
                         LifetimeDialog(
                           context: context,
                           widget: WorkInfoYearlyDisplayAlert(

@@ -392,9 +392,9 @@ class YearTimeline extends StatelessWidget {
                 ),
               ),
             ),
-            ...spans.map((YearlySpanItem s) {
-              final double left = (s.startMonth - 1) * colW;
-              double width = (s.endMonth - s.startMonth + 1) * colW;
+            ...spans.map((YearlySpanItem yearlySpanItem) {
+              final double left = (yearlySpanItem.startMonth - 1) * colW;
+              double width = (yearlySpanItem.endMonth - yearlySpanItem.startMonth + 1) * colW;
 
               const double minWidth = 14.0;
               if (width < minWidth) {
@@ -406,28 +406,18 @@ class YearTimeline extends StatelessWidget {
 
               final Widget bandChild = isNarrow
                   ? _BandCompact(
-                      color: s.color,
-                      agent: s.agentName,
-                      genba: s.genbaName,
-                      startMonth: s.startMonth,
-
                       labelStyle: labelStyle,
                       maxLetters: isUltraNarrow ? 1 : 2,
+                      yearlySpanItem: yearlySpanItem,
                     )
-                  : _BandTwoLines(
-                      color: s.color,
-                      agent: s.agentName,
-                      genba: s.genbaName,
-                      startMonth: s.startMonth,
-                      labelStyle: labelStyle,
-                    );
+                  : _BandTwoLines(labelStyle: labelStyle, yearlySpanItem: yearlySpanItem);
 
               return Positioned(
                 left: left,
                 width: width,
                 top: bandTop,
                 height: bandHeight,
-                child: GestureDetector(onTap: () => onSpanTap(s), child: bandChild),
+                child: GestureDetector(onTap: () => onSpanTap(yearlySpanItem), child: bandChild),
               );
             }),
           ],
@@ -440,19 +430,10 @@ class YearTimeline extends StatelessWidget {
 ////////////////////////////////////////////////////////////////////////////////
 
 class _BandTwoLines extends ConsumerStatefulWidget {
-  const _BandTwoLines({
-    required this.color,
-    required this.agent,
-    required this.genba,
-    required this.labelStyle,
-    required this.startMonth,
-  });
+  const _BandTwoLines({required this.labelStyle, required this.yearlySpanItem});
 
-  final Color color;
-  final String agent;
-  final String genba;
   final TextStyle labelStyle;
-  final int startMonth;
+  final YearlySpanItem yearlySpanItem;
 
   @override
   ConsumerState<_BandTwoLines> createState() => _BandTwoLinesState();
@@ -468,15 +449,14 @@ class _BandTwoLinesState extends ConsumerState<_BandTwoLines> with ControllersMi
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(
-          color: widget.color.withOpacity(0.18),
+          color: widget.yearlySpanItem.color.withOpacity(0.18),
           borderRadius: BorderRadius.circular(10),
-
           border:
               (appParamState.selectedWorkHistoryModel != null &&
-                  widget.agent == appParamState.selectedWorkHistoryModel!.workContractName &&
-                  widget.genba == appParamState.selectedWorkHistoryModel!.workTruthName)
+                  widget.yearlySpanItem.agentName == appParamState.selectedWorkHistoryModel!.workContractName &&
+                  widget.yearlySpanItem.genbaName == appParamState.selectedWorkHistoryModel!.workTruthName)
               ? Border.all(color: Colors.yellowAccent, width: 2)
-              : Border.all(color: widget.color.withOpacity(0.55)),
+              : Border.all(color: widget.yearlySpanItem.color.withOpacity(0.55)),
         ),
         child: FittedBox(
           fit: BoxFit.scaleDown,
@@ -484,7 +464,7 @@ class _BandTwoLinesState extends ConsumerState<_BandTwoLines> with ControllersMi
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                widget.genba,
+                widget.yearlySpanItem.genbaName,
                 style: widget.labelStyle,
                 textAlign: TextAlign.center,
                 maxLines: 1,
@@ -492,7 +472,7 @@ class _BandTwoLinesState extends ConsumerState<_BandTwoLines> with ControllersMi
                 softWrap: false,
               ),
               Text(
-                widget.agent,
+                widget.yearlySpanItem.agentName,
                 style: widget.labelStyle.copyWith(fontWeight: FontWeight.w500, color: Colors.white.withOpacity(0.85)),
                 textAlign: TextAlign.center,
                 maxLines: 1,
@@ -510,21 +490,11 @@ class _BandTwoLinesState extends ConsumerState<_BandTwoLines> with ControllersMi
 ////////////////////////////////////////////////////////////////////////////////
 
 class _BandCompact extends ConsumerStatefulWidget {
-  const _BandCompact({
-    required this.color,
-    required this.agent,
-    required this.genba,
-    required this.labelStyle,
-    this.maxLetters = 2,
-    required this.startMonth,
-  });
+  const _BandCompact({required this.labelStyle, this.maxLetters = 2, required this.yearlySpanItem});
 
-  final Color color;
-  final String agent;
-  final String genba;
   final TextStyle labelStyle;
   final int maxLetters;
-  final int startMonth;
+  final YearlySpanItem yearlySpanItem;
 
   @override
   ConsumerState<_BandCompact> createState() => _BandCompactState();
@@ -533,22 +503,20 @@ class _BandCompact extends ConsumerStatefulWidget {
 class _BandCompactState extends ConsumerState<_BandCompact> with ControllersMixin<_BandCompact> {
   @override
   Widget build(BuildContext context) {
-    final String abbrGenba = _abbr(widget.genba, widget.maxLetters);
-    final String abbrAgent = _abbr(widget.agent, widget.maxLetters);
-
+    final String abbrGenba = _abbr(widget.yearlySpanItem.genbaName, widget.maxLetters);
+    final String abbrAgent = _abbr(widget.yearlySpanItem.agentName, widget.maxLetters);
     final Widget face = Container(
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
-        color: widget.color.withOpacity(0.22),
+        color: widget.yearlySpanItem.color.withOpacity(0.22),
         borderRadius: BorderRadius.circular(8),
-
         border:
             (appParamState.selectedWorkHistoryModel != null &&
-                widget.agent == appParamState.selectedWorkHistoryModel!.workContractName &&
-                widget.genba == appParamState.selectedWorkHistoryModel!.workTruthName)
+                widget.yearlySpanItem.agentName == appParamState.selectedWorkHistoryModel!.workContractName &&
+                widget.yearlySpanItem.genbaName == appParamState.selectedWorkHistoryModel!.workTruthName)
             ? Border.all(color: Colors.yellowAccent, width: 2)
-            : Border.all(color: widget.color.withOpacity(0.75)),
+            : Border.all(color: widget.yearlySpanItem.color.withOpacity(0.75)),
       ),
       child: FittedBox(
         fit: BoxFit.scaleDown,
@@ -581,7 +549,7 @@ class _BandCompactState extends ConsumerState<_BandCompact> with ControllersMixi
     );
 
     return Tooltip(
-      message: '${widget.genba}\n${widget.agent}',
+      message: '${widget.yearlySpanItem.genbaName}\n${widget.yearlySpanItem.agentName}',
       waitDuration: const Duration(milliseconds: 200),
       child: face,
     );
