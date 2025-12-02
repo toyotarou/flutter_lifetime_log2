@@ -386,7 +386,11 @@ class YearTimeline extends StatelessWidget {
                     alignment: Alignment.topCenter,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 2),
-                      child: Text('${i + 1}月', style: const TextStyle(fontSize: 10, color: Colors.white70)),
+                      child: Text(
+                        (i + 1).toString().padLeft(2, '0'),
+
+                        style: const TextStyle(fontSize: 10, color: Colors.white70),
+                      ),
                     ),
                   ),
                 ),
