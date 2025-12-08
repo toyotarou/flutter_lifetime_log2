@@ -291,10 +291,10 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
   String _buildStampImageUrl(StampRallyModel element) {
     switch (widget.kind) {
       case StampRallyKind.metroAllStation:
-        return 'http://toyohide.work/BrainLog/station_stamp/${element.imageFolder}/${element.imageCode}.png';
+        return 'http://toyohide.work/BrainLog/metro_stamp_all_station/${element.imageFolder}/${element.imageCode}.png';
 
       case StampRallyKind.metro20Anniversary:
-        return 'http://toyohide.work/BrainLog/public/metro_stamp_20_anniversary/metro_stamp_20_${element.stamp}.png';
+        return 'http://toyohide.work/BrainLog/metro_stamp_20_anniversary/metro_stamp_20_${element.stamp}.png';
 
       case StampRallyKind.metroPokepoke:
         return 'http://toyohide.work/BrainLog/metro_stamp_pokepoke/stamp${element.stamp}.png';
