@@ -1,3 +1,8 @@
+import 'dart:ui';
+
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+
 import '../extensions/extensions.dart';
 import '../models/lifetime_model.dart';
 import '../models/municipal_model.dart';
@@ -241,4 +246,35 @@ bool _rayCasting(double lat, double lng, List<List<double>> ring) {
   }
 
   return inside;
+}
+
+/////////////////////
+///
+// ignore: always_specify_types
+Polygon? getColorPaintPolygon({required List<List<List<double>>> polygon, required Color color}) {
+  if (polygon.isEmpty) {
+    return null;
+  }
+
+  /////////////////////////////////////
+  final List<LatLng> outer = polygon.first.map((List<double> element) => LatLng(element[1], element[0])).toList();
+  /////////////////////////////////////
+
+  /////////////////////////////////////
+  final List<List<LatLng>> holes = <List<LatLng>>[];
+
+  for (int i = 1; i < polygon.length; i++) {
+    holes.add(polygon[i].map((List<double> element4) => LatLng(element4[1], element4[0])).toList());
+  }
+  /////////////////////////////////////
+
+  // ignore: always_specify_types
+  return Polygon(
+    points: outer,
+    holePointsList: holes.isEmpty ? null : holes,
+    isFilled: true,
+    color: color.withValues(alpha: 0.3),
+    borderColor: color.withValues(alpha: 0.8),
+    borderStrokeWidth: 1.5,
+  );
 }

@@ -317,6 +317,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
       ///////////////////////
 
+      final List<List<List<List<double>>>> allPolygonsList = <List<List<List<double>>>>[];
+
+      for (final MunicipalModel element in widget.tokyoMunicipalList) {
+        allPolygonsList.addAll(element.polygons);
+      }
+
+      ///////////////////////
+
       // ignore: always_specify_types
       Future(() {
         appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
@@ -325,6 +333,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         appParamNotifier.setKeepStampRallyMetro20AnniversaryMap(map: stampRallyMetro20AnniversaryMap);
         appParamNotifier.setKeepStampRallyMetroPokepokeMap(map: stampRallyMetroPokepokeMap);
         appParamNotifier.setKeepCreditSummaryTotalMap(map: creditSummaryTotalMap);
+        appParamNotifier.setKeepAllPolygonsList(list: allPolygonsList);
       });
       //===========================================//
     });

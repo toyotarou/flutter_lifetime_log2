@@ -75,6 +75,8 @@ class AppParamState with _$AppParamState {
 
     @Default(<int, Map<String, int>>{}) Map<int, Map<String, int>> keepCreditSummaryTotalMap,
 
+    @Default(<List<List<List<double>>>>[]) List<List<List<List<double>>>> keepAllPolygonsList,
+
     ///
     @Default('') String homeTabYearMonth,
 
@@ -263,6 +265,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepCreditSummaryTotalMap({required Map<int, Map<String, int>> map}) =>
       state = state.copyWith(keepCreditSummaryTotalMap: map);
+
+  ///
+  void setKeepAllPolygonsList({required List<List<List<List<double>>>> list}) =>
+      state = state.copyWith(keepAllPolygonsList: list);
 
   //===================================================
 
