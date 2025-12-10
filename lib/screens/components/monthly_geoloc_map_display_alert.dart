@@ -11,6 +11,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../mixin/monthly_geoloc_map_date_list/monthly_geoloc_map_date_list_widget.dart';
 import '../../models/geoloc_model.dart';
+import '../../utility/functions.dart';
 import '../../utility/tile_provider.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_log_overlay.dart';
@@ -89,6 +90,16 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                 tileProvider: CachedTileProvider(),
                 userAgentPackageName: 'com.example.app',
               ),
+
+              if (appParamState.keepAllPolygonsList.isNotEmpty) ...<Widget>[
+                // ignore: always_specify_types
+                PolygonLayer(
+                  polygons: makeAreaPolygons(
+                    allPolygonsList: appParamState.keepAllPolygonsList,
+                    twentyFourColor: utility.getTwentyFourColor(),
+                  ),
+                ),
+              ],
 
               MarkerLayer(markers: markerList),
 

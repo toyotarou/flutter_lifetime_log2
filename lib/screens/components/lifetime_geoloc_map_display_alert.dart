@@ -195,7 +195,12 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
               if (appParamState.keepAllPolygonsList.isNotEmpty) ...<Widget>[
                 // ignore: always_specify_types
-                PolygonLayer(polygons: makeAreaPolygons()),
+                PolygonLayer(
+                  polygons: makeAreaPolygons(
+                    allPolygonsList: appParamState.keepAllPolygonsList,
+                    twentyFourColor: utility.getTwentyFourColor(),
+                  ),
+                ),
               ],
 
               MarkerLayer(markers: markerList),
@@ -966,40 +971,5 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     }
 
     return list;
-  }
-
-  ///
-  // ignore: always_specify_types
-  List<Polygon> makeAreaPolygons() {
-    // ignore: always_specify_types
-    final List<Polygon<Object>> polygonList = <Polygon<Object>>[];
-
-    if (appParamState.keepAllPolygonsList.isEmpty) {
-      return polygonList;
-    }
-
-    final List<Color> twentyFourColor = utility.getTwentyFourColor();
-
-    final Map<String, List<List<List<double>>>> uniquePolygons = <String, List<List<List<double>>>>{};
-
-    for (final List<List<List<double>>> poly in appParamState.keepAllPolygonsList) {
-      final String key = poly.toString();
-      uniquePolygons[key] = poly;
-    }
-
-    int idx = 0;
-    for (final List<List<List<double>>> poly in uniquePolygons.values) {
-      final Polygon<Object>? polygon = getColorPaintPolygon(
-        polygon: poly,
-        color: twentyFourColor[idx % 24].withValues(alpha: 0.3),
-      );
-
-      if (polygon != null) {
-        polygonList.add(polygon);
-        idx++;
-      }
-    }
-
-    return polygonList;
   }
 }

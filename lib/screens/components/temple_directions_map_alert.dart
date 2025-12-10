@@ -12,6 +12,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/direction_model.dart';
 import '../../models/transportation_model.dart';
+import '../../utility/functions.dart';
 import '../../utility/tile_provider.dart';
 import '../../utility/utility.dart';
 
@@ -138,6 +139,16 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
                   tileProvider: CachedTileProvider(),
                   userAgentPackageName: 'com.example.app',
                 ),
+
+                if (appParamState.keepAllPolygonsList.isNotEmpty) ...<Widget>[
+                  // ignore: always_specify_types
+                  PolygonLayer(
+                    polygons: makeAreaPolygons(
+                      allPolygonsList: appParamState.keepAllPolygonsList,
+                      twentyFourColor: utility.getTwentyFourColor(),
+                    ),
+                  ),
+                ],
 
                 if (stepLocationList.isNotEmpty) ...<Widget>[
                   // ignore: always_specify_types

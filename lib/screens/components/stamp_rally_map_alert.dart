@@ -10,6 +10,7 @@ import '../../const/const.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/stamp_rally_model.dart';
+import '../../utility/functions.dart';
 import '../../utility/tile_provider.dart';
 import '../../utility/utility.dart';
 import '../parts/icon_toolchip_display_overlay.dart';
@@ -112,6 +113,16 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert> with Co
                 tileProvider: CachedTileProvider(),
                 userAgentPackageName: 'com.example.app',
               ),
+
+              if (appParamState.keepAllPolygonsList.isNotEmpty) ...<Widget>[
+                // ignore: always_specify_types
+                PolygonLayer(
+                  polygons: makeAreaPolygons(
+                    allPolygonsList: appParamState.keepAllPolygonsList,
+                    twentyFourColor: utility.getTwentyFourColor(),
+                  ),
+                ),
+              ],
 
               // ignore: always_specify_types
               PolylineLayer(polylines: makeTransportationPolyline()),
