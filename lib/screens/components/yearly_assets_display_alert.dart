@@ -11,6 +11,7 @@ import '../../models/common/year_day_assets_model.dart';
 import '../../models/gold_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
+import '../../utility/assets_calc.dart';
 import '../../utility/utility.dart';
 import 'yearly_assets_line_graph_alert.dart';
 
@@ -37,7 +38,6 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
 
   late final int year;
 
-  // ▼ 追加：上下ジャンプ用
   final AutoScrollController autoScrollController = AutoScrollController();
 
   ///
@@ -56,7 +56,6 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       appBar: AppBar(
         title: Text('$year 年 資産推移'),
         actions: <Widget>[
-          // ▼ 追加：monthly_assets_display_alert.dart と同等の上下ジャンプ
           Row(
             children: <Widget>[
               IconButton(
@@ -66,16 +65,16 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                   Navigator.of(context).push(
                     // ignore: inference_failure_on_instance_creation, always_specify_types
                     MaterialPageRoute(
-                      builder: (_) =>
-                          YearlyAssetsLineGraphAlert(year: year, totals: yearlyList.map((YearDayAssetsModel e) => e.total).toList()),
+                      builder: (_) => YearlyAssetsLineGraphAlert(
+                        year: year,
+                        totals: yearlyList.map((YearDayAssetsModel e) => e.total).toList(),
+                      ),
                     ),
                   );
                 },
               ),
-
               IconButton(
                 onPressed: () {
-                  // 最下部へ（最終index）
                   if (yearlyList.isEmpty) {
                     return;
                   }
@@ -89,7 +88,6 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
               ),
               IconButton(
                 onPressed: () {
-                  // 最上部へ
                   if (yearlyList.isEmpty) {
                     return;
                   }
@@ -105,10 +103,9 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
           ),
         ],
       ),
-
       body: SafeArea(
         child: ListView.builder(
-          controller: autoScrollController, // ▼ 追加
+          controller: autoScrollController,
           itemCount: yearlyList.length,
           itemBuilder: (BuildContext context, int index) {
             final YearDayAssetsModel item = yearlyList[index];
@@ -154,7 +151,6 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // 日付ブロック
           Container(
             width: 60,
             padding: const EdgeInsets.all(6),
@@ -169,14 +165,12 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
           ),
           const SizedBox(width: 12),
 
-          // 本文
           Expanded(
             child: DefaultTextStyle(
               style: TextStyle(color: isBeforeOrToday ? Colors.black87 : Colors.grey, fontSize: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  // total + 前日比
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -207,7 +201,6 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
 
                   const SizedBox(height: 8),
 
-                  // 内訳
                   Wrap(
                     spacing: 12,
                     runSpacing: 6,
@@ -223,7 +216,6 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
 
                   const SizedBox(height: 4),
 
-                  // 何ヶ月分かも表示（任意）
                   Text(
                     'insurance months: ${item.insurancePassedMonths}, nenkinKikin months: ${item.nenkinKikinPassedMonths}',
                     style: const TextStyle(fontSize: 11, color: Colors.black54),
@@ -282,13 +274,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       if (!foundStock) {
         final List<StockModel>? stockList = appParamState.keepStockMap[key];
         if (stockList != null) {
-          int sum = 0;
-          for (final StockModel e in stockList) {
-            if (e.jikaHyoukagaku != '-') {
-              sum += e.jikaHyoukagaku.replaceAll(',', '').toInt();
-            }
-          }
-          lastStock = sum;
+          lastStock = AssetsCalc.calcStockSum(stockList);
           foundStock = true;
         }
       }
@@ -296,13 +282,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       if (!foundToushi) {
         final List<ToushiShintakuModel>? toushiList = appParamState.keepToushiShintakuMap[key];
         if (toushiList != null) {
-          int sum = 0;
-          for (final ToushiShintakuModel e in toushiList) {
-            if (e.jikaHyoukagaku != '-') {
-              sum += e.jikaHyoukagaku.replaceAll(',', '').replaceAll('円', '').trim().toInt();
-            }
-          }
-          lastToushi = sum;
+          lastToushi = AssetsCalc.calcToushiSum(toushiList);
           foundToushi = true;
         }
       }
@@ -316,21 +296,6 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
   }
 
   ///
-  int countPaidUpTo({required List<Map<String, dynamic>> data, required DateTime date, String dateKey = 'date'}) {
-    final DateTime target = DateTime(date.year, date.month, date.day);
-
-    final List<DateTime> dates =
-        data
-            .where((Map<String, dynamic> e) => e[dateKey] != null)
-            .map((Map<String, dynamic> e) => DateTime.parse(e[dateKey] as String))
-            .map((DateTime d) => DateTime(d.year, d.month, d.day))
-            .toList()
-          ..sort();
-
-    return dates.where((DateTime d) => !d.isAfter(target)).length;
-  }
-
-  ///
   List<YearDayAssetsModel> _buildYearlyDayAssetsList({required int year}) {
     const double assetRate = 0.8;
 
@@ -341,6 +306,8 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
     int lastGoldSum = prev.gold;
     int lastStockSum = prev.stock;
     int lastToushiShintakuSum = prev.toushi;
+
+    int lastMoneySum = 0;
 
     final DateTime start = DateTime(year);
     final DateTime endExclusive = DateTime(year + 1);
@@ -357,33 +324,24 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
 
       final List<StockModel>? stockList = appParamState.keepStockMap[key];
       if (stockList != null) {
-        int sum = 0;
-        for (final StockModel e in stockList) {
-          if (e.jikaHyoukagaku != '-') {
-            sum += e.jikaHyoukagaku.replaceAll(',', '').toInt();
-          }
-        }
-        lastStockSum = sum;
+        lastStockSum = AssetsCalc.calcStockSum(stockList);
       }
 
       final List<ToushiShintakuModel>? toushiList = appParamState.keepToushiShintakuMap[key];
       if (toushiList != null) {
-        int sum = 0;
-        for (final ToushiShintakuModel e in toushiList) {
-          if (e.jikaHyoukagaku != '-') {
-            sum += e.jikaHyoukagaku.replaceAll(',', '').replaceAll('円', '').trim().toInt();
-          }
-        }
-        lastToushiShintakuSum = sum;
+        lastToushiShintakuSum = AssetsCalc.calcToushiSum(toushiList);
       }
 
       final String moneyStr = appParamState.keepMoneyMap[key]?.sum ?? '';
-      final int money = moneyStr.isNotEmpty ? (int.tryParse(moneyStr) ?? 0) : 0;
+      if (moneyStr.isNotEmpty) {
+        lastMoneySum = AssetsCalc.calcMoney(moneyStr);
+      }
+      final int money = lastMoneySum;
 
-      final int insurancePassedMonths = countPaidUpTo(data: widget.insuranceDataList, date: d) + 102;
+      final int insurancePassedMonths = AssetsCalc.countPaidUpTo(data: widget.insuranceDataList, date: d) + 102;
       final int insuranceSum = insurancePassedMonths * (55880 * 0.7).toInt();
 
-      final int nenkinKikinPassedMonths = countPaidUpTo(data: widget.nenkinKikinDataList, date: d) + 32;
+      final int nenkinKikinPassedMonths = AssetsCalc.countPaidUpTo(data: widget.nenkinKikinDataList, date: d) + 32;
       final int nenkinKikinSum = nenkinKikinPassedMonths * (26625 * 0.7).toInt();
 
       final int gold80 = (lastGoldSum * assetRate).toInt();
