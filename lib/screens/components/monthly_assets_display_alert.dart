@@ -15,6 +15,7 @@ import 'assets_detail_graph_alert.dart';
 import 'monthly_assets_graph_alert.dart';
 import 'stock_data_input_alert.dart';
 import 'toushi_shintaku_data_update_alert.dart';
+import 'yearly_assets_display_alert.dart';
 
 class MonthlyAssetsDisplayAlert extends ConsumerStatefulWidget {
   const MonthlyAssetsDisplayAlert({
@@ -45,6 +46,23 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   final AutoScrollController autoScrollController = AutoScrollController();
 
   List<Widget> monthlyAssetsList = <Widget>[];
+
+  ///
+  int _calcTotalAssets({
+    required String money,
+    required Map<String, dynamic>? monthlyAssets,
+    required List<String> keys,
+  }) {
+    final List<int> items = <int>[
+      if (money.isNotEmpty) int.tryParse(money) ?? 0 else 0,
+      ...keys.map((String key) {
+        final String value = monthlyAssets?[key]?.toString() ?? '';
+        return value.isNotEmpty ? int.tryParse(value) ?? 0 : 0;
+      }),
+    ];
+
+    return items.fold(0, (int sum, int value) => sum + value);
+  }
 
   ///
   @override
@@ -85,43 +103,61 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                           ],
                         ),
 
-                        GestureDetector(
-                          onTap: () {
-                            if (DateTime.now().year.toString() == widget.yearmonth.split('-')[0] &&
-                                DateTime.now().month.toString() == widget.yearmonth.split('-')[1] &&
-                                DateTime.now().day == 1) {
-                              // ignore: always_specify_types
-                              Future.delayed(
-                                Duration.zero,
-                                () => error_dialog(
-                                  // ignore: use_build_context_synchronously
+                        Row(
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                    builder: (_) => YearlyAssetsDisplayAlert(
+                                      date: '${widget.yearmonth}-01',
+                                      insuranceDataList: widget.insuranceDataList,
+                                      nenkinKikinDataList: widget.nenkinKikinDataList,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: const Icon(Icons.calendar_view_month),
+                            ),
+
+                            const SizedBox(width: 12),
+
+                            GestureDetector(
+                              onTap: () {
+                                if (DateTime.now().year.toString() == widget.yearmonth.split('-')[0] &&
+                                    DateTime.now().month.toString() == widget.yearmonth.split('-')[1] &&
+                                    DateTime.now().day == 1) {
+                                  // ignore: always_specify_types
+                                  Future.delayed(
+                                    Duration.zero,
+                                    () => error_dialog(
+                                      // ignore: use_build_context_synchronously
+                                      context: context,
+                                      title: '表示できません。',
+                                      content: 'データが1日分しかないため、assets graphが表示できません。',
+                                    ),
+                                  );
+
+                                  return;
+                                }
+
+                                LifetimeDialog(
                                   context: context,
-                                  title: '表示できません。',
-                                  content: 'データが1日分しかないため、assets graphが表示できません。',
-                                ),
-                              );
-
-                              return;
-                            }
-
-                            LifetimeDialog(
-                              context: context,
-                              widget: MonthlyAssetsGraphAlert(
-                                yearmonth: widget.yearmonth,
-
-                                monthlyGraphAssetsMap: monthlyGraphAssetsMap,
-                              ),
-                            );
-                          },
-                          child: const Icon(Icons.graphic_eq),
+                                  widget: MonthlyAssetsGraphAlert(
+                                    yearmonth: widget.yearmonth,
+                                    monthlyGraphAssetsMap: monthlyGraphAssetsMap,
+                                  ),
+                                );
+                              },
+                              child: const Icon(Icons.graphic_eq),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ],
                 ),
-
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
                 Expanded(child: displayMonthlyAssetsList()),
               ],
             ),
@@ -260,15 +296,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       //-----------------------------------------//
       final Map<String, dynamic>? monthlyAssets = monthlyAssetsMap[date];
 
-      final List<int> items = <int>[
-        if (money.isNotEmpty) int.tryParse(money) ?? 0 else 0,
-        ...keys.map((String key) {
-          final String value = monthlyAssets?[key]?.toString() ?? '';
-          return value.isNotEmpty ? int.tryParse(value) ?? 0 : 0;
-        }),
-      ];
-
-      final int total = items.fold(0, (int sum, int value) => sum + value);
+      final int total = _calcTotalAssets(money: money, monthlyAssets: monthlyAssets, keys: keys);
       //-----------------------------------------//
 
       if (isBeforeDate) {
@@ -280,15 +308,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
       final String moneyBefore = appParamState.keepMoneyMap[beforeDate.yyyymmdd]?.sum ?? '';
 
-      final List<int> itemsBefore = <int>[
-        if (moneyBefore.isNotEmpty) int.tryParse(moneyBefore) ?? 0 else 0,
-        ...keys.map((String key) {
-          final String value = monthlyAssetsBefore?[key]?.toString() ?? '';
-          return value.isNotEmpty ? int.tryParse(value) ?? 0 : 0;
-        }),
-      ];
-
-      final int totalBefore = itemsBefore.fold(0, (int sum, int value) => sum + value);
+      final int totalBefore = _calcTotalAssets(money: moneyBefore, monthlyAssets: monthlyAssetsBefore, keys: keys);
       //-----------------------------------------//
 
       monthlyAssetsList.add(

@@ -552,7 +552,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
     insuranceDataList.clear();
     nenkinKikinDataList.clear();
 
-    appParamState.keepMoneySpendMap.forEach((String key, List<MoneySpendModel> value) {
+    widget.moneySpendMap.forEach((String key, List<MoneySpendModel> value) {
       for (final MoneySpendModel element in value) {
         if (element.price == 55880) {
           insuranceDataList.add(<String, String>{'date': key, 'price': element.price.toString()});
@@ -818,7 +818,7 @@ class _ScrollableBottomDialogMenu extends StatelessWidget {
             return InkWell(
               onTap: () => onTap(index),
               child: Container(
-                width: 80,
+                width: 70,
                 alignment: Alignment.topCenter,
                 decoration: BoxDecoration(color: selected ? Colors.yellow.withValues(alpha: 0.2) : Colors.transparent),
                 padding: const EdgeInsets.only(top: 8),
