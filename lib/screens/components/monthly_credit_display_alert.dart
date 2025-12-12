@@ -109,9 +109,8 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Expanded(child: Text(element.useDate)),
+                SizedBox(width: 70, child: Text(element.useDate)),
                 Expanded(
-                  flex: 2,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -120,7 +119,6 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          const SizedBox.shrink(),
                           Text(
                             element.item,
 
@@ -129,13 +127,12 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
 
                             style: const TextStyle(fontSize: 10, color: Colors.grey),
                           ),
+
+                          Text(element.price.toString().toCurrency()),
                         ],
                       ),
                     ],
                   ),
-                ),
-                Expanded(
-                  child: Container(alignment: Alignment.topRight, child: Text(element.price.toString().toCurrency())),
                 ),
               ],
             ),

@@ -5,19 +5,13 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
-import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
 import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
 import '../components/money_data_input_alert.dart';
-import '../components/monthly_assets_display_alert.dart';
-import '../components/monthly_geoloc_map_display_alert.dart';
-import '../components/monthly_lifetime_display_alert.dart';
-import '../components/monthly_money_spend_display_alert.dart';
 import '../components/walk_data_input_alert.dart';
-import '../components/work_info_monthly_display_alert.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 
@@ -34,17 +28,11 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     with ControllersMixin<MonthlyLifetimeDisplayPage> {
   Utility utility = Utility();
 
-  List<Map<String, String>> insuranceDataList = <Map<String, String>>[];
-
-  List<Map<String, String>> nenkinKikinDataList = <Map<String, String>>[];
-
   final AutoScrollController autoScrollController = AutoScrollController();
 
   ///
   @override
   Widget build(BuildContext context) {
-    makeNenkinKikinDataList();
-
     return Scaffold(
       backgroundColor: Colors.transparent,
 
@@ -63,162 +51,24 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: () => LifetimeDialog(
-                                context: context,
-                                widget: MonthlyLifetimeDisplayAlert(yearmonth: widget.yearmonth),
-                              ),
-                              child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.3)),
-                            ),
-
-                            const SizedBox(width: 20),
-
-                            GestureDetector(
-                              onTap: () {
-                                if (appParamState.keepMoneySpendItemMap.isEmpty) {
-                                  // ignore: always_specify_types
-                                  Future.delayed(
-                                    Duration.zero,
-                                    () => error_dialog(
-                                      // ignore: use_build_context_synchronously
-                                      context: context,
-                                      title: '表示できません。',
-                                      content: 'appParamState.keepMoneySpendItemMapが作成されていません。',
-                                    ),
-                                  );
-
-                                  return;
-                                }
-
-                                LifetimeDialog(
-                                  context: context,
-                                  widget: MonthlyMoneySpendDisplayAlert(yearmonth: widget.yearmonth),
-                                );
-                              },
-                              child: Icon(Icons.money, color: Colors.white.withValues(alpha: 0.3)),
-                            ),
-
-                            if (appParamState.keepGeolocMap.isNotEmpty) ...<Widget>[
-                              const SizedBox(width: 20),
-
-                              GestureDetector(
-                                onTap: () {
-                                  if (DateTime.now().day == 1) {
-                                    // ignore: always_specify_types
-                                    Future.delayed(
-                                      Duration.zero,
-                                      () => error_dialog(
-                                        // ignore: use_build_context_synchronously
-                                        context: context,
-                                        title: '表示できません。',
-                                        content: '今月分のgeolocが存在しません。',
-                                      ),
-                                    );
-
-                                    return;
-                                  }
-
-                                  appParamNotifier.setSelectedYearMonth(yearmonth: widget.yearmonth);
-                                  appParamNotifier.clearMonthlyGeolocMapSelectedDateList();
-
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: MonthlyGeolocMapDisplayAlert(yearmonth: widget.yearmonth),
-                                    executeFunctionWhenDialogClose: true,
-                                    from: 'MonthlyGeolocMapDisplayAlert',
-                                    ref: ref,
-                                  );
-                                },
-                                child: Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
-                              ),
-                            ],
-                          ],
-                        ),
+                        const SizedBox.shrink(),
 
                         Row(
                           children: <Widget>[
                             GestureDetector(
-                              onTap: () {
-                                if (appParamState.keepGoldMap.isEmpty ||
-                                    appParamState.keepStockMap.isEmpty ||
-                                    appParamState.keepToushiShintakuMap.isEmpty) {
-                                  // ignore: always_specify_types
-                                  Future.delayed(
-                                    Duration.zero,
-                                    () => error_dialog(
-                                      // ignore: use_build_context_synchronously
-                                      context: context,
-                                      title: '表示できません。',
-                                      content: '資産情報が作成されていません。',
-                                    ),
-                                  );
-
-                                  return;
-                                }
-
-                                LifetimeDialog(
-                                  context: context,
-                                  widget: MonthlyAssetsDisplayAlert(
-                                    yearmonth: widget.yearmonth,
-                                    insuranceDataList: insuranceDataList,
-                                    nenkinKikinDataList: nenkinKikinDataList,
-                                  ),
-                                );
-                              },
-                              child: Icon(FontAwesomeIcons.sun, size: 20, color: Colors.white.withValues(alpha: 0.3)),
+                              onTap: () => autoScrollController.scrollToIndex(
+                                DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day,
+                              ),
+                              child: Icon(Icons.arrow_downward, color: Colors.white.withValues(alpha: 0.3)),
                             ),
-
                             const SizedBox(width: 20),
-
                             GestureDetector(
-                              onTap: () {
-                                if (appParamState.keepWorkTimeMap.isEmpty) {
-                                  // ignore: always_specify_types
-                                  Future.delayed(
-                                    Duration.zero,
-                                    () => error_dialog(
-                                      // ignore: use_build_context_synchronously
-                                      context: context,
-                                      title: '表示できません。',
-                                      content: 'appParamState.keepWorkTimeMapが作成されていません。',
-                                    ),
-                                  );
-
-                                  return;
-                                }
-
-                                LifetimeDialog(
-                                  context: context,
-                                  widget: WorkInfoMonthlyDisplayAlert(yearmonth: widget.yearmonth),
-                                );
-                              },
-                              child: Icon(Icons.work, color: Colors.white.withValues(alpha: 0.3)),
+                              onTap: () => autoScrollController.scrollToIndex(0),
+                              child: Icon(Icons.arrow_upward, color: Colors.white.withValues(alpha: 0.3)),
                             ),
                           ],
                         ),
                       ],
-                    ),
-                  ],
-                ),
-
-                Row(
-                  children: <Widget>[
-                    IconButton(
-                      onPressed: () {
-                        autoScrollController.scrollToIndex(
-                          DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day,
-                        );
-                      },
-                      icon: Icon(Icons.arrow_downward, color: Colors.white.withValues(alpha: 0.3)),
-                    ),
-
-                    IconButton(
-                      onPressed: () {
-                        autoScrollController.scrollToIndex(0);
-                      },
-                      icon: Icon(Icons.arrow_upward, color: Colors.white.withValues(alpha: 0.3)),
                     ),
                   ],
                 ),
@@ -232,24 +82,6 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
         ),
       ),
     );
-  }
-
-  ///
-  void makeNenkinKikinDataList() {
-    insuranceDataList.clear();
-    nenkinKikinDataList.clear();
-
-    appParamState.keepMoneySpendMap.forEach((String key, List<MoneySpendModel> value) {
-      for (final MoneySpendModel element in value) {
-        if (element.price == 55880) {
-          insuranceDataList.add(<String, String>{'date': key, 'price': element.price.toString()});
-        }
-
-        if (element.item == '国民年金基金') {
-          nenkinKikinDataList.add(<String, String>{'date': key, 'price': element.price.toString()});
-        }
-      }
-    });
   }
 
   ///

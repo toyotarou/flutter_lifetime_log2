@@ -34,19 +34,31 @@ import 'components/lifetime_item_search_alert.dart';
 import 'components/lifetime_summary_alert.dart';
 import 'components/money_count_list_alert.dart';
 import 'components/money_in_possession_display_alert.dart';
+import 'components/monthly_assets_display_alert.dart';
+import 'components/monthly_geoloc_map_display_alert.dart';
+import 'components/monthly_lifetime_display_alert.dart';
+import 'components/monthly_money_spend_display_alert.dart';
 import 'components/salary_list_alert.dart';
 import 'components/spend_each_year_display_alert.dart';
-
-// import 'components/stamp_rally_metro_20_anniversary_list_alert.dart';
-// import 'components/stamp_rally_metro_all_station_list_alert.dart';
-// import 'components/stamp_rally_metro_pokepoke_list_alert.dart';
-//
-//
-//
-
 import 'components/stamp_rally_list_alert.dart';
+import 'components/work_info_monthly_display_alert.dart';
 import 'page/monthly_lifetime_display_page.dart';
+import 'parts/error_dialog.dart';
 import 'parts/lifetime_dialog.dart';
+
+///
+const List<IconData> bottomNavigationMenuIcons = <IconData>[
+  Icons.list,
+  Icons.map,
+  Icons.work,
+  Icons.money,
+  FontAwesomeIcons.sun,
+  // Icons.filter_6_outlined,
+  // Icons.filter_7_outlined,
+  // Icons.filter_8_outlined,
+  // Icons.filter_9_outlined,
+  // Icons.filter_9_plus_outlined,
+];
 
 class TabInfo {
   TabInfo(this.label, this.widget, {this.highlight = false});
@@ -133,6 +145,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
   final Utility utility = Utility();
 
   TabController? _tabController;
+
+  List<Map<String, String>> insuranceDataList = <Map<String, String>>[];
+
+  List<Map<String, String>> nenkinKikinDataList = <Map<String, String>>[];
 
   ///
   void _onTabChanged() {
@@ -336,6 +352,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         appParamNotifier.setKeepAllPolygonsList(list: allPolygonsList);
       });
       //===========================================//
+
+      makeNenkinKikinDataList();
     });
 
     return DefaultTabController(
@@ -374,6 +392,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                   isScrollable: true,
                   tabAlignment: TabAlignment.start,
                   indicatorColor: Colors.blueAccent,
+                  padding: EdgeInsets.zero,
                   tabs: _tabs.map((TabInfo tab) {
                     return Tab(
                       child: Text(
@@ -401,11 +420,149 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 ),
               ],
             ),
+
+            ///
+            bottomNavigationBar: _ScrollableBottomDialogMenu(
+              bottomSelected: appParamState.bottomNavigationSelectedIndex,
+              onTap: (int index) async {
+                appParamNotifier.setSelectedBottomNavigationIndex(
+                  index: index,
+                  maxCount: bottomNavigationMenuIcons.length,
+                );
+
+                getBottomMenuContents(index: index);
+
+                if (mounted) {
+                  appParamNotifier.setSelectedBottomNavigationIndex(maxCount: bottomNavigationMenuIcons.length);
+                }
+              },
+            ),
+
             endDrawer: _dispDrawer(),
           );
         },
       ),
     );
+  }
+
+  ///
+  Object getBottomMenuContents({required int index}) {
+    switch (index) {
+      case 0:
+        return LifetimeDialog(
+          context: context,
+          widget: MonthlyLifetimeDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
+        );
+
+      case 1:
+        if (DateTime.now().day == 1) {
+          // ignore: always_specify_types
+          Future.delayed(
+            Duration.zero,
+            () => error_dialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              title: '表示できません。',
+              content: '今月分のgeolocが存在しません。',
+            ),
+          );
+        } else {
+          appParamNotifier.setSelectedYearMonth(yearmonth: appParamState.homeTabYearMonth);
+
+          appParamNotifier.clearMonthlyGeolocMapSelectedDateList();
+
+          return LifetimeDialog(
+            context: context,
+            widget: MonthlyGeolocMapDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
+            executeFunctionWhenDialogClose: true,
+            from: 'MonthlyGeolocMapDisplayAlert',
+            ref: ref,
+          );
+        }
+
+      case 2:
+        if (appParamState.keepWorkTimeMap.isEmpty) {
+          // ignore: always_specify_types
+          Future.delayed(
+            Duration.zero,
+            () => error_dialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              title: '表示できません。',
+              content: 'appParamState.keepWorkTimeMapが作成されていません。',
+            ),
+          );
+        } else {
+          return LifetimeDialog(
+            context: context,
+            widget: WorkInfoMonthlyDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
+          );
+        }
+
+      case 3:
+        if (appParamState.keepMoneySpendItemMap.isEmpty) {
+          // ignore: always_specify_types
+          Future.delayed(
+            Duration.zero,
+            () => error_dialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              title: '表示できません。',
+              content: 'appParamState.keepMoneySpendItemMapが作成されていません。',
+            ),
+          );
+        } else {
+          return LifetimeDialog(
+            context: context,
+            widget: MonthlyMoneySpendDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
+          );
+        }
+
+      case 4:
+        if (appParamState.keepGoldMap.isEmpty ||
+            appParamState.keepStockMap.isEmpty ||
+            appParamState.keepToushiShintakuMap.isEmpty) {
+          // ignore: always_specify_types
+          Future.delayed(
+            Duration.zero,
+            () => error_dialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              title: '表示できません。',
+              content: '資産情報が作成されていません。',
+            ),
+          );
+        } else {
+          return LifetimeDialog(
+            context: context,
+            widget: MonthlyAssetsDisplayAlert(
+              yearmonth: appParamState.homeTabYearMonth,
+              insuranceDataList: insuranceDataList,
+              nenkinKikinDataList: nenkinKikinDataList,
+            ),
+          );
+        }
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  ///
+  void makeNenkinKikinDataList() {
+    insuranceDataList.clear();
+    nenkinKikinDataList.clear();
+
+    appParamState.keepMoneySpendMap.forEach((String key, List<MoneySpendModel> value) {
+      for (final MoneySpendModel element in value) {
+        if (element.price == 55880) {
+          insuranceDataList.add(<String, String>{'date': key, 'price': element.price.toString()});
+        }
+
+        if (element.item == '国民年金基金') {
+          nenkinKikinDataList.add(<String, String>{'date': key, 'price': element.price.toString()});
+        }
+      }
+    });
   }
 
   ///
@@ -636,6 +793,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
     }
   }
 }
+
+/////////////////////////////////////////////////////////////////////////////////
+
+class _ScrollableBottomDialogMenu extends StatelessWidget {
+  const _ScrollableBottomDialogMenu({required this.bottomSelected, required this.onTap});
+
+  final int? bottomSelected;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      elevation: 4,
+      color: Colors.transparent,
+      child: SizedBox(
+        height: 88,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: bottomNavigationMenuIcons.length,
+          itemBuilder: (BuildContext context, int index) {
+            final bool selected = bottomSelected == index;
+
+            return InkWell(
+              onTap: () => onTap(index),
+              child: Container(
+                width: 80,
+                alignment: Alignment.topCenter,
+                decoration: BoxDecoration(color: selected ? Colors.yellow.withValues(alpha: 0.2) : Colors.transparent),
+                padding: const EdgeInsets.only(top: 8),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(bottomNavigationMenuIcons[index], color: Colors.white.withValues(alpha: 0.3)),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 
 ///
 Map<String, List<StampRallyModel>> makeStampRallyDisplayDataMap({

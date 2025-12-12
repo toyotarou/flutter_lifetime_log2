@@ -126,6 +126,8 @@ class AppParamState with _$AppParamState {
     @Default(true) bool isDisplayMunicipalNameOnLifetimeGeolocMap,
 
     WorkHistoryModel? selectedWorkHistoryModel,
+
+    int? bottomNavigationSelectedIndex,
   }) = _AppParamState;
 }
 
@@ -358,4 +360,12 @@ class AppParam extends _$AppParam {
   ///
   void setSelectedWorkHistoryModel({WorkHistoryModel? model}) =>
       state = state.copyWith(selectedWorkHistoryModel: model);
+
+  ///
+  void setSelectedBottomNavigationIndex({int? index, required int maxCount}) {
+    if (index != null && (index < 0 || index >= maxCount)) {
+      return;
+    }
+    state = state.copyWith(bottomNavigationSelectedIndex: index);
+  }
 }
