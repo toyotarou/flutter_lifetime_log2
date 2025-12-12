@@ -105,7 +105,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                               },
                               child: const Icon(Icons.calendar_view_month),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 20),
                             GestureDetector(
                               onTap: () {
                                 if (DateTime.now().year.toString() == widget.yearmonth.split('-')[0] &&
