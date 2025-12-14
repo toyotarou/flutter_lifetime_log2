@@ -13,7 +13,8 @@ import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../../utility/assets_calc.dart';
 import '../../utility/utility.dart';
-import 'yearly_assets_line_graph_alert.dart';
+import '../parts/lifetime_dialog.dart';
+import 'yearly_assets_graph_alert.dart';
 
 class YearlyAssetsDisplayAlert extends ConsumerStatefulWidget {
   const YearlyAssetsDisplayAlert({
@@ -111,13 +112,11 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                     tooltip: '折れ線グラフ',
                     icon: const Icon(Icons.graphic_eq),
                     onPressed: () {
-                      Navigator.of(context).push(
-                        // ignore: inference_failure_on_instance_creation, always_specify_types
-                        MaterialPageRoute(
-                          builder: (_) => YearlyAssetsLineGraphAlert(
-                            year: year,
-                            totals: yearlyDayAssetsList.map((YearDayAssetsModel e) => e.total).toList(),
-                          ),
+                      LifetimeDialog(
+                        context: context,
+                        widget: YearlyAssetsGraphAlert(
+                          year: year,
+                          totals: yearlyDayAssetsList.map((YearDayAssetsModel e) => e.total).toList(),
                         ),
                       );
                     },
