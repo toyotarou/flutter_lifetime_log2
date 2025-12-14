@@ -40,6 +40,11 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
 
   final AutoScrollController autoScrollController = AutoScrollController();
 
+  int lastAssets = 0;
+  int totalDiff = 0;
+
+  List<YearDayAssetsModel> yearlyDayAssetsList = [];
+
   ///
   @override
   void initState() {
@@ -50,84 +55,137 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
   ///
   @override
   Widget build(BuildContext context) {
-    final List<YearDayAssetsModel> yearlyList = _buildYearlyDayAssetsList(year: year);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      yearlyDayAssetsList = makeYearlyDayAssetsList();
+    });
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('$year 年 資産推移'),
-        actions: <Widget>[
-          Row(
-            children: <Widget>[
-              IconButton(
-                tooltip: '折れ線グラフ',
-                icon: const Icon(Icons.graphic_eq),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    // ignore: inference_failure_on_instance_creation, always_specify_types
-                    MaterialPageRoute(
-                      builder: (_) => YearlyAssetsLineGraphAlert(
-                        year: year,
-                        totals: yearlyList.map((YearDayAssetsModel e) => e.total).toList(),
-                      ),
-                    ),
-                  );
-                },
-              ),
-              IconButton(
-                onPressed: () {
-                  if (yearlyList.isEmpty) {
-                    return;
-                  }
-                  autoScrollController.scrollToIndex(
-                    yearlyList.length - 1,
-                    preferPosition: AutoScrollPosition.end,
-                    duration: const Duration(milliseconds: 300),
-                  );
-                },
-                icon: const Icon(Icons.arrow_downward),
-              ),
-              IconButton(
-                onPressed: () {
-                  if (yearlyList.isEmpty) {
-                    return;
-                  }
-                  autoScrollController.scrollToIndex(
-                    0,
-                    preferPosition: AutoScrollPosition.begin,
-                    duration: const Duration(milliseconds: 300),
-                  );
-                },
-                icon: const Icon(Icons.arrow_upward),
-              ),
-            ],
-          ),
-        ],
-      ),
+      backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: ListView.builder(
-          controller: autoScrollController,
-          itemCount: yearlyList.length,
-          itemBuilder: (BuildContext context, int index) {
-            final YearDayAssetsModel item = yearlyList[index];
-            final bool isToday = item.date == DateTime.now().yyyymmdd;
-
-            return AutoScrollTag(
-              // ignore: always_specify_types
-              key: ValueKey(index),
-              index: index,
-              controller: autoScrollController,
-              child: Column(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  if (isToday)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      child: DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3),
-                    ),
-                  _dayRow(item: item),
+                  Row(
+                    children: <Widget>[
+                      Text('$year 年 資産推移'),
+                      const SizedBox(width: 10),
+
+                      Row(
+                        children: <Widget>[
+                          IconButton(
+                            onPressed: () {
+                              if (yearlyDayAssetsList.isEmpty) {
+                                return;
+                              }
+                              autoScrollController.scrollToIndex(
+                                yearlyDayAssetsList.length - 1,
+                                preferPosition: AutoScrollPosition.end,
+                                duration: const Duration(milliseconds: 300),
+                              );
+                            },
+                            icon: const Icon(Icons.arrow_downward),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              if (yearlyDayAssetsList.isEmpty) {
+                                return;
+                              }
+                              autoScrollController.scrollToIndex(
+                                0,
+                                preferPosition: AutoScrollPosition.begin,
+                                duration: const Duration(milliseconds: 300),
+                              );
+                            },
+                            icon: const Icon(Icons.arrow_upward),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  IconButton(
+                    tooltip: '折れ線グラフ',
+                    icon: const Icon(Icons.graphic_eq),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        // ignore: inference_failure_on_instance_creation, always_specify_types
+                        MaterialPageRoute(
+                          builder: (_) => YearlyAssetsLineGraphAlert(
+                            year: year,
+                            totals: yearlyDayAssetsList.map((YearDayAssetsModel e) => e.total).toList(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
-            );
-          },
+            ),
+
+            Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+            Expanded(
+              child: ListView.builder(
+                controller: autoScrollController,
+                itemCount: yearlyDayAssetsList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final YearDayAssetsModel item = yearlyDayAssetsList[index];
+                  final bool isToday = item.date == DateTime.now().yyyymmdd;
+
+                  return AutoScrollTag(
+                    // ignore: always_specify_types
+                    key: ValueKey(index),
+                    index: index,
+                    controller: autoScrollController,
+                    child: Column(
+                      children: <Widget>[
+                        if (isToday)
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 12),
+                            child: DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3),
+                          ),
+                        _dayRow(item: item),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: DefaultTextStyle(
+                style: const TextStyle(fontSize: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    Text(lastAssets.toString().toCurrency()),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const SizedBox.shrink(),
+                        Row(
+                          children: <Widget>[
+                            _dispUpDownMark(before: 0, after: lastAssets, size: 18),
+                            const SizedBox(width: 10),
+
+                            Text(totalDiff.toString().toCurrency(), style: const TextStyle(color: Colors.orange)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -148,93 +206,61 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.25))),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            width: 60,
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(color: youbiColor),
-            child: Column(
-              children: <Widget>[
-                Text(item.mmdd, style: const TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 6),
-                Text(item.youbiShort, style: const TextStyle(fontSize: 10)),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
 
-          Expanded(
-            child: DefaultTextStyle(
-              style: TextStyle(color: isBeforeOrToday ? Colors.black87 : Colors.grey, fontSize: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      child: DefaultTextStyle(
+        style: const TextStyle(fontSize: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: 80,
+              decoration: BoxDecoration(color: youbiColor),
+              child: Row(
                 children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            isBeforeOrToday ? item.total.toString().toCurrency() : '-',
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(width: 8),
-                          if (isBeforeOrToday && item.totalBefore != null) ...<Widget>[
-                            _dispUpDownMark(before: item.totalBefore!, after: item.total, size: 18),
-                            const SizedBox(width: 6),
-                            Text(
-                              _diffString(before: item.totalBefore!, after: item.total),
-                              style: const TextStyle(color: Colors.orange),
-                            ),
-                          ],
-                        ],
-                      ),
-                      if (item.date == DateTime.now().yyyymmdd)
-                        const Text('TODAY', style: TextStyle(color: Colors.orangeAccent))
-                      else
-                        const SizedBox.shrink(),
-                    ],
+                  SizedBox(
+                    width: 40,
+                    child: Text(item.mmdd, style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
-
-                  const SizedBox(height: 8),
-
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 6,
-                    children: <Widget>[
-                      _miniChip(label: 'money', value: item.money),
-                      _miniChip(label: 'gold(0.8)', value: item.gold),
-                      _miniChip(label: 'stock(0.8)', value: item.stock),
-                      _miniChip(label: 'toushi(0.8)', value: item.toushiShintaku),
-                      _miniChip(label: 'insurance', value: item.insurance),
-                      _miniChip(label: 'nenkinKikin', value: item.nenkinKikin),
-                    ],
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  Text(
-                    'insurance months: ${item.insurancePassedMonths}, nenkinKikin months: ${item.nenkinKikinPassedMonths}',
-                    style: const TextStyle(fontSize: 11, color: Colors.black54),
-                  ),
+                  const SizedBox(width: 10),
+                  Text(item.youbiShort, style: const TextStyle(fontSize: 10)),
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+            Expanded(
+              child: Container(
+                alignment: Alignment.topRight,
+                child: Text(isBeforeOrToday ? item.total.toString().toCurrency() : '-'),
+              ),
+            ),
 
-  ///
-  Widget _miniChip({required String label, required int value}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20)),
-      child: Text('$label: ${value.toString().toCurrency()}'),
+            SizedBox(
+              width: 80,
+              child: (isBeforeOrToday && item.totalBefore != null)
+                  ? Row(
+                      children: <Widget>[
+                        const Spacer(),
+                        SizedBox(
+                          width: 70,
+                          child: Row(
+                            children: <Widget>[
+                              _dispUpDownMark(before: item.totalBefore!, after: item.total, size: 18),
+
+                              const Spacer(),
+
+                              Text(
+                                _diffString(before: item.totalBefore!, after: item.total),
+                                style: const TextStyle(color: Colors.orange),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -296,7 +322,9 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
   }
 
   ///
-  List<YearDayAssetsModel> _buildYearlyDayAssetsList({required int year}) {
+  List<YearDayAssetsModel> makeYearlyDayAssetsList() {
+    yearlyDayAssetsList.clear();
+
     const double assetRate = 0.8;
 
     final List<YearDayAssetsModel> list = <YearDayAssetsModel>[];
@@ -313,6 +341,9 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
     final DateTime endExclusive = DateTime(year + 1);
 
     int? prevTotal;
+
+    int first = 0;
+    int last = 0;
 
     for (DateTime d = start; d.isBefore(endExclusive); d = d.add(const Duration(days: 1))) {
       final String key = d.yyyymmdd;
@@ -373,8 +404,22 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
         ),
       );
 
+      if (mmdd == '01/01') {
+        first = total;
+      }
+
+      if (total != 0) {
+        last = total;
+      }
+
       prevTotal = total;
     }
+
+    setState(() {
+      lastAssets = last;
+
+      totalDiff = last - first;
+    });
 
     return list;
   }

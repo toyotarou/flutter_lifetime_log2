@@ -93,13 +93,12 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                           children: <Widget>[
                             GestureDetector(
                               onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) => YearlyAssetsDisplayAlert(
-                                      date: '${widget.yearmonth}-01',
-                                      insuranceDataList: widget.insuranceDataList,
-                                      nenkinKikinDataList: widget.nenkinKikinDataList,
-                                    ),
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: YearlyAssetsDisplayAlert(
+                                    date: '${widget.yearmonth}-01',
+                                    insuranceDataList: widget.insuranceDataList,
+                                    nenkinKikinDataList: widget.nenkinKikinDataList,
                                   ),
                                 );
                               },
