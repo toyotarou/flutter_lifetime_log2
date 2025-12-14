@@ -43,7 +43,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
   int lastAssets = 0;
   int totalDiff = 0;
 
-  List<YearDayAssetsModel> yearlyDayAssetsList = [];
+  List<YearDayAssetsModel> yearlyDayAssetsList = <YearDayAssetsModel>[];
 
   ///
   @override
