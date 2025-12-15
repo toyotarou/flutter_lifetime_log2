@@ -29,15 +29,24 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
   static const double _monthBoundaryBandWidthX = 1;
   static const double _todayBandWidthX = 3;
 
+  final TransformationController transformationController = TransformationController();
+  bool zoomMode = false;
+  bool _showPointLabels = false;
+
+  int? _todayIndex;
+
   ///
   @override
   void initState() {
     super.initState();
 
     _plotTotals = _buildPlotTotals(year: widget.year, totals: widget.totals);
+
     if (_plotTotals.isEmpty) {
       _minY = 0;
       _maxY = 0;
+      _todayIndex = null;
+      transformationController.addListener(_onTransformChanged);
       return;
     }
 
@@ -53,6 +62,39 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
     } else {
       _minY = minRounded;
       _maxY = maxRounded;
+    }
+
+    final DateTime now = DateTime.now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
+    if (widget.year == today.year) {
+      _todayIndex = today.difference(DateTime(widget.year)).inDays.clamp(0, _plotTotals.length - 1);
+    } else {
+      _todayIndex = null;
+    }
+
+    transformationController.addListener(_onTransformChanged);
+  }
+
+  ///
+  @override
+  void dispose() {
+    transformationController.dispose();
+    super.dispose();
+  }
+
+  ///
+  void _onTransformChanged() {
+    if (!zoomMode) {
+      return;
+    }
+
+    final double scale = transformationController.value.getMaxScaleOnAxis();
+    final bool shouldShow = scale >= 5.0;
+
+    if (shouldShow != _showPointLabels) {
+      setState(() {
+        _showPointLabels = shouldShow;
+      });
     }
   }
 
@@ -81,33 +123,88 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
   int _dayOfYear(DateTime date) => date.difference(DateTime(date.year)).inDays + 1;
 
   ///
+  bool _isFutureIndex(int idx) {
+    if (_todayIndex == null) {
+      return false;
+    }
+    return idx > _todayIndex!;
+  }
+
+  ///
   @override
   Widget build(BuildContext context) {
+    if (_plotTotals.isEmpty) {
+      return Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Padding(
+            padding: widget.padding,
+            child: const Center(child: Text('データがありません')),
+          ),
+        ),
+      );
+    }
+
+    final Widget chartStack = Stack(
+      children: <Widget>[
+        LineChart(makeBackgroundChart()),
+        LineChart(makeAxisChart()),
+        LineChart(makeMainChart(zoomMode: zoomMode, showPointLabels: _showPointLabels)),
+      ],
+    );
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
           padding: widget.padding,
-          child: _plotTotals.isEmpty
-              ? const Center(child: Text('データがありません'))
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text('${widget.year} 年 資産推移'),
-                    Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-                    Expanded(
-                      child: Stack(
-                        children: <Widget>[
-                          LineChart(makeBackgroundChart()),
-
-                          LineChart(makeAxisChart()),
-
-                          LineChart(makeMainChart()),
-                        ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(width: MediaQuery.of(context).size.width),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text('${widget.year} 年 資産推移'),
+                  Row(
+                    children: <Widget>[
+                      if (zoomMode)
+                        IconButton(
+                          onPressed: () => setState(() {
+                            transformationController.value = Matrix4.identity();
+                            _showPointLabels = false;
+                          }),
+                          icon: const Icon(Icons.lock_reset),
+                        ),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            zoomMode = !zoomMode;
+                            if (!zoomMode) {
+                              transformationController.value = Matrix4.identity();
+                              _showPointLabels = false;
+                            }
+                          });
+                        },
+                        icon: Icon(Icons.expand, color: zoomMode ? Colors.yellowAccent : Colors.white),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
+              ),
+              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+              Expanded(
+                child: zoomMode
+                    ? InteractiveViewer(
+                        transformationController: transformationController,
+                        minScale: 1.0,
+                        maxScale: 30.0,
+                        child: AbsorbPointer(child: chartStack),
+                      )
+                    : chartStack,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -122,7 +219,20 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
   String _yLabel(double value) => value.toInt().toString();
 
   ///
-  LineChartData makeMainChart() {
+  String _buildSpotLabel(FlSpot spot) {
+    final List<FlSpot> spots = _buildSpots();
+    final int idx = spot.x.round().clamp(0, spots.length - 1);
+
+    final DateTime date = DateTime(widget.year).add(Duration(days: idx));
+
+    final String dateStr =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    final String price = spot.y.round().toString().toCurrency();
+    return '$dateStr\n$price';
+  }
+
+  ///
+  LineChartData makeMainChart({required bool zoomMode, required bool showPointLabels}) {
     final List<FlSpot> spots = _buildSpots();
 
     return LineChartData(
@@ -133,30 +243,59 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
       gridData: const FlGridData(show: false),
       titlesData: const FlTitlesData(show: false),
       borderData: FlBorderData(show: true, border: Border.all(color: Colors.grey.withValues(alpha: 0.25))),
-      lineTouchData: LineTouchData(
-        touchTooltipData: LineTouchTooltipData(
-          tooltipRoundedRadius: 6,
-          getTooltipItems: (List<LineBarSpot> touched) {
-            return touched.map((LineBarSpot s) {
-              final int idx = s.x.toInt().clamp(0, spots.length - 1);
-              final DateTime date = DateTime(widget.year).add(Duration(days: idx));
-              final String dateStr =
-                  '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      lineTouchData: zoomMode
+          ? const LineTouchData(enabled: false)
+          : LineTouchData(
+              touchTooltipData: LineTouchTooltipData(
+                tooltipRoundedRadius: 6,
+                getTooltipItems: (List<LineBarSpot> touched) {
+                  return touched.map((LineBarSpot s) {
+                    final int idx = s.spotIndex.clamp(0, spots.length - 1);
 
-              return LineTooltipItem(
-                '$dateStr\n${s.y.toInt().toString().toCurrency()}',
-                const TextStyle(color: Colors.white, fontSize: 12),
-              );
-            }).toList();
-          },
-        ),
-      ),
+                    if (_isFutureIndex(idx)) {
+                      return null;
+                    }
+
+                    final DateTime date = DateTime(widget.year).add(Duration(days: idx));
+
+                    final String dateStr =
+                        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
+                    return LineTooltipItem(
+                      '$dateStr\n${s.y.toInt().toString().toCurrency()}',
+                      const TextStyle(color: Colors.white, fontSize: 12),
+                    );
+                  }).toList();
+                },
+              ),
+            ),
       lineBarsData: <LineChartBarData>[
         LineChartBarData(
           spots: spots,
           color: Colors.greenAccent,
           barWidth: 1.8,
-          dotData: const FlDotData(show: false),
+          dotData: FlDotData(
+            show: showPointLabels,
+            getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int index) {
+              final int idx = index.clamp(0, spots.length - 1);
+              if (_isFutureIndex(idx)) {
+                return ValueDotPainter(
+                  color: Colors.greenAccent,
+                  radius: 0.8,
+                  textStyle: const TextStyle(fontSize: 2, color: Colors.transparent),
+                  labelBuilder: (_) => '',
+                );
+              }
+
+              return ValueDotPainter(
+                color: Colors.greenAccent,
+                radius: 0.8,
+                backgroundColor: Colors.blue.withOpacity(0.5),
+                textStyle: const TextStyle(fontSize: 1, color: Colors.white),
+                labelBuilder: _buildSpotLabel,
+              );
+            },
+          ),
           belowBarData: BarAreaData(),
         ),
       ],
@@ -240,9 +379,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
       borderData: FlBorderData(show: false),
       titlesData: const FlTitlesData(show: false),
       lineTouchData: const LineTouchData(enabled: false),
-
       rangeAnnotations: RangeAnnotations(verticalRangeAnnotations: ranges),
-
       lineBarsData: _buildMonthlyMomentumLines(spots),
     );
   }
@@ -378,4 +515,73 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
 
     return result;
   }
+}
+
+class ValueDotPainter extends FlDotPainter {
+  ValueDotPainter({
+    required this.color,
+    required this.radius,
+    required this.textStyle,
+    required this.labelBuilder,
+    this.backgroundColor,
+  });
+
+  final Color color;
+  final double radius;
+  final TextStyle textStyle;
+  final String Function(FlSpot spot) labelBuilder;
+  final Color? backgroundColor;
+
+  @override
+  Color get mainColor => color;
+
+  @override
+  List<Object?> get props => <Object?>[color, radius, textStyle, backgroundColor];
+
+  ///
+  @override
+  void draw(Canvas canvas, FlSpot spot, Offset offsetInCanvas) {
+    final Paint dotPaint = Paint()..color = color;
+    canvas.drawCircle(offsetInCanvas, radius, dotPaint);
+
+    final String label = labelBuilder(spot);
+    if (label.isEmpty) {
+      return;
+    }
+
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(text: label, style: textStyle),
+      textAlign: TextAlign.right,
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: 36);
+
+    final Offset textOffset = offsetInCanvas - Offset(textPainter.width, textPainter.height + radius + 1);
+
+    if (backgroundColor != null) {
+      final Rect bgRect = Rect.fromLTWH(
+        textOffset.dx - 1,
+        textOffset.dy - 1,
+        textPainter.width + 2,
+        textPainter.height + 2,
+      );
+      final RRect rRect = RRect.fromRectAndRadius(bgRect, const Radius.circular(2));
+      final Paint bgPaint = Paint()..color = backgroundColor!;
+      canvas.drawRRect(rRect, bgPaint);
+    }
+
+    textPainter.paint(canvas, textOffset);
+  }
+
+  ///
+  @override
+  Size getSize(FlSpot spot) => Size(radius * 2, radius * 2);
+
+  ///
+  @override
+  bool hitTest(FlSpot spot, Offset touched, Offset center, double extraThreshold) =>
+      (touched - center).distance <= radius + extraThreshold;
+
+  ///
+  @override
+  FlDotPainter lerp(FlDotPainter a, FlDotPainter b, double t) => this;
 }
