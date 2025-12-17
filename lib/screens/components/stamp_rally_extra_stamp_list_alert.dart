@@ -118,7 +118,18 @@ class _StampRallyExtraStampListAlertState extends ConsumerState<StampRallyExtraS
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
+
+                FadeInImage.assetNetwork(
+                  placeholder: 'assets/images/no_image.png',
+                  image: 'http://toyohide.work/BrainLog/metro_stamp_pokepoke/title_collection_$name.png',
+                  fit: BoxFit.contain,
+                  imageErrorBuilder: (BuildContext c, Object o, StackTrace? s) {
+                    return Image.asset('assets/images/no_image.png');
+                  },
+                ),
+
+                const SizedBox(height: 10),
 
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,6 +152,8 @@ class _StampRallyExtraStampListAlertState extends ConsumerState<StampRallyExtraS
                     Expanded(child: Text(name, maxLines: 3, overflow: TextOverflow.ellipsis)),
                   ],
                 ),
+
+                const SizedBox(height: 10),
               ],
             );
           },
