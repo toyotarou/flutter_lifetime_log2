@@ -102,6 +102,8 @@ class _StampRallyListAlertState extends ConsumerState<StampRallyListAlert> with 
                       onTap: _mapAlertType == null
                           ? null
                           : () {
+                              appParamNotifier.setSelectedStampRallyMapPolylineIndex();
+
                               LifetimeDialog(
                                 context: context,
                                 widget: StampRallyMapAlert(type: _mapAlertType!),

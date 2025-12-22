@@ -52,11 +52,8 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
 
   List<GlobalKey> globalKeyList = <GlobalKey>[];
 
-  // Glow
   late GlowBlink sharedBlink;
   bool _blinkRunning = true;
-
-  int? _selectedRouteIndex;
 
   ///
   Map<String, List<StampRallyModel>> get _currentStampMap {
@@ -185,7 +182,7 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
 
   ///
   void _selectRoute(int index) {
-    setState(() => _selectedRouteIndex = index);
+    appParamNotifier.setSelectedStampRallyMapPolylineIndex(index: index);
 
     if (_blinkRunning) {
       sharedBlink.restartFromZero();
@@ -208,7 +205,8 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
 
     final List<MapEntry<String, List<StampRallyModel>>> entries = _validEntriesSorted;
 
-    final int? selectedIndex = _selectedRouteIndex ?? (entries.isEmpty ? null : entries.length - 1);
+    final int? selectedIndex =
+        appParamState.selectedStampRallyMapPolylineIndex ?? (entries.isEmpty ? null : entries.length - 1);
 
     // ignore: always_specify_types
     final List<Polyline<Object>> nonGlowingPolylines = <Polyline<Object>>[];
@@ -235,16 +233,6 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: const Text('路線ボタンで発光切替'),
-        actions: <Widget>[
-          IconButton(
-            tooltip: _blinkRunning ? '明滅を停止' : '明滅を再開',
-            onPressed: _blinkRunning ? _stopBlink : _startBlink,
-            icon: Icon(_blinkRunning ? Icons.pause : Icons.play_arrow),
-          ),
-        ],
-      ),
       body: Stack(
         children: <Widget>[
           FlutterMap(
@@ -304,11 +292,70 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
             ],
           ),
 
+          if (appParamState.selectedStampRallyMapPolylineIndex != null) ...<Widget>[
+            if (widget.type == 'metro_all_station') ...<Widget>[
+              Positioned(
+                bottom: 60,
+                right: 5,
+                left: 5,
+                child: Container(
+                  height: 100,
+
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: displaySelectedPolylineStations(),
+                ),
+              ),
+            ],
+
+            Positioned(
+              top: 5,
+              right: 5,
+              child: CircleAvatar(
+                backgroundColor: Colors.pinkAccent.withOpacity(0.5),
+
+                child: IconButton(
+                  onPressed: _blinkRunning ? _stopBlink : _startBlink,
+                  icon: Icon(_blinkRunning ? Icons.pause : Icons.play_arrow, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+
           Positioned(left: 0, right: 0, bottom: 8, child: _buildRouteButtons(entries, selectedIndex)),
 
           if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
+    );
+  }
+
+  ///
+  Widget displaySelectedPolylineStations() {
+    final List<Widget> list = <Widget>[];
+
+    final List<MapEntry<String, List<StampRallyModel>>> entries = _validEntriesSorted;
+
+    int i = 0;
+    for (final StampRallyModel element in entries[appParamState.selectedStampRallyMapPolylineIndex!].value) {
+      list.add(
+        DefaultTextStyle(
+          style: const TextStyle(fontSize: 12),
+
+          child: Row(
+            children: <Widget>[Text((i + 1).toString().padLeft(2, '0')), const Text('：'), Text(element.stationName)],
+          ),
+        ),
+      );
+
+      i++;
+    }
+
+    return SingleChildScrollView(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: list),
     );
   }
 
@@ -345,8 +392,8 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
       onPressed: onTap,
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        backgroundColor: isSelected ? Colors.white : null,
-        foregroundColor: isSelected ? Colors.black : null,
+        backgroundColor: isSelected ? Colors.white.withValues(alpha: 0.2) : Colors.pinkAccent.withOpacity(0.2),
+        foregroundColor: isSelected ? Colors.black : Colors.white,
       ),
       child: Text(label),
     );
@@ -428,9 +475,32 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
                   stampRallyModel: element,
                 );
               },
-              child: Container(
+
+              child: SizedBox(
                 key: globalKeyList[markerIndex],
-                child: Icon(FontAwesomeIcons.stamp, color: iconColor),
+                width: 30,
+                height: 30,
+                child: Stack(
+                  children: <Widget>[
+                    Icon(FontAwesomeIcons.stamp, color: iconColor),
+
+                    if (i == appParamState.selectedStampRallyMapPolylineIndex &&
+                        widget.type == 'metro_all_station') ...<Widget>[
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          width: 15,
+                          height: 15,
+                          decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
+                          child: Center(
+                            child: Text(element.stampGetOrder.toString(), style: const TextStyle(fontSize: 10)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
           ),

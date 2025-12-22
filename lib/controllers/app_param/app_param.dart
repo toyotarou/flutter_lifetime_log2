@@ -128,6 +128,8 @@ class AppParamState with _$AppParamState {
     WorkHistoryModel? selectedWorkHistoryModel,
 
     int? bottomNavigationSelectedIndex,
+
+    int? selectedStampRallyMapPolylineIndex,
   }) = _AppParamState;
 }
 
@@ -368,4 +370,8 @@ class AppParam extends _$AppParam {
     }
     state = state.copyWith(bottomNavigationSelectedIndex: index);
   }
+
+  ///
+  void setSelectedStampRallyMapPolylineIndex({int? index}) =>
+      state = state.copyWith(selectedStampRallyMapPolylineIndex: index);
 }
