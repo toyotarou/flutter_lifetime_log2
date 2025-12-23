@@ -293,23 +293,20 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
           ),
 
           if (appParamState.selectedStampRallyMapPolylineIndex != null) ...<Widget>[
-            if (widget.type == 'metro_all_station') ...<Widget>[
-              Positioned(
-                bottom: 60,
-                right: 5,
-                left: 5,
-                child: Container(
-                  height: 100,
-
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: displaySelectedPolylineStations(),
+            Positioned(
+              bottom: 60,
+              right: 5,
+              left: 5,
+              child: Container(
+                height: 100,
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(10),
                 ),
+                child: displaySelectedPolylineStations(),
               ),
-            ],
+            ),
 
             Positioned(
               top: 5,
@@ -337,21 +334,59 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
   Widget displaySelectedPolylineStations() {
     final List<Widget> list = <Widget>[];
 
-    final List<MapEntry<String, List<StampRallyModel>>> entries = _validEntriesSorted;
-
-    int i = 0;
-    for (final StampRallyModel element in entries[appParamState.selectedStampRallyMapPolylineIndex!].value) {
-      list.add(
-        DefaultTextStyle(
-          style: const TextStyle(fontSize: 12),
-
-          child: Row(
-            children: <Widget>[Text((i + 1).toString().padLeft(2, '0')), const Text('：'), Text(element.stationName)],
-          ),
-        ),
+    final List<MapEntry<String, List<StampRallyModel>>> entries = _validEntriesSorted
+      ..sort(
+        (MapEntry<String, List<StampRallyModel>> a, MapEntry<String, List<StampRallyModel>> b) =>
+            a.key.compareTo(b.key),
       );
 
-      i++;
+    int stampRallyMapPolylineIndex = 0;
+    for (final MapEntry<String, List<StampRallyModel>> entry in entries) {
+      final String key = entry.key;
+
+      if (stampRallyMapPolylineIndex == appParamState.selectedStampRallyMapPolylineIndex) {
+        if (key == 'null') {
+          continue;
+        }
+
+        final List<StampRallyModel> value = List<StampRallyModel>.from(entry.value);
+
+        switch (widget.type) {
+          case 'metro_all_station':
+            value.sort((StampRallyModel a, StampRallyModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
+
+          case 'metro_20_anniversary':
+          case 'metro_pokepoke':
+            value.sort((StampRallyModel a, StampRallyModel b) => a.time.compareTo(b.time));
+        }
+
+        final Set<String> stationNames = <String>{};
+
+        int stampIconGuideNum = 0;
+        for (final StampRallyModel element in value) {
+          if (!stationNames.add(element.stationName)) {
+            continue;
+          }
+
+          list.add(
+            DefaultTextStyle(
+              style: const TextStyle(fontSize: 12),
+
+              child: Row(
+                children: <Widget>[
+                  Text((stampIconGuideNum + 1).toString().padLeft(2, '0')),
+                  const Text('：'),
+                  Text(element.stationName),
+                ],
+              ),
+            ),
+          );
+
+          stampIconGuideNum++;
+        }
+      }
+
+      stampRallyMapPolylineIndex++;
     }
 
     return SingleChildScrollView(
@@ -447,9 +482,13 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
   void makeStampMarkerList() {
     stampMarkerList.clear();
 
-    int j = 0;
+    int allIndex = 0;
 
-    final List<MapEntry<String, List<StampRallyModel>>> entries = _validEntriesSorted;
+    final List<MapEntry<String, List<StampRallyModel>>> entries = _validEntriesSorted
+      ..sort(
+        (MapEntry<String, List<StampRallyModel>> a, MapEntry<String, List<StampRallyModel>> b) =>
+            a.key.compareTo(b.key),
+      );
 
     for (int i = 0; i < entries.length; i++) {
       final String key = entries[i].key;
@@ -459,8 +498,24 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
 
       final List<Marker> list = <Marker>[];
 
-      for (final StampRallyModel element in value) {
-        final int markerIndex = j;
+      final List<StampRallyModel> value2 = List<StampRallyModel>.from(value);
+
+      switch (widget.type) {
+        case 'metro_all_station':
+          value2.sort((StampRallyModel a, StampRallyModel b) => a.stampGetOrder.compareTo(b.stampGetOrder));
+
+        case 'metro_20_anniversary':
+        case 'metro_pokepoke':
+          value2.sort((StampRallyModel a, StampRallyModel b) => a.time.compareTo(b.time));
+      }
+
+      final Set<String> stationNames = <String>{};
+
+      int stampIconGuideNum = 0;
+      for (final StampRallyModel element in value2) {
+        if (!stationNames.add(element.stationName)) {
+          continue;
+        }
 
         list.add(
           Marker(
@@ -470,31 +525,30 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
                 iconToolChipDisplayOverlay(
                   type: 'stamp_rally_map_alert_icon',
                   context: context,
-                  buttonKey: globalKeyList[markerIndex],
+                  buttonKey: globalKeyList[allIndex],
                   displayDuration: const Duration(seconds: 2),
                   stampRallyModel: element,
                 );
               },
 
               child: SizedBox(
-                key: globalKeyList[markerIndex],
+                key: globalKeyList[allIndex],
                 width: 30,
                 height: 30,
                 child: Stack(
                   children: <Widget>[
                     Icon(FontAwesomeIcons.stamp, color: iconColor),
 
-                    if (i == appParamState.selectedStampRallyMapPolylineIndex &&
-                        widget.type == 'metro_all_station') ...<Widget>[
+                    if (i == appParamState.selectedStampRallyMapPolylineIndex) ...<Widget>[
                       Positioned(
                         right: 0,
                         bottom: 0,
                         child: Container(
                           width: 15,
                           height: 15,
-                          decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
+                          decoration: const BoxDecoration(color: Colors.black, shape: BoxShape.circle),
                           child: Center(
-                            child: Text(element.stampGetOrder.toString(), style: const TextStyle(fontSize: 10)),
+                            child: Text((stampIconGuideNum + 1).toString(), style: const TextStyle(fontSize: 10)),
                           ),
                         ),
                       ),
@@ -506,7 +560,8 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
           ),
         );
 
-        j++;
+        allIndex++;
+        stampIconGuideNum++;
       }
 
       stampMarkerList.add(list);
