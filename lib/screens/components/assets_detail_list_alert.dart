@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -19,6 +20,10 @@ class AssetsDetailListAlert extends ConsumerStatefulWidget {
 
 class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
     with ControllersMixin<AssetsDetailListAlert> {
+  final AutoScrollController autoScrollController = AutoScrollController();
+
+  final List<Widget> assetsDetailList = <Widget>[];
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -36,7 +41,38 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(widget.name),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(child: Text(widget.name)),
+
+                      Row(
+                        children: <Widget>[
+                          IconButton(
+                            onPressed: () {
+                              autoScrollController.scrollToIndex(
+                                assetsDetailList.length,
+                                preferPosition: AutoScrollPosition.end,
+                                duration: const Duration(milliseconds: 300),
+                              );
+                            },
+                            icon: const Icon(Icons.arrow_downward),
+                          ),
+
+                          IconButton(
+                            onPressed: () {
+                              autoScrollController.scrollToIndex(
+                                0,
+                                preferPosition: AutoScrollPosition.begin,
+                                duration: const Duration(milliseconds: 300),
+                              );
+                            },
+                            icon: const Icon(Icons.arrow_upward),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
 
                   Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
@@ -52,11 +88,12 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
 
   ///
   Widget _displayAssetsDetailList() {
-    final List<Widget> list = <Widget>[];
+    assetsDetailList.clear();
 
     switch (widget.title) {
       case 'stock':
         int lastCost = 0;
+        int i = 0;
         appParamState.keepStockTickerMap[widget.item]?.forEach((StockModel element) {
           final String jikaHyoukagaku = element.jikaHyoukagaku.replaceAll(',', '');
           final String heikinShutokuKagaku = element.heikinShutokuKagaku.replaceAll(',', '');
@@ -70,50 +107,60 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
             diff = price - cost;
           }
 
-          list.add(
-            Container(
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-              ),
-              padding: const EdgeInsets.all(5),
+          assetsDetailList.add(
+            AutoScrollTag(
+              // ignore: always_specify_types
+              key: ValueKey(i),
+              index: i,
+              controller: autoScrollController,
 
-              child: Row(
-                children: <Widget>[
-                  Expanded(child: Text('${element.year}-${element.month}-${element.day}')),
-                  Expanded(
-                    child: Container(
-                      alignment: Alignment.topRight,
-                      child: Text(
-                        cost.toString().toCurrency(),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                ),
+                padding: const EdgeInsets.all(5),
 
-                        style: TextStyle(color: (cost != lastCost) ? Colors.yellowAccent : Colors.white),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(child: Text('${element.year}-${element.month}-${element.day}')),
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.topRight,
+                        child: Text(
+                          cost.toString().toCurrency(),
+
+                          style: TextStyle(color: (cost != lastCost) ? Colors.yellowAccent : Colors.white),
+                        ),
                       ),
                     ),
-                  ),
 
-                  Expanded(
-                    child: Container(alignment: Alignment.topRight, child: Text(price.toString().toCurrency())),
-                  ),
-                  Expanded(
-                    child: Container(
-                      alignment: Alignment.topRight,
-                      child: Text(
-                        diff.toString().toCurrency(),
+                    Expanded(
+                      child: Container(alignment: Alignment.topRight, child: Text(price.toString().toCurrency())),
+                    ),
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.topRight,
+                        child: Text(
+                          diff.toString().toCurrency(),
 
-                        style: TextStyle(color: (diff < 0) ? Colors.orangeAccent : Colors.white),
+                          style: TextStyle(color: (diff < 0) ? Colors.orangeAccent : Colors.white),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
 
           lastCost = cost;
+
+          i++;
         });
 
       case 'toushiShintaku':
         int lastCost = 0;
+        int i = 0;
         appParamState.keepToushiShintakuRelationalMap[widget.item.toInt()]?.forEach((ToushiShintakuModel element) {
           final String jikaHyoukagaku = element.jikaHyoukagaku
               .replaceAll(',', '')
@@ -132,55 +179,66 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
             diff = price - cost;
           }
 
-          list.add(
-            Container(
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-              ),
-              padding: const EdgeInsets.all(5),
+          assetsDetailList.add(
+            AutoScrollTag(
+              // ignore: always_specify_types
+              key: ValueKey(i),
+              index: i,
+              controller: autoScrollController,
 
-              child: Row(
-                children: <Widget>[
-                  Expanded(child: Text('${element.year}-${element.month}-${element.day}')),
-                  Expanded(
-                    child: Container(
-                      alignment: Alignment.topRight,
-                      child: Text(
-                        cost.toString().toCurrency(),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                ),
+                padding: const EdgeInsets.all(5),
 
-                        style: TextStyle(color: (cost != lastCost) ? Colors.yellowAccent : Colors.white),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(child: Text('${element.year}-${element.month}-${element.day}')),
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.topRight,
+                        child: Text(
+                          cost.toString().toCurrency(),
+
+                          style: TextStyle(color: (cost != lastCost) ? Colors.yellowAccent : Colors.white),
+                        ),
                       ),
                     ),
-                  ),
 
-                  Expanded(
-                    child: Container(alignment: Alignment.topRight, child: Text(price.toString().toCurrency())),
-                  ),
-                  Expanded(
-                    child: Container(
-                      alignment: Alignment.topRight,
-                      child: Text(
-                        diff.toString().toCurrency(),
+                    Expanded(
+                      child: Container(alignment: Alignment.topRight, child: Text(price.toString().toCurrency())),
+                    ),
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.topRight,
+                        child: Text(
+                          diff.toString().toCurrency(),
 
-                        style: TextStyle(color: (diff < 0) ? Colors.orangeAccent : Colors.white),
+                          style: TextStyle(color: (diff < 0) ? Colors.orangeAccent : Colors.white),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
 
           lastCost = cost;
+
+          i++;
         });
     }
 
     return CustomScrollView(
+      controller: autoScrollController,
+
       slivers: <Widget>[
         SliverList(
           delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) => list[index],
-            childCount: list.length,
+            (BuildContext context, int index) => assetsDetailList[index],
+            childCount: assetsDetailList.length,
           ),
         ),
       ],

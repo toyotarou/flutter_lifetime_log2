@@ -69,21 +69,49 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                           children: <Widget>[
                             IconButton(
                               onPressed: () {
+
+
+
+
+
+
                                 autoScrollController.scrollToIndex(
                                   monthlyAssetsList.length,
                                   preferPosition: AutoScrollPosition.end,
                                   duration: const Duration(milliseconds: 300),
                                 );
+
+
+
+
+
+
+
+
                               },
                               icon: const Icon(Icons.arrow_downward),
                             ),
                             IconButton(
                               onPressed: () {
+
+
+
+
+
+
+
                                 autoScrollController.scrollToIndex(
                                   0,
                                   preferPosition: AutoScrollPosition.begin,
                                   duration: const Duration(milliseconds: 300),
                                 );
+
+
+
+
+
+
+
                               },
                               icon: const Icon(Icons.arrow_upward),
                             ),
