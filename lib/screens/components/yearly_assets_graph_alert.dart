@@ -198,7 +198,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
                     ? InteractiveViewer(
                         transformationController: transformationController,
                         minScale: 1.0,
-                        maxScale: 30.0,
+                        maxScale: 10.0,
                         child: AbsorbPointer(child: chartStack),
                       )
                     : chartStack,
@@ -273,7 +273,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
         LineChartBarData(
           spots: spots,
           color: Colors.greenAccent,
-          barWidth: 1.8,
+          barWidth: 1,
           dotData: FlDotData(
             show: showPointLabels,
             getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int index) {
