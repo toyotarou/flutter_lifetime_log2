@@ -65,57 +65,60 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
 
     final int yearRange = DateTime.now().year - startYearMonth.split('-')[0].toInt() + 1;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.25), borderRadius: BorderRadius.circular(14)),
-      child: Column(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text('${genDate.year}-${genDate.month.toString().padLeft(2, '0')}'),
-
-              if (hasData) ...<Widget>[
-                GestureDetector(
-                  onTap: () {
-                    appParamNotifier.setSelectedWorkHistoryModel();
-
-                    LifetimeDialog(
-                      context: context,
-                      widget: WorkInfoYearlyDisplayAlert(
-                        startYear: startYearMonth.split('-')[0].toInt(),
-                        years: yearRange,
-                        initialScrollYear: genDate.year,
-                        workInfoList: _buildYearlyHistoryEventsFromHistory(),
-                      ),
-                    );
-                  },
-                  child: Icon(Icons.table_chart, color: Colors.white.withValues(alpha: 0.4)),
-                ),
-              ] else ...<Widget>[const SizedBox.shrink()],
-            ],
-          ),
-
-          Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-          if (hasData) ...<Widget>[
-            displayGenbaName(yearmonth: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}'),
-            const SizedBox(height: 10),
-            Expanded(
-              child: displayMonthlyWorkTimeList(
-                yearmonth: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}',
-              ),
-            ),
-          ] else ...<Widget>[
-            const Row(
+    return DefaultTextStyle(
+      style: const TextStyle(fontSize: 12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.25), borderRadius: BorderRadius.circular(14)),
+        child: Column(
+          children: <Widget>[
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text('no data', style: TextStyle(color: Colors.yellowAccent)),
-                SizedBox.shrink(),
+                Text('${genDate.year}-${genDate.month.toString().padLeft(2, '0')}'),
+
+                if (hasData) ...<Widget>[
+                  GestureDetector(
+                    onTap: () {
+                      appParamNotifier.setSelectedWorkHistoryModel();
+
+                      LifetimeDialog(
+                        context: context,
+                        widget: WorkInfoYearlyDisplayAlert(
+                          startYear: startYearMonth.split('-')[0].toInt(),
+                          years: yearRange,
+                          initialScrollYear: genDate.year,
+                          workInfoList: _buildYearlyHistoryEventsFromHistory(),
+                        ),
+                      );
+                    },
+                    child: Icon(Icons.table_chart, color: Colors.white.withValues(alpha: 0.4)),
+                  ),
+                ] else ...<Widget>[const SizedBox.shrink()],
               ],
             ),
+
+            Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+            if (hasData) ...<Widget>[
+              displayGenbaName(yearmonth: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}'),
+              const SizedBox(height: 10),
+              Expanded(
+                child: displayMonthlyWorkTimeList(
+                  yearmonth: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}',
+                ),
+              ),
+            ] else ...<Widget>[
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text('no data', style: TextStyle(color: Colors.yellowAccent)),
+                  SizedBox.shrink(),
+                ],
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
