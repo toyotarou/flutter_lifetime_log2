@@ -777,40 +777,33 @@ class TapeDailyChartController extends ChangeNotifier {
     final int lastFullYear = lastDt.year;
 
     for (int year = skipYear + 1; year <= lastFullYear; year++) {
-      final int yearStartIdx = DateTime(year).difference(startDate).inDays;
-      final int yearEndIdx = DateTime(year, 12, 31).difference(startDate).inDays;
+      // =========================================================
+      // ★修正点（年収支）：
+      //   年収支 = 当年12/31 - 前年12/31 を直接計算する
+      //   （月収支を12回合算するより安全。丸め誤差/欠損補完の影響を最小化）
+      // =========================================================
+      final DateTime prevYearEnd = DateTime(year, 1, 0); // 前年12/31
+      final DateTime yearEnd = DateTime(year, 12, 31); // 当年12/31
 
-      if (yearStartIdx < 0) {
+      final int sIdx = prevYearEnd.difference(startDate).inDays;
+      final int eIdx = yearEnd.difference(startDate).inDays;
+
+      // データ範囲外は対象外
+      if (sIdx < 0) {
         continue;
       }
-      if (yearEndIdx > maxIndex) {
+      if (eIdx > maxIndex) {
         continue;
       }
 
-      int sum = 0;
-      bool ok = true;
+      final double? yStart = _valueAtIndexWithFallback(sIdx);
+      final double? yEnd = _valueAtIndexWithFallback(eIdx);
 
-      for (int month = 1; month <= 12; month++) {
-        final DateTime monthEnd = DateTime(year, month + 1, 0);
-        final DateTime prevMonthEnd = DateTime(year, month, 0);
-
-        final int sIdx = prevMonthEnd.difference(startDate).inDays;
-        final int eIdx = monthEnd.difference(startDate).inDays;
-
-        final double? yStart = _valueAtIndexWithFallback(sIdx);
-        final double? yEnd = _valueAtIndexWithFallback(eIdx);
-
-        if (yStart == null || yEnd == null) {
-          ok = false;
-          break;
-        }
-
-        sum += (yEnd - yStart).round();
+      if (yStart == null || yEnd == null) {
+        continue;
       }
 
-      if (ok) {
-        map[year] = sum;
-      }
+      map[year] = (yEnd - yStart).round();
     }
 
     return map;
@@ -905,6 +898,10 @@ class TapeDailyChartController extends ChangeNotifier {
     final List<MonthBandLabel> labels = <MonthBandLabel>[];
 
     while (!cursor.isAfter(endMonth)) {
+      // =========================================================
+      // 月収支（あなた指定）：
+      //   当月月末 - 先月月末
+      // =========================================================
       final DateTime monthEnd = DateTime(cursor.year, cursor.month + 1, 0);
       final DateTime prevMonthEnd = DateTime(cursor.year, cursor.month, 0);
 
