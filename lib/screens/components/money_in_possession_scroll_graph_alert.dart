@@ -541,7 +541,20 @@ class TapeDailyChartController extends ChangeNotifier {
       minY: fixedMinY,
       maxY: fixedMaxY,
       gridData: const FlGridData(show: false),
-      titlesData: const FlTitlesData(show: false),
+      titlesData: FlTitlesData(
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 34,
+            interval: 1,
+            getTitlesWidget: (_, __) => const SizedBox.shrink(),
+          ),
+        ),
+
+        topTitles: const AxisTitles(),
+        rightTitles: const AxisTitles(),
+        leftTitles: const AxisTitles(),
+      ),
       borderData: FlBorderData(show: false),
       lineTouchData: const LineTouchData(enabled: false, handleBuiltInTouches: false),
       rangeAnnotations: RangeAnnotations(verticalRangeAnnotations: ranges),
@@ -627,7 +640,20 @@ class TapeDailyChartController extends ChangeNotifier {
       minY: fixedMinY,
       maxY: fixedMaxY,
       gridData: const FlGridData(show: false),
-      titlesData: const FlTitlesData(show: false),
+      titlesData: FlTitlesData(
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 34,
+            interval: 1,
+            getTitlesWidget: (_, __) => const SizedBox.shrink(),
+          ),
+        ),
+
+        topTitles: const AxisTitles(),
+        rightTitles: const AxisTitles(),
+        leftTitles: const AxisTitles(),
+      ),
       borderData: FlBorderData(show: false),
       lineBarsData: <LineChartBarData>[
         LineChartBarData(
@@ -728,7 +754,20 @@ class TapeDailyChartController extends ChangeNotifier {
       minY: fixedMinY,
       maxY: fixedMaxY,
       gridData: const FlGridData(show: false),
-      titlesData: const FlTitlesData(show: false),
+      titlesData: FlTitlesData(
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 34,
+            interval: 1,
+            getTitlesWidget: (_, __) => const SizedBox.shrink(),
+          ),
+        ),
+
+        topTitles: const AxisTitles(),
+        rightTitles: const AxisTitles(),
+        leftTitles: const AxisTitles(),
+      ),
       borderData: FlBorderData(show: false),
       lineBarsData: bars,
       lineTouchData: const LineTouchData(enabled: false, handleBuiltInTouches: false),
@@ -777,18 +816,12 @@ class TapeDailyChartController extends ChangeNotifier {
     final int lastFullYear = lastDt.year;
 
     for (int year = skipYear + 1; year <= lastFullYear; year++) {
-      // =========================================================
-      // ★修正点（年収支）：
-      //   年収支 = 当年12/31 - 前年12/31 を直接計算する
-      //   （月収支を12回合算するより安全。丸め誤差/欠損補完の影響を最小化）
-      // =========================================================
-      final DateTime prevYearEnd = DateTime(year, 1, 0); // 前年12/31
-      final DateTime yearEnd = DateTime(year, 12, 31); // 当年12/31
+      final DateTime prevYearEnd = DateTime(year, 1, 0);
+      final DateTime yearEnd = DateTime(year, 12, 31);
 
       final int sIdx = prevYearEnd.difference(startDate).inDays;
       final int eIdx = yearEnd.difference(startDate).inDays;
 
-      // データ範囲外は対象外
       if (sIdx < 0) {
         continue;
       }
@@ -898,10 +931,6 @@ class TapeDailyChartController extends ChangeNotifier {
     final List<MonthBandLabel> labels = <MonthBandLabel>[];
 
     while (!cursor.isAfter(endMonth)) {
-      // =========================================================
-      // 月収支（あなた指定）：
-      //   当月月末 - 先月月末
-      // =========================================================
       final DateTime monthEnd = DateTime(cursor.year, cursor.month + 1, 0);
       final DateTime prevMonthEnd = DateTime(cursor.year, cursor.month, 0);
 
@@ -1409,9 +1438,7 @@ class _MonthJumpButtonState extends State<MonthJumpButton> {
   }
 
   ///
-  void _rebuildKeys() {
-    _chipKeys = List<GlobalKey>.generate(widget.monthStarts.length, (_) => GlobalKey());
-  }
+  void _rebuildKeys() => _chipKeys = List<GlobalKey>.generate(widget.monthStarts.length, (_) => GlobalKey());
 
   ///
   int _selectedIndex() {
