@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'app_param.dart';
+part of 'money_sum.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appParamHash() => r'b2bf6054caa4d64fd5406ddd15d115046a6e7f13';
+String _$moneySumHash() => r'8ce61614d8baa68f264ca05d391e2f069df346f7';
 
-/// See also [AppParam].
-@ProviderFor(AppParam)
-final appParamProvider =
-    AutoDisposeNotifierProvider<AppParam, AppParamState>.internal(
-  AppParam.new,
-  name: r'appParamProvider',
+/// See also [MoneySum].
+@ProviderFor(MoneySum)
+final moneySumProvider =
+    AutoDisposeNotifierProvider<MoneySum, MoneySumState>.internal(
+  MoneySum.new,
+  name: r'moneySumProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$appParamHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$moneySumHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$AppParam = AutoDisposeNotifier<AppParamState>;
+typedef _$MoneySum = AutoDisposeNotifier<MoneySumState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

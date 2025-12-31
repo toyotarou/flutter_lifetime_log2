@@ -12,6 +12,7 @@ import '_get_data/lifetime_item/lifetime_item.dart';
 import '_get_data/money/money.dart';
 import '_get_data/money_spend/money_spend.dart';
 import '_get_data/money_spend_item/money_spend_item.dart';
+import '_get_data/money_sum/money_sum.dart';
 import '_get_data/salary/salary.dart';
 import '_get_data/stamp_rally_metro_20_anniversary/stamp_rally_metro_20_anniversary.dart';
 import '_get_data/stamp_rally_metro_all_station/stamp_rally_metro_all_station.dart';
@@ -238,6 +239,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   WorkHistoryState get workHistoryState => ref.watch(workHistoryProvider);
 
   WorkHistory get workHistoryNotifier => ref.read(workHistoryProvider.notifier);
+
+  //==========================================//
+
+  MoneySumState get moneySumState => ref.watch(moneySumProvider);
+
+  MoneySum get moneySumNotifier => ref.read(moneySumProvider.notifier);
 
   //==========================================//
   Directions get directionsNotifier => ref.read(directionsProvider.notifier);

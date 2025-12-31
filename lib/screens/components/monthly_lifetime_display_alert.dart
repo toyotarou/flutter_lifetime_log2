@@ -178,7 +178,7 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[const SizedBox.shrink(), Text((i % 6 == 0) ? i.toString().padLeft(2, '0') : '')],
+                children: <Widget>[const SizedBox.shrink(), Text((i % 3 == 0) ? i.toString().padLeft(2, '0') : '')],
               ),
               Text(dispValList[i]),
 

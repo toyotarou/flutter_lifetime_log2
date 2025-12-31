@@ -11,6 +11,7 @@ import '../../models/gold_model.dart';
 import '../../models/lifetime_model.dart';
 import '../../models/money_model.dart';
 import '../../models/money_spend_model.dart';
+import '../../models/money_sum_model.dart';
 import '../../models/municipal_model.dart';
 import '../../models/salary_model.dart';
 import '../../models/stamp_rally_model.dart';
@@ -76,6 +77,8 @@ class AppParamState with _$AppParamState {
     @Default(<int, Map<String, int>>{}) Map<int, Map<String, int>> keepCreditSummaryTotalMap,
 
     @Default(<List<List<List<double>>>>[]) List<List<List<List<double>>>> keepAllPolygonsList,
+
+    @Default(<MoneySumModel>[]) List<MoneySumModel> keepMoneySumList,
 
     ///
     @Default('') String homeTabYearMonth,
@@ -273,6 +276,9 @@ class AppParam extends _$AppParam {
   ///
   void setKeepAllPolygonsList({required List<List<List<List<double>>>> list}) =>
       state = state.copyWith(keepAllPolygonsList: list);
+
+  ///
+  void setKeepMoneySumList({required List<MoneySumModel> list}) => state = state.copyWith(keepMoneySumList: list);
 
   //===================================================
 

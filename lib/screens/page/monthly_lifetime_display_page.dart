@@ -615,7 +615,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
         ),
         const SizedBox(height: 5),
         Text(
-          (num % 6 == 0) ? num.toString().padLeft(2, '0') : '',
+          (num % 3 == 0) ? num.toString().padLeft(2, '0') : '',
           style: TextStyle(fontSize: 10, color: Colors.white.withValues(alpha: 0.4)),
         ),
       ],

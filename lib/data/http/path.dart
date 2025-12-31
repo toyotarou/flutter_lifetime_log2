@@ -35,6 +35,7 @@ enum APIPath {
   getMetroStampPokePoke,
   getWorkTruth,
   getWorkContract,
+  getAllMoneySum,
 }
 
 extension APIPathExtension on APIPath {
@@ -136,6 +137,8 @@ extension APIPathExtension on APIPath {
         return 'getWorkTruth';
       case APIPath.getWorkContract:
         return 'getWorkContract';
+      case APIPath.getAllMoneySum:
+        return 'getAllMoneySum';
     }
   }
 }

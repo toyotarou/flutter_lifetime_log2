@@ -5,8 +5,10 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_model.dart';
+import '../../models/money_sum_model.dart';
 import '../parts/lifetime_dialog.dart';
 import 'money_in_possession_graph_alert.dart';
+import 'money_in_possession_scroll_graph_alert.dart';
 
 class MoneyInPossessionDisplayAlert extends ConsumerStatefulWidget {
   const MoneyInPossessionDisplayAlert({super.key});
@@ -20,8 +22,45 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
   final AutoScrollController autoScrollController = AutoScrollController();
 
   ///
+  DateTime? _tryParseDate(String s) {
+    try {
+      final DateTime dt = DateTime.parse(s);
+      return DateTime(dt.year, dt.month, dt.day);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  ///
+  DateTime _resolveStartDateFromMoneySumList() {
+    final List<MoneySumModel> list = appParamState.keepMoneySumList;
+
+    if (list.isEmpty) {
+      return DateTime.now();
+    }
+
+    DateTime? minDt;
+
+    for (final MoneySumModel m in list) {
+      final DateTime? dt = _tryParseDate(m.date);
+
+      if (dt == null) {
+        continue;
+      }
+
+      if (minDt == null || dt.isBefore(minDt)) {
+        minDt = dt;
+      }
+    }
+
+    return minDt ?? DateTime.now();
+  }
+
+  ///
   @override
   Widget build(BuildContext context) {
+    final DateTime startDate = _resolveStartDateFromMoneySumList();
+
     return Scaffold(
       backgroundColor: Colors.transparent,
 
@@ -37,9 +76,37 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     const Text('money in possession'),
-                    GestureDetector(
-                      onTap: () => LifetimeDialog(context: context, widget: const MoneyInPossessionGraphAlert()),
-                      child: const Icon(Icons.graphic_eq),
+                    Row(
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            LifetimeDialog(
+                              context: context,
+                              widget: TapeDailyLineChartDemoPage(
+                                startDate: startDate,
+
+                                windowDays: 35,
+                                pixelsPerDay: 16.0,
+                                fixedMinY: 0,
+                                fixedMaxY: 10000000,
+                                fixedIntervalY: 1000000,
+                                seed: DateTime.now().year,
+                                labelShowScaleThreshold: 3.0,
+
+                                moneySumList: appParamState.keepMoneySumList,
+                              ),
+                            );
+                          },
+                          child: const Icon(Icons.stacked_line_chart),
+                        ),
+
+                        const SizedBox(width: 20),
+
+                        GestureDetector(
+                          onTap: () => LifetimeDialog(context: context, widget: const MoneyInPossessionGraphAlert()),
+                          child: const Icon(Icons.graphic_eq),
+                        ),
+                      ],
                     ),
                   ],
                 ),

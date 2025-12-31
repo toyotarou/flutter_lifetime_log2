@@ -15,6 +15,7 @@ import '../models/gold_model.dart';
 import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
+import '../models/money_sum_model.dart';
 import '../models/municipal_model.dart';
 import '../models/salary_model.dart';
 import '../models/stamp_rally_model.dart';
@@ -102,6 +103,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.stampRallyMetroPokepokeMap,
     required this.tokyoMunicipalList,
     required this.workHistoryModelMap,
+    required this.moneySumList,
   });
 
   final List<String> holidayList;
@@ -135,6 +137,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final List<MunicipalModel> tokyoMunicipalList;
   final Map<String, MunicipalModel> tokyoMunicipalMap;
   final Map<String, WorkHistoryModel> workHistoryModelMap;
+  final List<MoneySumModel> moneySumList;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -210,6 +213,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepTokyoMunicipalList(list: widget.tokyoMunicipalList);
       appParamNotifier.setKeepTokyoMunicipalMap(map: widget.tokyoMunicipalMap);
       appParamNotifier.setKeepWorkHistoryModelMap(map: widget.workHistoryModelMap);
+      appParamNotifier.setKeepMoneySumList(list: widget.moneySumList);
 
       //===========================================//
 
