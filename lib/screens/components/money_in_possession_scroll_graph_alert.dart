@@ -163,56 +163,61 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
     final LineChartData mainData = tapeDailyChartController.buildMainData(context, showPointLabels: _showPointLabels);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: <Widget>[
-              _HeaderDaily(
-                start: startDt,
-                end: endDt,
-                today: tapeDailyChartController.todayJst,
-                windowDays: tapeDailyChartController.windowDays,
-                minY: tapeDailyChartController.fixedMinY,
-                maxY: tapeDailyChartController.fixedMaxY,
-                tooltipEnabled: tapeDailyChartController.tooltipEnabled,
-                tooltipSwitchEnabled: !tapeDailyChartController.zoomMode,
-                onToggleTooltip: (bool v) => tapeDailyChartController.setTooltipEnabled(v),
-              ),
-              const SizedBox(height: 12),
-              _FooterDaily(
-                onReset: () {
-                  _transformationController.value = Matrix4.identity();
-                  _showPointLabels = false;
-                  tapeDailyChartController.resetToStart();
-                },
-                onToToday: () {
-                  _transformationController.value = Matrix4.identity();
-                  _showPointLabels = false;
-                  tapeDailyChartController.jumpToTodayWindow();
-                },
-              ),
-              const SizedBox(height: 10),
-              _ZoomBar(
-                zoomMode: tapeDailyChartController.zoomMode,
-                onToggleZoom: () {
-                  final bool next = !tapeDailyChartController.zoomMode;
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  _ZoomBar(
+                    zoomMode: tapeDailyChartController.zoomMode,
+                    onToggleZoom: () {
+                      final bool next = !tapeDailyChartController.zoomMode;
 
-                  if (!next) {
-                    _transformationController.value = Matrix4.identity();
-                    _showPointLabels = false;
-                  }
-
-                  tapeDailyChartController.setZoomMode(next);
-                },
-                onResetTransform: tapeDailyChartController.zoomMode
-                    ? () {
+                      if (!next) {
                         _transformationController.value = Matrix4.identity();
-                        setState(() => _showPointLabels = false);
+                        _showPointLabels = false;
                       }
-                    : null,
+
+                      tapeDailyChartController.setZoomMode(next);
+                    },
+                    onResetTransform: tapeDailyChartController.zoomMode
+                        ? () {
+                            _transformationController.value = Matrix4.identity();
+                            setState(() => _showPointLabels = false);
+                          }
+                        : null,
+                  ),
+
+                  TooltipDisplay(
+                    start: startDt,
+                    end: endDt,
+                    today: tapeDailyChartController.todayJst,
+                    windowDays: tapeDailyChartController.windowDays,
+                    minY: tapeDailyChartController.fixedMinY,
+                    maxY: tapeDailyChartController.fixedMaxY,
+                    tooltipEnabled: tapeDailyChartController.tooltipEnabled,
+                    tooltipSwitchEnabled: !tapeDailyChartController.zoomMode,
+                    onToggleTooltip: (bool v) => tapeDailyChartController.setTooltipEnabled(v),
+                  ),
+                ],
               ),
+
+              MonthJumpButton(
+                monthStarts: tapeDailyChartController.monthStarts,
+                currentWindowStart: startDt,
+                onTapMonth: (DateTime monthStart) {
+                  _transformationController.value = Matrix4.identity();
+                  _showPointLabels = false;
+                  tapeDailyChartController.jumpToMonth(monthStart);
+                },
+              ),
+
               const SizedBox(height: 10),
+
               Expanded(
                 child: TapeChartFrame(
                   dragEnabled: dragEnabled,
@@ -230,14 +235,19 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
                   ),
                 ),
               ),
+
               const SizedBox(height: 10),
-              _MonthJumpBar(
-                monthStarts: tapeDailyChartController.monthStarts,
-                currentWindowStart: startDt,
-                onTapMonth: (DateTime monthStart) {
+
+              ScrollToStartEndButton(
+                onReset: () {
                   _transformationController.value = Matrix4.identity();
                   _showPointLabels = false;
-                  tapeDailyChartController.jumpToMonth(monthStart);
+                  tapeDailyChartController.resetToStart();
+                },
+                onToToday: () {
+                  _transformationController.value = Matrix4.identity();
+                  _showPointLabels = false;
+                  tapeDailyChartController.jumpToTodayWindow();
                 },
               ),
             ],
@@ -615,7 +625,6 @@ class TapeDailyChartController extends ChangeNotifier {
       extendLastValue: true,
     );
 
-    final Color lineColor = Theme.of(context).colorScheme.primary;
     final bool effectiveTooltip = tooltipEnabled && !zoomMode;
 
     return LineChartData(
@@ -628,7 +637,7 @@ class TapeDailyChartController extends ChangeNotifier {
       borderData: FlBorderData(show: false),
       lineBarsData: <LineChartBarData>[
         LineChartBarData(
-          color: lineColor,
+          color: Colors.greenAccent,
           spots: visibleSpots,
           barWidth: 3,
           isStrokeCapRound: true,
@@ -637,7 +646,7 @@ class TapeDailyChartController extends ChangeNotifier {
                   show: showPointLabels,
                   getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int index) {
                     return ValueLabelDotPainter(
-                      color: lineColor,
+                      color: Colors.greenAccent,
                       radius: 0.8,
                       backgroundColor: Colors.black.withOpacity(0.55),
                       textStyle: const TextStyle(fontSize: 6, color: Colors.white, fontWeight: FontWeight.w600),
@@ -709,13 +718,10 @@ class TapeDailyChartController extends ChangeNotifier {
       cursor = DateTime(cursor.year, cursor.month + 1);
     }
 
-    final Color base = Theme.of(context).colorScheme.primary;
-    final Color thickColor = base.withOpacity(0.28);
-
     final List<LineChartBarData> bars = monthSegments.map((List<FlSpot> seg) {
       return LineChartBarData(
         spots: seg,
-        color: thickColor,
+        color: Colors.white.withValues(alpha: 0.2),
         barWidth: 10,
         isStrokeCapRound: true,
         dotData: const FlDotData(show: false),
@@ -851,7 +857,7 @@ class TapeDailyChartController extends ChangeNotifier {
         final double x2 = _clampAnnotX(eIdx.toDouble() + _dayHalf, minX: minX, maxX: maxX);
 
         if (x2 > x1) {
-          ranges.add(VerticalRangeAnnotation(x1: x1, x2: x2, color: Colors.yellowAccent.withOpacity(0.10)));
+          ranges.add(VerticalRangeAnnotation(x1: x1, x2: x2, color: Colors.yellowAccent.withOpacity(0.1)));
         }
       }
 
@@ -1266,8 +1272,9 @@ class TapeChartFrame extends StatelessWidget {
 
 /////////////////////////////////////////////////////////////////
 
-class _HeaderDaily extends StatelessWidget {
-  const _HeaderDaily({
+class TooltipDisplay extends StatelessWidget {
+  const TooltipDisplay({
+    super.key,
     required this.start,
     required this.end,
     required this.today,
@@ -1293,45 +1300,24 @@ class _HeaderDaily extends StatelessWidget {
   ///
   @override
   Widget build(BuildContext context) {
-    final String todayStr = '${today.year}/${today.month}/${today.day}';
-    final String rangeStr = '${start.year}/${start.month}/${start.day} 〜 ${end.year}/${end.month}/${end.day}';
+    return Column(
+      children: <Widget>[
+        Text(tooltipSwitchEnabled ? (tooltipEnabled ? '表示' : '非表示') : '無効', style: const TextStyle(fontSize: 12)),
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all()),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('データ最終日（本日）: $todayStr', style: const TextStyle(fontSize: 12)),
-          const SizedBox(height: 4),
-          Text('表示範囲（$windowDays日）: $rangeStr', style: const TextStyle(fontSize: 13)),
-          const SizedBox(height: 8),
-          Row(
-            children: <Widget>[
-              const Text('値の箱（ツールチップ）', style: TextStyle(fontSize: 12)),
-              const SizedBox(width: 8),
-              Switch(
-                // ignore: avoid_bool_literals_in_conditional_expressions
-                value: tooltipSwitchEnabled ? tooltipEnabled : false,
-                onChanged: tooltipSwitchEnabled ? onToggleTooltip : null,
-              ),
-              Text(
-                tooltipSwitchEnabled ? (tooltipEnabled ? '表示' : '非表示') : '拡大中は無効',
-                style: const TextStyle(fontSize: 12),
-              ),
-            ],
-          ),
-        ],
-      ),
+        Switch(
+          // ignore: avoid_bool_literals_in_conditional_expressions
+          value: tooltipSwitchEnabled ? tooltipEnabled : false,
+          onChanged: tooltipSwitchEnabled ? onToggleTooltip : null,
+        ),
+      ],
     );
   }
 }
 
 /////////////////////////////////////////////////////////////////
 
-class _FooterDaily extends StatelessWidget {
-  const _FooterDaily({required this.onReset, required this.onToToday});
+class ScrollToStartEndButton extends StatelessWidget {
+  const ScrollToStartEndButton({super.key, required this.onReset, required this.onToToday});
 
   final VoidCallback onReset;
   final VoidCallback onToToday;
@@ -1339,12 +1325,18 @@ class _FooterDaily extends StatelessWidget {
   ///
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        OutlinedButton(onPressed: onReset, child: const Text('先頭へ')),
-        OutlinedButton(onPressed: onToToday, child: const Text('今日付近へ')),
+        InkWell(
+          onTap: () => onReset(),
+          child: const Row(children: <Widget>[Text('S'), SizedBox(width: 10), Icon(Icons.arrow_back)]),
+        ),
+
+        InkWell(
+          onTap: () => onToToday(),
+          child: const Row(children: <Widget>[Icon(Icons.arrow_forward), SizedBox(width: 10), Text('E')]),
+        ),
       ],
     );
   }
@@ -1364,14 +1356,12 @@ class _ZoomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        if (zoomMode) IconButton(onPressed: onResetTransform, icon: const Icon(Icons.lock_reset), tooltip: '拡大リセット'),
+        if (zoomMode) ...<Widget>[IconButton(onPressed: onResetTransform, icon: const Icon(Icons.lock_reset))],
+
         IconButton(
           onPressed: onToggleZoom,
-          icon: Icon(Icons.expand, color: zoomMode ? Colors.orange : Colors.black),
-          tooltip: zoomMode ? '拡大OFF' : '拡大ON',
+          icon: Icon(Icons.expand, color: zoomMode ? Colors.orange : Colors.white),
         ),
-        const SizedBox(width: 8),
-        Expanded(child: Text(zoomMode ? 'ピンチ拡大：ON（倍率>=5で点ラベル表示／ツールチップOFF）' : 'ピンチ拡大：OFF（テープドラッグ）')),
       ],
     );
   }
@@ -1379,20 +1369,25 @@ class _ZoomBar extends StatelessWidget {
 
 /////////////////////////////////////////////////////////////////
 
-class _MonthJumpBar extends StatefulWidget {
-  const _MonthJumpBar({required this.monthStarts, required this.currentWindowStart, required this.onTapMonth});
+class MonthJumpButton extends StatefulWidget {
+  const MonthJumpButton({
+    super.key,
+    required this.monthStarts,
+    required this.currentWindowStart,
+    required this.onTapMonth,
+  });
 
   final List<DateTime> monthStarts;
   final DateTime currentWindowStart;
   final ValueChanged<DateTime> onTapMonth;
 
   @override
-  State<_MonthJumpBar> createState() => _MonthJumpBarState();
+  State<MonthJumpButton> createState() => _MonthJumpButtonState();
 }
 
 //=====
 
-class _MonthJumpBarState extends State<_MonthJumpBar> {
+class _MonthJumpButtonState extends State<MonthJumpButton> {
   final ScrollController _sc = ScrollController();
 
   late List<GlobalKey> _chipKeys;
@@ -1408,7 +1403,7 @@ class _MonthJumpBarState extends State<_MonthJumpBar> {
 
   ///
   @override
-  void didUpdateWidget(covariant _MonthJumpBar oldWidget) {
+  void didUpdateWidget(covariant MonthJumpButton oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.monthStarts.length != widget.monthStarts.length) {
@@ -1477,10 +1472,8 @@ class _MonthJumpBarState extends State<_MonthJumpBar> {
   Widget build(BuildContext context) {
     final DateTime currentMonthStart = DateTime(widget.currentWindowStart.year, widget.currentWindowStart.month);
 
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all()),
       child: SingleChildScrollView(
         controller: _sc,
         scrollDirection: Axis.horizontal,
