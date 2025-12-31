@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../models/amazon_purchase_model.dart';
+import '../../models/common/scroll_line_chart_model.dart';
 import '../../models/common/work_history_model.dart';
 import '../../models/credit_summary_model.dart';
 import '../../models/fund_model.dart';
@@ -11,7 +12,6 @@ import '../../models/gold_model.dart';
 import '../../models/lifetime_model.dart';
 import '../../models/money_model.dart';
 import '../../models/money_spend_model.dart';
-import '../../models/money_sum_model.dart';
 import '../../models/municipal_model.dart';
 import '../../models/salary_model.dart';
 import '../../models/stamp_rally_model.dart';
@@ -26,7 +26,6 @@ import '../../models/work_time_model.dart';
 import '../../utility/utility.dart';
 
 part 'app_param.freezed.dart';
-
 part 'app_param.g.dart';
 
 @freezed
@@ -78,7 +77,7 @@ class AppParamState with _$AppParamState {
 
     @Default(<List<List<List<double>>>>[]) List<List<List<List<double>>>> keepAllPolygonsList,
 
-    @Default(<MoneySumModel>[]) List<MoneySumModel> keepMoneySumList,
+    @Default(<ScrollLineChartModel>[]) List<ScrollLineChartModel> keepMoneySumList,
 
     ///
     @Default('') String homeTabYearMonth,
@@ -278,7 +277,7 @@ class AppParam extends _$AppParam {
       state = state.copyWith(keepAllPolygonsList: list);
 
   ///
-  void setKeepMoneySumList({required List<MoneySumModel> list}) => state = state.copyWith(keepMoneySumList: list);
+  void setKeepMoneySumList({required List<ScrollLineChartModel> list}) => state = state.copyWith(keepMoneySumList: list);
 
   //===================================================
 

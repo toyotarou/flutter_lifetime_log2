@@ -6,7 +6,7 @@ part of 'money_sum.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$moneySumHash() => r'8ce61614d8baa68f264ca05d391e2f069df346f7';
+String _$moneySumHash() => r'a29ea42a409f02bdfeb96f44a95fb491e882be41';
 
 /// See also [MoneySum].
 @ProviderFor(MoneySum)

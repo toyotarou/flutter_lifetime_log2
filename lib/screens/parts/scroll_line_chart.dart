@@ -5,12 +5,12 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../../extensions/extensions.dart';
-import '../../models/money_sum_model.dart';
+import '../../models/common/scroll_line_chart_model.dart';
 
 /////////////////////////////////////////////////////////////////
 
-class TapeDailyLineChartDemoPage extends StatefulWidget {
-  const TapeDailyLineChartDemoPage({
+class ScrollLineChart extends StatefulWidget {
+  const ScrollLineChart({
     super.key,
     required this.startDate,
     required this.windowDays,
@@ -21,7 +21,7 @@ class TapeDailyLineChartDemoPage extends StatefulWidget {
     required this.seed,
     required this.labelShowScaleThreshold,
     this.dataSpots,
-    required this.moneySumList,
+    required this.scrollLineChartModelList,
   });
 
   final DateTime startDate;
@@ -38,16 +38,16 @@ class TapeDailyLineChartDemoPage extends StatefulWidget {
 
   final List<FlSpot>? dataSpots;
 
-  final List<MoneySumModel> moneySumList;
+  final List<ScrollLineChartModel> scrollLineChartModelList;
 
   @override
-  State<TapeDailyLineChartDemoPage> createState() => _TapeDailyLineChartDemoPageState();
+  State<ScrollLineChart> createState() => _ScrollLineChartState();
 }
 
-/////////////////////////////////////////////////////////////////
+//=====
 
-class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage> {
-  late TapeDailyChartController tapeDailyChartController;
+class _ScrollLineChartState extends State<ScrollLineChart> {
+  late ScrollLineChartController tapeDailyChartController;
 
   final TransformationController _transformationController = TransformationController();
 
@@ -58,7 +58,7 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
   void initState() {
     super.initState();
 
-    tapeDailyChartController = TapeDailyChartController(
+    tapeDailyChartController = ScrollLineChartController(
       startDate: widget.startDate,
       windowDays: widget.windowDays,
       pixelsPerDay: widget.pixelsPerDay,
@@ -67,7 +67,7 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
       fixedIntervalY: widget.fixedIntervalY,
       seed: widget.seed,
       dataSpots: widget.dataSpots,
-      moneySumList: widget.moneySumList,
+      scrollLineChartModelList: widget.scrollLineChartModelList,
     )..init();
 
     tapeDailyChartController.addListener(_onControllerChanged);
@@ -77,7 +77,7 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
 
   ///
   @override
-  void didUpdateWidget(covariant TapeDailyLineChartDemoPage oldWidget) {
+  void didUpdateWidget(covariant ScrollLineChart oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     final bool startDateChanged =
@@ -85,7 +85,7 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
         oldWidget.startDate.month != widget.startDate.month ||
         oldWidget.startDate.day != widget.startDate.day;
 
-    final bool moneyListChanged = oldWidget.moneySumList != widget.moneySumList;
+    final bool moneyListChanged = oldWidget.scrollLineChartModelList != widget.scrollLineChartModelList;
     final bool spotsChanged = oldWidget.dataSpots != widget.dataSpots;
 
     if (!startDateChanged && !moneyListChanged && !spotsChanged) {
@@ -95,7 +95,7 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
     tapeDailyChartController.removeListener(_onControllerChanged);
     tapeDailyChartController.dispose();
 
-    tapeDailyChartController = TapeDailyChartController(
+    tapeDailyChartController = ScrollLineChartController(
       startDate: widget.startDate,
       windowDays: widget.windowDays,
       pixelsPerDay: widget.pixelsPerDay,
@@ -104,7 +104,7 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
       fixedIntervalY: widget.fixedIntervalY,
       seed: widget.seed,
       dataSpots: widget.dataSpots,
-      moneySumList: widget.moneySumList,
+      scrollLineChartModelList: widget.scrollLineChartModelList,
     )..init();
 
     tapeDailyChartController.addListener(_onControllerChanged);
@@ -323,8 +323,8 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
 
 enum _AutoScrollDir { none, toStart, toEnd }
 
-class TapeDailyChartController extends ChangeNotifier {
-  TapeDailyChartController({
+class ScrollLineChartController extends ChangeNotifier {
+  ScrollLineChartController({
     required this.startDate,
     required this.windowDays,
     required this.pixelsPerDay,
@@ -333,7 +333,7 @@ class TapeDailyChartController extends ChangeNotifier {
     required this.fixedIntervalY,
     required this.seed,
     this.dataSpots,
-    required this.moneySumList,
+    required this.scrollLineChartModelList,
   });
 
   final DateTime startDate;
@@ -348,7 +348,7 @@ class TapeDailyChartController extends ChangeNotifier {
 
   final List<FlSpot>? dataSpots;
 
-  final List<MoneySumModel> moneySumList;
+  final List<ScrollLineChartModel> scrollLineChartModelList;
 
   late final DateTime todayJst;
 
@@ -415,7 +415,7 @@ class TapeDailyChartController extends ChangeNotifier {
       return sorted;
     }
 
-    final List<FlSpot> moneySpots = _makeSpotsFromMoneySumList();
+    final List<FlSpot> moneySpots = _makeSpotsFromScrollLineChartModelList();
     if (moneySpots.isNotEmpty) {
       return moneySpots;
     }
@@ -424,13 +424,13 @@ class TapeDailyChartController extends ChangeNotifier {
   }
 
   ///
-  List<FlSpot> _makeSpotsFromMoneySumList() {
-    if (moneySumList.isEmpty) {
+  List<FlSpot> _makeSpotsFromScrollLineChartModelList() {
+    if (scrollLineChartModelList.isEmpty) {
       return <FlSpot>[];
     }
 
-    final List<MoneySumModel> sorted = List<MoneySumModel>.from(moneySumList)
-      ..sort((MoneySumModel a, MoneySumModel b) {
+    final List<ScrollLineChartModel> sorted = List<ScrollLineChartModel>.from(scrollLineChartModelList)
+      ..sort((ScrollLineChartModel a, ScrollLineChartModel b) {
         final DateTime? da = _tryParseDate(a.date);
         final DateTime? db = _tryParseDate(b.date);
         if (da == null && db == null) {
@@ -447,7 +447,7 @@ class TapeDailyChartController extends ChangeNotifier {
 
     final List<FlSpot> spots = <FlSpot>[];
 
-    for (final MoneySumModel m in sorted) {
+    for (final ScrollLineChartModel m in sorted) {
       final DateTime? dt = _tryParseDate(m.date);
       if (dt == null) {
         continue;

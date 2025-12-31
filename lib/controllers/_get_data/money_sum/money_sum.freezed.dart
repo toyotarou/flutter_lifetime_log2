@@ -16,8 +16,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$MoneySumState {
-  List<MoneySumModel> get moneySumList => throw _privateConstructorUsedError;
-  Map<String, MoneySumModel> get moneySumMap =>
+  List<ScrollLineChartModel> get moneySumList =>
+      throw _privateConstructorUsedError;
+  Map<String, ScrollLineChartModel> get moneySumMap =>
       throw _privateConstructorUsedError;
 
   /// Create a copy of MoneySumState
@@ -34,8 +35,8 @@ abstract class $MoneySumStateCopyWith<$Res> {
       _$MoneySumStateCopyWithImpl<$Res, MoneySumState>;
   @useResult
   $Res call(
-      {List<MoneySumModel> moneySumList,
-      Map<String, MoneySumModel> moneySumMap});
+      {List<ScrollLineChartModel> moneySumList,
+      Map<String, ScrollLineChartModel> moneySumMap});
 }
 
 /// @nodoc
@@ -60,11 +61,11 @@ class _$MoneySumStateCopyWithImpl<$Res, $Val extends MoneySumState>
       moneySumList: null == moneySumList
           ? _value.moneySumList
           : moneySumList // ignore: cast_nullable_to_non_nullable
-              as List<MoneySumModel>,
+              as List<ScrollLineChartModel>,
       moneySumMap: null == moneySumMap
           ? _value.moneySumMap
           : moneySumMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, MoneySumModel>,
+              as Map<String, ScrollLineChartModel>,
     ) as $Val);
   }
 }
@@ -78,8 +79,8 @@ abstract class _$$MoneySumStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<MoneySumModel> moneySumList,
-      Map<String, MoneySumModel> moneySumMap});
+      {List<ScrollLineChartModel> moneySumList,
+      Map<String, ScrollLineChartModel> moneySumMap});
 }
 
 /// @nodoc
@@ -102,11 +103,11 @@ class __$$MoneySumStateImplCopyWithImpl<$Res>
       moneySumList: null == moneySumList
           ? _value._moneySumList
           : moneySumList // ignore: cast_nullable_to_non_nullable
-              as List<MoneySumModel>,
+              as List<ScrollLineChartModel>,
       moneySumMap: null == moneySumMap
           ? _value._moneySumMap
           : moneySumMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, MoneySumModel>,
+              as Map<String, ScrollLineChartModel>,
     ));
   }
 }
@@ -115,25 +116,26 @@ class __$$MoneySumStateImplCopyWithImpl<$Res>
 
 class _$MoneySumStateImpl implements _MoneySumState {
   const _$MoneySumStateImpl(
-      {final List<MoneySumModel> moneySumList = const <MoneySumModel>[],
-      final Map<String, MoneySumModel> moneySumMap =
-          const <String, MoneySumModel>{}})
+      {final List<ScrollLineChartModel> moneySumList =
+          const <ScrollLineChartModel>[],
+      final Map<String, ScrollLineChartModel> moneySumMap =
+          const <String, ScrollLineChartModel>{}})
       : _moneySumList = moneySumList,
         _moneySumMap = moneySumMap;
 
-  final List<MoneySumModel> _moneySumList;
+  final List<ScrollLineChartModel> _moneySumList;
   @override
   @JsonKey()
-  List<MoneySumModel> get moneySumList {
+  List<ScrollLineChartModel> get moneySumList {
     if (_moneySumList is EqualUnmodifiableListView) return _moneySumList;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_moneySumList);
   }
 
-  final Map<String, MoneySumModel> _moneySumMap;
+  final Map<String, ScrollLineChartModel> _moneySumMap;
   @override
   @JsonKey()
-  Map<String, MoneySumModel> get moneySumMap {
+  Map<String, ScrollLineChartModel> get moneySumMap {
     if (_moneySumMap is EqualUnmodifiableMapView) return _moneySumMap;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_moneySumMap);
@@ -172,13 +174,14 @@ class _$MoneySumStateImpl implements _MoneySumState {
 
 abstract class _MoneySumState implements MoneySumState {
   const factory _MoneySumState(
-      {final List<MoneySumModel> moneySumList,
-      final Map<String, MoneySumModel> moneySumMap}) = _$MoneySumStateImpl;
+          {final List<ScrollLineChartModel> moneySumList,
+          final Map<String, ScrollLineChartModel> moneySumMap}) =
+      _$MoneySumStateImpl;
 
   @override
-  List<MoneySumModel> get moneySumList;
+  List<ScrollLineChartModel> get moneySumList;
   @override
-  Map<String, MoneySumModel> get moneySumMap;
+  Map<String, ScrollLineChartModel> get moneySumMap;
 
   /// Create a copy of MoneySumState
   /// with the given fields replaced by the non-null parameter values.

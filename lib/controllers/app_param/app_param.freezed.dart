@@ -85,7 +85,7 @@ mixin _$AppParamState {
       throw _privateConstructorUsedError;
   List<List<List<List<double>>>> get keepAllPolygonsList =>
       throw _privateConstructorUsedError;
-  List<MoneySumModel> get keepMoneySumList =>
+  List<ScrollLineChartModel> get keepMoneySumList =>
       throw _privateConstructorUsedError;
 
   ///
@@ -181,7 +181,7 @@ abstract class $AppParamStateCopyWith<$Res> {
       Map<String, List<StampRallyModel>> keepStampRallyMetroPokepokeMap,
       Map<int, Map<String, int>> keepCreditSummaryTotalMap,
       List<List<List<List<double>>>> keepAllPolygonsList,
-      List<MoneySumModel> keepMoneySumList,
+      List<ScrollLineChartModel> keepMoneySumList,
       String homeTabYearMonth,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
@@ -431,7 +431,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
       keepMoneySumList: null == keepMoneySumList
           ? _value.keepMoneySumList
           : keepMoneySumList // ignore: cast_nullable_to_non_nullable
-              as List<MoneySumModel>,
+              as List<ScrollLineChartModel>,
       homeTabYearMonth: null == homeTabYearMonth
           ? _value.homeTabYearMonth
           : homeTabYearMonth // ignore: cast_nullable_to_non_nullable
@@ -582,7 +582,7 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       Map<String, List<StampRallyModel>> keepStampRallyMetroPokepokeMap,
       Map<int, Map<String, int>> keepCreditSummaryTotalMap,
       List<List<List<List<double>>>> keepAllPolygonsList,
-      List<MoneySumModel> keepMoneySumList,
+      List<ScrollLineChartModel> keepMoneySumList,
       String homeTabYearMonth,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
@@ -830,7 +830,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
       keepMoneySumList: null == keepMoneySumList
           ? _value._keepMoneySumList
           : keepMoneySumList // ignore: cast_nullable_to_non_nullable
-              as List<MoneySumModel>,
+              as List<ScrollLineChartModel>,
       homeTabYearMonth: null == homeTabYearMonth
           ? _value.homeTabYearMonth
           : homeTabYearMonth // ignore: cast_nullable_to_non_nullable
@@ -995,7 +995,7 @@ class _$AppParamStateImpl implements _AppParamState {
       final Map<String, List<StampRallyModel>> keepStampRallyMetroPokepokeMap = const <String, List<StampRallyModel>>{},
       final Map<int, Map<String, int>> keepCreditSummaryTotalMap = const <int, Map<String, int>>{},
       final List<List<List<List<double>>>> keepAllPolygonsList = const <List<List<List<double>>>>[],
-      final List<MoneySumModel> keepMoneySumList = const <MoneySumModel>[],
+      final List<ScrollLineChartModel> keepMoneySumList = const <ScrollLineChartModel>[],
       this.homeTabYearMonth = '',
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
@@ -1402,10 +1402,10 @@ class _$AppParamStateImpl implements _AppParamState {
     return EqualUnmodifiableListView(_keepAllPolygonsList);
   }
 
-  final List<MoneySumModel> _keepMoneySumList;
+  final List<ScrollLineChartModel> _keepMoneySumList;
   @override
   @JsonKey()
-  List<MoneySumModel> get keepMoneySumList {
+  List<ScrollLineChartModel> get keepMoneySumList {
     if (_keepMoneySumList is EqualUnmodifiableListView)
       return _keepMoneySumList;
     // ignore: implicit_dynamic_type
@@ -1749,7 +1749,7 @@ abstract class _AppParamState implements AppParamState {
       final Map<String, List<StampRallyModel>> keepStampRallyMetroPokepokeMap,
       final Map<int, Map<String, int>> keepCreditSummaryTotalMap,
       final List<List<List<List<double>>>> keepAllPolygonsList,
-      final List<MoneySumModel> keepMoneySumList,
+      final List<ScrollLineChartModel> keepMoneySumList,
       final String homeTabYearMonth,
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
@@ -1849,7 +1849,7 @@ abstract class _AppParamState implements AppParamState {
   @override
   List<List<List<List<double>>>> get keepAllPolygonsList;
   @override
-  List<MoneySumModel> get keepMoneySumList;
+  List<ScrollLineChartModel> get keepMoneySumList;
 
   ///
   @override

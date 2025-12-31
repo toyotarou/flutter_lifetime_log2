@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
 import '../../../extensions/extensions.dart';
-import '../../../models/money_sum_model.dart';
+import '../../../models/common/scroll_line_chart_model.dart';
 import '../../../utility/utility.dart';
 
 part 'money_sum.freezed.dart';
@@ -14,8 +14,8 @@ part 'money_sum.g.dart';
 @freezed
 class MoneySumState with _$MoneySumState {
   const factory MoneySumState({
-    @Default(<MoneySumModel>[]) List<MoneySumModel> moneySumList,
-    @Default(<String, MoneySumModel>{}) Map<String, MoneySumModel> moneySumMap,
+    @Default(<ScrollLineChartModel>[]) List<ScrollLineChartModel> moneySumList,
+    @Default(<String, ScrollLineChartModel>{}) Map<String, ScrollLineChartModel> moneySumMap,
   }) = _MoneySumState;
 }
 
@@ -34,15 +34,15 @@ class MoneySum extends _$MoneySum {
     final HttpClient client = ref.read(httpClientProvider);
 
     try {
-      final List<MoneySumModel> list = <MoneySumModel>[];
-      final Map<String, MoneySumModel> map = <String, MoneySumModel>{};
+      final List<ScrollLineChartModel> list = <ScrollLineChartModel>[];
+      final Map<String, ScrollLineChartModel> map = <String, ScrollLineChartModel>{};
 
       // ignore: always_specify_types
       await client.post(path: APIPath.getAllMoneySum).then((value) {
         // ignore: avoid_dynamic_calls
         for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
           // ignore: avoid_dynamic_calls
-          final MoneySumModel val = MoneySumModel.fromJson(value['data'][i] as Map<String, dynamic>);
+          final ScrollLineChartModel val = ScrollLineChartModel.fromJson(value['data'][i] as Map<String, dynamic>);
 
           list.add(val);
 

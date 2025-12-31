@@ -4,11 +4,11 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/common/scroll_line_chart_model.dart';
 import '../../models/money_model.dart';
-import '../../models/money_sum_model.dart';
 import '../parts/lifetime_dialog.dart';
+import '../parts/scroll_line_chart.dart';
 import 'money_in_possession_graph_alert.dart';
-import 'money_in_possession_scroll_graph_alert.dart';
 
 class MoneyInPossessionDisplayAlert extends ConsumerStatefulWidget {
   const MoneyInPossessionDisplayAlert({super.key});
@@ -33,7 +33,7 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
 
   ///
   DateTime _resolveStartDateFromMoneySumList() {
-    final List<MoneySumModel> list = appParamState.keepMoneySumList;
+    final List<ScrollLineChartModel> list = appParamState.keepMoneySumList;
 
     if (list.isEmpty) {
       return DateTime.now();
@@ -41,7 +41,7 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
 
     DateTime? minDt;
 
-    for (final MoneySumModel m in list) {
+    for (final ScrollLineChartModel m in list) {
       final DateTime? dt = _tryParseDate(m.date);
 
       if (dt == null) {
@@ -82,9 +82,8 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
                           onTap: () {
                             LifetimeDialog(
                               context: context,
-                              widget: TapeDailyLineChartDemoPage(
+                              widget: ScrollLineChart(
                                 startDate: startDate,
-
                                 windowDays: 35,
                                 pixelsPerDay: 16.0,
                                 fixedMinY: 0,
@@ -93,7 +92,7 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
                                 seed: DateTime.now().year,
                                 labelShowScaleThreshold: 3.0,
 
-                                moneySumList: appParamState.keepMoneySumList,
+                                scrollLineChartModelList: appParamState.keepMoneySumList,
                               ),
                             );
                           },

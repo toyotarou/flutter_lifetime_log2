@@ -7,6 +7,7 @@ import '../enums/stamp_rally_kind.dart';
 import '../extensions/extensions.dart';
 import '../main.dart';
 import '../models/amazon_purchase_model.dart';
+import '../models/common/scroll_line_chart_model.dart';
 import '../models/common/work_history_model.dart';
 import '../models/credit_summary_model.dart';
 import '../models/fund_model.dart';
@@ -15,7 +16,6 @@ import '../models/gold_model.dart';
 import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
-import '../models/money_sum_model.dart';
 import '../models/municipal_model.dart';
 import '../models/salary_model.dart';
 import '../models/stamp_rally_model.dart';
@@ -137,7 +137,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final List<MunicipalModel> tokyoMunicipalList;
   final Map<String, MunicipalModel> tokyoMunicipalMap;
   final Map<String, WorkHistoryModel> workHistoryModelMap;
-  final List<MoneySumModel> moneySumList;
+  final List<ScrollLineChartModel> moneySumList;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
