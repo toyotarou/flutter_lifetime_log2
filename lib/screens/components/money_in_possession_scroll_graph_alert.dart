@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
@@ -155,7 +156,10 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
     final DateTime startDt = tapeDailyChartController.dateFromIndex(minX.round());
     final DateTime endDt = tapeDailyChartController.dateFromIndex(maxX.round());
 
-    final bool dragEnabled = !tapeDailyChartController.zoomMode && !tapeDailyChartController.tooltipEnabled;
+    final bool dragEnabled =
+        !tapeDailyChartController.zoomMode &&
+        !tapeDailyChartController.tooltipEnabled &&
+        !tapeDailyChartController.autoScrollActive;
 
     final LineChartData backgroundData = tapeDailyChartController.buildBackgroundData();
     final LineChartData axisData = tapeDailyChartController.buildAxisData();
@@ -243,6 +247,17 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
                   _showPointLabels = false;
                   tapeDailyChartController.jumpToTodayWindow();
                 },
+                onToStartAuto: () {
+                  _transformationController.value = Matrix4.identity();
+                  _showPointLabels = false;
+                  tapeDailyChartController.toggleAutoScrollToStart();
+                },
+                onToEndAuto: () {
+                  _transformationController.value = Matrix4.identity();
+                  _showPointLabels = false;
+                  tapeDailyChartController.toggleAutoScrollToEnd();
+                },
+                autoScrollActive: tapeDailyChartController.autoScrollActive,
               ),
             ],
           ),
@@ -306,6 +321,8 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
 
 /////////////////////////////////////////////////////////////////
 
+enum _AutoScrollDir { none, toStart, toEnd }
+
 class TapeDailyChartController extends ChangeNotifier {
   TapeDailyChartController({
     required this.startDate,
@@ -352,6 +369,16 @@ class TapeDailyChartController extends ChangeNotifier {
   static const double _monthBoundaryBandWidthX = 1.0;
 
   static const double _dayHalf = 0.5;
+
+  Timer? _autoTimer;
+  _AutoScrollDir _autoDir = _AutoScrollDir.none;
+
+  double autoScrollDaysPerTick = 2;
+
+  Duration autoScrollTick = const Duration(milliseconds: 16);
+
+  ///
+  bool get autoScrollActive => _autoDir != _AutoScrollDir.none;
 
   ///
   bool get isEmptyInitial => allSpots.isEmpty;
@@ -451,6 +478,7 @@ class TapeDailyChartController extends ChangeNotifier {
   void setTooltipEnabled(bool v) {
     tooltipEnabled = v;
     dragAccumDx = 0;
+    _stopAutoScroll();
     notifyListeners();
   }
 
@@ -458,11 +486,13 @@ class TapeDailyChartController extends ChangeNotifier {
   void setZoomMode(bool v) {
     zoomMode = v;
     dragAccumDx = 0;
+    _stopAutoScroll();
     notifyListeners();
   }
 
   ///
   void resetToStart() {
+    _stopAutoScroll();
     startIndex = 0;
     dragAccumDx = 0;
     notifyListeners();
@@ -470,6 +500,7 @@ class TapeDailyChartController extends ChangeNotifier {
 
   ///
   void jumpToTodayWindow() {
+    _stopAutoScroll();
     startIndex = _clampStartIndex((maxIndex - (windowDays - 1)).toDouble());
     dragAccumDx = 0;
     notifyListeners();
@@ -477,6 +508,7 @@ class TapeDailyChartController extends ChangeNotifier {
 
   ///
   void jumpToMonth(DateTime monthStart) {
+    _stopAutoScroll();
     final int dayIndex = monthStart.difference(startDate).inDays;
     startIndex = _clampStartIndex(dayIndex.toDouble());
     dragAccumDx = 0;
@@ -489,6 +521,10 @@ class TapeDailyChartController extends ChangeNotifier {
       return;
     }
     if (tooltipEnabled) {
+      return;
+    }
+    if (autoScrollActive) {
+      _stopAutoScroll();
       return;
     }
 
@@ -514,8 +550,11 @@ class TapeDailyChartController extends ChangeNotifier {
   }
 
   ///
+  int _maxStartIndexInt() => math.max(0, maxIndex - (windowDays - 1));
+
+  ///
   double _clampStartIndex(double start) {
-    final int maxStart = math.max(0, maxIndex - (windowDays - 1));
+    final int maxStart = _maxStartIndexInt();
     if (start < 0) {
       return 0;
     }
@@ -523,6 +562,87 @@ class TapeDailyChartController extends ChangeNotifier {
       return maxStart.toDouble();
     }
     return start;
+  }
+
+  ///
+  void toggleAutoScrollToEnd() {
+    if (zoomMode || tooltipEnabled) {
+      return;
+    }
+
+    if (_autoDir == _AutoScrollDir.toEnd) {
+      _stopAutoScroll();
+      notifyListeners();
+      return;
+    }
+
+    _startAutoScroll(_AutoScrollDir.toEnd);
+  }
+
+  ///
+  void toggleAutoScrollToStart() {
+    if (zoomMode || tooltipEnabled) {
+      return;
+    }
+
+    if (_autoDir == _AutoScrollDir.toStart) {
+      _stopAutoScroll();
+      notifyListeners();
+      return;
+    }
+
+    _startAutoScroll(_AutoScrollDir.toStart);
+  }
+
+  ///
+  void _startAutoScroll(_AutoScrollDir dir) {
+    _stopAutoScroll();
+
+    _autoDir = dir;
+
+    _autoTimer = Timer.periodic(autoScrollTick, (_) {
+      if (_autoDir == _AutoScrollDir.none) {
+        return;
+      }
+
+      final double maxStart = _maxStartIndexInt().toDouble();
+
+      if (_autoDir == _AutoScrollDir.toEnd) {
+        if (startIndex >= maxStart) {
+          startIndex = maxStart;
+          _stopAutoScroll();
+          notifyListeners();
+          return;
+        }
+        startIndex = _clampStartIndex(startIndex + autoScrollDaysPerTick);
+      } else if (_autoDir == _AutoScrollDir.toStart) {
+        if (startIndex <= 0) {
+          startIndex = 0;
+          _stopAutoScroll();
+          notifyListeners();
+          return;
+        }
+        startIndex = _clampStartIndex(startIndex - autoScrollDaysPerTick);
+      }
+
+      notifyListeners();
+    });
+
+    notifyListeners();
+  }
+
+  ///
+  void _stopAutoScroll() {
+    _autoTimer?.cancel();
+    _autoTimer = null;
+    _autoDir = _AutoScrollDir.none;
+  }
+
+  ///
+  @override
+  void dispose() {
+    _stopAutoScroll();
+    super.dispose();
   }
 
   ///
@@ -550,7 +670,6 @@ class TapeDailyChartController extends ChangeNotifier {
             getTitlesWidget: (_, __) => const SizedBox.shrink(),
           ),
         ),
-
         topTitles: const AxisTitles(),
         rightTitles: const AxisTitles(),
         leftTitles: const AxisTitles(),
@@ -649,7 +768,6 @@ class TapeDailyChartController extends ChangeNotifier {
             getTitlesWidget: (_, __) => const SizedBox.shrink(),
           ),
         ),
-
         topTitles: const AxisTitles(),
         rightTitles: const AxisTitles(),
         leftTitles: const AxisTitles(),
@@ -763,7 +881,6 @@ class TapeDailyChartController extends ChangeNotifier {
             getTitlesWidget: (_, __) => const SizedBox.shrink(),
           ),
         ),
-
         topTitles: const AxisTitles(),
         rightTitles: const AxisTitles(),
         leftTitles: const AxisTitles(),
@@ -1336,10 +1453,21 @@ class TooltipDisplay extends StatelessWidget {
 /////////////////////////////////////////////////////////////////
 
 class ScrollToStartEndButton extends StatelessWidget {
-  const ScrollToStartEndButton({super.key, required this.onReset, required this.onToToday});
+  const ScrollToStartEndButton({
+    super.key,
+    required this.onReset,
+    required this.onToToday,
+    required this.onToStartAuto,
+    required this.onToEndAuto,
+    required this.autoScrollActive,
+  });
 
   final VoidCallback onReset;
   final VoidCallback onToToday;
+
+  final VoidCallback onToStartAuto;
+  final VoidCallback onToEndAuto;
+  final bool autoScrollActive;
 
   ///
   @override
@@ -1347,13 +1475,44 @@ class ScrollToStartEndButton extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        InkWell(
-          onTap: () => onReset(),
-          child: const Row(children: <Widget>[Text('S'), SizedBox(width: 10), Icon(Icons.arrow_back)]),
+        Row(
+          children: <Widget>[
+            InkWell(
+              onTap: () => onReset(),
+              child: const Row(children: <Widget>[Text('S'), SizedBox(width: 10), Icon(Icons.arrow_back)]),
+            ),
+            const SizedBox(width: 18),
+            InkWell(
+              onTap: () => onToStartAuto(),
+              child: Row(
+                children: <Widget>[
+                  const Text('AUTO'),
+                  const SizedBox(width: 6),
+                  Icon(Icons.fast_rewind, color: autoScrollActive ? Colors.orange : Colors.white),
+                ],
+              ),
+            ),
+          ],
         ),
-        InkWell(
-          onTap: () => onToToday(),
-          child: const Row(children: <Widget>[Icon(Icons.arrow_forward), SizedBox(width: 10), Text('E')]),
+
+        Row(
+          children: <Widget>[
+            InkWell(
+              onTap: () => onToEndAuto(),
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.fast_forward, color: autoScrollActive ? Colors.orange : Colors.white),
+                  const SizedBox(width: 6),
+                  const Text('AUTO'),
+                ],
+              ),
+            ),
+            const SizedBox(width: 18),
+            InkWell(
+              onTap: () => onToToday(),
+              child: const Row(children: <Widget>[Icon(Icons.arrow_forward), SizedBox(width: 10), Text('E')]),
+            ),
+          ],
         ),
       ],
     );
