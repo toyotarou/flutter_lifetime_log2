@@ -191,7 +191,6 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
                           }
                         : null,
                   ),
-
                   TooltipDisplay(
                     start: startDt,
                     end: endDt,
@@ -205,7 +204,6 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
                   ),
                 ],
               ),
-
               MonthJumpButton(
                 monthStarts: tapeDailyChartController.monthStarts,
                 currentWindowStart: startDt,
@@ -215,9 +213,7 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
                   tapeDailyChartController.jumpToMonth(monthStart);
                 },
               ),
-
               const SizedBox(height: 10),
-
               Expanded(
                 child: TapeChartFrame(
                   dragEnabled: dragEnabled,
@@ -235,9 +231,7 @@ class _TapeDailyLineChartDemoPageState extends State<TapeDailyLineChartDemoPage>
                   ),
                 ),
               ),
-
               const SizedBox(height: 10),
-
               ScrollToStartEndButton(
                 onReset: () {
                   _transformationController.value = Matrix4.identity();
@@ -797,11 +791,11 @@ class TapeDailyChartController extends ChangeNotifier {
       bool ok = true;
 
       for (int month = 1; month <= 12; month++) {
-        final DateTime mStart = DateTime(year, month);
-        final DateTime mEnd = DateTime(year, month + 1, 0);
+        final DateTime monthEnd = DateTime(year, month + 1, 0);
+        final DateTime prevMonthEnd = DateTime(year, month, 0);
 
-        final int sIdx = mStart.difference(startDate).inDays;
-        final int eIdx = mEnd.difference(startDate).inDays;
+        final int sIdx = prevMonthEnd.difference(startDate).inDays;
+        final int eIdx = monthEnd.difference(startDate).inDays;
 
         final double? yStart = _valueAtIndexWithFallback(sIdx);
         final double? yEnd = _valueAtIndexWithFallback(eIdx);
@@ -911,10 +905,10 @@ class TapeDailyChartController extends ChangeNotifier {
     final List<MonthBandLabel> labels = <MonthBandLabel>[];
 
     while (!cursor.isAfter(endMonth)) {
-      final DateTime monthStart = DateTime(cursor.year, cursor.month);
       final DateTime monthEnd = DateTime(cursor.year, cursor.month + 1, 0);
+      final DateTime prevMonthEnd = DateTime(cursor.year, cursor.month, 0);
 
-      final int sIdx = monthStart.difference(startDate).inDays;
+      final int sIdx = prevMonthEnd.difference(startDate).inDays;
       final int eIdx = monthEnd.difference(startDate).inDays;
 
       final double x1 = _clampAnnotX(sIdx.toDouble() - _dayHalf, minX: minX0, maxX: maxX0);
@@ -1303,7 +1297,6 @@ class TooltipDisplay extends StatelessWidget {
     return Column(
       children: <Widget>[
         Text(tooltipSwitchEnabled ? (tooltipEnabled ? '表示' : '非表示') : '無効', style: const TextStyle(fontSize: 12)),
-
         Switch(
           // ignore: avoid_bool_literals_in_conditional_expressions
           value: tooltipSwitchEnabled ? tooltipEnabled : false,
@@ -1332,7 +1325,6 @@ class ScrollToStartEndButton extends StatelessWidget {
           onTap: () => onReset(),
           child: const Row(children: <Widget>[Text('S'), SizedBox(width: 10), Icon(Icons.arrow_back)]),
         ),
-
         InkWell(
           onTap: () => onToToday(),
           child: const Row(children: <Widget>[Icon(Icons.arrow_forward), SizedBox(width: 10), Text('E')]),
@@ -1357,7 +1349,6 @@ class _ZoomBar extends StatelessWidget {
     return Row(
       children: <Widget>[
         if (zoomMode) ...<Widget>[IconButton(onPressed: onResetTransform, icon: const Icon(Icons.lock_reset))],
-
         IconButton(
           onPressed: onToggleZoom,
           icon: Icon(Icons.expand, color: zoomMode ? Colors.orange : Colors.white),
