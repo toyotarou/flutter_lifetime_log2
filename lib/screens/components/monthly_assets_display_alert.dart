@@ -69,49 +69,21 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                           children: <Widget>[
                             IconButton(
                               onPressed: () {
-
-
-
-
-
-
                                 autoScrollController.scrollToIndex(
                                   monthlyAssetsList.length,
                                   preferPosition: AutoScrollPosition.end,
                                   duration: const Duration(milliseconds: 300),
                                 );
-
-
-
-
-
-
-
-
                               },
                               icon: const Icon(Icons.arrow_downward),
                             ),
                             IconButton(
                               onPressed: () {
-
-
-
-
-
-
-
                                 autoScrollController.scrollToIndex(
                                   0,
                                   preferPosition: AutoScrollPosition.begin,
                                   duration: const Duration(milliseconds: 300),
                                 );
-
-
-
-
-
-
-
                               },
                               icon: const Icon(Icons.arrow_upward),
                             ),
@@ -623,8 +595,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                     foregroundColor: Colors.white,
                   ),
                   onPressed: () {
-                    appParamNotifier.setSelectedToushiGraphItemName(name: '');
                     appParamNotifier.setSelectedToushiGraphYear(year: '');
+
                     LifetimeDialog(
                       context: context,
                       widget: AssetsDetailGraphAlert(date: date, title: title),

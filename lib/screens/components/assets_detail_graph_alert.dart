@@ -6,11 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/common/scroll_line_chart_model.dart';
 import '../../models/gold_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
+import '../parts/scroll_line_chart.dart';
 import 'assets_detail_list_alert.dart';
 
 class AssetsDetailGraphAlert extends ConsumerStatefulWidget {
@@ -76,42 +78,11 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                if (widget.title != 'gold') ...<Widget>[
-                  Expanded(child: displayAssetsNameList()),
+                Expanded(child: displayAssetsNameList()),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          if (zoomMode) ...<Widget>[
-                            IconButton(
-                              onPressed: () => transformationController.value = Matrix4.identity(),
-                              icon: const Icon(Icons.lock_reset),
-                            ),
-                          ],
+                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                          IconButton(
-                            onPressed: () => zoomMode = !zoomMode,
-                            icon: Icon(Icons.expand, color: zoomMode ? Colors.yellowAccent : Colors.white),
-                          ),
-                        ],
-                      ),
-
-                      GestureDetector(
-                        onTap: () {
-                          appParamNotifier.setSelectedToushiGraphItemName(name: '');
-
-                          appParamNotifier.setSelectedToushiGraphYear(year: '');
-                        },
-                        child: const Icon(Icons.close),
-                      ),
-                    ],
-                  ),
-
-                  Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-                ],
-
+                //                ],
                 SizedBox(
                   height: (widget.title == 'gold') ? context.screenSize.height * 0.7 : context.screenSize.height * 0.5,
                   child: Stack(
@@ -132,26 +103,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                         )
                       else
                         Stack(children: <Widget>[LineChart(graphData2), LineChart(graphData)]),
-
-                      Positioned(
-                        top: 5,
-                        right: 5,
-                        left: 5,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                const SizedBox.shrink(),
-                                Text('last date: $lastAssetsDate', style: const TextStyle(color: Colors.greenAccent)),
-                              ],
-                            ),
-
-                            selectedToushiGraphYearParts(),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -160,51 +111,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           ),
         ),
       ),
-    );
-  }
-
-  ///
-  Widget selectedToushiGraphYearParts() {
-    if (widget.title == 'stock' || widget.title == 'toushiShintaku') {
-      if (appParamState.selectedToushiGraphItemName == '') {
-        return const SizedBox.shrink();
-      }
-    }
-
-    final List<String> yList = toushiGraphSelectYearList.toSet().toList();
-
-    yList.sort();
-
-    final List<String> yearList = <String>['', ...yList];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        const SizedBox(height: 10),
-
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: yearList.map((String e) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: GestureDetector(
-                  onTap: () => appParamNotifier.setSelectedToushiGraphYear(year: e),
-                  child: CircleAvatar(
-                    radius: 15,
-
-                    backgroundColor: (appParamState.selectedToushiGraphYear == e)
-                        ? Colors.yellowAccent.withValues(alpha: 0.8)
-                        : Colors.black.withValues(alpha: 0.8),
-
-                    child: Text(e, style: const TextStyle(fontSize: 10)),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
     );
   }
 
@@ -233,57 +139,37 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         });
       case 'stock':
         appParamState.keepStockTickerMap.forEach((String key, List<StockModel> value) {
-          bool flag = true;
-
-          if (appParamState.selectedToushiGraphItemName != '') {
-            if (appParamState.selectedToushiGraphItemName != key) {
-              flag = false;
-            }
-          }
-
-          if (flag) {
-            for (final StockModel element in value) {
-              bool flag2 = true;
-              if (appParamState.selectedToushiGraphYear != '') {
-                if (appParamState.selectedToushiGraphYear != element.year) {
-                  flag2 = false;
-                }
+          for (final StockModel element in value) {
+            bool flag2 = true;
+            if (appParamState.selectedToushiGraphYear != '') {
+              if (appParamState.selectedToushiGraphYear != element.year) {
+                flag2 = false;
               }
-
-              if (flag2) {
-                dateList.add('${element.year}-${element.month}-${element.day}');
-              }
-
-              toushiGraphSelectYearList.add(element.year);
             }
+
+            if (flag2) {
+              dateList.add('${element.year}-${element.month}-${element.day}');
+            }
+
+            toushiGraphSelectYearList.add(element.year);
           }
         });
 
       case 'toushiShintaku':
         appParamState.keepToushiShintakuRelationalMap.forEach((int key, List<ToushiShintakuModel> value) {
-          bool flag = true;
-
-          if (appParamState.selectedToushiGraphItemName != '') {
-            if (appParamState.selectedToushiGraphItemName != key.toString()) {
-              flag = false;
-            }
-          }
-
-          if (flag) {
-            for (final ToushiShintakuModel element in value) {
-              bool flag2 = true;
-              if (appParamState.selectedToushiGraphYear != '') {
-                if (appParamState.selectedToushiGraphYear != element.year) {
-                  flag2 = false;
-                }
+          for (final ToushiShintakuModel element in value) {
+            bool flag2 = true;
+            if (appParamState.selectedToushiGraphYear != '') {
+              if (appParamState.selectedToushiGraphYear != element.year) {
+                flag2 = false;
               }
-
-              if (flag2) {
-                dateList.add('${element.year}-${element.month}-${element.day}');
-              }
-
-              toushiGraphSelectYearList.add(element.year);
             }
+
+            if (flag2) {
+              dateList.add('${element.year}-${element.month}-${element.day}');
+            }
+
+            toushiGraphSelectYearList.add(element.year);
           }
         });
     }
@@ -348,40 +234,24 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         for (final String element in <String>['EPI', 'INFY', 'JMIA']) {
           final List<FlSpot> flspots = <FlSpot>[];
           appParamState.keepStockTickerMap[element]?.forEach((StockModel element2) {
-            bool flag = true;
+            final String jikaHyoukagaku = element2.jikaHyoukagaku.replaceAll(',', '');
 
-            if (appParamState.selectedToushiGraphItemName != '') {
-              if (appParamState.selectedToushiGraphItemName != element2.ticker) {
-                flag = false;
-              }
-            }
+            final String heikinShutokuKagaku = element2.heikinShutokuKagaku.replaceAll(',', '');
 
-            if (appParamState.selectedToushiGraphYear != '') {
-              if (appParamState.selectedToushiGraphYear != element2.year) {
-                flag = false;
-              }
-            }
+            if (int.tryParse(jikaHyoukagaku) != null && double.tryParse(heikinShutokuKagaku) != null) {
+              final int pos = dateList.indexWhere(
+                (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
+              );
 
-            if (flag) {
-              final String jikaHyoukagaku = element2.jikaHyoukagaku.replaceAll(',', '');
+              final double diff = jikaHyoukagaku.toInt() - (element2.hoyuuSuuryou * heikinShutokuKagaku.toDouble());
 
-              final String heikinShutokuKagaku = element2.heikinShutokuKagaku.replaceAll(',', '');
+              flspots.add(FlSpot(pos.toDouble(), diff));
 
-              if (int.tryParse(jikaHyoukagaku) != null && double.tryParse(heikinShutokuKagaku) != null) {
-                final int pos = dateList.indexWhere(
-                  (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
-                );
+              list.add(diff.toInt());
 
-                final double diff = jikaHyoukagaku.toInt() - (element2.hoyuuSuuryou * heikinShutokuKagaku.toDouble());
+              (dateMaxValueMapData[pos] ??= <int>[]).add(diff.toInt());
 
-                flspots.add(FlSpot(pos.toDouble(), diff));
-
-                list.add(diff.toInt());
-
-                (dateMaxValueMapData[pos] ??= <int>[]).add(diff.toInt());
-
-                lastDate = '${element2.year}-${element2.month}-${element2.day}';
-              }
+              lastDate = '${element2.year}-${element2.month}-${element2.day}';
             }
           });
 
@@ -404,44 +274,28 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           ..forEach((int element) {
             final List<FlSpot> flspots = <FlSpot>[];
             appParamState.keepToushiShintakuRelationalMap[element]?.forEach((ToushiShintakuModel element2) {
-              bool flag = true;
+              final String jikaHyoukagaku = element2.jikaHyoukagaku
+                  .replaceAll(',', '')
+                  .replaceAll(',', '')
+                  .replaceAll('円', '')
+                  .trim();
 
-              if (appParamState.selectedToushiGraphItemName != '') {
-                if (appParamState.selectedToushiGraphItemName != element2.relationalId.toString()) {
-                  flag = false;
-                }
-              }
+              final String shutokuSougaku = element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim();
 
-              if (appParamState.selectedToushiGraphYear != '') {
-                if (appParamState.selectedToushiGraphYear != element2.year) {
-                  flag = false;
-                }
-              }
+              if (int.tryParse(jikaHyoukagaku) != null && int.tryParse(shutokuSougaku) != null) {
+                final int pos = dateList.indexWhere(
+                  (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
+                );
 
-              if (flag) {
-                final String jikaHyoukagaku = element2.jikaHyoukagaku
-                    .replaceAll(',', '')
-                    .replaceAll(',', '')
-                    .replaceAll('円', '')
-                    .trim();
+                final double diff = (jikaHyoukagaku.toInt() - shutokuSougaku.toInt()).toDouble();
 
-                final String shutokuSougaku = element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim();
+                flspots.add(FlSpot(pos.toDouble(), diff));
 
-                if (int.tryParse(jikaHyoukagaku) != null && int.tryParse(shutokuSougaku) != null) {
-                  final int pos = dateList.indexWhere(
-                    (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
-                  );
+                list.add(diff.toInt());
 
-                  final double diff = (jikaHyoukagaku.toInt() - shutokuSougaku.toInt()).toDouble();
+                (dateMaxValueMapData[pos] ??= <int>[]).add(diff.toInt());
 
-                  flspots.add(FlSpot(pos.toDouble(), diff));
-
-                  list.add(diff.toInt());
-
-                  (dateMaxValueMapData[pos] ??= <int>[]).add(diff.toInt());
-
-                  lastDate = '${element2.year}-${element2.month}-${element2.day}';
-                }
+                lastDate = '${element2.year}-${element2.month}-${element2.day}';
               }
             });
 
@@ -544,11 +398,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
               spots: flspotsList[i],
               barWidth: 1,
               isStrokeCapRound: true,
-
-              color: (widget.title == 'gold' || appParamState.selectedToushiGraphItemName != '')
-                  ? Colors.white.withValues(alpha: 0.5)
-                  : twentyFourColor[i % 24],
-
+              color: twentyFourColor[i % 24],
               dotData: const FlDotData(show: false),
             ),
         ],
@@ -635,7 +485,66 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
     switch (widget.title) {
       case 'gold':
-        break;
+        list.add(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  final List<ScrollLineChartModel> scrollLineChartModelList = <ScrollLineChartModel>[];
+
+                  if (appParamState.keepGoldMap.isNotEmpty) {
+                    final List<String> sortedKeys = appParamState.keepGoldMap.keys.toList()
+                      ..sort((String a, String b) {
+                        final DateTime dateA = DateTime.parse(a);
+                        final DateTime dateB = DateTime.parse(b);
+                        return dateA.compareTo(dateB);
+                      });
+
+                    if (sortedKeys.isNotEmpty) {
+                      final List<int> sumList = <int>[];
+
+                      for (final String key3 in sortedKeys) {
+                        final GoldModel value3 = appParamState.keepGoldMap[key3]!;
+
+                        if (value3.goldValue != '-' && value3.goldPrice != '-') {
+                          final int goldValue = value3.goldValue.toString().toInt();
+                          final int payPrice = value3.payPrice.toString().toInt();
+                          final int sum = goldValue - payPrice;
+
+                          scrollLineChartModelList.add(ScrollLineChartModel(date: key3, sum: sum));
+
+                          sumList.add(sum);
+                        }
+                      }
+
+                      final double fixedY = makeFixedY(sumList: sumList);
+
+                      LifetimeDialog(
+                        context: context,
+                        widget: ScrollLineChart(
+                          startDate: DateTime.parse(sortedKeys[0]),
+                          windowDays: 35,
+                          pixelsPerDay: 16.0,
+                          fixedMinY: fixedY * -1,
+                          fixedMaxY: fixedY,
+                          fixedIntervalY: fixedY / 10,
+                          seed: DateTime.now().year,
+                          labelShowScaleThreshold: 3.0,
+                          scrollLineChartModelList: scrollLineChartModelList,
+                        ),
+                      );
+                    }
+                  }
+                },
+                child: CircleAvatar(radius: 15, backgroundColor: twentyFourColor[0].withValues(alpha: 0.3)),
+              ),
+
+              const SizedBox.shrink(),
+            ],
+          ),
+        );
+
       case 'stock':
         final Map<String, int> lastDiffMap = <String, int>{};
         final Map<String, String> lastDateMap = <String, String>{};
@@ -678,12 +587,60 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                     child: Row(
                       children: <Widget>[
                         GestureDetector(
-                          onTap: () => appParamNotifier.setSelectedToushiGraphItemName(name: element2.ticker),
+                          onTap: () {
+                            final List<ScrollLineChartModel> scrollLineChartModelList = <ScrollLineChartModel>[];
+
+                            final List<StockModel>? sorted = appParamState.keepStockTickerMap[element2.ticker]
+                              ?..sort(
+                                (StockModel a, StockModel b) =>
+                                    '${a.year}-${a.month}-${a.day}'.compareTo('${b.year}-${b.month}-${b.day}'),
+                              );
+
+                            if (sorted != null) {
+                              final List<int> sumList = <int>[];
+
+                              for (final StockModel element3 in sorted) {
+                                final int hoyuuSuuryou = element3.hoyuuSuuryou;
+                                final double heikinShutokuKagaku = element3.heikinShutokuKagaku
+                                    .replaceAll(',', '')
+                                    .toDouble();
+
+                                final double jikaHyoukagaku = element3.jikaHyoukagaku.replaceAll(',', '').toDouble();
+
+                                final int sum = (jikaHyoukagaku - (heikinShutokuKagaku * hoyuuSuuryou)).toInt();
+
+                                scrollLineChartModelList.add(
+                                  ScrollLineChartModel(
+                                    date: '${element3.year}-${element3.month}-${element3.day}',
+                                    sum: sum,
+                                  ),
+                                );
+
+                                sumList.add(sum);
+                              }
+
+                              final double fixedY = makeFixedY(sumList: sumList);
+
+                              LifetimeDialog(
+                                context: context,
+                                widget: ScrollLineChart(
+                                  startDate: DateTime.parse('${sorted[0].year}-${sorted[0].month}-${sorted[0].day}'),
+                                  windowDays: 35,
+                                  pixelsPerDay: 16.0,
+                                  fixedMinY: fixedY * -1,
+                                  fixedMaxY: fixedY,
+                                  fixedIntervalY: fixedY / 10,
+                                  seed: DateTime.now().year,
+                                  labelShowScaleThreshold: 3.0,
+
+                                  scrollLineChartModelList: scrollLineChartModelList,
+                                ),
+                              );
+                            }
+                          },
                           child: CircleAvatar(
                             radius: 15,
-                            backgroundColor: (appParamState.selectedToushiGraphItemName == element2.ticker)
-                                ? Colors.white.withValues(alpha: 0.4)
-                                : twentyFourColor[i % 24].withValues(alpha: 0.3),
+                            backgroundColor: twentyFourColor[i % 24].withValues(alpha: 0.3),
                           ),
                         ),
 
@@ -795,15 +752,65 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                       child: Row(
                         children: <Widget>[
                           GestureDetector(
-                            onTap: () =>
-                                appParamNotifier.setSelectedToushiGraphItemName(name: element2.relationalId.toString()),
+                            onTap: () {
+                              final List<ScrollLineChartModel> scrollLineChartModelList = <ScrollLineChartModel>[];
+
+                              final List<ToushiShintakuModel>? sorted =
+                                  appParamState.keepToushiShintakuRelationalMap[element2.relationalId]?..sort(
+                                    (ToushiShintakuModel a, ToushiShintakuModel b) =>
+                                        '${a.year}-${a.month}-${a.day}'.compareTo('${b.year}-${b.month}-${b.day}'),
+                                  );
+
+                              if (sorted != null) {
+                                final List<int> sumList = <int>[];
+
+                                for (final ToushiShintakuModel element3 in sorted) {
+                                  final int shutokuSougaku = element3.shutokuSougaku
+                                      .replaceAll(',', '')
+                                      .replaceAll('円', '')
+                                      .trim()
+                                      .toInt();
+
+                                  final int jikaHyoukagaku = element3.jikaHyoukagaku
+                                      .replaceAll(',', '')
+                                      .replaceAll('円', '')
+                                      .trim()
+                                      .toInt();
+
+                                  final int sum = jikaHyoukagaku - shutokuSougaku;
+
+                                  scrollLineChartModelList.add(
+                                    ScrollLineChartModel(
+                                      date: '${element3.year}-${element3.month}-${element3.day}',
+                                      sum: sum,
+                                    ),
+                                  );
+
+                                  sumList.add(sum);
+                                }
+
+                                final double fixedY = makeFixedY(sumList: sumList);
+
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: ScrollLineChart(
+                                    startDate: DateTime.parse('${sorted[0].year}-${sorted[0].month}-${sorted[0].day}'),
+                                    windowDays: 35,
+                                    pixelsPerDay: 16.0,
+                                    fixedMinY: fixedY * -1,
+                                    fixedMaxY: fixedY,
+                                    fixedIntervalY: fixedY / 10,
+                                    seed: DateTime.now().year,
+                                    labelShowScaleThreshold: 3.0,
+
+                                    scrollLineChartModelList: scrollLineChartModelList,
+                                  ),
+                                );
+                              }
+                            },
                             child: CircleAvatar(
                               radius: 15,
-
-                              backgroundColor:
-                                  (appParamState.selectedToushiGraphItemName == element2.relationalId.toString())
-                                  ? Colors.white.withValues(alpha: 0.4)
-                                  : twentyFourColor[i % 24].withValues(alpha: 0.3),
+                              backgroundColor: twentyFourColor[i % 24].withValues(alpha: 0.3),
                             ),
                           ),
 
@@ -872,5 +879,21 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         ),
       ],
     );
+  }
+
+  ///
+  double makeFixedY({required List<int> sumList}) {
+    final int minSum = sumList.reduce(min);
+    final int maxSum = sumList.reduce(max);
+
+    final int diff = maxSum - minSum;
+
+    switch (diff.toString().length) {
+      case 6:
+        return 1000000;
+
+      default:
+        return 100000;
+    }
   }
 }

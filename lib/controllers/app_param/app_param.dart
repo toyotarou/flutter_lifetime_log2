@@ -26,6 +26,7 @@ import '../../models/work_time_model.dart';
 import '../../utility/utility.dart';
 
 part 'app_param.freezed.dart';
+
 part 'app_param.g.dart';
 
 @freezed
@@ -106,8 +107,6 @@ class AppParamState with _$AppParamState {
 
     ///
     @Default(false) bool isMonthlySpendSummaryMinusJogai,
-
-    @Default('') String selectedToushiGraphItemName,
 
     @Default('') String yearlyAllSpendSelectedYear,
 
@@ -277,7 +276,8 @@ class AppParam extends _$AppParam {
       state = state.copyWith(keepAllPolygonsList: list);
 
   ///
-  void setKeepMoneySumList({required List<ScrollLineChartModel> list}) => state = state.copyWith(keepMoneySumList: list);
+  void setKeepMoneySumList({required List<ScrollLineChartModel> list}) =>
+      state = state.copyWith(keepMoneySumList: list);
 
   //===================================================
 
@@ -335,10 +335,6 @@ class AppParam extends _$AppParam {
   ///
   void setIsMonthlySpendSummaryMinusJogai({required bool flag}) =>
       state = state.copyWith(isMonthlySpendSummaryMinusJogai: flag);
-
-  ///
-  void setSelectedToushiGraphItemName({required String name}) =>
-      state = state.copyWith(selectedToushiGraphItemName: name);
 
   ///
   void setYearlyAllSpendSelectedYear({required String year}) =>

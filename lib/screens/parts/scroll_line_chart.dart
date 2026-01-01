@@ -47,7 +47,7 @@ class ScrollLineChart extends StatefulWidget {
 //=====
 
 class _ScrollLineChartState extends State<ScrollLineChart> {
-  late ScrollLineChartController tapeDailyChartController;
+  late ScrollLineChartController scrollLineChartController;
 
   final TransformationController _transformationController = TransformationController();
 
@@ -58,7 +58,7 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
   void initState() {
     super.initState();
 
-    tapeDailyChartController = ScrollLineChartController(
+    scrollLineChartController = ScrollLineChartController(
       startDate: widget.startDate,
       windowDays: widget.windowDays,
       pixelsPerDay: widget.pixelsPerDay,
@@ -70,7 +70,7 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
       scrollLineChartModelList: widget.scrollLineChartModelList,
     )..init();
 
-    tapeDailyChartController.addListener(_onControllerChanged);
+    scrollLineChartController.addListener(_onControllerChanged);
 
     _transformationController.addListener(_onTransformChanged);
   }
@@ -92,10 +92,10 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
       return;
     }
 
-    tapeDailyChartController.removeListener(_onControllerChanged);
-    tapeDailyChartController.dispose();
+    scrollLineChartController.removeListener(_onControllerChanged);
+    scrollLineChartController.dispose();
 
-    tapeDailyChartController = ScrollLineChartController(
+    scrollLineChartController = ScrollLineChartController(
       startDate: widget.startDate,
       windowDays: widget.windowDays,
       pixelsPerDay: widget.pixelsPerDay,
@@ -107,7 +107,7 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
       scrollLineChartModelList: widget.scrollLineChartModelList,
     )..init();
 
-    tapeDailyChartController.addListener(_onControllerChanged);
+    scrollLineChartController.addListener(_onControllerChanged);
 
     _transformationController.value = Matrix4.identity();
     _showPointLabels = false;
@@ -125,7 +125,7 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
 
   ///
   void _onTransformChanged() {
-    if (!tapeDailyChartController.zoomMode) {
+    if (!scrollLineChartController.zoomMode) {
       return;
     }
 
@@ -140,8 +140,8 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
   ///
   @override
   void dispose() {
-    tapeDailyChartController.removeListener(_onControllerChanged);
-    tapeDailyChartController.dispose();
+    scrollLineChartController.removeListener(_onControllerChanged);
+    scrollLineChartController.dispose();
     _transformationController.removeListener(_onTransformChanged);
     _transformationController.dispose();
     super.dispose();
@@ -150,21 +150,21 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
   ///
   @override
   Widget build(BuildContext context) {
-    final double minX = tapeDailyChartController.minX;
-    final double maxX = tapeDailyChartController.maxX;
+    final double minX = scrollLineChartController.minX;
+    final double maxX = scrollLineChartController.maxX;
 
-    final DateTime startDt = tapeDailyChartController.dateFromIndex(minX.round());
-    final DateTime endDt = tapeDailyChartController.dateFromIndex(maxX.round());
+    final DateTime startDt = scrollLineChartController.dateFromIndex(minX.round());
+    final DateTime endDt = scrollLineChartController.dateFromIndex(maxX.round());
 
     final bool dragEnabled =
-        !tapeDailyChartController.zoomMode &&
-        !tapeDailyChartController.tooltipEnabled &&
-        !tapeDailyChartController.autoScrollActive;
+        !scrollLineChartController.zoomMode &&
+        !scrollLineChartController.tooltipEnabled &&
+        !scrollLineChartController.autoScrollActive;
 
-    final LineChartData backgroundData = tapeDailyChartController.buildBackgroundData();
-    final LineChartData axisData = tapeDailyChartController.buildAxisData();
-    final LineChartData monthlyPowerData = tapeDailyChartController.buildMonthlyPowerData(context);
-    final LineChartData mainData = tapeDailyChartController.buildMainData(context, showPointLabels: _showPointLabels);
+    final LineChartData backgroundData = scrollLineChartController.buildBackgroundData();
+    final LineChartData axisData = scrollLineChartController.buildAxisData();
+    final LineChartData monthlyPowerData = scrollLineChartController.buildMonthlyPowerData(context);
+    final LineChartData mainData = scrollLineChartController.buildMainData(context, showPointLabels: _showPointLabels);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -177,18 +177,18 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   _ZoomBar(
-                    zoomMode: tapeDailyChartController.zoomMode,
+                    zoomMode: scrollLineChartController.zoomMode,
                     onToggleZoom: () {
-                      final bool next = !tapeDailyChartController.zoomMode;
+                      final bool next = !scrollLineChartController.zoomMode;
 
                       if (!next) {
                         _transformationController.value = Matrix4.identity();
                         _showPointLabels = false;
                       }
 
-                      tapeDailyChartController.setZoomMode(next);
+                      scrollLineChartController.setZoomMode(next);
                     },
-                    onResetTransform: tapeDailyChartController.zoomMode
+                    onResetTransform: scrollLineChartController.zoomMode
                         ? () {
                             _transformationController.value = Matrix4.identity();
                             setState(() => _showPointLabels = false);
@@ -198,31 +198,31 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
                   TooltipDisplay(
                     start: startDt,
                     end: endDt,
-                    today: tapeDailyChartController.todayJst,
-                    windowDays: tapeDailyChartController.windowDays,
-                    minY: tapeDailyChartController.fixedMinY,
-                    maxY: tapeDailyChartController.fixedMaxY,
-                    tooltipEnabled: tapeDailyChartController.tooltipEnabled,
-                    tooltipSwitchEnabled: !tapeDailyChartController.zoomMode,
-                    onToggleTooltip: (bool v) => tapeDailyChartController.setTooltipEnabled(v),
+                    today: scrollLineChartController.todayJst,
+                    windowDays: scrollLineChartController.windowDays,
+                    minY: scrollLineChartController.fixedMinY,
+                    maxY: scrollLineChartController.fixedMaxY,
+                    tooltipEnabled: scrollLineChartController.tooltipEnabled,
+                    tooltipSwitchEnabled: !scrollLineChartController.zoomMode,
+                    onToggleTooltip: (bool v) => scrollLineChartController.setTooltipEnabled(v),
                   ),
                 ],
               ),
               MonthJumpButton(
-                monthStarts: tapeDailyChartController.monthStarts,
+                monthStarts: scrollLineChartController.monthStarts,
                 currentWindowStart: startDt,
                 onTapMonth: (DateTime monthStart) {
                   _transformationController.value = Matrix4.identity();
                   _showPointLabels = false;
-                  tapeDailyChartController.jumpToMonth(monthStart);
+                  scrollLineChartController.jumpToMonth(monthStart);
                 },
               ),
               const SizedBox(height: 10),
               Expanded(
                 child: TapeChartFrame(
                   dragEnabled: dragEnabled,
-                  onDragUpdate: tapeDailyChartController.onDragUpdate,
-                  onDragEnd: tapeDailyChartController.onDragEnd,
+                  onDragUpdate: scrollLineChartController.onDragUpdate,
+                  onDragEnd: scrollLineChartController.onDragEnd,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 25),
                     child: _buildChartStack(
@@ -230,7 +230,7 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
                       axisData: axisData,
                       monthlyPowerData: monthlyPowerData,
                       mainData: mainData,
-                      zoomMode: tapeDailyChartController.zoomMode,
+                      zoomMode: scrollLineChartController.zoomMode,
                     ),
                   ),
                 ),
@@ -240,24 +240,24 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
                 onReset: () {
                   _transformationController.value = Matrix4.identity();
                   _showPointLabels = false;
-                  tapeDailyChartController.resetToStart();
+                  scrollLineChartController.resetToStart();
                 },
                 onToToday: () {
                   _transformationController.value = Matrix4.identity();
                   _showPointLabels = false;
-                  tapeDailyChartController.jumpToTodayWindow();
+                  scrollLineChartController.jumpToTodayWindow();
                 },
                 onToStartAuto: () {
                   _transformationController.value = Matrix4.identity();
                   _showPointLabels = false;
-                  tapeDailyChartController.toggleAutoScrollToStart();
+                  scrollLineChartController.toggleAutoScrollToStart();
                 },
                 onToEndAuto: () {
                   _transformationController.value = Matrix4.identity();
                   _showPointLabels = false;
-                  tapeDailyChartController.toggleAutoScrollToEnd();
+                  scrollLineChartController.toggleAutoScrollToEnd();
                 },
-                autoScrollActive: tapeDailyChartController.autoScrollActive,
+                autoScrollActive: scrollLineChartController.autoScrollActive,
               ),
             ],
           ),
@@ -274,7 +274,7 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
     required LineChartData mainData,
     required bool zoomMode,
   }) {
-    final List<MonthBandLabel> monthLabels = tapeDailyChartController.buildMonthBandLabels();
+    final List<MonthBandLabel> monthLabels = scrollLineChartController.buildMonthBandLabels();
 
     final Widget charts = Stack(
       children: <Widget>[
@@ -286,10 +286,10 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
             child: CustomPaint(
               painter: MonthBandLabelPainter(
                 labels: monthLabels,
-                minX: tapeDailyChartController.minX,
-                maxX: tapeDailyChartController.maxX,
-                minY: tapeDailyChartController.fixedMinY,
-                maxY: tapeDailyChartController.fixedMaxY,
+                minX: scrollLineChartController.minX,
+                maxX: scrollLineChartController.maxX,
+                minY: scrollLineChartController.fixedMinY,
+                maxY: scrollLineChartController.fixedMaxY,
               ),
             ),
           ),
