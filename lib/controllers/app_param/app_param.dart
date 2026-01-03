@@ -80,6 +80,9 @@ class AppParamState with _$AppParamState {
 
     @Default(<ScrollLineChartModel>[]) List<ScrollLineChartModel> keepMoneySumList,
 
+    @Default(<Map<String, String>>[]) List<Map<String, String>> keepNenkinKikinDataList,
+    @Default(<Map<String, String>>[]) List<Map<String, String>> keepInsuranceDataList,
+
     ///
     @Default('') String homeTabYearMonth,
 
@@ -278,6 +281,14 @@ class AppParam extends _$AppParam {
   ///
   void setKeepMoneySumList({required List<ScrollLineChartModel> list}) =>
       state = state.copyWith(keepMoneySumList: list);
+
+  ///
+  void setKeepNenkinKikinDataList({required List<Map<String, String>> list}) =>
+      state = state.copyWith(keepNenkinKikinDataList: list);
+
+  ///
+  void setKeepInsuranceDataList({required List<Map<String, String>> list}) =>
+      state = state.copyWith(keepInsuranceDataList: list);
 
   //===================================================
 

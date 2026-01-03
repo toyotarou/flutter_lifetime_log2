@@ -534,13 +534,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             ),
           );
         } else {
+          appParamNotifier.setKeepNenkinKikinDataList(list: nenkinKikinDataList);
+          appParamNotifier.setKeepInsuranceDataList(list: insuranceDataList);
+
           return LifetimeDialog(
             context: context,
-            widget: MonthlyAssetsDisplayAlert(
-              yearmonth: appParamState.homeTabYearMonth,
-              insuranceDataList: insuranceDataList,
-              nenkinKikinDataList: nenkinKikinDataList,
-            ),
+            widget: MonthlyAssetsDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
           );
         }
     }

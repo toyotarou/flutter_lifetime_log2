@@ -20,16 +20,9 @@ import 'toushi_shintaku_data_update_alert.dart';
 import 'yearly_assets_display_alert.dart';
 
 class MonthlyAssetsDisplayAlert extends ConsumerStatefulWidget {
-  const MonthlyAssetsDisplayAlert({
-    super.key,
-    required this.yearmonth,
-    required this.nenkinKikinDataList,
-    required this.insuranceDataList,
-  });
+  const MonthlyAssetsDisplayAlert({super.key, required this.yearmonth});
 
   final String yearmonth;
-  final List<Map<String, String>> nenkinKikinDataList;
-  final List<Map<String, String>> insuranceDataList;
 
   @override
   ConsumerState<MonthlyAssetsDisplayAlert> createState() => _MonthlyAssetsDisplayAlertState();
@@ -95,11 +88,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                               onTap: () {
                                 LifetimeDialog(
                                   context: context,
-                                  widget: YearlyAssetsDisplayAlert(
-                                    date: '${widget.yearmonth}-01',
-                                    insuranceDataList: widget.insuranceDataList,
-                                    nenkinKikinDataList: widget.nenkinKikinDataList,
-                                  ),
+                                  widget: YearlyAssetsDisplayAlert(date: '${widget.yearmonth}-01'),
                                 );
                               },
                               child: const Icon(Icons.calendar_view_month),
@@ -290,10 +279,12 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         );
       }
 
-      final int insurancePassedMonths = AssetsCalc.countPaidUpTo(data: widget.insuranceDataList, date: date) + 102;
+      final int insurancePassedMonths =
+          AssetsCalc.countPaidUpTo(data: appParamState.keepInsuranceDataList, date: date) + 102;
       lastInsuranceSum = insurancePassedMonths * (55880 * 0.7).toInt();
 
-      final int nenkinKikinPassedMonths = AssetsCalc.countPaidUpTo(data: widget.nenkinKikinDataList, date: date) + 32;
+      final int nenkinKikinPassedMonths =
+          AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: date) + 32;
       final int nenkinKikinSum = nenkinKikinPassedMonths * (26625 * 0.7).toInt();
 
       monthlyAssetsMap[key] = <String, int>{

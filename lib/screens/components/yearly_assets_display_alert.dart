@@ -17,17 +17,9 @@ import '../parts/lifetime_dialog.dart';
 import 'yearly_assets_graph_alert.dart';
 
 class YearlyAssetsDisplayAlert extends ConsumerStatefulWidget {
-  const YearlyAssetsDisplayAlert({
-    super.key,
-    required this.date,
-    required this.insuranceDataList,
-    required this.nenkinKikinDataList,
-  });
+  const YearlyAssetsDisplayAlert({super.key, required this.date});
 
   final String date;
-
-  final List<Map<String, String>> insuranceDataList;
-  final List<Map<String, String>> nenkinKikinDataList;
 
   @override
   ConsumerState<YearlyAssetsDisplayAlert> createState() => _YearlyAssetsDisplayPageState();
@@ -368,10 +360,12 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       }
       final int money = lastMoneySum;
 
-      final int insurancePassedMonths = AssetsCalc.countPaidUpTo(data: widget.insuranceDataList, date: d) + 102;
+      final int insurancePassedMonths =
+          AssetsCalc.countPaidUpTo(data: appParamState.keepInsuranceDataList, date: d) + 102;
       final int insuranceSum = insurancePassedMonths * (55880 * 0.7).toInt();
 
-      final int nenkinKikinPassedMonths = AssetsCalc.countPaidUpTo(data: widget.nenkinKikinDataList, date: d) + 32;
+      final int nenkinKikinPassedMonths =
+          AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: d) + 32;
       final int nenkinKikinSum = nenkinKikinPassedMonths * (26625 * 0.7).toInt();
 
       final int gold80 = (lastGoldSum * assetRate).toInt();
