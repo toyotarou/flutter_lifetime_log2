@@ -111,12 +111,18 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
                 ),
               ),
             ] else ...<Widget>[
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text('no data', style: TextStyle(color: Colors.yellowAccent)),
-                  SizedBox.shrink(),
-                ],
+              const Expanded(
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text('no data', style: TextStyle(color: Colors.yellowAccent)),
+                        SizedBox.shrink(),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ],
