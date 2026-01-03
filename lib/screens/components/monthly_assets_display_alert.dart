@@ -1,5 +1,6 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -30,7 +31,13 @@ class MonthlyAssetsDisplayAlert extends ConsumerStatefulWidget {
 
 class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplayAlert>
     with ControllersMixin<MonthlyAssetsDisplayAlert> {
-  final Utility utility = Utility();
+  static const int _itemCount = 100000;
+  static const int _initialIndex = _itemCount ~/ 2;
+
+  late final DateTime _baseMonth;
+  int currentIndex = _initialIndex;
+
+  Utility utility = Utility();
 
   bool todayStockExists = false;
   bool todayToushiShintakuRelationalIdBlankExists = false;
@@ -42,119 +49,182 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
   ///
   @override
+  void initState() {
+    super.initState();
+
+    _baseMonth = DateTime.parse('${widget.yearmonth}-01');
+  }
+
+  ///
+  DateTime _monthForIndex(int index) {
+    final int rawOffset = index - _initialIndex;
+    final int offset = -rawOffset;
+    return _addMonths(_baseMonth, offset);
+  }
+
+  ///
+  DateTime _addMonths(DateTime base, int deltaMonths) {
+    final int totalMonths = base.year * 12 + (base.month - 1) + deltaMonths;
+    final int newYear = totalMonths ~/ 12;
+    final int newMonth = (totalMonths % 12) + 1;
+    return DateTime(newYear, newMonth);
+  }
+
+  ///
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Stack(
-                  children: <Widget>[
-                    Positioned(top: 20, right: 5, left: 5, child: Center(child: Text(widget.yearmonth))),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            IconButton(
-                              onPressed: () {
-                                autoScrollController.scrollToIndex(
-                                  monthlyAssetsList.length,
-                                  preferPosition: AutoScrollPosition.end,
-                                  duration: const Duration(milliseconds: 300),
-                                );
-                              },
-                              icon: const Icon(Icons.arrow_downward),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                autoScrollController.scrollToIndex(
-                                  0,
-                                  preferPosition: AutoScrollPosition.begin,
-                                  duration: const Duration(milliseconds: 300),
-                                );
-                              },
-                              icon: const Icon(Icons.arrow_upward),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: () {
-                                LifetimeDialog(
-                                  context: context,
-                                  widget: YearlyAssetsDisplayAlert(date: '${widget.yearmonth}-01'),
-                                );
-                              },
-                              child: const Icon(Icons.calendar_view_month),
-                            ),
-                            const SizedBox(width: 20),
-                            GestureDetector(
-                              onTap: () {
-                                if (DateTime.now().year.toString() == widget.yearmonth.split('-')[0] &&
-                                    DateTime.now().month.toString() == widget.yearmonth.split('-')[1] &&
-                                    DateTime.now().day == 1) {
-                                  // ignore: always_specify_types
-                                  Future.delayed(
-                                    Duration.zero,
-                                    () => error_dialog(
-                                      // ignore: use_build_context_synchronously
-                                      context: context,
-                                      title: '表示できません。',
-                                      content: 'データが1日分しかないため、assets graphが表示できません。',
-                                    ),
-                                  );
-                                  return;
-                                }
+      body: CarouselSlider.builder(
+        itemCount: _itemCount,
+        initialPage: _initialIndex,
+        slideTransform: const CubeTransform(),
+        onSlideChanged: (int index) => setState(() => currentIndex = index),
+        slideBuilder: (int index) => makeMonthlyWorktimeSlide(index),
+      ),
+    );
+  }
 
-                                LifetimeDialog(
+  ///
+  Widget makeMonthlyWorktimeSlide(int index) {
+    final DateTime genDate = _monthForIndex(index);
+
+    final bool hasData = appParamState.keepMoneyMap.containsKey(
+      '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
+    );
+
+    return DefaultTextStyle(
+      style: const TextStyle(fontSize: 12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.25), borderRadius: BorderRadius.circular(14)),
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text('${genDate.year}-${genDate.month.toString().padLeft(2, '0')}'),
+
+                const SizedBox.shrink(),
+              ],
+            ),
+
+            Stack(
+              children: <Widget>[
+                Positioned(top: 20, right: 5, left: 5, child: Center(child: Text(genDate.yyyymmdd))),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        IconButton(
+                          onPressed: () {
+                            autoScrollController.scrollToIndex(
+                              monthlyAssetsList.length,
+                              preferPosition: AutoScrollPosition.end,
+                              duration: const Duration(milliseconds: 300),
+                            );
+                          },
+                          icon: const Icon(Icons.arrow_downward),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            autoScrollController.scrollToIndex(
+                              0,
+                              preferPosition: AutoScrollPosition.begin,
+                              duration: const Duration(milliseconds: 300),
+                            );
+                          },
+                          icon: const Icon(Icons.arrow_upward),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            LifetimeDialog(
+                              context: context,
+                              widget: YearlyAssetsDisplayAlert(
+                                date: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
+                              ),
+                            );
+                          },
+                          child: const Icon(Icons.calendar_view_month),
+                        ),
+                        const SizedBox(width: 20),
+                        GestureDetector(
+                          onTap: () {
+                            if (DateTime.now().year == genDate.year &&
+                                DateTime.now().month == genDate.month &&
+                                DateTime.now().day == 1) {
+                              // ignore: always_specify_types
+                              Future.delayed(
+                                Duration.zero,
+                                () => error_dialog(
+                                  // ignore: use_build_context_synchronously
                                   context: context,
-                                  widget: MonthlyAssetsGraphAlert(
-                                    yearmonth: widget.yearmonth,
-                                    monthlyGraphAssetsMap: monthlyGraphAssetsMap,
-                                  ),
-                                );
-                              },
-                              child: const Icon(Icons.graphic_eq),
-                            ),
-                          ],
+                                  title: '表示できません。',
+                                  content: 'データが1日分しかないため、assets graphが表示できません。',
+                                ),
+                              );
+                              return;
+                            }
+
+                            LifetimeDialog(
+                              context: context,
+                              widget: MonthlyAssetsGraphAlert(
+                                yearmonth: genDate.yyyymm,
+                                monthlyGraphAssetsMap: monthlyGraphAssetsMap,
+                              ),
+                            );
+                          },
+                          child: const Icon(Icons.graphic_eq),
                         ),
                       ],
                     ),
                   ],
                 ),
-                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-                Expanded(child: displayMonthlyAssetsList()),
               ],
             ),
-          ),
+
+            Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+            if (hasData) ...<Widget>[Expanded(child: displayMonthlyAssetsList(genDate: genDate))] else ...<Widget>[
+              const Expanded(
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text('no data', style: TextStyle(color: Colors.yellowAccent)),
+                        SizedBox.shrink(),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
   }
 
   ///
-  Widget displayMonthlyAssetsList() {
+  Widget displayMonthlyAssetsList({required DateTime genDate}) {
     monthlyAssetsList.clear();
     monthlyGraphAssetsMap.clear();
 
-    final Map<String, Map<String, int>> monthlyAssetsMap = _buildMonthlyAssetsMap();
+    final Map<String, Map<String, int>> monthlyAssetsMap = _buildMonthlyAssetsMap(genDate: genDate);
 
-    final int endDay = DateTime(
-      widget.yearmonth.split('-')[0].toInt(),
-      widget.yearmonth.split('-')[1].toInt() + 1,
-      0,
-    ).day;
+    final int endDay = DateTime(genDate.year, genDate.month + 1, 0).day;
 
     int lastMoneySum = 0;
 
     for (int day = 1; day <= endDay; day++) {
-      final String date = '${widget.yearmonth}-${day.toString().padLeft(2, '0')}';
+      final String date = '${genDate.yyyymm}-${day.toString().padLeft(2, '0')}';
+
       final bool isBeforeDate = DateTime.parse(date).isBeforeOrSameDate(DateTime.now());
 
       final DateTime beforeDate = DateTime(
@@ -236,12 +306,12 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   }
 
   ///
-  Map<String, Map<String, int>> _buildMonthlyAssetsMap() {
+  Map<String, Map<String, int>> _buildMonthlyAssetsMap({required DateTime genDate}) {
     final Map<String, Map<String, int>> monthlyAssetsMap = <String, Map<String, int>>{};
 
     final DateTime tenDaysAgoFromBeforeMonthEndDay = DateTime(
-      widget.yearmonth.split('-')[0].toInt(),
-      widget.yearmonth.split('-')[1].toInt(),
+      genDate.year,
+      genDate.month,
       0,
     ).add(const Duration(days: 10 * -1));
 
@@ -356,47 +426,57 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Stack(
                     children: <Widget>[
+                      Positioned(
+                        right: 5,
+                        child: Text(date, style: const TextStyle(color: Colors.grey)),
+                      ),
+
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(
-                                isBeforeDate ? total.toString().toCurrency() : '-',
-                                style: const TextStyle(fontSize: 24),
-                              ),
-                              if (isBeforeDate) ...<Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    if ((totalBefore - total) < 0) ...<Widget>[
-                                      const Text('+', style: TextStyle(color: Colors.yellowAccent)),
-                                    ],
-                                    Text(
-                                      ((totalBefore - total) * -1).toString().toCurrency(),
-                                      style: const TextStyle(color: Colors.yellowAccent),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  Text(
+                                    isBeforeDate ? total.toString().toCurrency() : '-',
+                                    style: const TextStyle(fontSize: 24),
+                                  ),
+                                  if (isBeforeDate) ...<Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        if ((totalBefore - total) < 0) ...<Widget>[
+                                          const Text('+', style: TextStyle(color: Colors.yellowAccent)),
+                                        ],
+                                        Text(
+                                          ((totalBefore - total) * -1).toString().toCurrency(),
+                                          style: const TextStyle(color: Colors.yellowAccent),
+                                        ),
+                                      ],
                                     ),
                                   ],
-                                ),
+                                ],
+                              ),
+                              if (isBeforeDate) ...<Widget>[
+                                const SizedBox(width: 5),
+                                _dispUpDownMark(before: totalBefore, after: total, size: 24),
                               ],
                             ],
                           ),
-                          if (isBeforeDate) ...<Widget>[
-                            const SizedBox(width: 5),
-                            _dispUpDownMark(before: totalBefore, after: total, size: 24),
-                          ],
+                          if (date == DateTime.now().yyyymmdd)
+                            const Text('TODAY', style: TextStyle(color: Colors.orangeAccent))
+                          else
+                            const Text(''),
                         ],
                       ),
-                      if (date == DateTime.now().yyyymmdd)
-                        const Text('TODAY', style: TextStyle(color: Colors.orangeAccent))
-                      else
-                        const Text(''),
                     ],
                   ),
+
                   priceDisplayParts(
                     date: date,
                     isBeforeDate: isBeforeDate,
