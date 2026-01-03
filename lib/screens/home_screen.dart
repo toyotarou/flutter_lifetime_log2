@@ -497,7 +497,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             ),
           );
         } else {
-          return LifetimeDialog(context: context, widget: const WorkInfoMonthlyDisplayAlert());
+          return LifetimeDialog(
+            context: context,
+            widget: WorkInfoMonthlyDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
+          );
         }
 
       case 3:

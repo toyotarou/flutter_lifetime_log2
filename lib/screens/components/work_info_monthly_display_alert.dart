@@ -12,7 +12,9 @@ import '../parts/lifetime_dialog.dart';
 import 'work_info_yearly_display_alert.dart';
 
 class WorkInfoMonthlyDisplayAlert extends ConsumerStatefulWidget {
-  const WorkInfoMonthlyDisplayAlert({super.key});
+  const WorkInfoMonthlyDisplayAlert({super.key, required this.yearmonth});
+
+  final String yearmonth;
 
   @override
   ConsumerState<WorkInfoMonthlyDisplayAlert> createState() => _WorkInfoMonthlyDisplayAlertState();
@@ -32,8 +34,8 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
   @override
   void initState() {
     super.initState();
-    final DateTime now = DateTime.now();
-    _baseMonth = DateTime(now.year, now.month);
+
+    _baseMonth = DateTime.parse('${widget.yearmonth}-01');
   }
 
   ///
