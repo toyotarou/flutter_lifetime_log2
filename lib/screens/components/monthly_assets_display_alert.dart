@@ -95,118 +95,126 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
     return DefaultTextStyle(
       style: const TextStyle(fontSize: 12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-        decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.25), borderRadius: BorderRadius.circular(14)),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('${genDate.year}-${genDate.month.toString().padLeft(2, '0')}'),
+      child: Column(
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            height: 5,
+            decoration: BoxDecoration(color: Colors.orangeAccent.withValues(alpha: 0.2)),
+          ),
 
-                const SizedBox.shrink(),
-              ],
-            ),
-
-            Stack(
-              children: <Widget>[
-                Positioned(top: 20, right: 5, left: 5, child: Center(child: Text(genDate.yyyymmdd))),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        IconButton(
-                          onPressed: () {
-                            autoScrollController.scrollToIndex(
-                              monthlyAssetsList.length,
-                              preferPosition: AutoScrollPosition.end,
-                              duration: const Duration(milliseconds: 300),
-                            );
-                          },
-                          icon: const Icon(Icons.arrow_downward),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            autoScrollController.scrollToIndex(
-                              0,
-                              preferPosition: AutoScrollPosition.begin,
-                              duration: const Duration(milliseconds: 300),
-                            );
-                          },
-                          icon: const Icon(Icons.arrow_upward),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            LifetimeDialog(
-                              context: context,
-                              widget: YearlyAssetsDisplayAlert(
-                                date: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
-                              ),
-                            );
-                          },
-                          child: const Icon(Icons.calendar_view_month),
-                        ),
-                        const SizedBox(width: 20),
-                        GestureDetector(
-                          onTap: () {
-                            if (DateTime.now().year == genDate.year &&
-                                DateTime.now().month == genDate.month &&
-                                DateTime.now().day == 1) {
-                              // ignore: always_specify_types
-                              Future.delayed(
-                                Duration.zero,
-                                () => error_dialog(
-                                  // ignore: use_build_context_synchronously
-                                  context: context,
-                                  title: '表示できません。',
-                                  content: 'データが1日分しかないため、assets graphが表示できません。',
-                                ),
-                              );
-                              return;
-                            }
-
-                            LifetimeDialog(
-                              context: context,
-                              widget: MonthlyAssetsGraphAlert(
-                                yearmonth: genDate.yyyymm,
-                                monthlyGraphAssetsMap: monthlyGraphAssetsMap,
-                              ),
-                            );
-                          },
-                          child: const Icon(Icons.graphic_eq),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-            if (hasData) ...<Widget>[Expanded(child: displayMonthlyAssetsList(genDate: genDate))] else ...<Widget>[
-              const Expanded(
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text('no data', style: TextStyle(color: Colors.yellowAccent)),
-                        SizedBox.shrink(),
-                      ],
-                    ),
-                  ],
-                ),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.only(bottom: 18, right: 10, left: 10),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.25),
+                borderRadius: BorderRadius.circular(14),
               ),
-            ],
-          ],
-        ),
+              child: Column(
+                children: <Widget>[
+                  Stack(
+                    children: <Widget>[
+                      Positioned(top: 20, right: 5, left: 5, child: Center(child: Text(genDate.yyyymmdd))),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              IconButton(
+                                onPressed: () {
+                                  autoScrollController.scrollToIndex(
+                                    monthlyAssetsList.length,
+                                    preferPosition: AutoScrollPosition.end,
+                                    duration: const Duration(milliseconds: 300),
+                                  );
+                                },
+                                icon: const Icon(Icons.arrow_downward),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  autoScrollController.scrollToIndex(
+                                    0,
+                                    preferPosition: AutoScrollPosition.begin,
+                                    duration: const Duration(milliseconds: 300),
+                                  );
+                                },
+                                icon: const Icon(Icons.arrow_upward),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: <Widget>[
+                              GestureDetector(
+                                onTap: () {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: YearlyAssetsDisplayAlert(
+                                      date: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
+                                    ),
+                                  );
+                                },
+                                child: const Icon(Icons.calendar_view_month),
+                              ),
+                              const SizedBox(width: 20),
+                              GestureDetector(
+                                onTap: () {
+                                  if (DateTime.now().year == genDate.year &&
+                                      DateTime.now().month == genDate.month &&
+                                      DateTime.now().day == 1) {
+                                    // ignore: always_specify_types
+                                    Future.delayed(
+                                      Duration.zero,
+                                      () => error_dialog(
+                                        // ignore: use_build_context_synchronously
+                                        context: context,
+                                        title: '表示できません。',
+                                        content: 'データが1日分しかないため、assets graphが表示できません。',
+                                      ),
+                                    );
+                                    return;
+                                  }
+
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: MonthlyAssetsGraphAlert(
+                                      yearmonth: genDate.yyyymm,
+                                      monthlyGraphAssetsMap: monthlyGraphAssetsMap,
+                                    ),
+                                  );
+                                },
+                                child: const Icon(Icons.graphic_eq),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                  if (hasData) ...<Widget>[
+                    Expanded(child: displayMonthlyAssetsList(genDate: genDate)),
+                  ] else ...<Widget>[
+                    const Expanded(
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text('no data', style: TextStyle(color: Colors.yellowAccent)),
+                              SizedBox.shrink(),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

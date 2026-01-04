@@ -164,7 +164,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                         const SizedBox.shrink(),
                         Row(
                           children: <Widget>[
-                            _dispUpDownMark(before: 0, after: lastAssets, size: 18),
+                            _dispUpDownMark(before: 0, after: totalDiff, size: 18),
                             const SizedBox(width: 10),
 
                             Text(totalDiff.toString().toCurrency(), style: const TextStyle(color: Colors.orange)),

@@ -103,7 +103,10 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  const Text('monthly assets graph'),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[const Text('monthly assets graph'), Text(widget.yearmonth)],
+                  ),
                   Row(
                     children: <Widget>[
                       if (zoomMode) ...<Widget>[
