@@ -216,7 +216,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
   ];
 
   ///
-  String _yLabel(double value) => value.toInt().toString();
+  String _yLabel(double value) => value.toInt().toString().toCurrency();
 
   ///
   String _buildSpotLabel(FlSpot spot) {
@@ -334,7 +334,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
               return SideTitleWidget(
                 axisSide: meta.axisSide,
                 space: 6,
-                child: Text(_yLabel(value), style: TextStyle(color: Colors.grey.withValues(alpha: 0.9), fontSize: 10)),
+                child: Text(_yLabel(value), style: const TextStyle(fontSize: 10)),
               );
             },
           ),
@@ -351,7 +351,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
               return SideTitleWidget(
                 axisSide: meta.axisSide,
                 space: 6,
-                child: Text(_yLabel(value), style: TextStyle(color: Colors.grey.withValues(alpha: 0.9), fontSize: 10)),
+                child: Text(_yLabel(value), style: const TextStyle(fontSize: 10)),
               );
             },
           ),

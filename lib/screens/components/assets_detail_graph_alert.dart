@@ -376,6 +376,14 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         ///
         gridData: FlGridData(
           verticalInterval: 1,
+
+          getDrawingHorizontalLine: (double value) {
+            return FlLine(
+              color: (value == 0.0) ? Colors.greenAccent.withOpacity(0.8) : Colors.white.withOpacity(0.2),
+              strokeWidth: (value == 0.0) ? 3 : 1,
+            );
+          },
+
           getDrawingVerticalLine: (double value) {
             final String date = dateList[value.toInt()];
 
@@ -528,6 +536,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                       LifetimeDialog(
                         context: context,
                         widget: ScrollLineChart(
+                          name: 'gold',
                           startDate: DateTime.parse(sortedKeys[0]),
                           windowDays: 35,
                           pixelsPerDay: 16.0,
@@ -631,7 +640,9 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
                               LifetimeDialog(
                                 context: context,
+
                                 widget: ScrollLineChart(
+                                  name: '[${element2.ticker}] ${element2.name}',
                                   startDate: DateTime.parse('${sorted[0].year}-${sorted[0].month}-${sorted[0].day}'),
                                   windowDays: 35,
                                   pixelsPerDay: 16.0,
@@ -804,6 +815,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                                 LifetimeDialog(
                                   context: context,
                                   widget: ScrollLineChart(
+                                    name: '[${element2.relationalId}] ${element2.name}',
                                     startDate: DateTime.parse('${sorted[0].year}-${sorted[0].month}-${sorted[0].day}'),
                                     windowDays: 35,
                                     pixelsPerDay: 16.0,

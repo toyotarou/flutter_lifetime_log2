@@ -12,6 +12,7 @@ import '../../models/common/scroll_line_chart_model.dart';
 class ScrollLineChart extends StatefulWidget {
   const ScrollLineChart({
     super.key,
+    required this.name,
     required this.startDate,
     required this.windowDays,
     required this.pixelsPerDay,
@@ -23,6 +24,8 @@ class ScrollLineChart extends StatefulWidget {
     this.dataSpots,
     required this.scrollLineChartModelList,
   });
+
+  final String name;
 
   final DateTime startDate;
   final int windowDays;
@@ -217,6 +220,13 @@ class _ScrollLineChartState extends State<ScrollLineChart> {
                   scrollLineChartController.jumpToMonth(monthStart);
                 },
               ),
+
+              const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.topLeft,
+                child: Text(widget.name, style: const TextStyle(fontSize: 12, color: Colors.greenAccent)),
+              ),
+
               const SizedBox(height: 10),
               Expanded(
                 child: TapeChartFrame(
@@ -660,7 +670,17 @@ class ScrollLineChartController extends ChangeNotifier {
       maxX: maxX0,
       minY: fixedMinY,
       maxY: fixedMaxY,
-      gridData: const FlGridData(show: false),
+      gridData: FlGridData(
+        drawVerticalLine: false,
+        horizontalInterval: fixedIntervalY,
+
+        getDrawingHorizontalLine: (double value) {
+          return FlLine(
+            color: (value == 0.0) ? Colors.greenAccent.withOpacity(0.8) : Colors.white.withOpacity(0.2),
+            strokeWidth: (value == 0.0) ? 3 : 1,
+          );
+        },
+      ),
       titlesData: FlTitlesData(
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
@@ -692,7 +712,7 @@ class ScrollLineChartController extends ChangeNotifier {
       maxY: fixedMaxY,
       lineTouchData: const LineTouchData(enabled: false, handleBuiltInTouches: false),
       borderData: FlBorderData(show: false),
-      gridData: FlGridData(drawVerticalLine: false, horizontalInterval: fixedIntervalY),
+      gridData: const FlGridData(show: false),
       titlesData: FlTitlesData(
         topTitles: const AxisTitles(),
         bottomTitles: AxisTitles(
@@ -709,12 +729,13 @@ class ScrollLineChartController extends ChangeNotifier {
             reservedSize: 60,
             interval: fixedIntervalY,
             getTitlesWidget: (double value, TitleMeta meta) {
-              if (value == fixedMinY || value == fixedMaxY) {
-                return const SizedBox.shrink();
-              }
-              return Padding(
-                padding: const EdgeInsets.only(right: 6),
-                child: Text(value.toInt().toString(), style: const TextStyle(fontSize: 11), textAlign: TextAlign.right),
+              return Container(
+                padding: (value == fixedMaxY) ? const EdgeInsets.only(top: 15) : null,
+                alignment: Alignment.topLeft,
+                child: Text(
+                  value.toInt().toString().toCurrency(),
+                  style: TextStyle(fontSize: 10, color: (value == fixedMaxY) ? Colors.orangeAccent : Colors.white),
+                ),
               );
             },
           ),
@@ -725,12 +746,13 @@ class ScrollLineChartController extends ChangeNotifier {
             reservedSize: 60,
             interval: fixedIntervalY,
             getTitlesWidget: (double value, TitleMeta meta) {
-              if (value == fixedMinY || value == fixedMaxY) {
-                return const SizedBox.shrink();
-              }
-              return Padding(
-                padding: const EdgeInsets.only(left: 6),
-                child: Text(value.toInt().toString(), style: const TextStyle(fontSize: 11), textAlign: TextAlign.right),
+              return Container(
+                padding: (value == fixedMaxY) ? const EdgeInsets.only(top: 15) : null,
+                alignment: Alignment.topRight,
+                child: Text(
+                  value.toInt().toString().toCurrency(),
+                  style: TextStyle(fontSize: 10, color: (value == fixedMaxY) ? Colors.orangeAccent : Colors.white),
+                ),
               );
             },
           ),

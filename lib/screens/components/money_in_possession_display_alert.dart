@@ -97,6 +97,7 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
                             LifetimeDialog(
                               context: context,
                               widget: ScrollLineChart(
+                                name: 'money',
                                 startDate: startDate,
                                 windowDays: 35,
                                 pixelsPerDay: 16.0,
