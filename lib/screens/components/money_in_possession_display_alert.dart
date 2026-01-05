@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -5,7 +7,9 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/common/scroll_line_chart_model.dart';
+import '../../models/common/scroll_line_chart_y_axis_range_model.dart';
 import '../../models/money_model.dart';
+import '../../utility/functions.dart';
 import '../parts/lifetime_dialog.dart';
 import '../parts/scroll_line_chart.dart';
 import 'money_in_possession_graph_alert.dart';
@@ -80,18 +84,27 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
                       children: <Widget>[
                         GestureDetector(
                           onTap: () {
+                            final List<int> sumList = <int>[];
+                            for (final ScrollLineChartModel aaa in appParamState.keepMoneySumList) {
+                              sumList.add(aaa.sum);
+                            }
+
+                            final ScrollLineChartYAxisRangeModel yAxisRange = calcYAxisRange(
+                              minValue: sumList.reduce(min).toDouble(),
+                              maxValue: sumList.reduce(max).toDouble(),
+                            );
+
                             LifetimeDialog(
                               context: context,
                               widget: ScrollLineChart(
                                 startDate: startDate,
                                 windowDays: 35,
                                 pixelsPerDay: 16.0,
-                                fixedMinY: 0,
-                                fixedMaxY: 10000000,
-                                fixedIntervalY: 1000000,
+                                fixedMinY: yAxisRange.min,
+                                fixedMaxY: yAxisRange.max,
+                                fixedIntervalY: yAxisRange.interval,
                                 seed: DateTime.now().year,
                                 labelShowScaleThreshold: 3.0,
-
                                 scrollLineChartModelList: appParamState.keepMoneySumList,
                               ),
                             );

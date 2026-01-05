@@ -1,9 +1,11 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../extensions/extensions.dart';
+import '../models/common/scroll_line_chart_y_axis_range_model.dart';
 import '../models/lifetime_model.dart';
 import '../models/municipal_model.dart';
 
@@ -310,4 +312,31 @@ Polygon? getColorPaintPolygon({required List<List<List<double>>> polygon, requir
     borderColor: color.withValues(alpha: 0.8),
     borderStrokeWidth: 1.5,
   );
+}
+
+ScrollLineChartYAxisRangeModel calcYAxisRange({required double minValue, required double maxValue}) {
+  if (minValue == maxValue) {
+    final double padding = max(1.0, minValue.abs() * 0.1);
+    return ScrollLineChartYAxisRangeModel(min: minValue - padding, max: maxValue + padding, interval: padding);
+  }
+
+  final double range = maxValue - minValue;
+
+  final double exponent = pow(10, (log(range) / ln10).floor()).toDouble();
+
+  final List<double> candidates = <double>[1 * exponent, 2 * exponent, 5 * exponent, 10 * exponent];
+
+  double interval = candidates.first;
+  for (final double c in candidates) {
+    final double tickCount = range / c;
+    if (tickCount <= 8) {
+      interval = c;
+      break;
+    }
+  }
+
+  final double yMin = (minValue / interval).floor() * interval;
+  final double yMax = (maxValue / interval).ceil() * interval;
+
+  return ScrollLineChartYAxisRangeModel(min: yMin, max: yMax, interval: interval);
 }

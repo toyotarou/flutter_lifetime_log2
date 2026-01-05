@@ -7,9 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/common/scroll_line_chart_model.dart';
+import '../../models/common/scroll_line_chart_y_axis_range_model.dart';
 import '../../models/gold_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
+import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import '../parts/scroll_line_chart.dart';
@@ -84,7 +86,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
                 //                ],
                 SizedBox(
-                  height: (widget.title == 'gold') ? context.screenSize.height * 0.7 : context.screenSize.height * 0.5,
+                  height: (widget.title == 'gold') ? context.screenSize.height * 0.65 : context.screenSize.height * 0.5,
                   child: Stack(
                     children: <Widget>[
                       if (zoomMode)
@@ -518,7 +520,10 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                         }
                       }
 
-                      final double fixedY = makeFixedY(sumList: sumList);
+                      final ScrollLineChartYAxisRangeModel yAxisRange = calcYAxisRange(
+                        minValue: sumList.reduce(min).toDouble(),
+                        maxValue: sumList.reduce(max).toDouble(),
+                      );
 
                       LifetimeDialog(
                         context: context,
@@ -526,9 +531,9 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                           startDate: DateTime.parse(sortedKeys[0]),
                           windowDays: 35,
                           pixelsPerDay: 16.0,
-                          fixedMinY: fixedY * -1,
-                          fixedMaxY: fixedY,
-                          fixedIntervalY: fixedY / 10,
+                          fixedMinY: yAxisRange.min,
+                          fixedMaxY: yAxisRange.max,
+                          fixedIntervalY: yAxisRange.interval,
                           seed: DateTime.now().year,
                           labelShowScaleThreshold: 3.0,
                           scrollLineChartModelList: scrollLineChartModelList,
@@ -619,7 +624,10 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                                 sumList.add(sum);
                               }
 
-                              final double fixedY = makeFixedY(sumList: sumList);
+                              final ScrollLineChartYAxisRangeModel yAxisRange = calcYAxisRange(
+                                minValue: sumList.reduce(min).toDouble(),
+                                maxValue: sumList.reduce(max).toDouble(),
+                              );
 
                               LifetimeDialog(
                                 context: context,
@@ -627,12 +635,11 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                                   startDate: DateTime.parse('${sorted[0].year}-${sorted[0].month}-${sorted[0].day}'),
                                   windowDays: 35,
                                   pixelsPerDay: 16.0,
-                                  fixedMinY: fixedY * -1,
-                                  fixedMaxY: fixedY,
-                                  fixedIntervalY: fixedY / 10,
+                                  fixedMinY: yAxisRange.min,
+                                  fixedMaxY: yAxisRange.max,
+                                  fixedIntervalY: yAxisRange.interval,
                                   seed: DateTime.now().year,
                                   labelShowScaleThreshold: 3.0,
-
                                   scrollLineChartModelList: scrollLineChartModelList,
                                 ),
                               );
@@ -789,7 +796,10 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                                   sumList.add(sum);
                                 }
 
-                                final double fixedY = makeFixedY(sumList: sumList);
+                                final ScrollLineChartYAxisRangeModel yAxisRange = calcYAxisRange(
+                                  minValue: sumList.reduce(min).toDouble(),
+                                  maxValue: sumList.reduce(max).toDouble(),
+                                );
 
                                 LifetimeDialog(
                                   context: context,
@@ -797,12 +807,11 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                                     startDate: DateTime.parse('${sorted[0].year}-${sorted[0].month}-${sorted[0].day}'),
                                     windowDays: 35,
                                     pixelsPerDay: 16.0,
-                                    fixedMinY: fixedY * -1,
-                                    fixedMaxY: fixedY,
-                                    fixedIntervalY: fixedY / 10,
+                                    fixedMinY: yAxisRange.min,
+                                    fixedMaxY: yAxisRange.max,
+                                    fixedIntervalY: yAxisRange.interval,
                                     seed: DateTime.now().year,
                                     labelShowScaleThreshold: 3.0,
-
                                     scrollLineChartModelList: scrollLineChartModelList,
                                   ),
                                 );
