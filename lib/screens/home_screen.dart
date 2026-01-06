@@ -42,6 +42,7 @@ import 'components/monthly_money_spend_display_alert.dart';
 import 'components/salary_list_alert.dart';
 import 'components/spend_each_year_display_alert.dart';
 import 'components/stamp_rally_list_alert.dart';
+import 'components/walk_data_list_alert.dart';
 import 'components/work_info_monthly_display_alert.dart';
 import 'page/monthly_lifetime_display_page.dart';
 import 'parts/error_dialog.dart';
@@ -54,7 +55,7 @@ const List<IconData> bottomNavigationMenuIcons = <IconData>[
   Icons.work,
   Icons.money,
   FontAwesomeIcons.sun,
-  // Icons.filter_6_outlined,
+  FontAwesomeIcons.squareFontAwesomeStroke,
   // Icons.filter_7_outlined,
   // Icons.filter_8_outlined,
   // Icons.filter_9_outlined,
@@ -543,6 +544,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
           return LifetimeDialog(
             context: context,
             widget: MonthlyAssetsDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
+          );
+        }
+
+      case 5:
+        if (appParamState.keepWalkModelMap.isEmpty) {
+          // ignore: always_specify_types
+          Future.delayed(
+            Duration.zero,
+            () => error_dialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              title: '表示できません。',
+              content: 'appParamState.keepWalkModelMapが作成されていません。',
+            ),
+          );
+        } else {
+          return LifetimeDialog(
+            context: context,
+            widget: WalkDataListAlert(yearmonth: appParamState.homeTabYearMonth),
           );
         }
     }

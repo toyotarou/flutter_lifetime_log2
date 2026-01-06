@@ -26,18 +26,10 @@ import 'temple_list_display_alert.dart';
 import 'time_place_display_alert.dart';
 
 class LifetimeGeolocMapDisplayAlert extends ConsumerStatefulWidget {
-  const LifetimeGeolocMapDisplayAlert({
-    super.key,
-    required this.date,
-    this.geolocList,
-    this.temple,
-    this.transportation,
-  });
+  const LifetimeGeolocMapDisplayAlert({super.key, required this.date, this.geolocList});
 
   final String date;
   final List<GeolocModel>? geolocList;
-  final TempleModel? temple;
-  final TransportationModel? transportation;
 
   @override
   ConsumerState<LifetimeGeolocMapDisplayAlert> createState() => _LifetimeGeolocMapDisplayAlertState();
@@ -205,7 +197,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
               MarkerLayer(markers: markerList),
 
-              if (widget.transportation != null && widget.transportation!.spotDataModelListMap.isNotEmpty) ...<Widget>[
+              if (appParamState.keepTransportationMap[widget.date] != null &&
+                  appParamState.keepTransportationMap[widget.date]!.spotDataModelListMap.isNotEmpty) ...<Widget>[
                 // ignore: always_specify_types
                 PolylineLayer(polylines: makeTransportationPolyline()),
               ],
@@ -260,15 +253,21 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                         ),
                       ),
 
-                      if (widget.temple != null) ...<Widget>[const SizedBox(height: 10), displayTempleNameList()],
+                      if (appParamState.keepTempleMap[widget.date] != null) ...<Widget>[
+                        const SizedBox(height: 10),
+                        displayTempleNameList(),
+                      ],
 
                       Row(
                         children: <Widget>[
-                          if (widget.transportation != null &&
-                              widget.transportation!.stationRouteList.isNotEmpty) ...<Widget>[
+                          if (appParamState.keepTransportationMap[widget.date] != null &&
+                              appParamState
+                                  .keepTransportationMap[widget.date]!
+                                  .stationRouteList
+                                  .isNotEmpty) ...<Widget>[
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: widget.transportation!.stationRouteList
+                              children: appParamState.keepTransportationMap[widget.date]!.stationRouteList
                                   .map((String e) => Text(e, style: const TextStyle(fontSize: 12)))
                                   .toList(),
                             ),
@@ -362,7 +361,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                           ),
                         ),
 
-                        if (widget.temple != null) ...<Widget>[
+                        if (appParamState.keepTempleMap[widget.date] != null) ...<Widget>[
                           const SizedBox(height: 10),
 
                           Container(
@@ -380,7 +379,10 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
                                 LifetimeDialog(
                                   context: context,
-                                  widget: TempleListDisplayAlert(date: widget.date, temple: widget.temple),
+                                  widget: TempleListDisplayAlert(
+                                    date: widget.date,
+                                    temple: appParamState.keepTempleMap[widget.date],
+                                  ),
 
                                   paddingTop: context.screenSize.height * 0.2,
                                   paddingRight: context.screenSize.width * 0.3,
@@ -516,7 +518,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   Widget displayTempleNameList() {
     final List<Widget> list = <Widget>[];
 
-    for (int i = 0; i < widget.temple!.templeDataList.length; i++) {
+    for (int i = 0; i < appParamState.keepTempleMap[widget.date]!.templeDataList.length; i++) {
       list.add(
         Stack(
           children: <Widget>[
@@ -541,7 +543,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   const SizedBox(width: 5),
 
                   Text(
-                    widget.temple!.templeDataList[i].name,
+                    appParamState.keepTempleMap[widget.date]!.templeDataList[i].name,
                     style: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -552,7 +554,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               right: 3,
               bottom: 3,
               child: Text(
-                widget.temple!.templeDataList[i].rank,
+                appParamState.keepTempleMap[widget.date]!.templeDataList[i].rank,
 
                 style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
@@ -572,7 +574,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
             backgroundColor: Colors.white,
 
             child: Text(
-              widget.temple!.templeDataList.length.toString().padLeft(2, '0'),
+              appParamState.keepTempleMap[widget.date]!.templeDataList.length.toString().padLeft(2, '0'),
 
               style: const TextStyle(fontSize: 12),
             ),
@@ -601,11 +603,12 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       lngList.add(element.longitude.toDouble());
     });
 
-    if (widget.temple != null && widget.temple!.templeDataList.length > 1) {
+    if (appParamState.keepTempleMap[widget.date] != null &&
+        appParamState.keepTempleMap[widget.date]!.templeDataList.length > 1) {
       latList.clear();
       lngList.clear();
 
-      for (final TempleDataModel element in widget.temple!.templeDataList) {
+      for (final TempleDataModel element in appParamState.keepTempleMap[widget.date]!.templeDataList) {
         latList.add(element.latitude.toDouble());
         lngList.add(element.longitude.toDouble());
       }
@@ -774,13 +777,15 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   // ignore: always_specify_types
   List<Polyline> makeTransportationPolyline() {
     return <Polyline<Object>>[
-      for (int i = 0; i < widget.transportation!.spotDataModelListMap.length; i++)
+      for (int i = 0; i < appParamState.keepTransportationMap[widget.date]!.spotDataModelListMap.length; i++)
         // ignore: always_specify_types
         Polyline(
-          points: widget.transportation!.spotDataModelListMap[i]!
+          points: appParamState.keepTransportationMap[widget.date]!.spotDataModelListMap[i]!
               .map((SpotDataModel t) => LatLng(t.lat.toDouble(), t.lng.toDouble()))
               .toList(),
-          color: (widget.transportation!.oufuku) ? twentyFourColor[0] : twentyFourColor[i % 24],
+          color: (appParamState.keepTransportationMap[widget.date]!.oufuku)
+              ? twentyFourColor[0]
+              : twentyFourColor[i % 24],
           strokeWidth: 5,
         ),
     ];
@@ -790,16 +795,19 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeTransportationGoalMarker() {
     transportationGoalMarkerList.clear();
 
-    if (widget.transportation != null && widget.transportation!.spotDataModelListMap.isNotEmpty) {
-      for (int i = 0; i < widget.transportation!.spotDataModelListMap.length; i++) {
-        final SpotDataModel lastValue = widget.transportation!.spotDataModelListMap[i]!.last;
+    if (appParamState.keepTransportationMap[widget.date] != null &&
+        appParamState.keepTransportationMap[widget.date]!.spotDataModelListMap.isNotEmpty) {
+      for (int i = 0; i < appParamState.keepTransportationMap[widget.date]!.spotDataModelListMap.length; i++) {
+        final SpotDataModel lastValue = appParamState.keepTransportationMap[widget.date]!.spotDataModelListMap[i]!.last;
 
         transportationGoalMarkerList.add(
           Marker(
             point: LatLng(lastValue.lat.toDouble(), lastValue.lng.toDouble()),
             child: Icon(
               Icons.flag,
-              color: (widget.transportation!.oufuku) ? twentyFourColor[0] : twentyFourColor[i % 24],
+              color: (appParamState.keepTransportationMap[widget.date]!.oufuku)
+                  ? twentyFourColor[0]
+                  : twentyFourColor[i % 24],
             ),
           ),
         );
@@ -810,16 +818,15 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   ///
   void makeTempleMarker() {
     templeMarkerList.clear();
-
-    if (widget.temple != null) {
-      for (int i = 0; i < widget.temple!.templeDataList.length; i++) {
+    if (appParamState.keepTempleMap[widget.date] != null) {
+      for (int i = 0; i < appParamState.keepTempleMap[widget.date]!.templeDataList.length; i++) {
         templeMarkerList.add(
           Marker(
             key: globalKeyList[i],
 
             point: LatLng(
-              widget.temple!.templeDataList[i].latitude.toDouble(),
-              widget.temple!.templeDataList[i].longitude.toDouble(),
+              appParamState.keepTempleMap[widget.date]!.templeDataList[i].latitude.toDouble(),
+              appParamState.keepTempleMap[widget.date]!.templeDataList[i].longitude.toDouble(),
             ),
             child: GestureDetector(
               onTap: () {
@@ -828,7 +835,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   context: context,
                   buttonKey: globalKeyList[i],
                   displayDuration: const Duration(seconds: 2),
-                  templeDataModel: widget.temple!.templeDataList[i],
+                  templeDataModel: appParamState.keepTempleMap[widget.date]!.templeDataList[i],
                 );
               },
               child: Stack(

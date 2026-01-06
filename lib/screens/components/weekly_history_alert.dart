@@ -550,8 +550,6 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                                       widget: LifetimeGeolocMapDisplayAlert(
                                         date: date,
                                         geolocList: appParamState.keepGeolocMap[date],
-                                        temple: appParamState.keepTempleMap[date],
-                                        transportation: appParamState.keepTransportationMap[date],
                                       ),
 
                                       executeFunctionWhenDialogClose: true,
