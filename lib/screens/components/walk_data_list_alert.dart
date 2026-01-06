@@ -5,6 +5,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/geoloc_model.dart';
 import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
 import '../../utility/utility.dart';
@@ -176,25 +177,83 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
 
       final TransportationModel? transportation = appParamState.keepTransportationMap[date];
 
+      final List<GeolocModel>? geolocModelList = appParamState.keepGeolocMap[date];
+
+      String boundingBoxArea = '';
+      if (geolocModelList != null) {
+        boundingBoxArea = utility.getBoundingBoxArea(points: geolocModelList);
+      }
+
+      final String youbi = DateTime.parse(date).youbiStr;
+
       walkDataList.add(
-        Column(
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Expanded(child: Text(date)),
-                Expanded(child: Text((value != null) ? value.step.toString().toCurrency() : '0')),
-                Expanded(child: Text((value != null) ? value.distance.toString().toCurrency() : '0')),
-              ],
+        AutoScrollTag(
+          // ignore: always_specify_types
+          key: ValueKey(day),
+          index: day,
+          controller: autoScrollController,
+
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 5),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList),
             ),
 
-            if (transportation != null) ...<Widget>[
-              Column(
-                children: transportation.stationRouteList.map((String e) {
-                  return Text(e);
-                }).toList(),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 120),
+
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Expanded(flex: 2, child: Text(date)),
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.topRight,
+
+                          child: Text((value != null) ? value.step.toString().toCurrency() : '0'),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.topRight,
+                          child: Text((value != null) ? value.distance.toString().toCurrency() : '0'),
+                        ),
+                      ),
+
+                      Expanded(
+                        flex: 2,
+                        child: Container(alignment: Alignment.topRight, child: Text(boundingBoxArea)),
+                      ),
+                    ],
+                  ),
+
+                  if (boundingBoxArea.split('.')[0] != '0' && transportation != null) ...<Widget>[
+                    ExpansionTile(
+                      title: const Text('StationRoute', style: TextStyle(fontSize: 12, color: Colors.white)),
+
+                      iconColor: Colors.white,
+                      collapsedIconColor: Colors.white,
+
+                      children: transportation.stationRouteList.map((String e) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[Text(e), const SizedBox.shrink()],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 30),
+                  ],
+                ],
               ),
-            ],
-          ],
+            ),
+          ),
         ),
       );
     }
