@@ -192,27 +192,34 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
           key: ValueKey(day),
           index: day,
           controller: autoScrollController,
-
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 5),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList),
             ),
-
             child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 120),
-
+              constraints: BoxConstraints(
+                minHeight: (boundingBoxArea.split('.')[0] != '0' && transportation != null) ? 120 : 20,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Expanded(flex: 2, child: Text(date)),
+                      Expanded(
+                        flex: 2,
+                        child: Row(
+                          children: <Widget>[
+                            Text(day.toString().padLeft(2, '0')),
+                            const SizedBox(width: 10),
+                            Text(DateTime.parse(date).youbiStr.substring(0, 3)),
+                          ],
+                        ),
+                      ),
                       Expanded(
                         child: Container(
                           alignment: Alignment.topRight,
-
                           child: Text((value != null) ? value.step.toString().toCurrency() : '0'),
                         ),
                       ),
@@ -222,7 +229,6 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                           child: Text((value != null) ? value.distance.toString().toCurrency() : '0'),
                         ),
                       ),
-
                       Expanded(
                         flex: 2,
                         child: Container(alignment: Alignment.topRight, child: Text(boundingBoxArea)),
@@ -233,10 +239,8 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                   if (boundingBoxArea.split('.')[0] != '0' && transportation != null) ...<Widget>[
                     ExpansionTile(
                       title: const Text('StationRoute', style: TextStyle(fontSize: 12, color: Colors.white)),
-
                       iconColor: Colors.white,
                       collapsedIconColor: Colors.white,
-
                       children: transportation.stationRouteList.map((String e) {
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -247,7 +251,6 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                         );
                       }).toList(),
                     ),
-
                     const SizedBox(height: 30),
                   ],
                 ],
