@@ -16,6 +16,7 @@ import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import '../parts/scroll_line_chart.dart';
 import 'assets_detail_list_alert.dart';
+import 'assets_detail_percent_display_alert.dart';
 
 class AssetsDetailGraphAlert extends ConsumerStatefulWidget {
   const AssetsDetailGraphAlert({super.key, required this.date, required this.title});
@@ -75,7 +76,27 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.date), Text(widget.title)],
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[Text(widget.title), const SizedBox(height: 5), Text(widget.date)],
+                    ),
+
+                    GestureDetector(
+                      onTap: () {
+                        LifetimeDialog(
+                          context: context,
+                          widget: AssetsDetailPercentDisplayAlert(
+                            title: widget.title,
+                            goldMap: appParamState.keepGoldMap,
+                            stockTickerMap: appParamState.keepStockTickerMap,
+                            toushiShintakuRelationalMap: appParamState.keepToushiShintakuRelationalMap,
+                          ),
+                        );
+                      },
+                      child: const Icon(Icons.list),
+                    ),
+                  ],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
@@ -84,9 +105,12 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                //                ],
                 SizedBox(
-                  height: (widget.title == 'gold') ? context.screenSize.height * 0.65 : context.screenSize.height * 0.5,
+                  height: (widget.title == 'gold')
+                      ? context.screenSize.height * 0.65
+                      : (widget.title == 'stock')
+                      ? context.screenSize.height * 0.5
+                      : context.screenSize.height * 0.4,
                   child: Stack(
                     children: <Widget>[
                       if (zoomMode)
