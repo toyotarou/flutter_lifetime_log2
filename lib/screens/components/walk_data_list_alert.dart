@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
@@ -9,6 +10,8 @@ import '../../models/geoloc_model.dart';
 import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
 import '../../utility/utility.dart';
+import '../parts/lifetime_dialog.dart';
+import 'lifetime_geoloc_map_display_alert.dart';
 
 class WalkDataListAlert extends ConsumerStatefulWidget {
   const WalkDataListAlert({super.key, required this.yearmonth});
@@ -236,23 +239,76 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                     ],
                   ),
 
-                  if (boundingBoxArea.split('.')[0] != '0' && transportation != null) ...<Widget>[
-                    ExpansionTile(
-                      title: const Text('StationRoute', style: TextStyle(fontSize: 12, color: Colors.white)),
-                      iconColor: Colors.white,
-                      collapsedIconColor: Colors.white,
-                      children: transportation.stationRouteList.map((String e) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[Text(e), const SizedBox.shrink()],
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      if (boundingBoxArea.split('.')[0] != '0' && transportation != null) ...<Widget>[
+                        Expanded(
+                          child: ExpansionTile(
+                            tilePadding: EdgeInsets.zero,
+                            dense: true,
+                            visualDensity: VisualDensity.compact,
+                            iconColor: Colors.white,
+                            collapsedIconColor: Colors.white,
+                            title: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              color: Colors.black.withValues(alpha: 0.2),
+                              child: const Text('StationRoute', style: TextStyle(fontSize: 12, color: Colors.white)),
+                            ),
+                            children: transportation.stationRouteList.map((String e) {
+                              return Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+                                alignment: Alignment.centerLeft,
+                                child: Text(e, maxLines: 1, overflow: TextOverflow.ellipsis),
+                              );
+                            }).toList(),
                           ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 30),
-                  ],
+                        ),
+                        const SizedBox(height: 30),
+                      ] else ...<Widget>[const Expanded(child: SizedBox.shrink())],
+
+                      Container(
+                        width: 40,
+                        alignment: Alignment.topRight,
+                        child: Column(
+                          children: <Widget>[
+                            const SizedBox(height: 10),
+                            if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
+                              GestureDetector(
+                                onTap: () {
+                                  appParamNotifier.setSelectedGeolocTime(time: '');
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: LifetimeGeolocMapDisplayAlert(
+                                      date: date,
+                                      geolocList: appParamState.keepGeolocMap[date],
+                                    ),
+                                    executeFunctionWhenDialogClose: true,
+                                    from: 'LifetimeGeolocMapDisplayAlert',
+                                    ref: ref,
+                                  );
+                                },
+                                child: Column(
+                                  children: <Widget>[
+                                    Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      appParamState.keepGeolocMap[date]!.length.toString(),
+                                      style: const TextStyle(fontSize: 8),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                            if (appParamState.keepTempleMap[date] != null) ...<Widget>[
+                              const SizedBox(height: 10),
+                              Icon(FontAwesomeIcons.toriiGate, size: 20, color: Colors.white.withValues(alpha: 0.3)),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

@@ -5,6 +5,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/geoloc_model.dart';
 import '../../models/salary_model.dart';
 import '../../utility/functions.dart';
 import '../../utility/utility.dart';
@@ -131,6 +132,13 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
         sumDiff = beforeSum.toInt() - dateSum.toInt();
       }
       //////////////////////////////////////////////////////////////////////
+
+      final List<GeolocModel>? geolocModelList = appParamState.keepGeolocMap[date];
+
+      String boundingBoxArea = '';
+      if (geolocModelList != null) {
+        boundingBoxArea = utility.getBoundingBoxArea(points: geolocModelList);
+      }
 
       list.add(
         AutoScrollTag(
@@ -368,88 +376,143 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                 child: Column(
                                   children: <Widget>[
                                     if (appParamState.keepLifetimeMap[date] != null) ...<Widget>[
-                                      Row(
+                                      Stack(
                                         children: <Widget>[
-                                          Expanded(
-                                            child: Stack(
+                                          if (boundingBoxArea != '') ...<Widget>[
+                                            Row(
                                               children: <Widget>[
-                                                Text(
-                                                  '🦶',
-                                                  style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
-                                                ),
-                                                Container(
-                                                  alignment: Alignment.topRight,
-                                                  decoration: BoxDecoration(
-                                                    border: Border(
-                                                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                                                SizedBox(width: context.screenSize.width * 0.1),
+
+                                                Expanded(
+                                                  child: Opacity(
+                                                    opacity: 0.3,
+                                                    child: Container(
+                                                      alignment: Alignment.topRight,
+                                                      padding: const EdgeInsets.only(top: 15),
+                                                      child: Transform(
+                                                        alignment: Alignment.centerLeft,
+                                                        transform: Matrix4.identity()..setEntry(0, 1, -0.8),
+                                                        child: RichText(
+                                                          text: TextSpan(
+                                                            children: <InlineSpan>[
+                                                              TextSpan(
+                                                                text: boundingBoxArea.split('.')[0],
+                                                                style: const TextStyle(
+                                                                  fontSize: 24,
+                                                                  color: Colors.white,
+                                                                  fontWeight: FontWeight.w900,
+                                                                ),
+                                                              ),
+                                                              TextSpan(
+                                                                text: '.${boundingBoxArea.split('.')[1]}',
+                                                                style: const TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors.white,
+                                                                  fontWeight: FontWeight.bold,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
                                                     ),
                                                   ),
-                                                  padding: const EdgeInsets.all(5),
-                                                  child: Text(
-                                                    (appParamState.keepWalkModelMap[date] != null)
-                                                        ? appParamState.keepWalkModelMap[date]!.step
-                                                              .toString()
-                                                              .toCurrency()
-                                                        : '',
-                                                  ),
                                                 ),
+
+                                                const SizedBox(width: 40),
                                               ],
                                             ),
-                                          ),
-                                          const SizedBox(width: 5),
+                                          ],
 
-                                          Expanded(
-                                            child: Stack(
-                                              children: <Widget>[
-                                                Text(
-                                                  '🚩',
-                                                  style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
-                                                ),
-                                                Container(
-                                                  alignment: Alignment.topRight,
-                                                  decoration: BoxDecoration(
-                                                    border: Border(
-                                                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                                          Row(
+                                            children: <Widget>[
+                                              Expanded(
+                                                child: Stack(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      '🦶',
+                                                      style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
                                                     ),
-                                                  ),
-                                                  padding: const EdgeInsets.all(5),
-                                                  child: Text(
-                                                    (appParamState.keepWalkModelMap[date] != null)
-                                                        ? appParamState.keepWalkModelMap[date]!.distance
-                                                              .toString()
-                                                              .toCurrency()
-                                                        : '',
-                                                  ),
+                                                    Container(
+                                                      alignment: Alignment.topRight,
+                                                      decoration: BoxDecoration(
+                                                        border: Border(
+                                                          bottom: BorderSide(
+                                                            color: Colors.white.withValues(alpha: 0.3),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      padding: const EdgeInsets.all(5),
+                                                      child: Text(
+                                                        (appParamState.keepWalkModelMap[date] != null)
+                                                            ? appParamState.keepWalkModelMap[date]!.step
+                                                                  .toString()
+                                                                  .toCurrency()
+                                                            : '',
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
-                                            ),
-                                          ),
-
-                                          SizedBox(
-                                            width: 30,
-                                            child: Container(
-                                              alignment: Alignment.topRight,
-                                              child: GestureDetector(
-                                                onTap: () => LifetimeDialog(
-                                                  context: context,
-                                                  widget: WalkDataInputAlert(
-                                                    date: date,
-                                                    step: (appParamState.keepWalkModelMap[date] != null)
-                                                        ? appParamState.keepWalkModelMap[date]!.step.toString()
-                                                        : '',
-                                                    distance: (appParamState.keepWalkModelMap[date] != null)
-                                                        ? appParamState.keepWalkModelMap[date]!.distance.toString()
-                                                        : '',
-                                                  ),
-                                                ),
-                                                child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
                                               ),
-                                            ),
+                                              const SizedBox(width: 5),
+
+                                              Expanded(
+                                                child: Stack(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      '🚩',
+                                                      style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
+                                                    ),
+                                                    Container(
+                                                      alignment: Alignment.topRight,
+                                                      decoration: BoxDecoration(
+                                                        border: Border(
+                                                          bottom: BorderSide(
+                                                            color: Colors.white.withValues(alpha: 0.3),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      padding: const EdgeInsets.all(5),
+                                                      child: Text(
+                                                        (appParamState.keepWalkModelMap[date] != null)
+                                                            ? appParamState.keepWalkModelMap[date]!.distance
+                                                                  .toString()
+                                                                  .toCurrency()
+                                                            : '',
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+
+                                              SizedBox(
+                                                width: 30,
+                                                child: Container(
+                                                  alignment: Alignment.topRight,
+                                                  child: GestureDetector(
+                                                    onTap: () => LifetimeDialog(
+                                                      context: context,
+                                                      widget: WalkDataInputAlert(
+                                                        date: date,
+                                                        step: (appParamState.keepWalkModelMap[date] != null)
+                                                            ? appParamState.keepWalkModelMap[date]!.step.toString()
+                                                            : '',
+                                                        distance: (appParamState.keepWalkModelMap[date] != null)
+                                                            ? appParamState.keepWalkModelMap[date]!.distance.toString()
+                                                            : '',
+                                                      ),
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.input,
+                                                      color: Colors.white.withValues(alpha: 0.3),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
-
-                                      const SizedBox(height: 10),
 
                                       Row(
                                         children: <Widget>[

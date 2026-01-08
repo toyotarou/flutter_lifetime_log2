@@ -50,12 +50,12 @@ import 'parts/lifetime_dialog.dart';
 
 ///
 const List<IconData> bottomNavigationMenuIcons = <IconData>[
+  FontAwesomeIcons.sun,
+  Icons.money,
+  FontAwesomeIcons.squareFontAwesomeStroke,
   Icons.list,
   Icons.map,
   Icons.work,
-  Icons.money,
-  FontAwesomeIcons.sun,
-  FontAwesomeIcons.squareFontAwesomeStroke,
   // Icons.filter_7_outlined,
   // Icons.filter_8_outlined,
   // Icons.filter_9_outlined,
@@ -454,12 +454,74 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
   Object getBottomMenuContents({required int index}) {
     switch (index) {
       case 0:
+        if (appParamState.keepGoldMap.isEmpty ||
+            appParamState.keepStockMap.isEmpty ||
+            appParamState.keepToushiShintakuMap.isEmpty) {
+          // ignore: always_specify_types
+          Future.delayed(
+            Duration.zero,
+            () => error_dialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              title: '表示できません。',
+              content: '資産情報が作成されていません。',
+            ),
+          );
+        } else {
+          appParamNotifier.setKeepNenkinKikinDataList(list: nenkinKikinDataList);
+          appParamNotifier.setKeepInsuranceDataList(list: insuranceDataList);
+
+          return LifetimeDialog(
+            context: context,
+            widget: MonthlyAssetsDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
+          );
+        }
+
+      case 1:
+        if (appParamState.keepMoneySpendItemMap.isEmpty) {
+          // ignore: always_specify_types
+          Future.delayed(
+            Duration.zero,
+            () => error_dialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              title: '表示できません。',
+              content: 'appParamState.keepMoneySpendItemMapが作成されていません。',
+            ),
+          );
+        } else {
+          return LifetimeDialog(
+            context: context,
+            widget: MonthlyMoneySpendDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
+          );
+        }
+
+      case 2:
+        if (appParamState.keepWalkModelMap.isEmpty) {
+          // ignore: always_specify_types
+          Future.delayed(
+            Duration.zero,
+            () => error_dialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              title: '表示できません。',
+              content: 'appParamState.keepWalkModelMapが作成されていません。',
+            ),
+          );
+        } else {
+          return LifetimeDialog(
+            context: context,
+            widget: WalkDataListAlert(yearmonth: appParamState.homeTabYearMonth),
+          );
+        }
+
+      case 3:
         return LifetimeDialog(
           context: context,
           widget: MonthlyLifetimeDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
         );
 
-      case 1:
+      case 4:
         if (DateTime.now().day == 1) {
           // ignore: always_specify_types
           Future.delayed(
@@ -485,7 +547,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
           );
         }
 
-      case 2:
+      case 5:
         if (appParamState.keepWorkTimeMap.isEmpty) {
           // ignore: always_specify_types
           Future.delayed(
@@ -501,68 +563,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
           return LifetimeDialog(
             context: context,
             widget: WorkInfoMonthlyDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
-          );
-        }
-
-      case 3:
-        if (appParamState.keepMoneySpendItemMap.isEmpty) {
-          // ignore: always_specify_types
-          Future.delayed(
-            Duration.zero,
-            () => error_dialog(
-              // ignore: use_build_context_synchronously
-              context: context,
-              title: '表示できません。',
-              content: 'appParamState.keepMoneySpendItemMapが作成されていません。',
-            ),
-          );
-        } else {
-          return LifetimeDialog(
-            context: context,
-            widget: MonthlyMoneySpendDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
-          );
-        }
-
-      case 4:
-        if (appParamState.keepGoldMap.isEmpty ||
-            appParamState.keepStockMap.isEmpty ||
-            appParamState.keepToushiShintakuMap.isEmpty) {
-          // ignore: always_specify_types
-          Future.delayed(
-            Duration.zero,
-            () => error_dialog(
-              // ignore: use_build_context_synchronously
-              context: context,
-              title: '表示できません。',
-              content: '資産情報が作成されていません。',
-            ),
-          );
-        } else {
-          appParamNotifier.setKeepNenkinKikinDataList(list: nenkinKikinDataList);
-          appParamNotifier.setKeepInsuranceDataList(list: insuranceDataList);
-
-          return LifetimeDialog(
-            context: context,
-            widget: MonthlyAssetsDisplayAlert(yearmonth: appParamState.homeTabYearMonth),
-          );
-        }
-
-      case 5:
-        if (appParamState.keepWalkModelMap.isEmpty) {
-          // ignore: always_specify_types
-          Future.delayed(
-            Duration.zero,
-            () => error_dialog(
-              // ignore: use_build_context_synchronously
-              context: context,
-              title: '表示できません。',
-              content: 'appParamState.keepWalkModelMapが作成されていません。',
-            ),
-          );
-        } else {
-          return LifetimeDialog(
-            context: context,
-            widget: WalkDataListAlert(yearmonth: appParamState.homeTabYearMonth),
           );
         }
     }
