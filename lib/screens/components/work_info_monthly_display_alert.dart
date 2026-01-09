@@ -7,6 +7,7 @@ import '../../extensions/extensions.dart';
 import '../../models/common/work_history_model.dart';
 import '../../models/work_time_model.dart';
 import '../../models/yearly_history_event.dart';
+import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'work_info_yearly_display_alert.dart';
@@ -39,23 +40,8 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
   }
 
   ///
-  DateTime _addMonths(DateTime base, int deltaMonths) {
-    final int totalMonths = base.year * 12 + (base.month - 1) + deltaMonths;
-    final int newYear = totalMonths ~/ 12;
-    final int newMonth = (totalMonths % 12) + 1;
-    return DateTime(newYear, newMonth);
-  }
-
-  ///
-  DateTime _monthForIndex(int index) {
-    final int rawOffset = index - _initialIndex;
-    final int offset = -rawOffset;
-    return _addMonths(_baseMonth, offset);
-  }
-
-  ///
   Widget makeMonthlyWorktimeSlide(int index) {
-    final DateTime genDate = _monthForIndex(index);
+    final DateTime genDate = monthForIndex(index: index, baseMonth: _baseMonth);
 
     final bool hasData = appParamState.keepWorkTimeMap.containsKey(
       '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}',
@@ -318,7 +304,7 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
       ..sort((MapEntry<String, WorkHistoryModel> a, MapEntry<String, WorkHistoryModel> b) => a.key.compareTo(b.key));
 
     final List<YearlyHistoryEvent> events = <YearlyHistoryEvent>[];
-    final List<Color> colors = utility.getTwentyFourColor();
+    final List<Color> colors = utility.getFortyEightColor();
 
     final DateTime now = DateTime.now();
     final int currentYear = now.year;
@@ -340,7 +326,7 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
         final MapEntry<String, WorkHistoryModel> nextEntry = entries[i + 1];
         final DateTime nextStart = _ymToDate(nextEntry.key);
 
-        final DateTime lastMonth = _addMonths(nextStart, -1);
+        final DateTime lastMonth = addMonths(nextStart, -1);
         end = _endOfMonth(lastMonth);
       } else {
         final bool isStartedBeforeOrThisMonth =

@@ -42,7 +42,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
   String lastAssetsDate = '';
 
-  List<Color> twentyFourColor = <Color>[];
+  List<Color> fortyEightColor = <Color>[];
 
   List<String> toushiGraphSelectYearList = <String>[];
 
@@ -55,7 +55,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
   void initState() {
     super.initState();
 
-    twentyFourColor = utility.getTwentyFourColor();
+    fortyEightColor = utility.getFortyEightColor();
   }
 
   ///
@@ -432,7 +432,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
               spots: flspotsList[i],
               barWidth: 1,
               isStrokeCapRound: true,
-              color: twentyFourColor[i % 24],
+              color: fortyEightColor[i % 48],
               dotData: const FlDotData(show: false),
             ),
         ],
@@ -575,7 +575,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                     }
                   }
                 },
-                child: CircleAvatar(radius: 15, backgroundColor: twentyFourColor[0].withValues(alpha: 0.3)),
+                child: CircleAvatar(radius: 15, backgroundColor: fortyEightColor[0].withValues(alpha: 0.3)),
               ),
 
               const SizedBox.shrink(),
@@ -682,7 +682,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                           },
                           child: CircleAvatar(
                             radius: 15,
-                            backgroundColor: twentyFourColor[i % 24].withValues(alpha: 0.3),
+                            backgroundColor: fortyEightColor[i % 48].withValues(alpha: 0.3),
                           ),
                         ),
 
@@ -855,7 +855,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                             },
                             child: CircleAvatar(
                               radius: 15,
-                              backgroundColor: twentyFourColor[i % 24].withValues(alpha: 0.3),
+                              backgroundColor: fortyEightColor[i % 48].withValues(alpha: 0.3),
                             ),
                           ),
 

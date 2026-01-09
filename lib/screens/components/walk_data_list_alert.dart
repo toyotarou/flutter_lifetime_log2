@@ -9,6 +9,7 @@ import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
+import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'lifetime_geoloc_map_display_alert.dart';
@@ -48,21 +49,6 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
   }
 
   ///
-  DateTime _monthForIndex(int index) {
-    final int rawOffset = index - _initialIndex;
-    final int offset = -rawOffset;
-    return _addMonths(_baseMonth, offset);
-  }
-
-  ///
-  DateTime _addMonths(DateTime base, int deltaMonths) {
-    final int totalMonths = base.year * 12 + (base.month - 1) + deltaMonths;
-    final int newYear = totalMonths ~/ 12;
-    final int newMonth = (totalMonths % 12) + 1;
-    return DateTime(newYear, newMonth);
-  }
-
-  ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +65,7 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
 
   ///
   Widget makeMonthlyWalkDataSlide(int index) {
-    final DateTime genDate = _monthForIndex(index);
+    final DateTime genDate = monthForIndex(index: index, baseMonth: _baseMonth);
 
     final bool hasData = appParamState.keepWalkModelMap.containsKey(
       '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
@@ -106,7 +92,7 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                 children: <Widget>[
                   Stack(
                     children: <Widget>[
-                      Positioned(top: 20, right: 5, left: 5, child: Center(child: Text(genDate.yyyymmdd))),
+                      Positioned(top: 20, right: 5, left: 5, child: Center(child: Text(genDate.yyyymm))),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -303,6 +289,13 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                             if (appParamState.keepTempleMap[date] != null) ...<Widget>[
                               const SizedBox(height: 10),
                               Icon(FontAwesomeIcons.toriiGate, size: 20, color: Colors.white.withValues(alpha: 0.3)),
+                            ],
+
+                            if (appParamState.keepStampRallyMetroAllStationMap[date] != null ||
+                                appParamState.keepStampRallyMetro20AnniversaryMap[date] != null ||
+                                appParamState.keepStampRallyMetroPokepokeMap[date] != null) ...<Widget>[
+                              const SizedBox(height: 10),
+                              Icon(FontAwesomeIcons.stamp, size: 20, color: Colors.white.withValues(alpha: 0.3)),
                             ],
                           ],
                         ),

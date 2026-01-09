@@ -52,7 +52,7 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
 
   List<Marker> directionGoalMarkerList = <Marker>[];
 
-  List<Color> twentyFourColor = <Color>[];
+  List<Color> fortyEightColor = <Color>[];
 
   ///
   @override
@@ -93,7 +93,7 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
       }
     });
 
-    twentyFourColor = utility.getTwentyFourColor();
+    fortyEightColor = utility.getFortyEightColor();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() => isLoading = true);
@@ -145,7 +145,7 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
                   PolygonLayer(
                     polygons: makeAreaPolygons(
                       allPolygonsList: appParamState.keepAllPolygonsList,
-                      twentyFourColor: utility.getTwentyFourColor(),
+                      fortyEightColor: fortyEightColor,
                     ),
                   ),
                 ],
@@ -300,7 +300,7 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
   // ignore: always_specify_types
   List<Polyline> makeTransportationPolyline() {
     // ignore: always_specify_types
-    return <Polyline<Object>>[Polyline(points: latLngList, color: twentyFourColor[0], strokeWidth: 5)];
+    return <Polyline<Object>>[Polyline(points: latLngList, color: fortyEightColor[0], strokeWidth: 5)];
   }
 
   ///
@@ -319,7 +319,7 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
               stepLocationListLast['end']!['longitude']!.toDouble(),
             ),
 
-            child: Icon(Icons.flag, color: twentyFourColor[0]),
+            child: Icon(Icons.flag, color: fortyEightColor[0]),
           ),
         );
       }

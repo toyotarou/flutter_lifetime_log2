@@ -256,7 +256,7 @@ bool _rayCasting(double lat, double lng, List<List<double>> ring) {
 // ignore: always_specify_types
 List<Polygon> makeAreaPolygons({
   required List<List<List<List<double>>>> allPolygonsList,
-  required List<Color> twentyFourColor,
+  required List<Color> fortyEightColor,
 }) {
   // ignore: always_specify_types
   final List<Polygon<Object>> polygonList = <Polygon<Object>>[];
@@ -276,7 +276,7 @@ List<Polygon> makeAreaPolygons({
   for (final List<List<List<double>>> poly in uniquePolygons.values) {
     final Polygon<Object>? polygon = getColorPaintPolygon(
       polygon: poly,
-      color: twentyFourColor[idx % 24].withValues(alpha: 0.3),
+      color: fortyEightColor[idx % 48].withValues(alpha: 0.3),
     );
 
     if (polygon != null) {
@@ -314,6 +314,7 @@ Polygon? getColorPaintPolygon({required List<List<List<double>>> polygon, requir
   );
 }
 
+///
 ScrollLineChartYAxisRangeModel calcYAxisRange({required double minValue, required double maxValue}) {
   if (minValue == maxValue) {
     final double padding = max(1.0, minValue.abs() * 0.1);
@@ -339,4 +340,19 @@ ScrollLineChartYAxisRangeModel calcYAxisRange({required double minValue, require
   final double yMax = (maxValue / interval).ceil() * interval;
 
   return ScrollLineChartYAxisRangeModel(min: yMin, max: yMax, interval: interval);
+}
+
+///
+DateTime monthForIndex({required int index, required DateTime baseMonth}) {
+  final int rawOffset = index - (100000 ~/ 2);
+  final int offset = -rawOffset;
+  return addMonths(baseMonth, offset);
+}
+
+///
+DateTime addMonths(DateTime base, int deltaMonths) {
+  final int totalMonths = base.year * 12 + (base.month - 1) + deltaMonths;
+  final int newYear = totalMonths ~/ 12;
+  final int newMonth = (totalMonths % 12) + 1;
+  return DateTime(newYear, newMonth);
 }

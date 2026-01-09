@@ -11,6 +11,7 @@ import '../../models/gold_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../../utility/assets_calc.dart';
+import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
@@ -56,21 +57,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   }
 
   ///
-  DateTime _monthForIndex(int index) {
-    final int rawOffset = index - _initialIndex;
-    final int offset = -rawOffset;
-    return _addMonths(_baseMonth, offset);
-  }
-
-  ///
-  DateTime _addMonths(DateTime base, int deltaMonths) {
-    final int totalMonths = base.year * 12 + (base.month - 1) + deltaMonths;
-    final int newYear = totalMonths ~/ 12;
-    final int newMonth = (totalMonths % 12) + 1;
-    return DateTime(newYear, newMonth);
-  }
-
-  ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,7 +73,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
   ///
   Widget makeMonthlyWorktimeSlide(int index) {
-    final DateTime genDate = _monthForIndex(index);
+    final DateTime genDate = monthForIndex(index: index, baseMonth: _baseMonth);
 
     final bool hasData = appParamState.keepMoneyMap.containsKey(
       '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
@@ -114,7 +100,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 children: <Widget>[
                   Stack(
                     children: <Widget>[
-                      Positioned(top: 20, right: 5, left: 5, child: Center(child: Text(genDate.yyyymmdd))),
+                      Positioned(top: 20, right: 5, left: 5, child: Center(child: Text(genDate.yyyymm))),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[

@@ -48,7 +48,7 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
 
   Utility utility = Utility();
 
-  List<Color> twentyFourColor = <Color>[];
+  List<Color> fortyEightColor = <Color>[];
 
   List<GlobalKey> globalKeyList = <GlobalKey>[];
 
@@ -109,7 +109,7 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
 
     final Map<String, Color> map = <String, Color>{};
     for (int i = 0; i < entries.length; i++) {
-      map[entries[i].key] = twentyFourColor[i % 24];
+      map[entries[i].key] = fortyEightColor[i % 48];
     }
     return map;
   }
@@ -143,7 +143,7 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
   void initState() {
     super.initState();
 
-    twentyFourColor = utility.getTwentyFourColor();
+    fortyEightColor = utility.getFortyEightColor();
 
     // ignore: always_specify_types
     globalKeyList = List.generate(1000, (int index) => GlobalKey());
@@ -218,7 +218,7 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
     for (int i = 0; i < entries.length; i++) {
       final List<LatLng> points = _sortedLatLngList(entries[i].value);
 
-      final Color color = _routeColorByKey[entries[i].key] ?? twentyFourColor[i % 24];
+      final Color color = _routeColorByKey[entries[i].key] ?? fortyEightColor[i % 48];
 
       const double strokeWidth = 5;
 
@@ -258,7 +258,7 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
                 PolygonLayer(
                   polygons: makeAreaPolygons(
                     allPolygonsList: appParamState.keepAllPolygonsList,
-                    twentyFourColor: utility.getTwentyFourColor(),
+                    fortyEightColor: fortyEightColor,
                   ),
                 ),
               ],
@@ -494,7 +494,7 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
       final String key = entries[i].key;
       final List<StampRallyModel> value = entries[i].value;
 
-      final Color iconColor = _routeColorByKey[key] ?? twentyFourColor[i % 24];
+      final Color iconColor = _routeColorByKey[key] ?? fortyEightColor[i % 48];
 
       final List<Marker> list = <Marker>[];
 

@@ -61,7 +61,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   List<Marker> templeMarkerList = <Marker>[];
 
-  List<Color> twentyFourColor = <Color>[];
+  List<Color> fortyEightColor = <Color>[];
 
   double currentZoom2 = 13.0;
 
@@ -89,7 +89,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void initState() {
     super.initState();
 
-    twentyFourColor = utility.getTwentyFourColor();
+    fortyEightColor = utility.getFortyEightColor();
 
     // ignore: always_specify_types
     globalKeyList = List.generate(1000, (int index) => GlobalKey());
@@ -190,7 +190,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 PolygonLayer(
                   polygons: makeAreaPolygons(
                     allPolygonsList: appParamState.keepAllPolygonsList,
-                    twentyFourColor: utility.getTwentyFourColor(),
+                    fortyEightColor: fortyEightColor,
                   ),
                 ),
               ],
@@ -784,8 +784,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               .map((SpotDataModel t) => LatLng(t.lat.toDouble(), t.lng.toDouble()))
               .toList(),
           color: (appParamState.keepTransportationMap[widget.date]!.oufuku)
-              ? twentyFourColor[0]
-              : twentyFourColor[i % 24],
+              ? fortyEightColor[0]
+              : fortyEightColor[i % 48],
           strokeWidth: 5,
         ),
     ];
@@ -806,8 +806,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
             child: Icon(
               Icons.flag,
               color: (appParamState.keepTransportationMap[widget.date]!.oufuku)
-                  ? twentyFourColor[0]
-                  : twentyFourColor[i % 24],
+                  ? fortyEightColor[0]
+                  : fortyEightColor[i % 48],
             ),
           ),
         );

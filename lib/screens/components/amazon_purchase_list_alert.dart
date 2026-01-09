@@ -51,11 +51,11 @@ class _AmazonPurchaseListAlertState extends ConsumerState<AmazonPurchaseListAler
   Widget displayAmazonPurchaseList() {
     final List<Widget> list = <Widget>[];
 
-    final List<Color> twentyFourColor = utility.getTwentyFourColor();
+    final List<Color> fortyEightColor = utility.getFortyEightColor();
 
     appParamState.keepAmazonPurchaseMap.forEach((String key, List<AmazonPurchaseModel> value) {
       for (final AmazonPurchaseModel element in value) {
-        final Color color = twentyFourColor[element.month.toInt() - 1];
+        final Color color = fortyEightColor[element.month.toInt() - 1];
 
         list.add(
           Container(

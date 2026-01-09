@@ -96,7 +96,7 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                 PolygonLayer(
                   polygons: makeAreaPolygons(
                     allPolygonsList: appParamState.keepAllPolygonsList,
-                    twentyFourColor: utility.getTwentyFourColor(),
+                    fortyEightColor: utility.getFortyEightColor(),
                   ),
                 ),
               ],

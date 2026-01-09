@@ -26,7 +26,8 @@ class _MonthlyCreditBarChartAlertState extends ConsumerState<MonthlyCreditBarCha
     final List<BarChartGroupData> groups = <BarChartGroupData>[];
 
     final List<String> creditItemList = utility.getCreditItemList();
-    final List<Color> twentyFourColor = utility.getTwentyFourColor();
+
+    final List<Color> fortyEightColor = utility.getFortyEightColor();
 
     Color dim(Color c) => Color.lerp(c, Colors.white, 0.35)!;
 
@@ -40,7 +41,7 @@ class _MonthlyCreditBarChartAlertState extends ConsumerState<MonthlyCreditBarCha
           final String cat = creditItemList[i];
           final double val = (data[cat] ?? 0).toDouble();
           if (val > 0) {
-            final Color baseColor = dim(twentyFourColor[i % 24]);
+            final Color baseColor = dim(fortyEightColor[i % 48]);
             stack.add(BarChartRodStackItem(cursor, cursor + val, baseColor));
             cursor += val;
           }
@@ -98,7 +99,7 @@ class _MonthlyCreditBarChartAlertState extends ConsumerState<MonthlyCreditBarCha
           children: <Widget>[
             const SizedBox(height: 30),
 
-            _Legend.fixed(labels: utility.getCreditItemList(), colors: utility.getTwentyFourColor()),
+            _Legend.fixed(labels: utility.getCreditItemList(), colors: utility.getFortyEightColor()),
             const SizedBox(height: 12),
             Expanded(
               child: Padding(
