@@ -83,6 +83,8 @@ class AppParamState with _$AppParamState {
     @Default(<Map<String, String>>[]) List<Map<String, String>> keepNenkinKikinDataList,
     @Default(<Map<String, String>>[]) List<Map<String, String>> keepInsuranceDataList,
 
+    @Default(<String, GeolocModel>{}) Map<String, GeolocModel> keepNearestTempleNameGeolocModelMap,
+
     ///
     @Default('') String homeTabYearMonth,
 
@@ -289,6 +291,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepInsuranceDataList({required List<Map<String, String>> list}) =>
       state = state.copyWith(keepInsuranceDataList: list);
+
+  ///
+  void setKeepNearestTempleNameGeolocModelMap({required Map<String, GeolocModel> map}) =>
+      state = state.copyWith(keepNearestTempleNameGeolocModelMap: map);
 
   //===================================================
 

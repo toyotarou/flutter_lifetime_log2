@@ -84,6 +84,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   Set<String> dateMunicipalNameSet = <String>{};
 
+  String nearestTempleGeolocTime = '-----';
+
   ///
   @override
   void initState() {
@@ -235,22 +237,41 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                     crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: <Widget>[
-                      Text(widget.date, style: const TextStyle(fontSize: 20)),
+                      Row(
+                        children: <Widget>[
+                          SizedBox(
+                            width: 180,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Text(widget.date, style: const TextStyle(fontSize: 20)),
 
-                      const SizedBox(height: 10),
+                                const SizedBox(width: 10),
 
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            const SizedBox(width: 70, child: Text('size:')),
+                                Text(DateTime.parse(widget.date).youbiStr.substring(0, 3)),
+                              ],
+                            ),
+                          ),
 
-                            Text(appParamState.currentZoom.toStringAsFixed(2), style: const TextStyle(fontSize: 20)),
-                          ],
-                        ),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  const Text('size:'),
+
+                                  Text(
+                                    appParamState.currentZoom.toStringAsFixed(2),
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
 
                       if (appParamState.keepTempleMap[widget.date] != null) ...<Widget>[
@@ -287,6 +308,12 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                           ],
                         ],
                       ),
+
+                      if (appParamState.keepTempleMap[widget.date] != null) ...<Widget>[
+                        const SizedBox(height: 10),
+
+                        Text(nearestTempleGeolocTime, style: const TextStyle(color: Colors.yellowAccent)),
+                      ],
                     ],
                   ),
                 ),
@@ -598,10 +625,12 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     latList.clear();
     lngList.clear();
 
-    widget.geolocList?.forEach((GeolocModel element) {
-      latList.add(element.latitude.toDouble());
-      lngList.add(element.longitude.toDouble());
-    });
+    widget.geolocList
+      ?..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time))
+      ..forEach((GeolocModel element) {
+        latList.add(element.latitude.toDouble());
+        lngList.add(element.longitude.toDouble());
+      });
 
     if (appParamState.keepTempleMap[widget.date] != null &&
         appParamState.keepTempleMap[widget.date]!.templeDataList.length > 1) {
@@ -662,17 +691,19 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeMarker() {
     markerList.clear();
 
-    widget.geolocList?.forEach((GeolocModel element) {
-      markerList.add(
-        Marker(
-          point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-          width: 40,
-          height: 40,
+    widget.geolocList
+      ?..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time))
+      ..forEach((GeolocModel element) {
+        markerList.add(
+          Marker(
+            point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
+            width: 40,
+            height: 40,
 
-          child: const Icon(Icons.ac_unit, color: Colors.black),
-        ),
-      );
-    });
+            child: const Icon(Icons.ac_unit, color: Colors.black),
+          ),
+        );
+      });
   }
 
   ///
@@ -820,22 +851,28 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     templeMarkerList.clear();
     if (appParamState.keepTempleMap[widget.date] != null) {
       for (int i = 0; i < appParamState.keepTempleMap[widget.date]!.templeDataList.length; i++) {
+        final TempleDataModel templeDataModel = appParamState.keepTempleMap[widget.date]!.templeDataList[i];
+
         templeMarkerList.add(
           Marker(
             key: globalKeyList[i],
 
-            point: LatLng(
-              appParamState.keepTempleMap[widget.date]!.templeDataList[i].latitude.toDouble(),
-              appParamState.keepTempleMap[widget.date]!.templeDataList[i].longitude.toDouble(),
-            ),
+            point: LatLng(templeDataModel.latitude.toDouble(), templeDataModel.longitude.toDouble()),
             child: GestureDetector(
               onTap: () {
+                if (appParamState.keepNearestTempleNameGeolocModelMap[templeDataModel.name] != null) {
+                  setState(() {
+                    nearestTempleGeolocTime =
+                        appParamState.keepNearestTempleNameGeolocModelMap[templeDataModel.name]!.time;
+                  });
+                }
+
                 iconToolChipDisplayOverlay(
                   type: 'lifetime_geoloc_map_display_alert_icon',
                   context: context,
                   buttonKey: globalKeyList[i],
                   displayDuration: const Duration(seconds: 2),
-                  templeDataModel: appParamState.keepTempleMap[widget.date]!.templeDataList[i],
+                  templeDataModel: templeDataModel,
                 );
               },
               child: Stack(

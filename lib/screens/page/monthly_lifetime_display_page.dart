@@ -7,6 +7,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/salary_model.dart';
+import '../../models/temple_model.dart';
 import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../components/lifetime_geoloc_map_display_alert.dart';
@@ -334,6 +335,33 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                 GestureDetector(
                                                   onTap: () {
                                                     appParamNotifier.setSelectedGeolocTime(time: '');
+
+                                                    if (appParamState.keepTempleMap[date] != null) {
+                                                      final Map<String, GeolocModel> nearestTempleNameGeolocModelMap =
+                                                          <String, GeolocModel>{};
+
+                                                      for (final TempleDataModel element
+                                                          in appParamState.keepTempleMap[date]!.templeDataList) {
+                                                        final GeolocModel? nearestGeolocModel = utility
+                                                            .findNearestGeoloc(
+                                                              geolocModelList: appParamState.keepGeolocMap[date]!,
+                                                              latStr: element.latitude,
+                                                              lonStr: element.longitude,
+                                                            );
+
+                                                        if (nearestGeolocModel != null) {
+                                                          nearestTempleNameGeolocModelMap[element.name] =
+                                                              nearestGeolocModel;
+                                                        }
+                                                      }
+
+                                                      // ignore: always_specify_types
+                                                      Future(() {
+                                                        appParamNotifier.setKeepNearestTempleNameGeolocModelMap(
+                                                          map: nearestTempleNameGeolocModelMap,
+                                                        );
+                                                      });
+                                                    }
 
                                                     LifetimeDialog(
                                                       context: context,
