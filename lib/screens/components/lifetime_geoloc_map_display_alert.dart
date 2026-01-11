@@ -203,6 +203,11 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 PolylineLayer(polylines: makeTransportationPolyline()),
               ],
 
+              if (appParamState.routePolylinePartsGeolocList.isNotEmpty) ...<Widget>[
+                // ignore: always_specify_types
+                PolylineLayer(polylines: makeRouteGeolocPolyline()),
+              ],
+
               MarkerLayer(markers: transportationGoalMarkerList),
 
               MarkerLayer(markers: templeMarkerList),
@@ -326,6 +331,15 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                                   );
                                   appParamNotifier.setRoutePolylinePartsGeolocList(geolocModel: list[pos]);
                                   appParamNotifier.setSelectedGeolocPointTime(time: list[pos + 1].time);
+
+                                  appParamNotifier.setCurrentZoom(zoom: 15);
+
+                                  mapController.move(
+                                    LatLng(list[pos].latitude.toDouble(), list[pos].longitude.toDouble()),
+                                    15,
+                                  );
+
+                                  mapController.rotate(0);
                                 }
                               },
                               child: Container(
@@ -733,12 +747,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
             width: 40,
             height: 40,
 
-            /// 最終的にマーカーは黒のままでいいのでこれは残しておく
-            // child: const Icon(Icons.ac_unit, color: Colors.black),
-            //
             child: Icon(
               Icons.ac_unit,
-              color: (element.time == appParamState.selectedGeolocPointTime) ? Colors.redAccent : Colors.black,
+              color: (element.time == appParamState.selectedGeolocPointTime) ? Colors.indigoAccent : Colors.black,
             ),
           ),
         );
@@ -1055,5 +1066,21 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     }
 
     return list;
+  }
+
+  ///
+  // ignore: always_specify_types
+  List<Polyline> makeRouteGeolocPolyline() {
+    return <Polyline<Object>>[
+      for (int i = 0; i < appParamState.routePolylinePartsGeolocList.length; i++)
+        // ignore: always_specify_types
+        Polyline(
+          points: appParamState.routePolylinePartsGeolocList
+              .map((GeolocModel t) => LatLng(t.latitude.toDouble(), t.longitude.toDouble()))
+              .toList(),
+          color: Colors.indigoAccent.withValues(alpha: 0.1),
+          strokeWidth: 10,
+        ),
+    ];
   }
 }
