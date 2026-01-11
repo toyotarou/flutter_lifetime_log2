@@ -307,10 +307,45 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                         ],
                       ),
 
-                      if (appParamState.keepTempleMap[widget.date] != null) ...<Widget>[
-                        const SizedBox(height: 10),
+                      if (appParamState.selectedGeolocPointTime != '') ...<Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              appParamState.selectedGeolocPointTime,
+                              style: const TextStyle(color: Colors.yellowAccent),
+                            ),
 
-                        Text(appParamState.selectedGeolocPointTime, style: const TextStyle(color: Colors.yellowAccent)),
+                            GestureDetector(
+                              onTap: () {
+                                if (widget.geolocList != null) {
+                                  final List<GeolocModel> list = widget.geolocList!;
+                                  list.sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
+                                  final int pos = list.indexWhere(
+                                    (GeolocModel geoloc) => geoloc.time == appParamState.selectedGeolocPointTime,
+                                  );
+                                  appParamNotifier.setRoutePolylinePartsGeolocList(geolocModel: list[pos]);
+                                  appParamNotifier.setSelectedGeolocPointTime(time: list[pos + 1].time);
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.8),
+                                  border: Border.all(color: Colors.indigoAccent),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Row(
+                                  children: <Widget>[
+                                    Icon(Icons.stacked_line_chart, color: Colors.indigoAccent),
+                                    SizedBox(width: 5),
+                                    Icon(Icons.arrow_circle_right_rounded, color: Colors.indigoAccent),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ],
                   ),
@@ -864,6 +899,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
             point: LatLng(templeDataModel.latitude.toDouble(), templeDataModel.longitude.toDouble()),
             child: GestureDetector(
               onTap: () {
+                appParamNotifier.clearRoutePolylinePartsGeolocList();
+
                 if (appParamState.keepNearestTempleNameGeolocModelMap[templeDataModel.name] != null) {
                   appParamNotifier.setSelectedGeolocPointTime(
                     time: appParamState.keepNearestTempleNameGeolocModelMap[templeDataModel.name]!.time,

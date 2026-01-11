@@ -336,6 +336,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                   onTap: () {
                                                     appParamNotifier.setSelectedGeolocTime(time: '');
 
+                                                    appParamNotifier.setSelectedGeolocPointTime(time: '');
+
                                                     if (appParamState.keepTempleMap[date] != null) {
                                                       final Map<String, GeolocModel> nearestTempleNameGeolocModelMap =
                                                           <String, GeolocModel>{};
@@ -355,12 +357,9 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                         }
                                                       }
 
-                                                      // ignore: always_specify_types
-                                                      Future(() {
-                                                        appParamNotifier.setKeepNearestTempleNameGeolocModelMap(
-                                                          map: nearestTempleNameGeolocModelMap,
-                                                        );
-                                                      });
+                                                      appParamNotifier.setKeepNearestTempleNameGeolocModelMap(
+                                                        map: nearestTempleNameGeolocModelMap,
+                                                      );
                                                     }
 
                                                     LifetimeDialog(

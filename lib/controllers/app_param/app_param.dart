@@ -138,6 +138,8 @@ class AppParamState with _$AppParamState {
     int? selectedStampRallyMapPolylineIndex,
 
     @Default('') String selectedGeolocPointTime,
+
+    @Default(<GeolocModel>[]) List<GeolocModel> routePolylinePartsGeolocList,
   }) = _AppParamState;
 }
 
@@ -397,4 +399,14 @@ class AppParam extends _$AppParam {
 
   ///
   void setSelectedGeolocPointTime({required String time}) => state = state.copyWith(selectedGeolocPointTime: time);
+
+  ///
+  void clearRoutePolylinePartsGeolocList() => state = state.copyWith(routePolylinePartsGeolocList: <GeolocModel>[]);
+
+  ///
+  void setRoutePolylinePartsGeolocList({required GeolocModel geolocModel}) {
+    final List<GeolocModel> list = <GeolocModel>[...state.routePolylinePartsGeolocList];
+    list.add(geolocModel);
+    state = state.copyWith(routePolylinePartsGeolocList: list);
+  }
 }

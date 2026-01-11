@@ -137,6 +137,8 @@ mixin _$AppParamState {
   int? get selectedStampRallyMapPolylineIndex =>
       throw _privateConstructorUsedError;
   String get selectedGeolocPointTime => throw _privateConstructorUsedError;
+  List<GeolocModel> get routePolylinePartsGeolocList =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
@@ -215,7 +217,8 @@ abstract class $AppParamStateCopyWith<$Res> {
       WorkHistoryModel? selectedWorkHistoryModel,
       int? bottomNavigationSelectedIndex,
       int? selectedStampRallyMapPolylineIndex,
-      String selectedGeolocPointTime});
+      String selectedGeolocPointTime,
+      List<GeolocModel> routePolylinePartsGeolocList});
 }
 
 /// @nodoc
@@ -297,6 +300,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? bottomNavigationSelectedIndex = freezed,
     Object? selectedStampRallyMapPolylineIndex = freezed,
     Object? selectedGeolocPointTime = null,
+    Object? routePolylinePartsGeolocList = null,
   }) {
     return _then(_value.copyWith(
       keepHolidayList: null == keepHolidayList
@@ -559,6 +563,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.selectedGeolocPointTime
           : selectedGeolocPointTime // ignore: cast_nullable_to_non_nullable
               as String,
+      routePolylinePartsGeolocList: null == routePolylinePartsGeolocList
+          ? _value.routePolylinePartsGeolocList
+          : routePolylinePartsGeolocList // ignore: cast_nullable_to_non_nullable
+              as List<GeolocModel>,
     ) as $Val);
   }
 }
@@ -635,7 +643,8 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       WorkHistoryModel? selectedWorkHistoryModel,
       int? bottomNavigationSelectedIndex,
       int? selectedStampRallyMapPolylineIndex,
-      String selectedGeolocPointTime});
+      String selectedGeolocPointTime,
+      List<GeolocModel> routePolylinePartsGeolocList});
 }
 
 /// @nodoc
@@ -715,6 +724,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? bottomNavigationSelectedIndex = freezed,
     Object? selectedStampRallyMapPolylineIndex = freezed,
     Object? selectedGeolocPointTime = null,
+    Object? routePolylinePartsGeolocList = null,
   }) {
     return _then(_$AppParamStateImpl(
       keepHolidayList: null == keepHolidayList
@@ -977,6 +987,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value.selectedGeolocPointTime
           : selectedGeolocPointTime // ignore: cast_nullable_to_non_nullable
               as String,
+      routePolylinePartsGeolocList: null == routePolylinePartsGeolocList
+          ? _value._routePolylinePartsGeolocList
+          : routePolylinePartsGeolocList // ignore: cast_nullable_to_non_nullable
+              as List<GeolocModel>,
     ));
   }
 }
@@ -1067,7 +1081,8 @@ class _$AppParamStateImpl implements _AppParamState {
       this.selectedWorkHistoryModel,
       this.bottomNavigationSelectedIndex,
       this.selectedStampRallyMapPolylineIndex,
-      this.selectedGeolocPointTime = ''})
+      this.selectedGeolocPointTime = '',
+      final List<GeolocModel> routePolylinePartsGeolocList = const <GeolocModel>[]})
       : _keepHolidayList = keepHolidayList,
         _keepWalkModelMap = keepWalkModelMap,
         _keepMoneyMap = keepMoneyMap,
@@ -1111,7 +1126,8 @@ class _$AppParamStateImpl implements _AppParamState {
             keepNearestTempleNameGeolocModelMap,
         _firstEntries = firstEntries,
         _secondEntries = secondEntries,
-        _monthlyGeolocMapSelectedDateList = monthlyGeolocMapSelectedDateList;
+        _monthlyGeolocMapSelectedDateList = monthlyGeolocMapSelectedDateList,
+        _routePolylinePartsGeolocList = routePolylinePartsGeolocList;
 
   final List<String> _keepHolidayList;
   @override
@@ -1599,10 +1615,19 @@ class _$AppParamStateImpl implements _AppParamState {
   @override
   @JsonKey()
   final String selectedGeolocPointTime;
+  final List<GeolocModel> _routePolylinePartsGeolocList;
+  @override
+  @JsonKey()
+  List<GeolocModel> get routePolylinePartsGeolocList {
+    if (_routePolylinePartsGeolocList is EqualUnmodifiableListView)
+      return _routePolylinePartsGeolocList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_routePolylinePartsGeolocList);
+  }
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStampRallyMetroAllStationMap: $keepStampRallyMetroAllStationMap, keepTokyoMunicipalList: $keepTokyoMunicipalList, keepTokyoMunicipalMap: $keepTokyoMunicipalMap, keepWorkHistoryModelMap: $keepWorkHistoryModelMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, keepTempleDateTimeNameMap: $keepTempleDateTimeNameMap, keepAllDateLifetimeSummaryMap: $keepAllDateLifetimeSummaryMap, keepStampRallyMetro20AnniversaryMap: $keepStampRallyMetro20AnniversaryMap, keepStampRallyMetroPokepokeMap: $keepStampRallyMetroPokepokeMap, keepCreditSummaryTotalMap: $keepCreditSummaryTotalMap, keepAllPolygonsList: $keepAllPolygonsList, keepMoneySumList: $keepMoneySumList, keepNenkinKikinDataList: $keepNenkinKikinDataList, keepInsuranceDataList: $keepInsuranceDataList, keepNearestTempleNameGeolocModelMap: $keepNearestTempleNameGeolocModelMap, homeTabYearMonth: $homeTabYearMonth, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate, selectedCrossCalendarYear: $selectedCrossCalendarYear, gutterWidth: $gutterWidth, isDisplayMunicipalNameOnLifetimeGeolocMap: $isDisplayMunicipalNameOnLifetimeGeolocMap, selectedWorkHistoryModel: $selectedWorkHistoryModel, bottomNavigationSelectedIndex: $bottomNavigationSelectedIndex, selectedStampRallyMapPolylineIndex: $selectedStampRallyMapPolylineIndex, selectedGeolocPointTime: $selectedGeolocPointTime)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStampRallyMetroAllStationMap: $keepStampRallyMetroAllStationMap, keepTokyoMunicipalList: $keepTokyoMunicipalList, keepTokyoMunicipalMap: $keepTokyoMunicipalMap, keepWorkHistoryModelMap: $keepWorkHistoryModelMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, keepTempleDateTimeNameMap: $keepTempleDateTimeNameMap, keepAllDateLifetimeSummaryMap: $keepAllDateLifetimeSummaryMap, keepStampRallyMetro20AnniversaryMap: $keepStampRallyMetro20AnniversaryMap, keepStampRallyMetroPokepokeMap: $keepStampRallyMetroPokepokeMap, keepCreditSummaryTotalMap: $keepCreditSummaryTotalMap, keepAllPolygonsList: $keepAllPolygonsList, keepMoneySumList: $keepMoneySumList, keepNenkinKikinDataList: $keepNenkinKikinDataList, keepInsuranceDataList: $keepInsuranceDataList, keepNearestTempleNameGeolocModelMap: $keepNearestTempleNameGeolocModelMap, homeTabYearMonth: $homeTabYearMonth, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate, selectedCrossCalendarYear: $selectedCrossCalendarYear, gutterWidth: $gutterWidth, isDisplayMunicipalNameOnLifetimeGeolocMap: $isDisplayMunicipalNameOnLifetimeGeolocMap, selectedWorkHistoryModel: $selectedWorkHistoryModel, bottomNavigationSelectedIndex: $bottomNavigationSelectedIndex, selectedStampRallyMapPolylineIndex: $selectedStampRallyMapPolylineIndex, selectedGeolocPointTime: $selectedGeolocPointTime, routePolylinePartsGeolocList: $routePolylinePartsGeolocList)';
   }
 
   @override
@@ -1715,7 +1740,8 @@ class _$AppParamStateImpl implements _AppParamState {
             (identical(other.selectedWorkHistoryModel, selectedWorkHistoryModel) || other.selectedWorkHistoryModel == selectedWorkHistoryModel) &&
             (identical(other.bottomNavigationSelectedIndex, bottomNavigationSelectedIndex) || other.bottomNavigationSelectedIndex == bottomNavigationSelectedIndex) &&
             (identical(other.selectedStampRallyMapPolylineIndex, selectedStampRallyMapPolylineIndex) || other.selectedStampRallyMapPolylineIndex == selectedStampRallyMapPolylineIndex) &&
-            (identical(other.selectedGeolocPointTime, selectedGeolocPointTime) || other.selectedGeolocPointTime == selectedGeolocPointTime));
+            (identical(other.selectedGeolocPointTime, selectedGeolocPointTime) || other.selectedGeolocPointTime == selectedGeolocPointTime) &&
+            const DeepCollectionEquality().equals(other._routePolylinePartsGeolocList, _routePolylinePartsGeolocList));
   }
 
   @override
@@ -1786,7 +1812,8 @@ class _$AppParamStateImpl implements _AppParamState {
         selectedWorkHistoryModel,
         bottomNavigationSelectedIndex,
         selectedStampRallyMapPolylineIndex,
-        selectedGeolocPointTime
+        selectedGeolocPointTime,
+        const DeepCollectionEquality().hash(_routePolylinePartsGeolocList)
       ]);
 
   /// Create a copy of AppParamState
@@ -1865,7 +1892,9 @@ abstract class _AppParamState implements AppParamState {
       final WorkHistoryModel? selectedWorkHistoryModel,
       final int? bottomNavigationSelectedIndex,
       final int? selectedStampRallyMapPolylineIndex,
-      final String selectedGeolocPointTime}) = _$AppParamStateImpl;
+      final String selectedGeolocPointTime,
+      final List<GeolocModel>
+          routePolylinePartsGeolocList}) = _$AppParamStateImpl;
 
   @override
   List<String> get keepHolidayList;
@@ -2011,6 +2040,8 @@ abstract class _AppParamState implements AppParamState {
   int? get selectedStampRallyMapPolylineIndex;
   @override
   String get selectedGeolocPointTime;
+  @override
+  List<GeolocModel> get routePolylinePartsGeolocList;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
