@@ -84,8 +84,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   Set<String> dateMunicipalNameSet = <String>{};
 
-  String nearestTempleGeolocTime = '-----';
-
   ///
   @override
   void initState() {
@@ -312,7 +310,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                       if (appParamState.keepTempleMap[widget.date] != null) ...<Widget>[
                         const SizedBox(height: 10),
 
-                        Text(nearestTempleGeolocTime, style: const TextStyle(color: Colors.yellowAccent)),
+                        Text(appParamState.selectedGeolocPointTime, style: const TextStyle(color: Colors.yellowAccent)),
                       ],
                     ],
                   ),
@@ -700,7 +698,13 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
             width: 40,
             height: 40,
 
-            child: const Icon(Icons.ac_unit, color: Colors.black),
+            /// 最終的にマーカーは黒のままでいいのでこれは残しておく
+            // child: const Icon(Icons.ac_unit, color: Colors.black),
+            //
+            child: Icon(
+              Icons.ac_unit,
+              color: (element.time == appParamState.selectedGeolocPointTime) ? Colors.redAccent : Colors.black,
+            ),
           ),
         );
       });
@@ -861,10 +865,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
             child: GestureDetector(
               onTap: () {
                 if (appParamState.keepNearestTempleNameGeolocModelMap[templeDataModel.name] != null) {
-                  setState(() {
-                    nearestTempleGeolocTime =
-                        appParamState.keepNearestTempleNameGeolocModelMap[templeDataModel.name]!.time;
-                  });
+                  appParamNotifier.setSelectedGeolocPointTime(
+                    time: appParamState.keepNearestTempleNameGeolocModelMap[templeDataModel.name]!.time,
+                  );
                 }
 
                 iconToolChipDisplayOverlay(

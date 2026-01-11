@@ -136,6 +136,8 @@ class AppParamState with _$AppParamState {
     int? bottomNavigationSelectedIndex,
 
     int? selectedStampRallyMapPolylineIndex,
+
+    @Default('') String selectedGeolocPointTime,
   }) = _AppParamState;
 }
 
@@ -392,4 +394,7 @@ class AppParam extends _$AppParam {
   ///
   void setSelectedStampRallyMapPolylineIndex({int? index}) =>
       state = state.copyWith(selectedStampRallyMapPolylineIndex: index);
+
+  ///
+  void setSelectedGeolocPointTime({required String time}) => state = state.copyWith(selectedGeolocPointTime: time);
 }
