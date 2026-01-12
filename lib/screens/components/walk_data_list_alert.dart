@@ -263,11 +263,18 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                               GestureDetector(
                                 onTap: () {
                                   appParamNotifier.setSelectedGeolocTime(time: '');
+
+                                  final List<String> templeGeolocNearlyDateList = utility.getTempleGeolocNearlyDateList(
+                                    date: date,
+                                    templeMap: appParamState.keepTempleMap,
+                                  );
+
                                   LifetimeDialog(
                                     context: context,
                                     widget: LifetimeGeolocMapDisplayAlert(
                                       date: date,
                                       geolocList: appParamState.keepGeolocMap[date],
+                                      templeGeolocNearlyDateList: templeGeolocNearlyDateList,
                                     ),
                                     executeFunctionWhenDialogClose: true,
                                     from: 'LifetimeGeolocMapDisplayAlert',

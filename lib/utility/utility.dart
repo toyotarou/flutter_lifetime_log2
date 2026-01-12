@@ -372,6 +372,39 @@ class Utility {
       StampRallyKind.metroPokepoke: <String>['05', '10', '15', '20', '25', '30'],
     };
   }
+
+  ///
+  List<String> getTempleGeolocNearlyDateList({required String date, required Map<String, TempleModel> templeMap}) {
+    final Set<String> templeGeolocNearlyDateSet = <String>{};
+
+    for (final TempleDataModel element in templeMap[date]!.templeDataList) {
+      final LatLng baseLatLng = LatLng(element.latitude.toDouble(), element.longitude.toDouble());
+
+      templeMap.forEach((String key, TempleModel value) {
+        if (value.templeDataList.length > 1) {
+          for (final TempleDataModel element2 in value.templeDataList) {
+            if (double.tryParse(element2.latitude) != null && double.tryParse(element2.longitude) != null) {
+              final LatLng targetLatLng = LatLng(element2.latitude.toDouble(), element2.longitude.toDouble());
+
+              final double dist = calculateDistance(baseLatLng, targetLatLng);
+
+              if (dist < 100.0) {
+                if (key != date) {
+                  templeGeolocNearlyDateSet.add(key);
+
+                  continue;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    final List<String> list = templeGeolocNearlyDateSet.toList()..sort();
+
+    return list;
+  }
 }
 
 class NavigationService {

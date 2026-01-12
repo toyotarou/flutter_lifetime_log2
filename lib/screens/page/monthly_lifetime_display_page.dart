@@ -338,6 +338,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                                     appParamNotifier.setSelectedGeolocPointTime(time: '');
 
+                                                    List<String> templeGeolocNearlyDateList = <String>[];
+
                                                     if (appParamState.keepTempleMap[date] != null) {
                                                       final Map<String, GeolocModel> nearestTempleNameGeolocModelMap =
                                                           <String, GeolocModel>{};
@@ -355,6 +357,14 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                           nearestTempleNameGeolocModelMap[element.name] =
                                                               nearestGeolocModel;
                                                         }
+
+                                                        //------------------------------//
+
+                                                        templeGeolocNearlyDateList = utility
+                                                            .getTempleGeolocNearlyDateList(
+                                                              date: date,
+                                                              templeMap: appParamState.keepTempleMap,
+                                                            );
                                                       }
 
                                                       appParamNotifier.setKeepNearestTempleNameGeolocModelMap(
@@ -367,6 +377,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                       widget: LifetimeGeolocMapDisplayAlert(
                                                         date: date,
                                                         geolocList: appParamState.keepGeolocMap[date],
+                                                        templeGeolocNearlyDateList: templeGeolocNearlyDateList,
                                                       ),
 
                                                       executeFunctionWhenDialogClose: true,
@@ -374,6 +385,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                       ref: ref,
                                                     );
                                                   },
+
                                                   child: Column(
                                                     children: <Widget>[
                                                       Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),

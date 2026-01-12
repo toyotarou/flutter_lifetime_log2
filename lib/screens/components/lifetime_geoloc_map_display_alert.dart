@@ -26,10 +26,16 @@ import 'temple_list_display_alert.dart';
 import 'time_place_display_alert.dart';
 
 class LifetimeGeolocMapDisplayAlert extends ConsumerStatefulWidget {
-  const LifetimeGeolocMapDisplayAlert({super.key, required this.date, this.geolocList});
+  const LifetimeGeolocMapDisplayAlert({
+    super.key,
+    required this.date,
+    this.geolocList,
+    required this.templeGeolocNearlyDateList,
+  });
 
   final String date;
   final List<GeolocModel>? geolocList;
+  final List<String> templeGeolocNearlyDateList;
 
   @override
   ConsumerState<LifetimeGeolocMapDisplayAlert> createState() => _LifetimeGeolocMapDisplayAlertState();
@@ -206,6 +212,12 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               if (appParamState.routePolylinePartsGeolocList.isNotEmpty) ...<Widget>[
                 // ignore: always_specify_types
                 PolylineLayer(polylines: makeRouteGeolocPolyline()),
+              ],
+
+              if (widget.templeGeolocNearlyDateList.isNotEmpty &&
+                  appParamState.isDisplayGhostGeolocPolyline) ...<Widget>[
+                // ignore: always_specify_types
+                PolylineLayer(polylines: makeGhostGeolocPolyline()),
               ],
 
               MarkerLayer(markers: transportationGoalMarkerList),
@@ -465,6 +477,36 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                                 );
                               },
                               child: const Icon(FontAwesomeIcons.toriiGate),
+                            ),
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: (appParamState.isDisplayGhostGeolocPolyline)
+                                  ? Colors.yellowAccent.withOpacity(0.3)
+                                  : Colors.black.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+
+                            child: GestureDetector(
+                              onTap: () {
+                                appParamNotifier.setIsDisplayGhostGeolocPolyline(
+                                  flag: !appParamState.isDisplayGhostGeolocPolyline,
+                                );
+                              },
+                              child: const Stack(
+                                children: <Widget>[
+                                  Positioned(
+                                    bottom: 0,
+                                    child: Text('ghost', style: TextStyle(color: Colors.yellowAccent, fontSize: 8)),
+                                  ),
+
+                                  Icon(Icons.stacked_line_chart),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -1082,5 +1124,34 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           strokeWidth: 10,
         ),
     ];
+  }
+
+  ///
+  // ignore: always_specify_types
+  List<Polyline> makeGhostGeolocPolyline() {
+    // ignore: always_specify_types
+    final List<Polyline> polylines = <Polyline>[];
+
+    for (int i = 0; i < widget.templeGeolocNearlyDateList.length; i++) {
+      final TempleModel? templeModel = appParamState.keepTempleMap[widget.templeGeolocNearlyDateList[i]];
+      if (templeModel == null) {
+        continue;
+      }
+
+      for (int i = 0; i < templeModel.templeDataList.length; i++) {
+        polylines.add(
+          // ignore: always_specify_types
+          Polyline(
+            points: templeModel.templeDataList
+                .map((TempleDataModel t) => LatLng(t.latitude.toDouble(), t.longitude.toDouble()))
+                .toList(),
+            color: fortyEightColor[i % 48].withValues(alpha: 0.5),
+            strokeWidth: 20,
+          ),
+        );
+      }
+    }
+
+    return polylines;
   }
 }

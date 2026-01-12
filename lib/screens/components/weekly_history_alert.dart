@@ -8,6 +8,7 @@ import '../../extensions/extensions.dart';
 import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
 import '../../utility/functions.dart';
+import '../../utility/utility.dart';
 import '../parts/icon_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import 'lifetime_geoloc_map_display_alert.dart';
@@ -438,6 +439,8 @@ class WeekHeader extends ConsumerStatefulWidget {
 class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<WeekHeader> {
   Map<String, String> weeklyHistoryDisplayWeekDate = <String, String>{};
 
+  Utility utility = Utility();
+
   ///
   @override
   void initState() {
@@ -545,11 +548,18 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
 
                                     appParamNotifier.setSelectedGeolocTime(time: '');
 
+                                    final List<String> templeGeolocNearlyDateList = utility
+                                        .getTempleGeolocNearlyDateList(
+                                          date: date,
+                                          templeMap: appParamState.keepTempleMap,
+                                        );
+
                                     LifetimeDialog(
                                       context: context,
                                       widget: LifetimeGeolocMapDisplayAlert(
                                         date: date,
                                         geolocList: appParamState.keepGeolocMap[date],
+                                        templeGeolocNearlyDateList: templeGeolocNearlyDateList,
                                       ),
 
                                       executeFunctionWhenDialogClose: true,

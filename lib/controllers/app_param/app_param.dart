@@ -140,6 +140,8 @@ class AppParamState with _$AppParamState {
     @Default('') String selectedGeolocPointTime,
 
     @Default(<GeolocModel>[]) List<GeolocModel> routePolylinePartsGeolocList,
+
+    @Default(false) bool isDisplayGhostGeolocPolyline,
   }) = _AppParamState;
 }
 
@@ -409,4 +411,8 @@ class AppParam extends _$AppParam {
     list.add(geolocModel);
     state = state.copyWith(routePolylinePartsGeolocList: list);
   }
+
+  ///
+  void setIsDisplayGhostGeolocPolyline({required bool flag}) =>
+      state = state.copyWith(isDisplayGhostGeolocPolyline: flag);
 }
