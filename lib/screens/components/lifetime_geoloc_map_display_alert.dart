@@ -90,6 +90,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   Set<String> dateMunicipalNameSet = <String>{};
 
+  List<Marker> displayGhostGeolocDateList = <Marker>[];
+
   ///
   @override
   void initState() {
@@ -168,6 +170,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
     makeStampRallyMetroPokepokeMarker();
 
+    makeDisplayGhostGeolocDateMarker();
+
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -218,6 +222,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   appParamState.isDisplayGhostGeolocPolyline) ...<Widget>[
                 // ignore: always_specify_types
                 PolylineLayer(polylines: makeGhostGeolocPolyline()),
+
+                MarkerLayer(markers: displayGhostGeolocDateList),
               ],
 
               MarkerLayer(markers: transportationGoalMarkerList),
@@ -1138,20 +1144,57 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         continue;
       }
 
-      for (int i = 0; i < templeModel.templeDataList.length; i++) {
-        polylines.add(
-          // ignore: always_specify_types
-          Polyline(
-            points: templeModel.templeDataList
-                .map((TempleDataModel t) => LatLng(t.latitude.toDouble(), t.longitude.toDouble()))
-                .toList(),
-            color: fortyEightColor[i % 48].withValues(alpha: 0.5),
-            strokeWidth: 20,
-          ),
-        );
-      }
+      polylines.add(
+        // ignore: always_specify_types
+        Polyline(
+          points: templeModel.templeDataList
+              .map((TempleDataModel t) => LatLng(t.latitude.toDouble(), t.longitude.toDouble()))
+              .toList(),
+          color: fortyEightColor[i % 48].withValues(alpha: 0.5),
+          strokeWidth: 20,
+        ),
+      );
     }
 
     return polylines;
+  }
+
+  ///
+  void makeDisplayGhostGeolocDateMarker() {
+    displayGhostGeolocDateList.clear();
+
+    for (int i = 0; i < widget.templeGeolocNearlyDateList.length; i++) {
+      final TempleModel? templeModel = appParamState.keepTempleMap[widget.templeGeolocNearlyDateList[i]];
+      if (templeModel == null) {
+        continue;
+      }
+
+      displayGhostGeolocDateList.add(
+        Marker(
+          point: LatLng(
+            templeModel.templeDataList[0].latitude.toDouble(),
+            templeModel.templeDataList[0].longitude.toDouble(),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: fortyEightColor[i % 48]),
+            ),
+
+            child: DefaultTextStyle(
+              style: TextStyle(color: fortyEightColor[i % 48], fontSize: 8, fontWeight: FontWeight.bold),
+              child: Column(
+                children: <Widget>[
+                  const Spacer(),
+                  Text(DateTime.parse(templeModel.date).year.toString()),
+                  Text(DateTime.parse(templeModel.date).mmdd),
+                  const Spacer(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
   }
 }
