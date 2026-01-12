@@ -341,6 +341,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                     List<String> templeGeolocNearlyDateList = <String>[];
 
                                                     if (appParamState.keepTempleMap[date] != null) {
+                                                      //////////////////////////////////////////////
                                                       final Map<String, GeolocModel> nearestTempleNameGeolocModelMap =
                                                           <String, GeolocModel>{};
 
@@ -357,19 +358,19 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                           nearestTempleNameGeolocModelMap[element.name] =
                                                               nearestGeolocModel;
                                                         }
-
-                                                        //------------------------------//
-
-                                                        templeGeolocNearlyDateList = utility
-                                                            .getTempleGeolocNearlyDateList(
-                                                              date: date,
-                                                              templeMap: appParamState.keepTempleMap,
-                                                            );
                                                       }
 
                                                       appParamNotifier.setKeepNearestTempleNameGeolocModelMap(
                                                         map: nearestTempleNameGeolocModelMap,
                                                       );
+
+                                                      //////////////////////////////////////////////
+
+                                                      templeGeolocNearlyDateList = utility
+                                                          .getTempleGeolocNearlyDateList(
+                                                            date: date,
+                                                            templeMap: appParamState.keepTempleMap,
+                                                          );
                                                     }
 
                                                     LifetimeDialog(
