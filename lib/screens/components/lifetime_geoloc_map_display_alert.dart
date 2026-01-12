@@ -218,14 +218,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 PolylineLayer(polylines: makeRouteGeolocPolyline()),
               ],
 
-              if (widget.templeGeolocNearlyDateList.isNotEmpty &&
-                  appParamState.isDisplayGhostGeolocPolyline) ...<Widget>[
-                // ignore: always_specify_types
-                PolylineLayer(polylines: makeGhostGeolocPolyline()),
-
-                MarkerLayer(markers: displayGhostGeolocDateList),
-              ],
-
               MarkerLayer(markers: transportationGoalMarkerList),
 
               MarkerLayer(markers: templeMarkerList),
@@ -237,6 +229,14 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               MarkerLayer(markers: stampRallyMetro20AnniversaryMarkerList),
 
               MarkerLayer(markers: stampRallyMetroPokepokeMarkerList),
+
+              if (widget.templeGeolocNearlyDateList.isNotEmpty &&
+                  appParamState.isDisplayGhostGeolocPolyline) ...<Widget>[
+                // ignore: always_specify_types
+                PolylineLayer(polylines: makeGhostGeolocPolyline()),
+
+                MarkerLayer(markers: displayGhostGeolocDateList),
+              ],
             ],
           ),
 
@@ -486,35 +486,37 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                             ),
                           ),
 
-                          const SizedBox(height: 10),
+                          if (widget.templeGeolocNearlyDateList.isNotEmpty) ...<Widget>[
+                            const SizedBox(height: 10),
 
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: (appParamState.isDisplayGhostGeolocPolyline)
-                                  ? Colors.yellowAccent.withOpacity(0.3)
-                                  : Colors.black.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: (appParamState.isDisplayGhostGeolocPolyline)
+                                    ? Colors.yellowAccent.withOpacity(0.3)
+                                    : Colors.black.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
 
-                            child: GestureDetector(
-                              onTap: () {
-                                appParamNotifier.setIsDisplayGhostGeolocPolyline(
-                                  flag: !appParamState.isDisplayGhostGeolocPolyline,
-                                );
-                              },
-                              child: const Stack(
-                                children: <Widget>[
-                                  Positioned(
-                                    bottom: 0,
-                                    child: Text('ghost', style: TextStyle(color: Colors.yellowAccent, fontSize: 8)),
-                                  ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  appParamNotifier.setIsDisplayGhostGeolocPolyline(
+                                    flag: !appParamState.isDisplayGhostGeolocPolyline,
+                                  );
+                                },
+                                child: const Stack(
+                                  children: <Widget>[
+                                    Positioned(
+                                      bottom: 0,
+                                      child: Text('ghost', style: TextStyle(color: Colors.yellowAccent, fontSize: 8)),
+                                    ),
 
-                                  Icon(Icons.stacked_line_chart),
-                                ],
+                                    Icon(Icons.stacked_line_chart),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ],
                       ],
                     ),

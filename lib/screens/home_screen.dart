@@ -630,9 +630,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               const SizedBox(height: 20),
 
               GestureDetector(
-                onTap: () {
-                  LifetimeDialog(context: context, widget: const LifetimeItemSearchAlert());
-                },
+                onTap: () => LifetimeDialog(context: context, widget: const LifetimeItemSearchAlert()),
                 child: const Row(
                   children: <Widget>[
                     Icon(Icons.search),
@@ -875,7 +873,6 @@ Map<String, List<StampRallyModel>> makeStampRallyDisplayDataMap({
 }) {
   final Map<String, List<StampRallyModel>> result = <String, List<StampRallyModel>>{};
 
-  // trainMarkMap を作成
   final Map<String, List<Map<String, String>>> trainMarkMap = <String, List<Map<String, String>>>{};
   stampRallyMetroAllStationMap.forEach((String date, List<StampRallyModel> models) {
     for (final StampRallyModel model in models) {

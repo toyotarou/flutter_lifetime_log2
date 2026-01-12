@@ -648,9 +648,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                             const SizedBox(height: 10),
                             Row(
                               // ignore: always_specify_types
-                              children: List.generate(24, (index) => index).map((e) {
-                                return getLifetimeDisplayCell(date: date, num: e);
-                              }).toList(),
+                              children: List.generate(
+                                24,
+                                (int index) => index,
+                              ).map((int e) => getLifetimeDisplayCell(date: date, num: e)).toList(),
                             ),
                           ],
                         ],
