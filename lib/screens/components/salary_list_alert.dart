@@ -13,6 +13,7 @@ class SalaryListAlert extends ConsumerStatefulWidget {
 }
 
 class _SalaryListAlertState extends ConsumerState<SalaryListAlert> with ControllersMixin<SalaryListAlert> {
+  ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(

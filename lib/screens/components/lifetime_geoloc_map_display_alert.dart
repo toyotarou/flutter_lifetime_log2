@@ -22,6 +22,7 @@ import '../../utility/utility.dart';
 import '../parts/icon_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import '../parts/lifetime_log_overlay.dart';
+import 'lifetime_geoloc_ghost_temple_info_alert.dart';
 import 'temple_list_display_alert.dart';
 import 'time_place_display_alert.dart';
 
@@ -1197,7 +1198,21 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               ),
               child: (j == 0)
                   ? GestureDetector(
-                      onTap: () => appParamNotifier.setSelectedGhostPolylineDate(date: templeModel.date),
+                      onTap: () {
+                        if (appParamState.selectedGhostPolylineDate == '') {
+                          LifetimeDialog(
+                            context: context,
+                            widget: const LifetimeGeolocGhostTempleInfoAlert(),
+
+                            paddingRight: context.screenSize.width * 0.3,
+                            paddingTop: context.screenSize.height * 0.3,
+                            paddingBottom: context.screenSize.height * 0.1,
+                            clearBarrierColor: true,
+                          );
+                        }
+
+                        appParamNotifier.setSelectedGhostPolylineDate(date: templeModel.date);
+                      },
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,

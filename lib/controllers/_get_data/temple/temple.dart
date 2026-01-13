@@ -156,9 +156,9 @@ class Temple extends _$Temple {
           // ignore: avoid_dynamic_calls
           date: value['list'][i]['date'].toString(),
           // ignore: avoid_dynamic_calls
-          startPoint: value['list'][i]['startPoint'].toString(),
+          startPoint: value['list'][i]['start_point'].toString(),
           // ignore: avoid_dynamic_calls
-          endPoint: value['list'][i]['endPoint'].toString(),
+          endPoint: value['list'][i]['end_point'].toString(),
           templeDataList: templeDataList,
         );
 

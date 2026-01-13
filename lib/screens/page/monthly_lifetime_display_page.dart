@@ -338,6 +338,9 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                                     appParamNotifier.setSelectedGeolocPointTime(time: '');
 
+                                                    appParamNotifier.setIsDisplayGhostGeolocPolyline(flag: false);
+                                                    appParamNotifier.setSelectedGhostPolylineDate(date: '');
+
                                                     List<String> templeGeolocNearlyDateList = <String>[];
 
                                                     if (appParamState.keepTempleMap[date] != null) {
