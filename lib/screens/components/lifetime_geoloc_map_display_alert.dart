@@ -1141,21 +1141,30 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     final List<Polyline> polylines = <Polyline>[];
 
     for (int i = 0; i < widget.templeGeolocNearlyDateList.length; i++) {
-      final TempleModel? templeModel = appParamState.keepTempleMap[widget.templeGeolocNearlyDateList[i]];
-      if (templeModel == null) {
-        continue;
+      bool flag = true;
+
+      if (appParamState.selectedGhostPolylineDate != '' &&
+          appParamState.selectedGhostPolylineDate != widget.templeGeolocNearlyDateList[i]) {
+        flag = false;
       }
 
-      polylines.add(
-        // ignore: always_specify_types
-        Polyline(
-          points: templeModel.templeDataList
-              .map((TempleDataModel t) => LatLng(t.latitude.toDouble(), t.longitude.toDouble()))
-              .toList(),
-          color: fortyEightColor[i % 48].withValues(alpha: 0.5),
-          strokeWidth: 20,
-        ),
-      );
+      if (flag) {
+        final TempleModel? templeModel = appParamState.keepTempleMap[widget.templeGeolocNearlyDateList[i]];
+        if (templeModel == null) {
+          continue;
+        }
+
+        polylines.add(
+          // ignore: always_specify_types
+          Polyline(
+            points: templeModel.templeDataList
+                .map((TempleDataModel t) => LatLng(t.latitude.toDouble(), t.longitude.toDouble()))
+                .toList(),
+            color: fortyEightColor[i % 48].withValues(alpha: 0.5),
+            strokeWidth: 20,
+          ),
+        );
+      }
     }
 
     return polylines;
@@ -1171,32 +1180,54 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         continue;
       }
 
-      displayGhostGeolocDateList.add(
-        Marker(
-          point: LatLng(
-            templeModel.templeDataList[0].latitude.toDouble(),
-            templeModel.templeDataList[0].longitude.toDouble(),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: fortyEightColor[i % 48]),
-            ),
+      for (int j = 0; j < templeModel.templeDataList.length; j++) {
+        bool flag = true;
 
-            child: DefaultTextStyle(
-              style: TextStyle(color: fortyEightColor[i % 48], fontSize: 8, fontWeight: FontWeight.bold),
-              child: Column(
-                children: <Widget>[
-                  const Spacer(),
-                  Text(DateTime.parse(templeModel.date).year.toString()),
-                  Text(DateTime.parse(templeModel.date).mmdd),
-                  const Spacer(),
-                ],
+        if (appParamState.selectedGhostPolylineDate != '' &&
+            appParamState.selectedGhostPolylineDate != templeModel.date) {
+          flag = false;
+        }
+
+        if (flag) {
+          displayGhostGeolocDateList.add(
+            Marker(
+              point: LatLng(
+                templeModel.templeDataList[j].latitude.toDouble(),
+                templeModel.templeDataList[j].longitude.toDouble(),
               ),
+              child: (j == 0)
+                  ? GestureDetector(
+                      onTap: () => appParamNotifier.setSelectedGhostPolylineDate(date: templeModel.date),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: fortyEightColor[i % 48]),
+                        ),
+
+                        child: DefaultTextStyle(
+                          style: TextStyle(color: fortyEightColor[i % 48], fontSize: 8, fontWeight: FontWeight.bold),
+                          child: Column(
+                            children: <Widget>[
+                              const Spacer(),
+                              Text(DateTime.parse(templeModel.date).year.toString()),
+                              Text(DateTime.parse(templeModel.date).mmdd),
+                              const Spacer(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  : Center(
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                      ),
+                    ),
             ),
-          ),
-        ),
-      );
+          );
+        }
+      }
     }
   }
 }
