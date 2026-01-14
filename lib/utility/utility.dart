@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -404,6 +405,17 @@ class Utility {
     final List<String> list = templeGeolocNearlyDateSet.toList()..sort();
 
     return list;
+  }
+
+  ///
+  Widget dispUpDownMark({required int before, required int after, required double size}) {
+    if (before < after) {
+      return Icon(Icons.arrow_upward, color: Colors.greenAccent, size: size);
+    } else if (before > after) {
+      return Icon(Icons.arrow_downward, color: Colors.redAccent, size: size);
+    } else {
+      return Icon(FontAwesomeIcons.equals, color: Colors.blueAccent, size: size);
+    }
   }
 }
 

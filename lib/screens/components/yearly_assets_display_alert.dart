@@ -1,7 +1,6 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
@@ -14,6 +13,7 @@ import '../../models/toushi_shintaku_model.dart';
 import '../../utility/assets_calc.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
+import 'month_end_assets_display_alert.dart';
 import 'yearly_assets_graph_alert.dart';
 
 class YearlyAssetsDisplayAlert extends ConsumerStatefulWidget {
@@ -37,6 +37,8 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
   int totalDiff = 0;
 
   List<YearDayAssetsModel> yearlyDayAssetsList = <YearDayAssetsModel>[];
+
+  List<YearDayAssetsModel> monthEndAssetsList = <YearDayAssetsModel>[];
 
   ///
   @override
@@ -153,18 +155,30 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: DefaultTextStyle(
                 style: const TextStyle(fontSize: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                child: Row(
                   children: <Widget>[
-                    Text(lastAssets.toString().toCurrency()),
+                    ElevatedButton(
+                      onPressed: () {
+                        LifetimeDialog(
+                          context: context,
+                          widget: MonthEndAssetsDisplayAlert(date: widget.date, monthEndAssetsList: monthEndAssetsList),
+                        );
+                      },
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                      child: const Text('月末リスト'),
+                    ),
+
+                    const Spacer(),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
-                        const SizedBox.shrink(),
+                        Text(lastAssets.toString().toCurrency()),
+
                         Row(
                           children: <Widget>[
-                            _dispUpDownMark(before: 0, after: totalDiff, size: 18),
+                            utility.dispUpDownMark(before: 0, after: totalDiff, size: 18),
                             const SizedBox(width: 10),
 
                             Text(totalDiff.toString().toCurrency(), style: const TextStyle(color: Colors.orange)),
@@ -225,16 +239,16 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
             ),
 
             SizedBox(
-              width: 80,
+              width: 100,
               child: (isBeforeOrToday && item.totalBefore != null)
                   ? Row(
                       children: <Widget>[
                         const Spacer(),
                         SizedBox(
-                          width: 70,
+                          width: 90,
                           child: Row(
                             children: <Widget>[
-                              _dispUpDownMark(before: item.totalBefore!, after: item.total, size: 18),
+                              utility.dispUpDownMark(before: item.totalBefore!, after: item.total, size: 18),
 
                               const Spacer(),
 
@@ -315,6 +329,8 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
   ///
   List<YearDayAssetsModel> makeYearlyDayAssetsList() {
     yearlyDayAssetsList.clear();
+
+    monthEndAssetsList.clear();
 
     const double assetRate = 0.8;
 
@@ -397,6 +413,27 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
         ),
       );
 
+      if (d.yyyymmdd == DateTime(d.year, d.month + 1, 0).yyyymmdd) {
+        monthEndAssetsList.add(
+          YearDayAssetsModel(
+            date: key,
+            mmdd: mmdd,
+            youbiStr: youbiStr,
+            youbiShort: youbiShort,
+            money: money,
+            gold: gold80,
+            stock: stock80,
+            toushiShintaku: toushi80,
+            insurance: insuranceSum,
+            insurancePassedMonths: insurancePassedMonths,
+            nenkinKikin: nenkinKikinSum,
+            nenkinKikinPassedMonths: nenkinKikinPassedMonths,
+            total: total,
+            totalBefore: prevTotal,
+          ),
+        );
+      }
+
       if (mmdd == '01/01') {
         first = total;
       }
@@ -415,16 +452,5 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
     });
 
     return list;
-  }
-
-  ///
-  Widget _dispUpDownMark({required int before, required int after, required double size}) {
-    if (before < after) {
-      return Icon(Icons.arrow_upward, color: Colors.greenAccent, size: size);
-    } else if (before > after) {
-      return Icon(Icons.arrow_downward, color: Colors.redAccent, size: size);
-    } else {
-      return Icon(FontAwesomeIcons.equals, color: Colors.blueAccent, size: size);
-    }
   }
 }
