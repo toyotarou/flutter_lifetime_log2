@@ -9,11 +9,14 @@ class YearlyAssetsGraphAlert extends StatefulWidget {
     required this.year,
     required this.totals,
     this.padding = const EdgeInsets.fromLTRB(16, 16, 16, 24),
+    required this.lastTotal,
   });
 
   final int year;
   final List<int> totals;
   final EdgeInsets padding;
+
+  final int lastTotal;
 
   @override
   State<YearlyAssetsGraphAlert> createState() => _YearlyAssetsGraphAlertState();
@@ -35,12 +38,14 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
 
   int? _todayIndex;
 
+  DateTime get _baseDate => DateTime(widget.year).subtract(const Duration(days: 1));
+
   ///
   @override
   void initState() {
     super.initState();
 
-    _plotTotals = _buildPlotTotals(year: widget.year, totals: widget.totals);
+    _plotTotals = _buildPlotTotals(year: widget.year, totals: widget.totals, lastTotal: widget.lastTotal);
 
     if (_plotTotals.isEmpty) {
       _minY = 0;
@@ -67,7 +72,8 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
     final DateTime now = DateTime.now();
     final DateTime today = DateTime(now.year, now.month, now.day);
     if (widget.year == today.year) {
-      _todayIndex = today.difference(DateTime(widget.year)).inDays.clamp(0, _plotTotals.length - 1);
+      final int idx = _dayOfYear(today).clamp(0, _plotTotals.length - 1);
+      _todayIndex = idx;
     } else {
       _todayIndex = null;
     }
@@ -99,24 +105,27 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
   }
 
   ///
-  List<int> _buildPlotTotals({required int year, required List<int> totals}) {
+  List<int> _buildPlotTotals({required int year, required List<int> totals, required int lastTotal}) {
     if (totals.isEmpty) {
       return <int>[];
     }
 
     final DateTime today = DateTime.now();
+    final List<int> filled;
+
     if (year != today.year) {
-      return totals;
+      filled = List<int>.from(totals);
+    } else {
+      final int todayIndexInTotals = (_dayOfYear(today) - 1).clamp(0, totals.length - 1);
+      final int todayValue = totals[todayIndexInTotals];
+
+      filled = List<int>.from(totals);
+      for (int i = todayIndexInTotals + 1; i < filled.length; i++) {
+        filled[i] = todayValue;
+      }
     }
 
-    final int todayIndex = (_dayOfYear(today) - 1).clamp(0, totals.length - 1);
-    final int todayValue = totals[todayIndex];
-
-    final List<int> filled = List<int>.from(totals);
-    for (int i = todayIndex + 1; i < filled.length; i++) {
-      filled[i] = todayValue;
-    }
-    return filled;
+    return <int>[lastTotal, ...filled];
   }
 
   ///
@@ -223,7 +232,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
     final List<FlSpot> spots = _buildSpots();
     final int idx = spot.x.round().clamp(0, spots.length - 1);
 
-    final DateTime date = DateTime(widget.year).add(Duration(days: idx));
+    final DateTime date = _baseDate.add(Duration(days: idx));
 
     final String dateStr =
         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
@@ -256,15 +265,13 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
                       return null;
                     }
 
-                    final DateTime date = DateTime(widget.year).add(Duration(days: idx));
-
+                    final DateTime date = _baseDate.add(Duration(days: idx));
                     final String dateStr =
                         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
-                    return LineTooltipItem(
-                      '$dateStr\n${s.y.toInt().toString().toCurrency()}',
-                      const TextStyle(color: Colors.white, fontSize: 12),
-                    );
+                    final TextStyle style = TextStyle(color: (idx == 0) ? Colors.white : Colors.white, fontSize: 12);
+
+                    return LineTooltipItem('$dateStr\n${s.y.toInt().toString().toCurrency()}', style);
                   }).toList();
                 },
               ),
@@ -396,8 +403,8 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
       final DateTime start = DateTime(widget.year, m);
       final DateTime end = DateTime(widget.year, m + 1, 0);
 
-      final int s = start.difference(DateTime(widget.year)).inDays;
-      final int e = end.difference(DateTime(widget.year)).inDays;
+      final int s = start.difference(DateTime(widget.year)).inDays + 1;
+      final int e = end.difference(DateTime(widget.year)).inDays + 1;
 
       if (s >= _plotTotals.length) {
         continue;
@@ -426,7 +433,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
 
     for (int m = 2; m <= 12; m++) {
       final DateTime monthStart = DateTime(widget.year, m);
-      final int idx = monthStart.difference(DateTime(widget.year)).inDays;
+      final int idx = monthStart.difference(DateTime(widget.year)).inDays + 1;
 
       if (idx <= 0 || idx > maxIdx) {
         continue;
@@ -462,7 +469,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
       return ranges;
     }
 
-    final int todayIdx = today.difference(DateTime(widget.year)).inDays.clamp(0, maxIdx);
+    final int todayIdx = (today.difference(DateTime(widget.year)).inDays + 1).clamp(0, maxIdx);
     final double x = todayIdx.toDouble();
 
     ranges.add(
@@ -491,8 +498,8 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
         end = today;
       }
 
-      final int sIdx = start.difference(DateTime(widget.year)).inDays;
-      final int eIdx = end.difference(DateTime(widget.year)).inDays.clamp(0, spots.length - 1);
+      final int sIdx = start.difference(DateTime(widget.year)).inDays + 1;
+      final int eIdx = (end.difference(DateTime(widget.year)).inDays + 1).clamp(0, spots.length - 1);
 
       if (sIdx >= eIdx) {
         continue;

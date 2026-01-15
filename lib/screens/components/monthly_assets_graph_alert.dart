@@ -7,10 +7,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../extensions/extensions.dart';
 
 class MonthlyAssetsGraphAlert extends ConsumerStatefulWidget {
-  const MonthlyAssetsGraphAlert({super.key, required this.monthlyGraphAssetsMap, required this.yearmonth});
+  const MonthlyAssetsGraphAlert({
+    super.key,
+    required this.monthlyGraphAssetsMap,
+    required this.yearmonth,
+    required this.lastTotal,
+  });
 
   final Map<int, int> monthlyGraphAssetsMap;
   final String yearmonth;
+
+  final int lastTotal;
 
   @override
   ConsumerState<MonthlyAssetsGraphAlert> createState() => _MonthlyAssetsGraphAlertState();
@@ -207,31 +214,31 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
 
     final List<int> monthlyAssetValueList = <int>[];
 
-    int lastTotal = 0;
-
-    final List<int> sortedKeys = widget.monthlyGraphAssetsMap.keys.toList()..sort();
-
-    for (final int key in sortedKeys) {
-      final int value = widget.monthlyGraphAssetsMap[key]!;
-      _flspots.add(FlSpot(key.toDouble(), value.toDouble()));
-      monthlyAssetValueList.add(value);
-      _dateList.add('${widget.yearmonth}-${key.toString().padLeft(2, '0')}');
-      if (value > 0) {
-        lastTotal = value;
-      }
-    }
-
     final List<String> parts = widget.yearmonth.split('-');
     final int y = parts[0].toInt();
     final int m = parts[1].toInt();
 
     _lastDayOfMonth = DateTime(y, m + 1, 0).day;
 
-    if (monthlyAssetValueList.isNotEmpty) {
-      for (int d = (sortedKeys.isEmpty ? 1 : (sortedKeys.last + 1)); d <= _lastDayOfMonth; d++) {
-        _flspots.add(FlSpot(d.toDouble(), lastTotal.toDouble()));
-        _dateList.add('${widget.yearmonth}-${d.toString().padLeft(2, '0')}');
+    final DateTime prevMonthLast = DateTime(y, m, 0);
+    final String prevMonthLastStr =
+        '${prevMonthLast.year}-${prevMonthLast.month.toString().padLeft(2, '0')}-${prevMonthLast.day.toString().padLeft(2, '0')}';
+
+    _flspots.add(FlSpot(0.0, widget.lastTotal.toDouble()));
+    _dateList.add(prevMonthLastStr);
+    monthlyAssetValueList.add(widget.lastTotal);
+
+    int carryTotal = widget.lastTotal;
+
+    for (int day = 1; day <= _lastDayOfMonth; day++) {
+      final int? v = widget.monthlyGraphAssetsMap[day];
+      if (v != null) {
+        carryTotal = v;
       }
+
+      _flspots.add(FlSpot(day.toDouble(), carryTotal.toDouble()));
+      _dateList.add('${widget.yearmonth}-${day.toString().padLeft(2, '0')}');
+      monthlyAssetValueList.add(carryTotal);
     }
 
     if (monthlyAssetValueList.isNotEmpty) {
@@ -242,16 +249,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
       graphMin = ((minValue / step).floor()) * step;
       graphMax = ((maxValue / step).ceil()) * step;
 
-      double? startY = widget.monthlyGraphAssetsMap[1]?.toDouble();
-      if (startY == null) {
-        for (int d = 2; d <= _lastDayOfMonth; d++) {
-          final int? v = widget.monthlyGraphAssetsMap[d];
-          if (v != null) {
-            startY = v.toDouble();
-            break;
-          }
-        }
-      }
+      _startY = widget.lastTotal.toDouble();
 
       final bool isCurrentMonth =
           widget.yearmonth == '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}';
@@ -266,10 +264,9 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
             break;
           }
         }
-        endY ??= lastTotal.toDouble();
+        endY ??= carryTotal.toDouble();
       }
 
-      _startY = startY;
       _endY = endY;
 
       final List<List<int>> weeks = getSplitWeeksByIndex(dateList: _dateList);
@@ -298,58 +295,44 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
       );
 
       graphData = LineChartData(
-        minX: 1,
+        minX: 0,
         maxX: _lastDayOfMonth.toDouble(),
         minY: graphMin.toDouble(),
         maxY: graphMax.toDouble(),
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
             tooltipRoundedRadius: 2,
-            // ★ 修正：touchedSpots と同じ長さのリストを返しつつ、
-            // barIndex != 0（モメンタム線など）は null で非表示にする
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
               return touchedSpots.map((LineBarSpot s) {
                 if (s.barIndex != 0) {
-                  // メイン線以外はツールチップ非表示
                   return null;
                 }
 
-                final TextStyle baseStyle = TextStyle(
-                  color: s.bar.gradient?.colors.first ?? s.bar.color ?? Colors.blueGrey,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                );
+                final int idx = s.x.round().clamp(0, _dateList.length - 1);
+
+                final Color tooltipColor = (idx == 0)
+                    ? Colors.white
+                    : (s.bar.gradient?.colors.first ?? s.bar.color ?? Colors.blueGrey);
+
+                final TextStyle baseStyle = TextStyle(color: tooltipColor, fontWeight: FontWeight.bold, fontSize: 12);
+
+                final String date = _dateList[idx];
 
                 final int price = s.y.round();
                 final String displayPrice = price.toString().toCurrency();
 
-                final int day = s.x.toInt().clamp(1, _lastDayOfMonth);
-                final String date = '${widget.yearmonth}-${day.toString().padLeft(2, '0')}';
-                final String youbi = DateTime(
-                  date.split('-')[0].toInt(),
-                  date.split('-')[1].toInt(),
-                  date.split('-')[2].toInt(),
-                ).youbiStr.substring(0, 3);
+                final DateTime dt = DateTime.parse(date);
+                final String youbi = dt.youbiStr.substring(0, 3);
 
-                final int diffFromStart = monthlyAssetValueList.first - price;
-                final String kigouFromStart = (diffFromStart > 0) ? '-' : '+';
-                final String diffFromStartText = '$kigouFromStart${diffFromStart.abs().toString().toCurrency()}';
-
-                int? prevPrice;
-                if (day > 1) {
-                  for (int d = day - 1; d >= 1; d--) {
-                    final int? v = widget.monthlyGraphAssetsMap[d];
-                    if (v != null) {
-                      prevPrice = v;
-                      break;
-                    }
-                  }
-                }
+                final int baseline = widget.lastTotal;
+                final int diffFromStart = price - baseline;
+                final String signFromStart = diffFromStart > 0 ? '+' : (diffFromStart < 0 ? '-' : '±');
+                final String diffFromStartText = '$signFromStart${diffFromStart.abs().toString().toCurrency()}';
 
                 String diffFromPrevText = '';
                 Color diffColor = Colors.white;
-
-                if (prevPrice != null) {
+                if (idx > 0) {
+                  final int prevPrice = _flspots[idx - 1].y.round();
                   final int diffFromPrev = price - prevPrice;
                   final String sign = diffFromPrev > 0 ? '+' : (diffFromPrev < 0 ? '-' : '±');
                   diffFromPrevText = '$sign${diffFromPrev.abs().toString().toCurrency()}';
@@ -384,6 +367,10 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
             strokeWidth: 1,
           ),
           getDrawingVerticalLine: (double value) {
+            if (value < 1) {
+              return const FlLine(color: Colors.transparent, strokeWidth: 1);
+            }
+
             final String youbi = DateTime(
               widget.yearmonth.split('-')[0].toInt(),
               widget.yearmonth.split('-')[1].toInt(),
@@ -412,8 +399,9 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
             color: Colors.greenAccent,
             barWidth: 1,
             dotData: FlDotData(
-              show: _showPointLabels,
               getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int index) {
+                final bool showLabel = _showPointLabels;
+
                 if (_isFuture(spot)) {
                   return ValueDotPainter(
                     color: Colors.greenAccent,
@@ -426,9 +414,13 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                 return ValueDotPainter(
                   color: Colors.greenAccent,
                   radius: 0.8,
-                  backgroundColor: Colors.blue.withOpacity(0.5),
-                  textStyle: const TextStyle(fontSize: 1, color: Colors.white),
-                  labelBuilder: _buildSpotLabel,
+
+                  backgroundColor: showLabel ? Colors.blue.withOpacity(0.5) : null,
+                  textStyle: showLabel
+                      ? const TextStyle(fontSize: 1, color: Colors.white)
+                      : const TextStyle(fontSize: 1, color: Colors.transparent),
+
+                  labelBuilder: showLabel ? _buildSpotLabel : (_) => '',
                 );
               },
             ),
@@ -453,7 +445,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                 label: HorizontalLineLabel(
                   show: true,
                   style: const TextStyle(color: Colors.white, fontSize: 11),
-                  labelResolver: (_) => ' ${widget.yearmonth}-01 ',
+                  labelResolver: (_) => ' $prevMonthLastStr ',
                   padding: const EdgeInsets.only(left: 6, bottom: 2),
                 ),
               ),
@@ -475,7 +467,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
       );
 
       graphData2 = LineChartData(
-        minX: 1,
+        minX: 0,
         maxX: _lastDayOfMonth.toDouble(),
         minY: graphMin.toDouble(),
         maxY: graphMax.toDouble(),
@@ -521,7 +513,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
       );
 
       graphData3 = LineChartData(
-        minX: 1,
+        minX: 0,
         maxX: _lastDayOfMonth.toDouble(),
         minY: graphMin.toDouble(),
         maxY: graphMax.toDouble(),
@@ -557,20 +549,17 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
 
   ///
   String _buildSpotLabel(FlSpot spot) {
-    final int day = spot.x.toInt().clamp(1, _lastDayOfMonth);
-    final String date = '${widget.yearmonth}-${day.toString().padLeft(2, '0')}';
+    final int idx = spot.x.round().clamp(0, _dateList.length - 1);
+    final String date = _dateList[idx];
     final String price = spot.y.round().toString().toCurrency();
     return '$date\n$price';
   }
 
   ///
   bool _isFuture(FlSpot spot) {
-    final List<String> parts = widget.yearmonth.split('-');
-    final int year = parts[0].toInt();
-    final int month = parts[1].toInt();
-    final int day = spot.x.toInt().clamp(1, _lastDayOfMonth);
+    final int idx = spot.x.round().clamp(0, _dateList.length - 1);
+    final DateTime date = DateTime.parse(_dateList[idx]);
 
-    final DateTime date = DateTime(year, month, day);
     final DateTime now = DateTime.now();
     final DateTime today = DateTime(now.year, now.month, now.day);
 
@@ -612,8 +601,8 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
         continue;
       }
       if ((paintEvenWeeks && i.isEven) || (!paintEvenWeeks && i.isOdd)) {
-        final double x1 = w.first + 1.0;
-        final double x2 = w.last + 2.0;
+        final double x1 = w.first.toDouble();
+        final double x2 = (w.last + 1).toDouble();
         ranges.add(VerticalRangeAnnotation(x1: x1, x2: x2, color: color.withOpacity(opacity)));
       }
     }
@@ -714,6 +703,28 @@ class ValueDotPainter extends FlDotPainter {
   ///
   @override
   void draw(Canvas canvas, FlSpot spot, Offset offsetInCanvas) {
+    if (spot.x == 0.0) {
+      const double half = 4.0;
+      final Paint crossPaint = Paint()
+        ..color = Colors.white.withValues(alpha: 0.3)
+        ..strokeWidth = 4.0
+        ..style = PaintingStyle.stroke
+        ..strokeCap = StrokeCap.round;
+
+      canvas.drawLine(
+        offsetInCanvas + const Offset(-half, -half),
+        offsetInCanvas + const Offset(half, half),
+        crossPaint,
+      );
+      canvas.drawLine(
+        offsetInCanvas + const Offset(-half, half),
+        offsetInCanvas + const Offset(half, -half),
+        crossPaint,
+      );
+
+      return;
+    }
+
     final Paint dotPaint = Paint()..color = color;
     canvas.drawCircle(offsetInCanvas, radius, dotPaint);
 
@@ -747,7 +758,7 @@ class ValueDotPainter extends FlDotPainter {
 
   ///
   @override
-  Size getSize(FlSpot spot) => Size(radius * 2, radius * 2);
+  Size getSize(FlSpot spot) => Size(max(radius * 2, 24), max(radius * 2, 24));
 
   ///
   @override

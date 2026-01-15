@@ -17,9 +17,10 @@ import 'month_end_assets_display_alert.dart';
 import 'yearly_assets_graph_alert.dart';
 
 class YearlyAssetsDisplayAlert extends ConsumerStatefulWidget {
-  const YearlyAssetsDisplayAlert({super.key, required this.date});
+  const YearlyAssetsDisplayAlert({super.key, required this.date, required this.lastTotal});
 
   final String date;
+  final int lastTotal;
 
   @override
   ConsumerState<YearlyAssetsDisplayAlert> createState() => _YearlyAssetsDisplayPageState();
@@ -111,6 +112,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                         widget: YearlyAssetsGraphAlert(
                           year: year,
                           totals: yearlyDayAssetsList.map((YearDayAssetsModel e) => e.total).toList(),
+                          lastTotal: widget.lastTotal,
                         ),
                       );
                     },
@@ -161,7 +163,11 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                       onPressed: () {
                         LifetimeDialog(
                           context: context,
-                          widget: MonthEndAssetsDisplayAlert(date: widget.date, monthEndAssetsList: monthEndAssetsList),
+                          widget: MonthEndAssetsDisplayAlert(
+                            date: widget.date,
+                            monthEndAssetsList: monthEndAssetsList,
+                            lastTotal: widget.lastTotal,
+                          ),
                         );
                       },
 
@@ -261,7 +267,28 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                         ),
                       ],
                     )
-                  : const SizedBox.shrink(),
+                  : (item.mmdd.split('/')[1] == '01')
+                  ? Row(
+                      children: <Widget>[
+                        const Spacer(),
+                        SizedBox(
+                          width: 90,
+                          child: Row(
+                            children: <Widget>[
+                              utility.dispUpDownMark(before: widget.lastTotal, after: item.total, size: 18),
+
+                              const Spacer(),
+
+                              Text(
+                                _diffString(before: widget.lastTotal, after: item.total),
+                                style: const TextStyle(color: Colors.orange),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  : null,
             ),
           ],
         ),
@@ -435,7 +462,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       }
 
       if (mmdd == '01/01') {
-        first = total;
+        first = widget.lastTotal;
       }
 
       if (total != 0) {

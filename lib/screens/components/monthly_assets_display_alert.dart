@@ -132,10 +132,36 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                             children: <Widget>[
                               GestureDetector(
                                 onTap: () {
+                                  //====================================================//
+                                  final DateTime beforeDate = DateTime(
+                                    widget.yearmonth.split('-')[0].toInt() - 1,
+                                    12,
+                                    31,
+                                  );
+
+                                  final Map<String, Map<String, int>> monthlyAssetsMap = _buildMonthlyAssetsMap(
+                                    genDate: genDate,
+                                  );
+
+                                  final Map<String, int>? monthlyAssetsBefore = monthlyAssetsMap[beforeDate.yyyymmdd];
+
+                                  int lastMonthEndAssetsTotal = 0;
+                                  monthlyAssetsBefore?.forEach((String key, int value) {
+                                    if (key != 'insurancePassedMonths' && key != 'nenkinKikinPassedMonths') {
+                                      lastMonthEndAssetsTotal += value;
+                                    }
+                                  });
+
+                                  final int lastMonthEndMoney =
+                                      appParamState.keepMoneyMap[beforeDate.yyyymmdd]?.sum.toInt() ?? 0;
+
+                                  //====================================================//
+
                                   LifetimeDialog(
                                     context: context,
                                     widget: YearlyAssetsDisplayAlert(
                                       date: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
+                                      lastTotal: lastMonthEndAssetsTotal + lastMonthEndMoney,
                                     ),
                                   );
                                 },
@@ -160,11 +186,37 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                                     return;
                                   }
 
+                                  //====================================================//
+                                  final DateTime beforeDate = DateTime(
+                                    widget.yearmonth.split('-')[0].toInt() - 1,
+                                    12,
+                                    31,
+                                  );
+
+                                  final Map<String, Map<String, int>> monthlyAssetsMap = _buildMonthlyAssetsMap(
+                                    genDate: genDate,
+                                  );
+
+                                  final Map<String, int>? monthlyAssetsBefore = monthlyAssetsMap[beforeDate.yyyymmdd];
+
+                                  int lastMonthEndAssetsTotal = 0;
+                                  monthlyAssetsBefore?.forEach((String key, int value) {
+                                    if (key != 'insurancePassedMonths' && key != 'nenkinKikinPassedMonths') {
+                                      lastMonthEndAssetsTotal += value;
+                                    }
+                                  });
+
+                                  final int lastMonthEndMoney =
+                                      appParamState.keepMoneyMap[beforeDate.yyyymmdd]?.sum.toInt() ?? 0;
+
+                                  //====================================================//
+
                                   LifetimeDialog(
                                     context: context,
                                     widget: MonthlyAssetsGraphAlert(
                                       yearmonth: genDate.yyyymm,
                                       monthlyGraphAssetsMap: monthlyGraphAssetsMap,
+                                      lastTotal: lastMonthEndAssetsTotal + lastMonthEndMoney,
                                     ),
                                   );
                                 },

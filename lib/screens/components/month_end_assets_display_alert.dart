@@ -6,11 +6,18 @@ import '../../models/common/year_day_assets_model.dart';
 import '../../utility/utility.dart';
 
 class MonthEndAssetsDisplayAlert extends ConsumerStatefulWidget {
-  const MonthEndAssetsDisplayAlert({super.key, required this.date, required this.monthEndAssetsList});
+  const MonthEndAssetsDisplayAlert({
+    super.key,
+    required this.date,
+    required this.monthEndAssetsList,
+    required this.lastTotal,
+  });
 
   final String date;
 
   final List<YearDayAssetsModel> monthEndAssetsList;
+
+  final int lastTotal;
 
   @override
   ConsumerState<MonthEndAssetsDisplayAlert> createState() => _MonthEndAssetsDisplayAlertState();
@@ -50,7 +57,9 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
     int i = 0;
     for (final YearDayAssetsModel element in widget.monthEndAssetsList) {
       if (i < DateTime.parse(widget.date).month) {
-        final int diff = (i == 0) ? 0 : widget.monthEndAssetsList[i].total - widget.monthEndAssetsList[i - 1].total;
+        final int diff = (i == 0)
+            ? widget.monthEndAssetsList[i].total - widget.lastTotal
+            : widget.monthEndAssetsList[i].total - widget.monthEndAssetsList[i - 1].total;
 
         list.add(
           Container(
@@ -71,7 +80,7 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
                         children: <Widget>[
                           Text(element.total.toString().toCurrency()),
 
-                          Text((i == 0) ? '-' : diff.toString().toCurrency()),
+                          Text(diff.toString().toCurrency()),
                         ],
                       ),
 
@@ -79,13 +88,11 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
 
                       SizedBox(
                         width: 30,
-                        child: (i == 0)
-                            ? const Icon(Icons.square_outlined, color: Colors.transparent)
-                            : utility.dispUpDownMark(
-                                before: widget.monthEndAssetsList[i - 1].total,
-                                after: widget.monthEndAssetsList[i].total,
-                                size: 18,
-                              ),
+                        child: utility.dispUpDownMark(
+                          before: (i == 0) ? widget.lastTotal : widget.monthEndAssetsList[i - 1].total,
+                          after: widget.monthEndAssetsList[i].total,
+                          size: 18,
+                        ),
                       ),
                     ],
                   ),
