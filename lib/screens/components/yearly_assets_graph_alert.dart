@@ -261,6 +261,10 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
                   return touched.map((LineBarSpot s) {
                     final int idx = s.spotIndex.clamp(0, spots.length - 1);
 
+                    if (idx == 0) {
+                      return null;
+                    }
+
                     if (_isFutureIndex(idx)) {
                       return null;
                     }
@@ -269,7 +273,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
                     final String dateStr =
                         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
-                    final TextStyle style = TextStyle(color: (idx == 0) ? Colors.white : Colors.white, fontSize: 12);
+                    const TextStyle style = TextStyle(color: Colors.white, fontSize: 12);
 
                     return LineTooltipItem('$dateStr\n${s.y.toInt().toString().toCurrency()}', style);
                   }).toList();

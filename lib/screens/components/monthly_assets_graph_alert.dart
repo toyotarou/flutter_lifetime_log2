@@ -308,6 +308,10 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                   return null;
                 }
 
+                if (s.x.round() == 0) {
+                  return null;
+                }
+
                 final int idx = s.x.round().clamp(0, _dateList.length - 1);
 
                 final Color tooltipColor = (idx == 0)
