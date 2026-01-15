@@ -10,14 +10,14 @@ class MonthEndAssetsDisplayAlert extends ConsumerStatefulWidget {
     super.key,
     required this.date,
     required this.monthEndAssetsList,
-    required this.lastTotal,
+    required this.lastYearFinalAssets,
   });
 
   final String date;
 
   final List<YearDayAssetsModel> monthEndAssetsList;
 
-  final int lastTotal;
+  final int lastYearFinalAssets;
 
   @override
   ConsumerState<MonthEndAssetsDisplayAlert> createState() => _MonthEndAssetsDisplayAlertState();
@@ -25,6 +25,8 @@ class MonthEndAssetsDisplayAlert extends ConsumerStatefulWidget {
 
 class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDisplayAlert> {
   Utility utility = Utility();
+
+  int yearlyTotal = 0;
 
   ///
   @override
@@ -44,6 +46,19 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
               Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
               Expanded(child: displayMonthEndAssetsList()),
+
+              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  const SizedBox.shrink(),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: Text(yearlyTotal.toString().toCurrency(), style: const TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -55,10 +70,11 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
     final List<Widget> list = <Widget>[];
 
     int i = 0;
+    int yt = 0;
     for (final YearDayAssetsModel element in widget.monthEndAssetsList) {
       if (i < DateTime.parse(widget.date).month) {
         final int diff = (i == 0)
-            ? widget.monthEndAssetsList[i].total - widget.lastTotal
+            ? widget.monthEndAssetsList[i].total - widget.lastYearFinalAssets
             : widget.monthEndAssetsList[i].total - widget.monthEndAssetsList[i - 1].total;
 
         list.add(
@@ -89,7 +105,7 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
                       SizedBox(
                         width: 30,
                         child: utility.dispUpDownMark(
-                          before: (i == 0) ? widget.lastTotal : widget.monthEndAssetsList[i - 1].total,
+                          before: (i == 0) ? widget.lastYearFinalAssets : widget.monthEndAssetsList[i - 1].total,
                           after: widget.monthEndAssetsList[i].total,
                           size: 18,
                         ),
@@ -101,10 +117,14 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
             ),
           ),
         );
+
+        yt += diff;
       }
 
       i++;
     }
+
+    setState(() => yearlyTotal = yt);
 
     return CustomScrollView(
       slivers: <Widget>[

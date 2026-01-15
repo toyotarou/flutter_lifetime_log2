@@ -9,14 +9,14 @@ class YearlyAssetsGraphAlert extends StatefulWidget {
     required this.year,
     required this.totals,
     this.padding = const EdgeInsets.fromLTRB(16, 16, 16, 24),
-    required this.lastTotal,
+    required this.lastYearFinalAssets,
   });
 
   final int year;
   final List<int> totals;
   final EdgeInsets padding;
 
-  final int lastTotal;
+  final int lastYearFinalAssets;
 
   @override
   State<YearlyAssetsGraphAlert> createState() => _YearlyAssetsGraphAlertState();
@@ -45,7 +45,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
   void initState() {
     super.initState();
 
-    _plotTotals = _buildPlotTotals(year: widget.year, totals: widget.totals, lastTotal: widget.lastTotal);
+    _plotTotals = _buildPlotTotals(year: widget.year, totals: widget.totals, lastTotal: widget.lastYearFinalAssets);
 
     if (_plotTotals.isEmpty) {
       _minY = 0;

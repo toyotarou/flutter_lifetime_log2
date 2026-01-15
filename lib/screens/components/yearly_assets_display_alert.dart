@@ -17,10 +17,10 @@ import 'month_end_assets_display_alert.dart';
 import 'yearly_assets_graph_alert.dart';
 
 class YearlyAssetsDisplayAlert extends ConsumerStatefulWidget {
-  const YearlyAssetsDisplayAlert({super.key, required this.date, required this.lastTotal});
+  const YearlyAssetsDisplayAlert({super.key, required this.date, required this.lastYearFinalAssets});
 
   final String date;
-  final int lastTotal;
+  final int lastYearFinalAssets;
 
   @override
   ConsumerState<YearlyAssetsDisplayAlert> createState() => _YearlyAssetsDisplayPageState();
@@ -112,7 +112,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                         widget: YearlyAssetsGraphAlert(
                           year: year,
                           totals: yearlyDayAssetsList.map((YearDayAssetsModel e) => e.total).toList(),
-                          lastTotal: widget.lastTotal,
+                          lastYearFinalAssets: widget.lastYearFinalAssets,
                         ),
                       );
                     },
@@ -166,7 +166,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                           widget: MonthEndAssetsDisplayAlert(
                             date: widget.date,
                             monthEndAssetsList: monthEndAssetsList,
-                            lastTotal: widget.lastTotal,
+                            lastYearFinalAssets: widget.lastYearFinalAssets,
                           ),
                         );
                       },
@@ -275,12 +275,12 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                           width: 90,
                           child: Row(
                             children: <Widget>[
-                              utility.dispUpDownMark(before: widget.lastTotal, after: item.total, size: 18),
+                              utility.dispUpDownMark(before: widget.lastYearFinalAssets, after: item.total, size: 18),
 
                               const Spacer(),
 
                               Text(
-                                _diffString(before: widget.lastTotal, after: item.total),
+                                _diffString(before: widget.lastYearFinalAssets, after: item.total),
                                 style: const TextStyle(color: Colors.orange),
                               ),
                             ],
@@ -462,7 +462,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       }
 
       if (mmdd == '01/01') {
-        first = widget.lastTotal;
+        first = widget.lastYearFinalAssets;
       }
 
       if (total != 0) {

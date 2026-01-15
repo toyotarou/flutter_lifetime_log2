@@ -11,13 +11,13 @@ class MonthlyAssetsGraphAlert extends ConsumerStatefulWidget {
     super.key,
     required this.monthlyGraphAssetsMap,
     required this.yearmonth,
-    required this.lastTotal,
+    required this.lastMonthFinalAssets,
   });
 
   final Map<int, int> monthlyGraphAssetsMap;
   final String yearmonth;
 
-  final int lastTotal;
+  final int lastMonthFinalAssets;
 
   @override
   ConsumerState<MonthlyAssetsGraphAlert> createState() => _MonthlyAssetsGraphAlertState();
@@ -224,11 +224,11 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
     final String prevMonthLastStr =
         '${prevMonthLast.year}-${prevMonthLast.month.toString().padLeft(2, '0')}-${prevMonthLast.day.toString().padLeft(2, '0')}';
 
-    _flspots.add(FlSpot(0.0, widget.lastTotal.toDouble()));
+    _flspots.add(FlSpot(0.0, widget.lastMonthFinalAssets.toDouble()));
     _dateList.add(prevMonthLastStr);
-    monthlyAssetValueList.add(widget.lastTotal);
+    monthlyAssetValueList.add(widget.lastMonthFinalAssets);
 
-    int carryTotal = widget.lastTotal;
+    int carryTotal = widget.lastMonthFinalAssets;
 
     for (int day = 1; day <= _lastDayOfMonth; day++) {
       final int? v = widget.monthlyGraphAssetsMap[day];
@@ -249,7 +249,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
       graphMin = ((minValue / step).floor()) * step;
       graphMax = ((maxValue / step).ceil()) * step;
 
-      _startY = widget.lastTotal.toDouble();
+      _startY = widget.lastMonthFinalAssets.toDouble();
 
       final bool isCurrentMonth =
           widget.yearmonth == '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}';
@@ -324,7 +324,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                 final DateTime dt = DateTime.parse(date);
                 final String youbi = dt.youbiStr.substring(0, 3);
 
-                final int baseline = widget.lastTotal;
+                final int baseline = widget.lastMonthFinalAssets;
                 final int diffFromStart = price - baseline;
                 final String signFromStart = diffFromStart > 0 ? '+' : (diffFromStart < 0 ? '-' : '±');
                 final String diffFromStartText = '$signFromStart${diffFromStart.abs().toString().toCurrency()}';

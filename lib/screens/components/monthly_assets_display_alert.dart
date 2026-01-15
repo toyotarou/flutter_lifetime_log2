@@ -2,7 +2,6 @@ import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
@@ -88,7 +87,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
             height: 5,
             decoration: BoxDecoration(color: Colors.orangeAccent.withValues(alpha: 0.2)),
           ),
-
           Expanded(
             child: Container(
               padding: const EdgeInsets.only(bottom: 18, right: 10, left: 10),
@@ -132,36 +130,18 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                             children: <Widget>[
                               GestureDetector(
                                 onTap: () {
-                                  //====================================================//
-                                  final DateTime beforeDate = DateTime(
-                                    widget.yearmonth.split('-')[0].toInt() - 1,
-                                    12,
-                                    31,
-                                  );
+                                  final DateTime beforeDate = DateTime(genDate.year - 1, 12, 31);
 
-                                  final Map<String, Map<String, int>> monthlyAssetsMap = _buildMonthlyAssetsMap(
+                                  final int lastYearFinalAssets = _calcLastTotalByBeforeDate(
                                     genDate: genDate,
+                                    beforeDate: beforeDate,
                                   );
-
-                                  final Map<String, int>? monthlyAssetsBefore = monthlyAssetsMap[beforeDate.yyyymmdd];
-
-                                  int lastMonthEndAssetsTotal = 0;
-                                  monthlyAssetsBefore?.forEach((String key, int value) {
-                                    if (key != 'insurancePassedMonths' && key != 'nenkinKikinPassedMonths') {
-                                      lastMonthEndAssetsTotal += value;
-                                    }
-                                  });
-
-                                  final int lastMonthEndMoney =
-                                      appParamState.keepMoneyMap[beforeDate.yyyymmdd]?.sum.toInt() ?? 0;
-
-                                  //====================================================//
 
                                   LifetimeDialog(
                                     context: context,
                                     widget: YearlyAssetsDisplayAlert(
                                       date: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
-                                      lastTotal: lastMonthEndAssetsTotal + lastMonthEndMoney,
+                                      lastYearFinalAssets: lastYearFinalAssets,
                                     ),
                                   );
                                 },
@@ -186,37 +166,19 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                                     return;
                                   }
 
-                                  //====================================================//
-                                  final DateTime beforeDate = DateTime(
-                                    widget.yearmonth.split('-')[0].toInt() - 1,
-                                    12,
-                                    31,
-                                  );
+                                  final DateTime beforeDate = DateTime(genDate.year, genDate.month - 1, 31);
 
-                                  final Map<String, Map<String, int>> monthlyAssetsMap = _buildMonthlyAssetsMap(
+                                  final int lastMonthFinalAssets = _calcLastTotalByBeforeDate(
                                     genDate: genDate,
+                                    beforeDate: beforeDate,
                                   );
-
-                                  final Map<String, int>? monthlyAssetsBefore = monthlyAssetsMap[beforeDate.yyyymmdd];
-
-                                  int lastMonthEndAssetsTotal = 0;
-                                  monthlyAssetsBefore?.forEach((String key, int value) {
-                                    if (key != 'insurancePassedMonths' && key != 'nenkinKikinPassedMonths') {
-                                      lastMonthEndAssetsTotal += value;
-                                    }
-                                  });
-
-                                  final int lastMonthEndMoney =
-                                      appParamState.keepMoneyMap[beforeDate.yyyymmdd]?.sum.toInt() ?? 0;
-
-                                  //====================================================//
 
                                   LifetimeDialog(
                                     context: context,
                                     widget: MonthlyAssetsGraphAlert(
                                       yearmonth: genDate.yyyymm,
                                       monthlyGraphAssetsMap: monthlyGraphAssetsMap,
-                                      lastTotal: lastMonthEndAssetsTotal + lastMonthEndMoney,
+                                      lastMonthFinalAssets: lastMonthFinalAssets,
                                     ),
                                   );
                                 },
@@ -228,9 +190,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                       ),
                     ],
                   ),
-
                   Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
                   if (hasData) ...<Widget>[
                     Expanded(child: displayMonthlyAssetsList(genDate: genDate)),
                   ] else ...<Widget>[
@@ -255,6 +215,24 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         ],
       ),
     );
+  }
+
+  ///
+  int _calcLastTotalByBeforeDate({required DateTime genDate, required DateTime beforeDate}) {
+    final Map<String, Map<String, int>> monthlyAssetsMap = _buildMonthlyAssetsMap(genDate: genDate);
+
+    final Map<String, int>? monthlyAssetsBefore = monthlyAssetsMap[beforeDate.yyyymmdd];
+
+    int lastMonthEndAssetsTotal = 0;
+    monthlyAssetsBefore?.forEach((String key, int value) {
+      if (key != 'insurancePassedMonths' && key != 'nenkinKikinPassedMonths') {
+        lastMonthEndAssetsTotal += value;
+      }
+    });
+
+    final int lastMonthEndMoney = appParamState.keepMoneyMap[beforeDate.yyyymmdd]?.sum.toInt() ?? 0;
+
+    return lastMonthEndAssetsTotal + lastMonthEndMoney;
   }
 
   ///
@@ -351,23 +329,33 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     );
   }
 
+  // BBB
   ///
   Map<String, Map<String, int>> _buildMonthlyAssetsMap({required DateTime genDate}) {
+    todayStockExists = false;
+    todayToushiShintakuRelationalIdBlankExists = false;
+
     final Map<String, Map<String, int>> monthlyAssetsMap = <String, Map<String, int>>{};
 
-    final DateTime tenDaysAgoFromBeforeMonthEndDay = DateTime(
-      genDate.year,
-      genDate.month,
-      0,
-    ).add(const Duration(days: 10 * -1));
+    DateTime start = DateTime(genDate.year, genDate.month, 0).add(const Duration(days: -10));
+
+    final DateTime prevYearEndMinus10 = DateTime(genDate.year - 1, 12, 31).add(const Duration(days: -10));
+
+    if (prevYearEndMinus10.isBefore(start)) {
+      start = prevYearEndMinus10;
+    }
+
+    final DateTime end = DateTime(genDate.year, genDate.month + 1, 0).add(const Duration(days: 10));
+
+    final int days = end.difference(start).inDays + 1;
 
     int lastGoldSum = 0;
     int lastStockSum = 0;
     int lastToushiShintakuSum = 0;
     int lastInsuranceSum = 0;
 
-    for (int i = 0; i < 50; i++) {
-      final DateTime date = tenDaysAgoFromBeforeMonthEndDay.add(Duration(days: i));
+    for (int i = 0; i < days; i++) {
+      final DateTime date = start.add(Duration(days: i));
       final String key = date.yyyymmdd;
 
       final GoldModel? gold = appParamState.keepGoldMap[key];
@@ -478,7 +466,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                         right: 5,
                         child: Text(date, style: const TextStyle(color: Colors.grey)),
                       ),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -510,7 +497,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                               ),
                               if (isBeforeDate) ...<Widget>[
                                 const SizedBox(width: 5),
-                                _dispUpDownMark(before: totalBefore, after: total, size: 24),
+
+                                utility.dispUpDownMark(before: totalBefore, after: total, size: 24),
                               ],
                             ],
                           ),
@@ -522,7 +510,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                       ),
                     ],
                   ),
-
                   priceDisplayParts(
                     date: date,
                     isBeforeDate: isBeforeDate,
@@ -757,7 +744,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 ),
                 if (beforeData != null) ...<Widget>[
                   const SizedBox(width: 5),
-                  _dispUpDownMark(before: beforeData[exTitle[0].trim()]!, after: price.toInt(), size: 12),
+
+                  utility.dispUpDownMark(before: beforeData[exTitle[0].trim()]!, after: price.toInt(), size: 12),
                 ],
               ],
             ),
@@ -769,16 +757,5 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         ],
       ),
     );
-  }
-
-  ///
-  Widget _dispUpDownMark({required int before, required int after, required double size}) {
-    if (before < after) {
-      return Icon(Icons.arrow_upward, color: Colors.greenAccent, size: size);
-    } else if (before > after) {
-      return Icon(Icons.arrow_downward, color: Colors.redAccent, size: size);
-    } else {
-      return Icon(FontAwesomeIcons.equals, color: Colors.blueAccent, size: size);
-    }
   }
 }
