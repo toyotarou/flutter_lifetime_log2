@@ -7,6 +7,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
+import '../../models/time_place_model.dart';
 import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
 import '../../utility/functions.dart';
@@ -241,13 +242,21 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                               color: Colors.black.withValues(alpha: 0.2),
                               child: const Text('StationRoute', style: TextStyle(fontSize: 12, color: Colors.white)),
                             ),
-                            children: transportation.stationRouteList.map((String e) {
-                              return Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-                                alignment: Alignment.centerLeft,
-                                child: Text(e, maxLines: 1, overflow: TextOverflow.ellipsis),
-                              );
-                            }).toList(),
+                            children: <Widget>[
+                              Column(
+                                children: transportation.stationRouteList.map((String e) {
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(e, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                  );
+                                }).toList(),
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              displayExpensesList(date: date),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -328,5 +337,45 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
         ),
       ],
     );
+  }
+
+  ///
+  Widget displayExpensesList({required String date}) {
+    final List<Widget> list = <Widget>[];
+
+    appParamState.keepTimePlaceMap[date]?.forEach((TimePlaceModel element) {
+      list.add(
+        Container(
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+          ),
+
+          child: DefaultTextStyle(
+            style: const TextStyle(fontSize: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(child: Text(element.time)),
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(element.place),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[const SizedBox.shrink(), Text(element.price.toString().toCurrency())],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+
+    return Column(children: list);
   }
 }
