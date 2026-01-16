@@ -67,55 +67,91 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Text('$year 年 資産推移'),
-                      const SizedBox(width: 10),
-
-                      Row(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          IconButton(
-                            onPressed: () {
-                              if (yearlyDayAssetsList.isEmpty) {
-                                return;
-                              }
-                              autoScrollController.scrollToIndex(
-                                yearlyDayAssetsList.length - 1,
-                                preferPosition: AutoScrollPosition.end,
-                                duration: const Duration(milliseconds: 300),
-                              );
-                            },
-                            icon: const Icon(Icons.arrow_downward),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              if (yearlyDayAssetsList.isEmpty) {
-                                return;
-                              }
-                              autoScrollController.scrollToIndex(
-                                0,
-                                preferPosition: AutoScrollPosition.begin,
-                                duration: const Duration(milliseconds: 300),
-                              );
-                            },
-                            icon: const Icon(Icons.arrow_upward),
+                          const SizedBox(height: 10),
+
+                          Text('$year 年 資産推移'),
+
+                          Row(
+                            children: <Widget>[
+                              GestureDetector(
+                                onTap: () {
+                                  if (yearlyDayAssetsList.isEmpty) {
+                                    return;
+                                  }
+                                  autoScrollController.scrollToIndex(
+                                    yearlyDayAssetsList.length - 1,
+                                    preferPosition: AutoScrollPosition.end,
+                                    duration: const Duration(milliseconds: 300),
+                                  );
+                                },
+                                child: const Icon(Icons.arrow_downward),
+                              ),
+                              const SizedBox(width: 20),
+
+                              GestureDetector(
+                                onTap: () {
+                                  if (yearlyDayAssetsList.isEmpty) {
+                                    return;
+                                  }
+                                  autoScrollController.scrollToIndex(
+                                    0,
+                                    preferPosition: AutoScrollPosition.begin,
+                                    duration: const Duration(milliseconds: 300),
+                                  );
+                                },
+                                child: const Icon(Icons.arrow_upward),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ],
                   ),
 
-                  IconButton(
-                    tooltip: '折れ線グラフ',
-                    icon: const Icon(Icons.graphic_eq),
-                    onPressed: () {
-                      LifetimeDialog(
-                        context: context,
-                        widget: YearlyAssetsGraphAlert(
-                          year: year,
-                          totals: yearlyDayAssetsList.map((YearDayAssetsModel e) => e.total).toList(),
-                          lastYearFinalAssets: widget.lastYearFinalAssets,
-                        ),
-                      );
-                    },
+                  Row(
+                    children: <Widget>[
+                      IconButton(
+                        tooltip: '折れ線グラフ',
+                        icon: const Icon(Icons.graphic_eq),
+                        onPressed: () {
+                          LifetimeDialog(
+                            context: context,
+                            widget: YearlyAssetsGraphAlert(
+                              year: year,
+                              totals: yearlyDayAssetsList.map((YearDayAssetsModel e) => e.total).toList(),
+                              lastYearFinalAssets: widget.lastYearFinalAssets,
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      Column(
+                        children: <Widget>[
+                          const SizedBox(height: 10),
+
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Text('前年末', style: TextStyle(fontSize: 10)),
+                          ),
+
+                          const SizedBox(height: 5),
+
+                          Text(
+                            widget.lastYearFinalAssets.toString().toCurrency(),
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),

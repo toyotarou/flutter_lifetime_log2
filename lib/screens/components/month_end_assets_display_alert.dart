@@ -35,12 +35,33 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
       backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[Text('${widget.date.split('-')[0]} 年 月末資産推移'), const SizedBox.shrink()],
+                children: <Widget>[
+                  Text('${widget.date.split('-')[0]} 年 月末資産推移'),
+
+                  Column(
+                    children: <Widget>[
+                      const SizedBox(height: 10),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text('前年末', style: TextStyle(fontSize: 10)),
+                      ),
+
+                      const SizedBox(height: 5),
+
+                      Text(widget.lastYearFinalAssets.toString().toCurrency(), style: const TextStyle(fontSize: 10)),
+                    ],
+                  ),
+                ],
               ),
 
               Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
