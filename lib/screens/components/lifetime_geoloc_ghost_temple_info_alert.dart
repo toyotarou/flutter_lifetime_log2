@@ -50,17 +50,29 @@ class _LifetimeGeolocGhostTempleInfoAlertState extends ConsumerState<LifetimeGeo
     final TempleModel templeModel = appParamState.keepTempleMap[appParamState.selectedGhostPolylineDate]!;
 
     String startPoint = templeModel.startPoint;
-    if (int.tryParse(startPoint) != null) {
-      startPoint = appParamState.keepStationList
-          .firstWhere((StationModel value) => value.id == startPoint.toInt())
-          .stationName;
-    }
 
     String endPoint = templeModel.endPoint;
-    if (int.tryParse(endPoint) != null) {
-      endPoint = appParamState.keepStationList
-          .firstWhere((StationModel value) => value.id == endPoint.toInt())
-          .stationName;
+
+    if (appParamState.keepStationList.isNotEmpty) {
+      if (int.tryParse(startPoint) != null) {
+        final StationModel? matchedStartStation = appParamState.keepStationList
+            .where((StationModel value) => value.id == startPoint.toInt())
+            .firstOrNull;
+
+        if (matchedStartStation != null) {
+          startPoint = matchedStartStation.stationName;
+        }
+      }
+
+      if (int.tryParse(endPoint) != null) {
+        final StationModel? matchedEndStation = appParamState.keepStationList
+            .where((StationModel value) => value.id == endPoint.toInt())
+            .firstOrNull;
+
+        if (matchedEndStation != null) {
+          endPoint = matchedEndStation.stationName;
+        }
+      }
     }
 
     return Column(

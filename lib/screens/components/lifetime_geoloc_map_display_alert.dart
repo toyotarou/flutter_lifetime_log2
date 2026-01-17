@@ -829,7 +829,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       width: context.screenSize.width * 0.25,
       height: context.screenSize.height * 0.25,
       color: Colors.blueGrey.withOpacity(0.3),
-      initialPosition: Offset(context.screenSize.width * 0.75, context.screenSize.height * 0.45),
+      initialPosition: Offset(context.screenSize.width * 0.75, context.screenSize.height * 0.5),
 
       widget: SizedBox(
         height: context.screenSize.height * 0.2,
