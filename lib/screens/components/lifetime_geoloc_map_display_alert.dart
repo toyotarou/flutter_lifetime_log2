@@ -245,7 +245,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
             top: 5,
             right: 5,
             left: 5,
-
             child: Column(
               children: <Widget>[
                 Container(
@@ -257,7 +256,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-
                     children: <Widget>[
                       Row(
                         children: <Widget>[
@@ -267,14 +265,11 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
                                 Text(widget.date, style: const TextStyle(fontSize: 20)),
-
                                 const SizedBox(width: 10),
-
                                 Text(DateTime.parse(widget.date).youbiStr.substring(0, 3)),
                               ],
                             ),
                           ),
-
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
@@ -284,7 +279,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                   const Text('size:'),
-
                                   Text(
                                     appParamState.currentZoom.toStringAsFixed(2),
                                     style: const TextStyle(fontSize: 20),
@@ -400,14 +394,12 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                                 color: Colors.black.withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Expanded(
                                     child: Container(
                                       padding: const EdgeInsets.only(top: 10, left: 10),
-
                                       child: SingleChildScrollView(child: displayDateMunicipalNameWidget()),
                                     ),
                                   ),
@@ -443,11 +435,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                             color: Colors.black.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(10),
                           ),
-
                           child: GestureDetector(
                             onTap: () {
                               appParamNotifier.setSelectedGeolocTime(time: '');
-
                               setDefaultBoundsMap();
                             },
                             child: const Icon(FontAwesomeIcons.expand),
@@ -463,7 +453,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                               color: Colors.black.withOpacity(0.3),
                               borderRadius: BorderRadius.circular(10),
                             ),
-
                             child: GestureDetector(
                               onTap: () {
                                 closeAllOverlays(ref: ref);
@@ -476,10 +465,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                                     date: widget.date,
                                     temple: appParamState.keepTempleMap[widget.date],
                                   ),
-
                                   paddingTop: context.screenSize.height * 0.2,
                                   paddingRight: context.screenSize.width * 0.3,
-
                                   clearBarrierColor: true,
                                 );
                               },
@@ -498,7 +485,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                                     : Colors.black.withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-
                               child: GestureDetector(
                                 onTap: () {
                                   appParamNotifier.setIsDisplayGhostGeolocPolyline(
@@ -511,7 +497,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                                       bottom: 0,
                                       child: Text('ghost', style: TextStyle(color: Colors.yellowAccent, fontSize: 8)),
                                     ),
-
                                     Icon(Icons.stacked_line_chart),
                                   ],
                                 ),
@@ -535,11 +520,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               right: 5,
               left: 5,
               height: 150,
-
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.3),
-
                   borderRadius: BorderRadius.circular(16),
                 ),
                 padding: const EdgeInsets.all(5),
@@ -567,7 +550,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               ),
               margin: const EdgeInsets.all(3),
               padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-
               child: Text(element, style: const TextStyle(fontSize: 10)),
             ),
           );
@@ -594,27 +576,20 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
               width: (30 + 8 + timeContainerWidth + timeContainerWidth) * scaleFactor,
               height: 40,
-
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
-
                 children: <Widget>[
                   SizedBox(width: timeContainerWidth),
-
                   Icon(Icons.location_on, size: 30 * scaleFactor, color: Colors.red),
-
                   Container(
                     width: timeContainerWidth * scaleFactor,
-
                     height: 20 * scaleFactor,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black54),
                       color: Colors.white,
                     ),
-
                     padding: const EdgeInsets.all(1),
-
                     child: DefaultTextStyle(
                       style: const TextStyle(fontSize: 10, color: Colors.redAccent),
                       child: Column(
@@ -622,7 +597,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                         children: <Widget>[
                           Text(
                             '${element.time.split(':')[0]}:${element.time.split(':')[1]}',
-
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -649,7 +623,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           children: <Widget>[
             Container(
               margin: const EdgeInsets.only(top: 5, right: 10, left: 5, bottom: 15),
-
               padding: const EdgeInsets.only(top: 3, bottom: 3, right: 20, left: 10),
               decoration: BoxDecoration(color: const Color(0xFFFBB6CE).withValues(alpha: 0.5)),
               child: Row(
@@ -664,9 +637,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                       style: const TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ),
-
                   const SizedBox(width: 5),
-
                   Text(
                     appParamState.keepTempleMap[widget.date]!.templeDataList[i].name,
                     style: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
@@ -674,13 +645,11 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 ],
               ),
             ),
-
             Positioned(
               right: 3,
               bottom: 3,
               child: Text(
                 appParamState.keepTempleMap[widget.date]!.templeDataList[i].rank,
-
                 style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
             ),
@@ -697,17 +666,13 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           child: CircleAvatar(
             radius: 14,
             backgroundColor: Colors.white,
-
             child: Text(
               appParamState.keepTempleMap[widget.date]!.templeDataList.length.toString().padLeft(2, '0'),
-
               style: const TextStyle(fontSize: 12),
             ),
           ),
         ),
-
         const SizedBox(width: 10),
-
         Expanded(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -789,22 +754,60 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeMarker() {
     markerList.clear();
 
-    widget.geolocList
-      ?..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time))
-      ..forEach((GeolocModel element) {
-        markerList.add(
-          Marker(
-            point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-            width: 40,
-            height: 40,
+    final List<GeolocModel>? raw = widget.geolocList;
+    if (raw == null || raw.isEmpty) {
+      return;
+    }
 
-            child: Icon(
-              Icons.ac_unit,
-              color: (element.time == appParamState.selectedGeolocPointTime) ? Colors.indigoAccent : Colors.black,
+    final List<GeolocModel> list = <GeolocModel>[...raw]
+      ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
+
+    for (int i = 0; i < list.length; i++) {
+      final GeolocModel curr = list[i];
+
+      double bearingDeg = 0.0;
+      if (i >= 1) {
+        final GeolocModel prev = list[i - 1];
+
+        final LatLng prevPos = LatLng(prev.latitude.toDouble(), prev.longitude.toDouble());
+        final LatLng currPos = LatLng(curr.latitude.toDouble(), curr.longitude.toDouble());
+
+        bearingDeg = _bearingDegrees(from: prevPos, to: currPos);
+      }
+
+      markerList.add(
+        Marker(
+          point: LatLng(curr.latitude.toDouble(), curr.longitude.toDouble()),
+          width: 40,
+          height: 40,
+          child: Center(
+            child: Transform.rotate(
+              angle: bearingDeg * pi / 180.0,
+              child: const Icon(Icons.navigation, color: Colors.black, size: 22),
             ),
           ),
-        );
-      });
+        ),
+      );
+    }
+  }
+
+  ///
+  double _bearingDegrees({required LatLng from, required LatLng to}) {
+    final double lat1 = from.latitude * pi / 180.0;
+    final double lon1 = from.longitude * pi / 180.0;
+    final double lat2 = to.latitude * pi / 180.0;
+    final double lon2 = to.longitude * pi / 180.0;
+
+    final double dLon = lon2 - lon1;
+
+    final double y = sin(dLon) * cos(lat2);
+    final double x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+
+    double bearing = atan2(y, x);
+    bearing = bearing * 180.0 / pi;
+    bearing = (bearing + 360.0) % 360.0;
+
+    return bearing;
   }
 
   ///
@@ -830,10 +833,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       height: context.screenSize.height * 0.25,
       color: Colors.blueGrey.withOpacity(0.3),
       initialPosition: Offset(context.screenSize.width * 0.75, context.screenSize.height * 0.5),
-
       widget: SizedBox(
         height: context.screenSize.height * 0.2,
-
         child: displayTimeGeolocList(
           onCloseDialogFromOverlay: () {
             if (!completer.isCompleted) {
@@ -842,9 +843,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           },
         ),
       ),
-
       fixedFlag: true,
-
       firstEntries: _firstEntries,
       secondEntries: _secondEntries,
       onPositionChanged: (Offset newPos) => appParamNotifier.updateOverlayPosition(newPos),
@@ -877,13 +876,11 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   onCloseDialogFromOverlay();
                 }
               },
-
               child: Container(
                 margin: const EdgeInsets.all(5),
                 padding: const EdgeInsets.all(5),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: 0.4))),
-
                 child: Text(time, style: const TextStyle(fontSize: 12)),
               ),
             ),
@@ -957,7 +954,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         templeMarkerList.add(
           Marker(
             key: globalKeyList[i],
-
             point: LatLng(templeDataModel.latitude.toDouble(), templeDataModel.longitude.toDouble()),
             child: GestureDetector(
               onTap: () {
@@ -983,7 +979,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                     padding: const EdgeInsets.only(bottom: 5, right: 5),
                     child: const Icon(FontAwesomeIcons.toriiGate, color: Color(0xFFFBB6CE)),
                   ),
-
                   Positioned(
                     bottom: 0,
                     right: 0,
@@ -1203,7 +1198,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                           LifetimeDialog(
                             context: context,
                             widget: const LifetimeGeolocGhostTempleInfoAlert(),
-
                             paddingRight: context.screenSize.width * 0.3,
                             paddingTop: context.screenSize.height * 0.3,
                             paddingBottom: context.screenSize.height * 0.1,
@@ -1218,7 +1212,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                           color: Colors.white,
                           border: Border.all(color: fortyEightColor[i % 48]),
                         ),
-
                         child: DefaultTextStyle(
                           style: TextStyle(color: fortyEightColor[i % 48], fontSize: 8, fontWeight: FontWeight.bold),
                           child: Column(
