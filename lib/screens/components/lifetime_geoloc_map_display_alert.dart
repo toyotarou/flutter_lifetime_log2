@@ -751,39 +751,59 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   }
 
   ///
+  /// 位置情報（GeolocModel）の並びを時刻順に並べ、
+  /// 各地点に「移動方向（方位角）」に合わせて回転した矢印アイコンを表示する Marker を作成する。
+  ///
+  /// - 先頭要素 (index=0) は「直前点」が存在しないため、回転角は 0°（上向き）になる。
+  /// - index>=1 の場合は、(直前点 -> 現在点) の方位角を計算し、その角度で矢印を回転させる。
+  ///
   void makeMarker() {
     markerList.clear();
 
-    final List<GeolocModel>? raw = widget.geolocList;
-    if (raw == null || raw.isEmpty) {
+    // 元データが無い場合は何もしない
+    final List<GeolocModel>? rawGeolocList = widget.geolocList;
+    if (rawGeolocList == null || rawGeolocList.isEmpty) {
       return;
     }
 
-    final List<GeolocModel> list = <GeolocModel>[...raw]
+    // 時刻順に並べたリストを作成（元のListを破壊しないためコピーしてからsort）
+    final List<GeolocModel> sortedByTime = <GeolocModel>[...rawGeolocList]
       ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
 
-    for (int i = 0; i < list.length; i++) {
-      final GeolocModel curr = list[i];
+    for (int index = 0; index < sortedByTime.length; index++) {
+      final GeolocModel current = sortedByTime[index];
 
-      double bearingDeg = 0.0;
-      if (i >= 1) {
-        final GeolocModel prev = list[i - 1];
+      // 矢印を回転させる角度（度数法）。デフォルト 0°（上向き）
+      double bearingDegrees = 0.0;
 
-        final LatLng prevPos = LatLng(prev.latitude.toDouble(), prev.longitude.toDouble());
-        final LatLng currPos = LatLng(curr.latitude.toDouble(), curr.longitude.toDouble());
+      // 直前点が存在する場合のみ、直前点 -> 現在点 の方位角を計算する
+      if (index >= 1) {
+        final GeolocModel previous = sortedByTime[index - 1];
 
-        bearingDeg = _bearingDegrees(from: prevPos, to: currPos);
+        // 方位角計算に使う座標（LatLng）
+        final LatLng previousPosition = LatLng(previous.latitude.toDouble(), previous.longitude.toDouble());
+
+        final LatLng currentPosition = LatLng(current.latitude.toDouble(), current.longitude.toDouble());
+
+        // previous -> current の方位角（0..360）を度数法で取得
+        bearingDegrees = _bearingDegrees(from: previousPosition, to: currentPosition);
       }
 
+      // flutter_map の Marker を追加
       markerList.add(
         Marker(
-          point: LatLng(curr.latitude.toDouble(), curr.longitude.toDouble()),
+          point: LatLng(current.latitude.toDouble(), current.longitude.toDouble()),
           width: 40,
           height: 40,
           child: Center(
             child: Transform.rotate(
-              angle: bearingDeg * pi / 180.0,
-              child: const Icon(Icons.navigation, color: Colors.black, size: 22),
+              // Transform.rotate は「ラジアン」なので、度->ラジアン変換して渡す
+              angle: bearingDegrees * pi / 180.0,
+              child: const Icon(
+                Icons.navigation, // 矢印
+                color: Colors.black,
+                size: 22,
+              ),
             ),
           ),
         ),
@@ -792,22 +812,45 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   }
 
   ///
+  /// 「from から to に向かうとき、どっちの向きに進むか」を
+  /// 角度（0〜360度）で返す関数。
+  ///
+  /// 角度のルール：
+  ///  0°   = 上（北）
+  ///  90°  = 右（東）
+  ///  180° = 下（南）
+  ///  270° = 左（西）
+  ///
+  /// この角度を使って、矢印アイコンを回転させている。
+  ///
   double _bearingDegrees({required LatLng from, required LatLng to}) {
-    final double lat1 = from.latitude * pi / 180.0;
-    final double lon1 = from.longitude * pi / 180.0;
-    final double lat2 = to.latitude * pi / 180.0;
-    final double lon2 = to.longitude * pi / 180.0;
+    // --- ① 度 → ラジアンに変換 ---
+    // 三角関数（sin, cos）はラジアンしか使えないため
+    final double fromLatRad = from.latitude * pi / 180.0;
+    final double fromLonRad = from.longitude * pi / 180.0;
+    final double toLatRad = to.latitude * pi / 180.0;
+    final double toLonRad = to.longitude * pi / 180.0;
 
-    final double dLon = lon2 - lon1;
+    // --- ② 横方向（右・左）にどれだけズレたか ---
+    final double deltaLonRad = toLonRad - fromLonRad;
 
-    final double y = sin(dLon) * cos(lat2);
-    final double x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+    // --- ③ 向きを計算するための材料を作る ---
+    // y : 左右っぽさ
+    final double y = sin(deltaLonRad) * cos(toLatRad);
 
-    double bearing = atan2(y, x);
-    bearing = bearing * 180.0 / pi;
-    bearing = (bearing + 360.0) % 360.0;
+    // x : 上下っぽさ
+    final double x = cos(fromLatRad) * sin(toLatRad) - sin(fromLatRad) * cos(toLatRad) * cos(deltaLonRad);
 
-    return bearing;
+    // --- ④ x と y から角度を求める（ラジアン） ---
+    final double bearingRad = atan2(y, x);
+
+    // --- ⑤ ラジアン → 度に変換 ---
+    double bearingDeg = bearingRad * 180.0 / pi;
+
+    // --- ⑥ 0〜360° にそろえる ---
+    bearingDeg = (bearingDeg + 360.0) % 360.0;
+
+    return bearingDeg;
   }
 
   ///
