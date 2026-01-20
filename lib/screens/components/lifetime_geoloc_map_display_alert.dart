@@ -766,6 +766,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       return;
     }
 
+    final String boundingBoxArea = utility.getBoundingBoxArea(points: rawGeolocList);
+
     // 時刻順に並べたリストを作成（元のListを破壊しないためコピーしてからsort）
     final List<GeolocModel> sortedByTime = <GeolocModel>[...rawGeolocList]
       ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
@@ -796,15 +798,14 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           width: 40,
           height: 40,
           child: Center(
-            child: Transform.rotate(
-              // Transform.rotate は「ラジアン」なので、度->ラジアン変換して渡す
-              angle: bearingDegrees * pi / 180.0,
-              child: const Icon(
-                Icons.navigation, // 矢印
-                color: Colors.black,
-                size: 22,
-              ),
-            ),
+            child: (boundingBoxArea.split('.')[0] == '0')
+                // 外出していない場合は「Icons.ac_unit」
+                ? const Icon(Icons.ac_unit, color: Colors.black, size: 22)
+                : Transform.rotate(
+                    // Transform.rotate は「ラジアン」なので、度->ラジアン変換して渡す
+                    angle: bearingDegrees * pi / 180.0,
+                    child: const Icon(Icons.navigation, color: Colors.black, size: 22),
+                  ),
           ),
         ),
       );
