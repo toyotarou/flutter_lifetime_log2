@@ -188,7 +188,11 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
       };
     }
 
-    eachYearSpendMap.forEach((int key, int value) {
+    final List<int> sortedYears = eachYearSpendMap.keys.toList()..sort();
+
+    for (final int key in sortedYears) {
+      final int value = eachYearSpendMap[key]!;
+
       String dispTerm = '';
       int dateDiff = 0;
       int perDay = 0;
@@ -221,7 +225,6 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
             border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
           ),
           padding: const EdgeInsets.all(5),
-
           child: DefaultTextStyle(
             style: const TextStyle(fontSize: 12),
             child: Row(
@@ -234,9 +237,7 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[Text(dispTerm), Text(value.toString().toCurrency())],
                       ),
-
                       const SizedBox(height: 5),
-
                       DefaultTextStyle(
                         style: const TextStyle(color: Colors.grey, fontSize: 10),
                         child: Column(
@@ -252,9 +253,7 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 5),
-
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[const SizedBox.shrink(), Text(estimate.toString().toCurrency())],
@@ -265,13 +264,10 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
                     ],
                   ),
                 ),
-
                 const SizedBox(width: 20),
-
                 GestureDetector(
                   onTap: () {
                     appParamNotifier.setYearlyAllSpendSelectedYear(year: key.toString());
-
                     autoScrollController.scrollToIndex(0);
                   },
                   child: Icon(
@@ -286,7 +282,7 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
           ),
         ),
       );
-    });
+    }
 
     return CustomScrollView(
       slivers: <Widget>[
@@ -308,7 +304,6 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
 
     final List<Widget> list = <Widget>[];
 
-    /// マップをキーでソートする方法
     // ignore: always_specify_types
     final Map<String, List<MoneySpendModel>> sortedByKey = Map.fromEntries(
       appParamState.keepMoneySpendMap.entries.toList()..sort(

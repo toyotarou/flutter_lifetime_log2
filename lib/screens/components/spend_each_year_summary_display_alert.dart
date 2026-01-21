@@ -37,13 +37,11 @@ class _SpendEachYearSummaryDisplayAlertState extends ConsumerState<SpendEachYear
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     const Text('spend each year summary', style: TextStyle(fontSize: 12)),
-
                     Text(appParamState.yearlyAllSpendSelectedYear),
                   ],
                 ),
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
                 Expanded(child: displayYearlyAllSpendSummary()),
-
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,9 +66,33 @@ class _SpendEachYearSummaryDisplayAlertState extends ConsumerState<SpendEachYear
   Widget displayYearlyAllSpendSummary() {
     final String selectedYear = appParamState.yearlyAllSpendSelectedYear;
 
-    final Map<String, int> summary = <String, int>{};
+    final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
 
-    appParamState.keepMoneySpendItemMap.forEach((String key, MoneySpendItemModel value) => summary[key] = 0);
+    const List<String> extraItems = <String>[
+      '年金',
+      'GOLD',
+      'アイアールシー',
+      'メルカリ',
+      '衣料費',
+      '牛乳代',
+      '共済費',
+      '共済戻り',
+      '住民税',
+      '所得税',
+      '消費税',
+      '弁当代',
+    ];
+
+    for (final String item in extraItems) {
+      if (!itemKeys.contains(item)) {
+        itemKeys.add(item);
+      }
+    }
+
+    final Map<String, int> summary = <String, int>{};
+    for (final String key in itemKeys) {
+      summary[key] = 0;
+    }
 
     appParamState.keepMoneySpendMap.forEach((String key2, List<MoneySpendModel> value2) {
       if (key2.split('-').first != selectedYear) {
@@ -81,7 +103,6 @@ class _SpendEachYearSummaryDisplayAlertState extends ConsumerState<SpendEachYear
         final String itemKey = element.item;
 
         final int? current = summary[itemKey];
-
         if (current != null) {
           summary[itemKey] = current + element.price;
         }
@@ -92,7 +113,7 @@ class _SpendEachYearSummaryDisplayAlertState extends ConsumerState<SpendEachYear
 
     int st = 0;
 
-    appParamState.keepMoneySpendItemMap.forEach((String key, MoneySpendItemModel value) {
+    for (final String key in itemKeys) {
       final int total = summary[key] ?? 0;
 
       bool flag = true;
@@ -111,15 +132,12 @@ class _SpendEachYearSummaryDisplayAlertState extends ConsumerState<SpendEachYear
                 border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
               ),
               padding: const EdgeInsets.all(5),
-
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(key, maxLines: 1, overflow: TextOverflow.ellipsis),
-
                   Text(
                     total.toString().toCurrency(),
-
                     style: TextStyle(color: (total < 0) ? Colors.yellowAccent : Colors.white),
                   ),
                 ],
@@ -130,7 +148,7 @@ class _SpendEachYearSummaryDisplayAlertState extends ConsumerState<SpendEachYear
           st += total;
         }
       }
-    });
+    }
 
     setState(() => summaryTotal = st);
 
