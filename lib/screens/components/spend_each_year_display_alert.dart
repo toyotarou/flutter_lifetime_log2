@@ -5,6 +5,8 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
+import '../parts/lifetime_dialog.dart';
+import 'spend_each_year_summary_display_alert.dart';
 
 class SpendEachYearDisplayAlert extends ConsumerStatefulWidget {
   const SpendEachYearDisplayAlert({super.key});
@@ -47,7 +49,10 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
                     const SizedBox.shrink(),
 
                     GestureDetector(
-                      onTap: () => appParamNotifier.setYearlyAllSpendSelectedYear(year: ''),
+                      onTap: () {
+                        appParamNotifier.setYearlyAllSpendSelectedYear(year: '');
+                        appParamNotifier.setYearlyAllSpendSelectedPrice(price: '');
+                      },
                       child: Icon(Icons.close, color: Colors.white.withValues(alpha: 0.4)),
                     ),
                   ],
@@ -61,7 +66,20 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
 
                 Row(
                   children: <Widget>[
-                    const Expanded(flex: 2, child: SizedBox.shrink()),
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 40,
+                        child: (appParamState.yearlyAllSpendSelectedYear == '')
+                            ? const SizedBox.shrink()
+                            : ElevatedButton(
+                                onPressed: () =>
+                                    LifetimeDialog(context: context, widget: const SpendEachYearSummaryDisplayAlert()),
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                                child: const Text('summary'),
+                              ),
+                      ),
+                    ),
 
                     Expanded(
                       child: Container(
@@ -73,10 +91,12 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
                             autoScrollController.scrollToIndex(0);
                           },
                           child: Text(
-                            '-',
+                            '-----',
 
                             style: TextStyle(
-                              color: (appParamState.yearlyAllSpendSelectedPrice == '')
+                              color:
+                                  (appParamState.yearlyAllSpendSelectedYear != '' &&
+                                      appParamState.yearlyAllSpendSelectedPrice == '')
                                   ? Colors.yellowAccent
                                   : Colors.white,
                             ),
@@ -96,7 +116,9 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
                             '10000',
 
                             style: TextStyle(
-                              color: (appParamState.yearlyAllSpendSelectedPrice == '10000')
+                              color:
+                                  (appParamState.yearlyAllSpendSelectedYear != '' &&
+                                      appParamState.yearlyAllSpendSelectedPrice == '10000')
                                   ? Colors.yellowAccent
                                   : Colors.white,
                             ),
@@ -116,7 +138,9 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
                             '30000',
 
                             style: TextStyle(
-                              color: (appParamState.yearlyAllSpendSelectedPrice == '30000')
+                              color:
+                                  (appParamState.yearlyAllSpendSelectedYear != '' &&
+                                      appParamState.yearlyAllSpendSelectedPrice == '30000')
                                   ? Colors.yellowAccent
                                   : Colors.white,
                             ),

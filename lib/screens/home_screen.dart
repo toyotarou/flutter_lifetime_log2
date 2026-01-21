@@ -709,7 +709,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               const SizedBox(height: 20),
 
               GestureDetector(
-                onTap: () => LifetimeDialog(context: context, widget: const SpendEachYearDisplayAlert()),
+                onTap: () {
+                  appParamNotifier.setYearlyAllSpendSelectedYear(year: '');
+                  appParamNotifier.setYearlyAllSpendSelectedPrice(price: '');
+
+                  LifetimeDialog(context: context, widget: const SpendEachYearDisplayAlert());
+                },
                 child: const Row(
                   children: <Widget>[
                     Icon(Icons.ac_unit),
