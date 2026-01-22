@@ -303,7 +303,24 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
       (MoneySpendModel element) => (map[element.item] ??= <MoneySpendModel>[]).add(element),
     );
 
-    appParamState.keepMoneySpendItemMap.forEach((String key, MoneySpendItemModel value) {
+    final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
+
+    const List<String> extraItems = <String>[
+      '共済戻り',
+      '年金',
+      'アイアールシー',
+      'メルカリ',
+      '牛乳代',
+      '弁当代',
+    ];
+
+    for (final String item in extraItems) {
+      if (!itemKeys.contains(item)) {
+        itemKeys.add(item);
+      }
+    }
+
+    for (final String key in itemKeys) {
       map[key]?.forEach((MoneySpendModel element) {
         list.add(
           DefaultTextStyle(
@@ -324,7 +341,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
           ),
         );
       });
-    });
+    }
 
     return Column(children: list);
   }

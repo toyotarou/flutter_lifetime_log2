@@ -125,9 +125,26 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
     int listSum = 0;
 
-    appParamState.keepMoneySpendItemMap.forEach((String key, MoneySpendItemModel value) {
-      if (moneySpendSummaryMap[value.name] != null) {
-        final int moneySpendSummary = moneySpendSummaryMap[value.name]!;
+    final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
+
+    const List<String> extraItems = <String>[
+      '共済戻り',
+      '年金',
+      'アイアールシー',
+      'メルカリ',
+      '牛乳代',
+      '弁当代',
+    ];
+
+    for (final String item in extraItems) {
+      if (!itemKeys.contains(item)) {
+        itemKeys.add(item);
+      }
+    }
+
+    for (final String key in itemKeys) {
+      if (moneySpendSummaryMap[key] != null) {
+        final int moneySpendSummary = moneySpendSummaryMap[key]!;
 
         bool flag = true;
 
@@ -153,7 +170,7 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
                   children: <Widget>[
-                    Text(value.name),
+                    Text(key),
                     Row(
                       children: <Widget>[
                         Text(moneySpendSummary.toString().toCurrency()),
@@ -162,7 +179,7 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
                           child: Container(
                             alignment: Alignment.topRight,
-                            child: (value.name == 'クレジット')
+                            child: (key == 'クレジット')
                                 ? (widget.yearmonth == DateTime.now().yyyymm)
                                       ? const Text('未入力', style: TextStyle(color: Colors.greenAccent, fontSize: 8))
                                       : GestureDetector(
@@ -201,7 +218,7 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
           );
         }
       }
-    });
+    }
 
     ///////////////////////////////////////////////////////////////// salary start
 

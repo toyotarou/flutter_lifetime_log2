@@ -69,17 +69,11 @@ class _SpendEachYearSummaryDisplayAlertState extends ConsumerState<SpendEachYear
     final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
 
     const List<String> extraItems = <String>[
+      '共済戻り',
       '年金',
-      'GOLD',
       'アイアールシー',
       'メルカリ',
-      '衣料費',
       '牛乳代',
-      '共済費',
-      '共済戻り',
-      '住民税',
-      '所得税',
-      '消費税',
       '弁当代',
     ];
 
