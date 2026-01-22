@@ -392,7 +392,12 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                                   child: Column(
                                                     children: <Widget>[
-                                                      Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+                                                      Icon(
+                                                        (boundingBoxArea.substring(0, 3) == '0.0')
+                                                            ? Icons.home_outlined
+                                                            : Icons.map,
+                                                        color: Colors.white.withValues(alpha: 0.3),
+                                                      ),
                                                       const SizedBox(height: 5),
                                                       Text(
                                                         appParamState.keepGeolocMap[date]!.length.toString(),

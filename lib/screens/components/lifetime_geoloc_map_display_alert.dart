@@ -798,7 +798,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           width: 40,
           height: 40,
           child: Center(
-            child: (boundingBoxArea.split('.')[0] == '0')
+            child: (boundingBoxArea.substring(0, 3) == '0.0')
                 // 外出していない場合は「Icons.ac_unit」
                 ? const Icon(Icons.ac_unit, color: Colors.black, size: 22)
                 : Transform.rotate(
