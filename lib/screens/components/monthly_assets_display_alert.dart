@@ -60,12 +60,24 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: CarouselSlider.builder(
-        itemCount: _itemCount,
-        initialPage: _initialIndex,
-        slideTransform: const CubeTransform(),
-        onSlideChanged: (int index) => setState(() => currentIndex = index),
-        slideBuilder: (int index) => makeMonthlyWorktimeSlide(index),
+      body: Stack(
+        children: <Widget>[
+          Center(
+            child: Image.asset(
+              'assets/images/frame_arrow.png',
+              color: Colors.orangeAccent.withValues(alpha: 0.4),
+              colorBlendMode: BlendMode.srcIn,
+            ),
+          ),
+
+          CarouselSlider.builder(
+            itemCount: _itemCount,
+            initialPage: _initialIndex,
+            slideTransform: const CubeTransform(),
+            onSlideChanged: (int index) => setState(() => currentIndex = index),
+            slideBuilder: (int index) => makeMonthlyWorktimeSlide(index),
+          ),
+        ],
       ),
     );
   }
