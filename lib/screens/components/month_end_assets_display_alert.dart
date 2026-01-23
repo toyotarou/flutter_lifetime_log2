@@ -34,11 +34,11 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: <Widget>[
-              Row(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text('${widget.date.split('-')[0]} 年 月末資産推移'),
@@ -63,14 +63,17 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
                   ),
                 ],
               ),
+            ),
 
-              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+            Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-              Expanded(child: displayMonthEndAssetsList()),
+            Expanded(child: displayMonthEndAssetsList()),
 
-              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+            Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-              Row(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   const SizedBox.shrink(),
@@ -80,13 +83,16 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+
+            const SizedBox(height: 20),
+          ],
         ),
       ),
     );
   }
 
+  ///
   Widget displayMonthEndAssetsList() {
     final List<Widget> list = <Widget>[];
 

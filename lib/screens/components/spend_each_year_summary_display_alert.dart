@@ -5,6 +5,8 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
+import '../parts/lifetime_dialog.dart';
+import 'spend_each_year_cross_table_alert.dart';
 
 class SpendEachYearSummaryDisplayAlert extends ConsumerStatefulWidget {
   const SpendEachYearSummaryDisplayAlert({super.key});
@@ -36,8 +38,20 @@ class _SpendEachYearSummaryDisplayAlertState extends ConsumerState<SpendEachYear
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    const Text('spend each year summary', style: TextStyle(fontSize: 12)),
-                    Text(appParamState.yearlyAllSpendSelectedYear),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Text('spend each year summary', style: TextStyle(fontSize: 12)),
+
+                        Text(appParamState.yearlyAllSpendSelectedYear),
+                      ],
+                    ),
+
+                    ElevatedButton(
+                      onPressed: () => LifetimeDialog(context: context, widget: const MoneySpendCrossTableAlert()),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                      child: const Text('年比較'),
+                    ),
                   ],
                 ),
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
@@ -68,14 +82,7 @@ class _SpendEachYearSummaryDisplayAlertState extends ConsumerState<SpendEachYear
 
     final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
 
-    const List<String> extraItems = <String>[
-      '共済戻り',
-      '年金',
-      'アイアールシー',
-      'メルカリ',
-      '牛乳代',
-      '弁当代',
-    ];
+    const List<String> extraItems = <String>['共済戻り', '年金', 'アイアールシー', 'メルカリ', '牛乳代', '弁当代'];
 
     for (final String item in extraItems) {
       if (!itemKeys.contains(item)) {
