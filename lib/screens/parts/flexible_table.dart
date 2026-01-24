@@ -24,8 +24,10 @@ class FlexibleTable extends StatefulWidget {
     required this.buildCell,
     this.leftColumnWidth = 80,
     this.leftHeader,
-    this.headerHeight = 30,
-    this.rowHeight = 50,
+
+    this.headerHeight = 24,
+    this.rowHeight = 36,
+
     this.headerDecoration = const BoxDecoration(
       color: Colors.blueAccent,
 
@@ -39,7 +41,6 @@ class FlexibleTable extends StatefulWidget {
     this.initialScrollToRow,
     this.autoScrollDuration = const Duration(milliseconds: 400),
     this.cacheExtentRows = 12,
-
     this.onControllerReady,
   });
 
@@ -71,9 +72,9 @@ class FlexibleTable extends StatefulWidget {
     required double width,
     required double height,
     BoxDecoration decoration = const BoxDecoration(border: Border.fromBorderSide(BorderSide())),
-    TextStyle textStyle = const TextStyle(fontWeight: FontWeight.w700),
+    TextStyle textStyle = const TextStyle(fontWeight: FontWeight.w700, fontSize: 10),
     Alignment alignment = Alignment.center,
-    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 10),
+    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 6),
   }) {
     return Container(
       width: width,
@@ -92,13 +93,14 @@ class FlexibleTable extends StatefulWidget {
     required double height,
     BoxDecoration decoration = const BoxDecoration(border: Border.fromBorderSide(BorderSide())),
     Alignment alignment = Alignment.centerLeft,
-    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
     TextStyle? textStyle,
     required List<String> holiday,
   }) {
     final String youbi = DateTime.parse(text).youbiStr;
-
     final Utility utility = Utility();
+
+    final TextStyle resolvedTextStyle = textStyle ?? const TextStyle(fontSize: 10);
 
     return Container(
       width: width,
@@ -109,14 +111,15 @@ class FlexibleTable extends StatefulWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(text, style: textStyle),
+          Text(text, style: resolvedTextStyle),
+          const SizedBox(height: 2),
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
             decoration: BoxDecoration(
               color: utility.getYoubiColor(date: text, youbiStr: youbi, holiday: holiday).withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Text(youbi.substring(0, 3), style: textStyle),
+            child: Text(youbi.substring(0, 3), style: resolvedTextStyle),
           ),
         ],
       ),
@@ -295,11 +298,10 @@ class _FlexibleTableState extends State<FlexibleTable> {
                     Container(
                       decoration: widget.headerDecoration,
                       alignment: Alignment.centerLeft,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
                     ),
               ),
               const SizedBox(width: 2),
-
               Expanded(
                 child: SingleChildScrollView(
                   controller: _headerHorizontalScrollController,
@@ -351,7 +353,6 @@ class _FlexibleTableState extends State<FlexibleTable> {
                   ),
                 ),
                 const SizedBox(width: 2),
-
                 Expanded(
                   child: SingleChildScrollView(
                     controller: _bodyHorizontalScrollController,

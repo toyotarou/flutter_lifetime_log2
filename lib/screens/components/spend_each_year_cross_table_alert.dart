@@ -17,8 +17,8 @@ class _MoneySpendCrossTableAlertState extends ConsumerState<MoneySpendCrossTable
     with ControllersMixin<MoneySpendCrossTableAlert> {
   FlexibleTableController? _tableCtl;
 
-  static const double leftItemWidth = 140.0;
-  static const double colWidth = 110.0;
+  static const double leftItemWidth = 120.0;
+  static const double colWidth = 90.0;
 
   ///
   @override
