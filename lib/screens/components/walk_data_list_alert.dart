@@ -202,7 +202,9 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
             ),
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                minHeight: (boundingBoxArea.split('.')[0] != '0' && transportation != null) ? 120 : 20,
+                minHeight: (boundingBoxArea != '' && boundingBoxArea.substring(0, 3) != '0.0' && transportation != null)
+                    ? 120
+                    : 20,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -304,7 +306,10 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                                 },
                                 child: Column(
                                   children: <Widget>[
-                                    Icon(Icons.map, color: Colors.white.withValues(alpha: 0.3)),
+                                    Icon(
+                                      (boundingBoxArea.substring(0, 3) == '0.0') ? Icons.home_outlined : Icons.map,
+                                      color: Colors.white.withValues(alpha: 0.3),
+                                    ),
                                     const SizedBox(height: 5),
                                     Text(
                                       appParamState.keepGeolocMap[date]!.length.toString(),
