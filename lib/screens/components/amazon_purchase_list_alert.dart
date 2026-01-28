@@ -49,81 +49,70 @@ class _AmazonPurchaseListAlertState extends ConsumerState<AmazonPurchaseListAler
 
   ///
   Widget displayAmazonPurchaseList() {
-    final List<Widget> list = <Widget>[];
+    final List<AmazonPurchaseModel> amazonPurchases = <AmazonPurchaseModel>[];
+    appParamState.keepAmazonPurchaseMap.values.forEach(amazonPurchases.addAll);
+
+    if (amazonPurchases.isEmpty) {
+      return const Center(child: Text('Amazon購入履歴がありません'));
+    }
 
     final List<Color> fortyEightColor = utility.getFortyEightColor();
 
-    appParamState.keepAmazonPurchaseMap.forEach((String key, List<AmazonPurchaseModel> value) {
-      for (final AmazonPurchaseModel element in value) {
-        final Color color = fortyEightColor[element.month.toInt() - 1];
+    return ListView.builder(
+      itemCount: amazonPurchases.length,
+      itemBuilder: (BuildContext context, int index) {
+        final AmazonPurchaseModel element = amazonPurchases[index];
 
-        list.add(
-          Container(
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-            ),
-            padding: const EdgeInsets.all(5),
+        final int month = int.tryParse(element.month) ?? 0;
+        final Color color = fortyEightColor.isInRange(month - 1)
+            ? fortyEightColor[month - 1]
+            : Colors.white.withOpacity(0.2);
 
-            child: DefaultTextStyle(
-              style: const TextStyle(fontSize: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text('${element.year}-${element.month}-${element.day}'),
-                      const SizedBox.shrink(),
-                    ],
-                  ),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5),
-                        child: CircleAvatar(
-                          radius: 15,
-
-                          backgroundColor: color.withValues(alpha: 0.2),
-                          child: Text(element.month, style: const TextStyle(fontSize: 12)),
-                        ),
+        return Container(
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+          ),
+          padding: const EdgeInsets.all(5),
+          child: DefaultTextStyle(
+            style: const TextStyle(fontSize: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[Text('${element.year}-${element.month}-${element.day}'), const SizedBox.shrink()],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5),
+                      child: CircleAvatar(
+                        radius: 15,
+                        backgroundColor: color.withValues(alpha: 0.2),
+                        child: Text(element.month, style: const TextStyle(fontSize: 12)),
                       ),
-
-                      const SizedBox(width: 20),
-
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(element.item),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[const SizedBox.shrink(), Text(element.price.toString().toCurrency())],
-                            ),
-                          ],
-                        ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(element.item),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[const SizedBox.shrink(), Text(element.price.toString().toCurrency())],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         );
-      }
-    });
-
-    return CustomScrollView(
-      slivers: <Widget>[
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) => list[index],
-            childCount: list.length,
-          ),
-        ),
-      ],
+      },
     );
   }
 }

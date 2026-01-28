@@ -88,17 +88,21 @@ extension StringEx on String {
     return dateFormatter.parseStrict(this);
   }
 
-  int toInt() {
-    return int.parse(this);
+  int toInt({int defaultValue = 0}) {
+    return int.tryParse(this) ?? defaultValue;
   }
 
   String toCurrency() {
+    final int? val = int.tryParse(this);
+    if (val == null) {
+      return this;
+    }
     final NumberFormat formatter = NumberFormat('#,###');
-    return formatter.format(int.parse(this));
+    return formatter.format(val);
   }
 
-  double toDouble() {
-    return double.parse(this);
+  double toDouble({double defaultValue = 0.0}) {
+    return double.tryParse(this) ?? defaultValue;
   }
 
   String alphanumericToFullLength() {

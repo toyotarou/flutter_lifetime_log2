@@ -26,9 +26,11 @@ class Utility {
 
   ///
   void showError(String msg) {
-    ScaffoldMessenger.of(
-      NavigationService.navigatorKey.currentContext!,
-    ).showSnackBar(SnackBar(content: Text(msg), duration: const Duration(seconds: 5)));
+    final BuildContext? context = NavigationService.navigatorKey.currentContext;
+    if (context == null) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), duration: const Duration(seconds: 5)));
   }
 
   ///
@@ -215,6 +217,10 @@ class Utility {
 
   ///
   BoundingBoxInfoModel getBoundingBoxInfo(List<GeolocModel> points) {
+    if (points.isEmpty) {
+      return BoundingBoxInfoModel(minLat: 0, maxLat: 0, minLng: 0, maxLng: 0, areaKm2: 0);
+    }
+
     final List<double> lats = points.map((GeolocModel p) => double.tryParse(p.latitude) ?? 0).toList();
     final List<double> lngs = points.map((GeolocModel p) => double.tryParse(p.longitude) ?? 0).toList();
 
@@ -249,6 +255,9 @@ class Utility {
 
   ///
   List<LatLng> getBoundingBoxPoints(List<GeolocModel> points) {
+    if (points.isEmpty) {
+      return <LatLng>[];
+    }
     final BoundingBoxInfoModel info = getBoundingBoxInfo(points);
 
     return <LatLng>[
@@ -283,10 +292,14 @@ class Utility {
       final String firstPhoto = photoList.first;
 
       final List<String> exFirstPhoto = firstPhoto.split('/');
-      final List<String> exFirstPhotoLast = exFirstPhoto[exFirstPhoto.length - 1].split('_');
-      final String hour = exFirstPhotoLast[1].substring(0, 2);
-      final String minute = exFirstPhotoLast[1].substring(2, 4);
-      ret = '$hour:$minute';
+      if (exFirstPhoto.isNotEmpty) {
+        final List<String> exFirstPhotoLast = exFirstPhoto[exFirstPhoto.length - 1].split('_');
+        if (exFirstPhotoLast.length >= 2 && exFirstPhotoLast[1].length >= 4) {
+          final String hour = exFirstPhotoLast[1].substring(0, 2);
+          final String minute = exFirstPhotoLast[1].substring(2, 4);
+          ret = '$hour:$minute';
+        }
+      }
     }
 
     return ret;
@@ -378,14 +391,28 @@ class Utility {
   List<String> getTempleGeolocNearlyDateList({required String date, required Map<String, TempleModel> templeMap}) {
     final Set<String> templeGeolocNearlyDateSet = <String>{};
 
-    for (final TempleDataModel element in templeMap[date]!.templeDataList) {
-      final LatLng baseLatLng = LatLng(element.latitude.toDouble(), element.longitude.toDouble());
+    final TempleModel? templeModel = templeMap[date];
+    if (templeModel == null) {
+      return <String>[];
+    }
+
+    for (final TempleDataModel element in templeModel.templeDataList) {
+      final double? baseLat = double.tryParse(element.latitude);
+      final double? baseLng = double.tryParse(element.longitude);
+      if (baseLat == null || baseLng == null) {
+        continue;
+      }
+
+      final LatLng baseLatLng = LatLng(baseLat, baseLng);
 
       templeMap.forEach((String key, TempleModel value) {
         if (value.templeDataList.length > 1) {
           for (final TempleDataModel element2 in value.templeDataList) {
-            if (double.tryParse(element2.latitude) != null && double.tryParse(element2.longitude) != null) {
-              final LatLng targetLatLng = LatLng(element2.latitude.toDouble(), element2.longitude.toDouble());
+            final double? targetLat = double.tryParse(element2.latitude);
+            final double? targetLng = double.tryParse(element2.longitude);
+
+            if (targetLat != null && targetLng != null) {
+              final LatLng targetLatLng = LatLng(targetLat, targetLng);
 
               final double dist = calculateDistance(baseLatLng, targetLatLng);
 
