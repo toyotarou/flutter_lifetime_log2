@@ -215,6 +215,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepTokyoMunicipalMap(map: widget.tokyoMunicipalMap);
       appParamNotifier.setKeepWorkHistoryModelMap(map: widget.workHistoryModelMap);
       appParamNotifier.setKeepMoneySumList(list: widget.moneySumList);
+      appParamNotifier.setKeepTrainMap(map: widget.trainMap);
 
       //===========================================//
 

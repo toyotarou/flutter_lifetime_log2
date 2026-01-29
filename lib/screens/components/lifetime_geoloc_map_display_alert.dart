@@ -23,6 +23,7 @@ import '../parts/icon_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import '../parts/lifetime_log_overlay.dart';
 import 'lifetime_geoloc_ghost_temple_info_alert.dart';
+import 'route_info_display_alert.dart';
 import 'temple_list_display_alert.dart';
 import 'time_place_display_alert.dart';
 
@@ -92,6 +93,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   Set<String> dateMunicipalNameSet = <String>{};
 
   List<Marker> displayGhostGeolocDateList = <Marker>[];
+
+  List<Marker> routePolylineInfoMarkerList = <Marker>[];
 
   ///
   @override
@@ -208,6 +211,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   appParamState.keepTransportationMap[widget.date]!.spotDataModelListMap.isNotEmpty) ...<Widget>[
                 // ignore: always_specify_types
                 PolylineLayer(polylines: makeTransportationPolyline()),
+                MarkerLayer(markers: routePolylineInfoMarkerList),
               ],
               if (appParamState.routePolylinePartsGeolocList.isNotEmpty) ...<Widget>[
                 // ignore: always_specify_types
@@ -906,11 +910,18 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   ///
   // ignore: always_specify_types
   List<Polyline> makeTransportationPolyline() {
+    routePolylineInfoMarkerList.clear();
+
     final TransportationModel? transportationModel = appParamState.keepTransportationMap[widget.date];
     if (transportationModel == null) {
       // ignore: always_specify_types
       return <Polyline>[];
     }
+
+    final List<LatLng?> centerLatLngOfPolylineList = List<LatLng?>.filled(
+      transportationModel.spotDataModelListMap.length,
+      null,
+    );
 
     // ignore: always_specify_types
     final List<Polyline> polylines = <Polyline>[];
@@ -919,6 +930,19 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       if (spots == null || spots.isEmpty) {
         continue;
       }
+
+      double latSum = 0.0;
+      double lngSum = 0.0;
+
+      for (final SpotDataModel s in spots) {
+        latSum += s.lat.toDouble();
+        lngSum += s.lng.toDouble();
+      }
+
+      final int count = spots.length;
+
+      centerLatLngOfPolylineList[i] = LatLng(latSum / count, lngSum / count);
+
       polylines.add(
         // ignore: always_specify_types
         Polyline(
@@ -928,6 +952,45 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         ),
       );
     }
+
+    for (int i = 0; i < centerLatLngOfPolylineList.length; i++) {
+      final LatLng? center = centerLatLngOfPolylineList[i];
+      if (center == null) {
+        continue;
+      }
+
+      routePolylineInfoMarkerList.add(
+        Marker(
+          point: center,
+          child: GestureDetector(
+            onTap: () {
+              LifetimeDialog(
+                context: context,
+                widget: RouteInfoDisplayAlert(
+                  date: widget.date,
+                  spotDataModelList: transportationModel.spotDataModelListMap[i],
+                ),
+                paddingTop: context.screenSize.height * 0.5,
+                paddingRight: context.screenSize.width * 0.2,
+                clearBarrierColor: true,
+              );
+            },
+            child: Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(color: fortyEightColor[i % 48], shape: BoxShape.circle),
+              child: Center(
+                child: Text(
+                  (i + 1).toString(),
+                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return polylines;
   }
 

@@ -59,6 +59,7 @@ class AppParamState with _$AppParamState {
     @Default(<MunicipalModel>[]) List<MunicipalModel> keepTokyoMunicipalList,
     @Default(<String, MunicipalModel>{}) Map<String, MunicipalModel> keepTokyoMunicipalMap,
     @Default(<String, WorkHistoryModel>{}) Map<String, WorkHistoryModel> keepWorkHistoryModelMap,
+    @Default(<String, String>{}) Map<String, String> keepTrainMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -303,6 +304,9 @@ class AppParam extends _$AppParam {
   ///
   void setKeepNearestTempleNameGeolocModelMap({required Map<String, GeolocModel> map}) =>
       state = state.copyWith(keepNearestTempleNameGeolocModelMap: map);
+
+  ///
+  void setKeepTrainMap({required Map<String, String> map}) => state = state.copyWith(keepTrainMap: map);
 
   //===================================================
 
