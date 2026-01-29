@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../controllers/app_param/app_param.dart';
 import '../../controllers/controllers_mixin.dart';
-import '../../extensions/extensions.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 
@@ -20,65 +21,80 @@ class AssetsDetailListAlert extends ConsumerStatefulWidget {
 
 class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
     with ControllersMixin<AssetsDetailListAlert> {
-  final AutoScrollController autoScrollController = AutoScrollController();
+  late final AutoScrollController autoScrollController;
 
-  final List<Widget> assetsDetailList = <Widget>[];
+  // パフォーマンス向上のため、フォーマッタをstaticで保持して再利用する
+  static final NumberFormat _currencyFormatter = NumberFormat('#,###');
 
-  ///
+  @override
+  void initState() {
+    super.initState();
+    autoScrollController = AutoScrollController();
+  }
+
+  @override
+  void dispose() {
+    autoScrollController.dispose();
+    super.dispose();
+  }
+
+  /// 文字列から数値を安全かつ高速に取得するためのヘルパー
+  double _safeParseDouble(String value) {
+    if (value.isEmpty) {
+      return 0.0;
+    }
+    // カンマと円を効率的に除去
+    final String cleaned = value.replaceAll(',', '').replaceAll('円', '').trim();
+    return double.tryParse(cleaned) ?? 0.0;
+  }
+
   @override
   Widget build(BuildContext context) {
+    // 必要なデータのみを select でピンポイントに監視
+    final List<dynamic> dataList;
+    if (widget.title == 'stock') {
+      dataList =
+          ref.watch(appParamProvider.select((AppParamState s) => s.keepStockTickerMap[widget.item])) ?? <dynamic>[];
+    } else if (widget.title == 'toushiShintaku') {
+      final int? id = int.tryParse(widget.item);
+      dataList = (id != null)
+          ? (ref.watch(appParamProvider.select((AppParamState s) => s.keepToushiShintakuRelationalMap[id])) ??
+                <dynamic>[])
+          : <dynamic>[];
+    } else {
+      dataList = <dynamic>[];
+    }
+
     return Scaffold(
       backgroundColor: Colors.transparent,
-
       body: SafeArea(
-        child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white),
-
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: DefaultTextStyle(
-              style: const TextStyle(fontSize: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Expanded(child: Text(widget.name)),
-
-                      Row(
-                        children: <Widget>[
-                          IconButton(
-                            onPressed: () {
-                              autoScrollController.scrollToIndex(
-                                assetsDetailList.length,
-                                preferPosition: AutoScrollPosition.end,
-                                duration: const Duration(milliseconds: 300),
-                              );
-                            },
-                            icon: const Icon(Icons.arrow_downward),
-                          ),
-
-                          IconButton(
-                            onPressed: () {
-                              autoScrollController.scrollToIndex(
-                                0,
-                                preferPosition: AutoScrollPosition.begin,
-                                duration: const Duration(milliseconds: 300),
-                              );
-                            },
-                            icon: const Icon(Icons.arrow_upward),
-                          ),
-                        ],
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: DefaultTextStyle(
+            style: const TextStyle(color: Colors.white, fontSize: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _buildHeader(dataList),
+                const Divider(color: Colors.white38, thickness: 5),
+                Expanded(
+                  child: CustomScrollView(
+                    controller: autoScrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: <Widget>[
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+                          if (index >= dataList.length) {
+                            return null;
+                          }
+                          // 各アイテムに RepaintBoundary を適用してスクロールを滑らかにする
+                          return RepaintBoundary(child: _buildListItem(index, dataList));
+                        }, childCount: dataList.length),
                       ),
                     ],
                   ),
-
-                  Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-                  Expanded(child: _displayAssetsDetailList()),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -86,162 +102,108 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
     );
   }
 
-  ///
-  Widget _displayAssetsDetailList() {
-    assetsDetailList.clear();
-
-    switch (widget.title) {
-      case 'stock':
-        int lastCost = 0;
-        int i = 0;
-        appParamState.keepStockTickerMap[widget.item]?.forEach((StockModel element) {
-          final String jikaHyoukagaku = element.jikaHyoukagaku.replaceAll(',', '');
-          final String heikinShutokuKagaku = element.heikinShutokuKagaku.replaceAll(',', '');
-
-          int cost = 0;
-          int price = 0;
-          int diff = 0;
-          if (int.tryParse(jikaHyoukagaku) != null && double.tryParse(heikinShutokuKagaku) != null) {
-            cost = (element.hoyuuSuuryou * heikinShutokuKagaku.toDouble()).toInt();
-            price = jikaHyoukagaku.toDouble().toInt();
-            diff = price - cost;
-          }
-
-          assetsDetailList.add(
-            AutoScrollTag(
-              // ignore: always_specify_types
-              key: ValueKey(i),
-              index: i,
-              controller: autoScrollController,
-
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                ),
-                padding: const EdgeInsets.all(5),
-
-                child: Row(
-                  children: <Widget>[
-                    Expanded(child: Text('${element.year}-${element.month}-${element.day}')),
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.topRight,
-                        child: Text(
-                          cost.toString().toCurrency(),
-
-                          style: TextStyle(color: (cost != lastCost) ? Colors.yellowAccent : Colors.white),
-                        ),
-                      ),
-                    ),
-
-                    Expanded(
-                      child: Container(alignment: Alignment.topRight, child: Text(price.toString().toCurrency())),
-                    ),
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.topRight,
-                        child: Text(
-                          diff.toString().toCurrency(),
-
-                          style: TextStyle(color: (diff < 0) ? Colors.orangeAccent : Colors.white),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-
-          lastCost = cost;
-
-          i++;
-        });
-
-      case 'toushiShintaku':
-        int lastCost = 0;
-        int i = 0;
-        appParamState.keepToushiShintakuRelationalMap[widget.item.toInt()]?.forEach((ToushiShintakuModel element) {
-          final String jikaHyoukagaku = element.jikaHyoukagaku
-              .replaceAll(',', '')
-              .replaceAll(',', '')
-              .replaceAll('円', '')
-              .trim();
-
-          final String shutokuSougaku = element.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim();
-
-          int cost = 0;
-          int price = 0;
-          int diff = 0;
-          if (int.tryParse(jikaHyoukagaku) != null && int.tryParse(shutokuSougaku) != null) {
-            cost = shutokuSougaku.toInt();
-            price = jikaHyoukagaku.toDouble().toInt();
-            diff = price - cost;
-          }
-
-          assetsDetailList.add(
-            AutoScrollTag(
-              // ignore: always_specify_types
-              key: ValueKey(i),
-              index: i,
-              controller: autoScrollController,
-
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                ),
-                padding: const EdgeInsets.all(5),
-
-                child: Row(
-                  children: <Widget>[
-                    Expanded(child: Text('${element.year}-${element.month}-${element.day}')),
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.topRight,
-                        child: Text(
-                          cost.toString().toCurrency(),
-
-                          style: TextStyle(color: (cost != lastCost) ? Colors.yellowAccent : Colors.white),
-                        ),
-                      ),
-                    ),
-
-                    Expanded(
-                      child: Container(alignment: Alignment.topRight, child: Text(price.toString().toCurrency())),
-                    ),
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.topRight,
-                        child: Text(
-                          diff.toString().toCurrency(),
-
-                          style: TextStyle(color: (diff < 0) ? Colors.orangeAccent : Colors.white),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-
-          lastCost = cost;
-
-          i++;
-        });
-    }
-
-    return CustomScrollView(
-      controller: autoScrollController,
-
-      slivers: <Widget>[
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) => assetsDetailList[index],
-            childCount: assetsDetailList.length,
+  Widget _buildHeader(List<dynamic> dataList) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Expanded(
+          child: Text(
+            widget.name,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
+        Row(
+          children: <Widget>[
+            IconButton(
+              onPressed: () => _scrollTo(dataList.isEmpty ? 0 : dataList.length - 1, AutoScrollPosition.end),
+              icon: const Icon(Icons.arrow_downward, color: Colors.white70),
+            ),
+            IconButton(
+              onPressed: () => _scrollTo(0, AutoScrollPosition.begin),
+              icon: const Icon(Icons.arrow_upward, color: Colors.white70),
+            ),
+          ],
+        ),
       ],
+    );
+  }
+
+  void _scrollTo(int index, AutoScrollPosition position) {
+    autoScrollController.scrollToIndex(index, preferPosition: position, duration: const Duration(milliseconds: 300));
+  }
+
+  Widget _buildListItem(int index, List<dynamic> dataList) {
+    final dynamic item = dataList[index];
+
+    String date = '';
+    int cost = 0;
+    int price = 0;
+    int diff = 0;
+    int lastCost = 0;
+
+    // 型安全なデータ抽出と計算
+    if (widget.title == 'stock' && item is StockModel) {
+      date = '${item.year}-${item.month}-${item.day}';
+      cost = (item.hoyuuSuuryou * _safeParseDouble(item.heikinShutokuKagaku)).toInt();
+      price = _safeParseDouble(item.jikaHyoukagaku).toInt();
+      diff = price - cost;
+
+      if (index > 0) {
+        final dynamic prev = dataList[index - 1];
+        if (prev is StockModel) {
+          lastCost = (prev.hoyuuSuuryou * _safeParseDouble(prev.heikinShutokuKagaku)).toInt();
+        }
+      }
+    } else if (widget.title == 'toushiShintaku' && item is ToushiShintakuModel) {
+      date = '${item.year}-${item.month}-${item.day}';
+      cost = _safeParseDouble(item.shutokuSougaku).toInt();
+      price = _safeParseDouble(item.jikaHyoukagaku).toInt();
+      diff = price - cost;
+
+      if (index > 0) {
+        final dynamic prev = dataList[index - 1];
+        if (prev is ToushiShintakuModel) {
+          lastCost = _safeParseDouble(prev.shutokuSougaku).toInt();
+        }
+      }
+    }
+
+    return AutoScrollTag(
+      key: ValueKey<int>(index),
+      index: index,
+      controller: autoScrollController,
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: Colors.white24)),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        child: Row(
+          children: <Widget>[
+            Expanded(flex: 2, child: Text(date)),
+            _buildPriceText(cost, lastCost: lastCost, isCost: true),
+            _buildPriceText(price),
+            _buildPriceText(diff, isDiff: true),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPriceText(int value, {int lastCost = 0, bool isCost = false, bool isDiff = false}) {
+    Color textColor = Colors.white;
+    if (isCost && value != lastCost && lastCost != 0) {
+      textColor = Colors.yellowAccent;
+    } else if (isDiff && value < 0) {
+      textColor = Colors.orangeAccent;
+    }
+
+    return Expanded(
+      child: Text(
+        _currencyFormatter.format(value),
+        textAlign: TextAlign.right,
+        style: TextStyle(color: textColor, fontFeatures: const <FontFeature>[FontFeature.tabularFigures()]),
+      ),
     );
   }
 }
