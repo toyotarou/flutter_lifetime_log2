@@ -102,11 +102,14 @@ List<Map<String, dynamic>> getStartEndTitleList({required Map<int, String> data}
 Map<String, String> getWeeklyHistoryDisplayWeekDate({required String date}) {
   final Map<String, String> map = <String, String>{};
 
-  for (int i = 0; i < 7; i++) {
-    final String youbi = DateTime.parse(date).add(Duration(days: i)).youbiStr;
-    final String ymd = DateTime.parse(date).add(Duration(days: i)).yyyymmdd;
+  final DateTime? baseDate = DateTime.tryParse(date);
+  if (baseDate == null) {
+    return map;
+  }
 
-    map[youbi] = ymd;
+  for (int i = 0; i < 7; i++) {
+    final DateTime current = baseDate.add(Duration(days: i));
+    map[current.youbiStr] = current.yyyymmdd;
   }
 
   return map;
@@ -166,6 +169,10 @@ bool _pointInRingOrOnEdge(double lat, double lng, List<List<double>> ring) {
     final List<double> a = ring[i];
 
     final List<double> b = ring[(i + 1) % ring.length];
+
+    if (a.length < 2 || b.length < 2) {
+      continue;
+    }
 
     final double aLng = a[0], aLat = a[1];
 
@@ -228,6 +235,10 @@ bool _rayCasting(double lat, double lng, List<List<double>> ring) {
   bool inside = false;
 
   for (int i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    if (ring[i].length < 2 || ring[j].length < 2) {
+      continue;
+    }
+
     final double xiLat = ring[i][1], xiLng = ring[i][0];
 
     final double xjLat = ring[j][1], xjLng = ring[j][0];
@@ -261,7 +272,7 @@ List<Polygon> makeAreaPolygons({
   // ignore: always_specify_types
   final List<Polygon<Object>> polygonList = <Polygon<Object>>[];
 
-  if (allPolygonsList.isEmpty) {
+  if (allPolygonsList.isEmpty || fortyEightColor.isEmpty) {
     return polygonList;
   }
 
@@ -276,7 +287,7 @@ List<Polygon> makeAreaPolygons({
   for (final List<List<List<double>>> poly in uniquePolygons.values) {
     final Polygon<Object>? polygon = getColorPaintPolygon(
       polygon: poly,
-      color: fortyEightColor[idx % 48].withValues(alpha: 0.3),
+      color: fortyEightColor[idx % fortyEightColor.length].withValues(alpha: 0.3),
     );
 
     if (polygon != null) {
@@ -295,12 +306,25 @@ Polygon? getColorPaintPolygon({required List<List<List<double>>> polygon, requir
     return null;
   }
 
-  final List<LatLng> outer = polygon.first.map((List<double> element) => LatLng(element[1], element[0])).toList();
+  final List<LatLng> outer = polygon.first
+      .where((List<double> element) => element.length >= 2)
+      .map((List<double> element) => LatLng(element[1], element[0]))
+      .toList();
+
+  if (outer.isEmpty) {
+    return null;
+  }
 
   final List<List<LatLng>> holes = <List<LatLng>>[];
 
   for (int i = 1; i < polygon.length; i++) {
-    holes.add(polygon[i].map((List<double> element4) => LatLng(element4[1], element4[0])).toList());
+    final List<LatLng> hole = polygon[i]
+        .where((List<double> element) => element.length >= 2)
+        .map((List<double> element4) => LatLng(element4[1], element4[0]))
+        .toList();
+    if (hole.isNotEmpty) {
+      holes.add(hole);
+    }
   }
 
   // ignore: always_specify_types
@@ -316,13 +340,18 @@ Polygon? getColorPaintPolygon({required List<List<List<double>>> polygon, requir
 
 ///
 ScrollLineChartYAxisRangeModel calcYAxisRange({required double minValue, required double maxValue}) {
-  if (minValue == maxValue) {
-    final double padding = max(1.0, minValue.abs() * 0.1);
-    return ScrollLineChartYAxisRangeModel(min: minValue - padding, max: maxValue + padding, interval: padding);
+  // Ensure min is actually less than or equal to max
+  final double actualMin = minValue <= maxValue ? minValue : maxValue;
+  final double actualMax = minValue <= maxValue ? maxValue : minValue;
+
+  if (actualMin == actualMax) {
+    final double padding = max(1.0, actualMin.abs() * 0.1);
+    return ScrollLineChartYAxisRangeModel(min: actualMin - padding, max: actualMax + padding, interval: padding);
   }
 
-  final double range = maxValue - minValue;
+  final double range = actualMax - actualMin;
 
+  // log(range) is safe because range > 0
   final double exponent = pow(10, (log(range) / ln10).floor()).toDouble();
 
   final List<double> candidates = <double>[1 * exponent, 2 * exponent, 5 * exponent, 10 * exponent];
@@ -336,8 +365,8 @@ ScrollLineChartYAxisRangeModel calcYAxisRange({required double minValue, require
     }
   }
 
-  final double yMin = (minValue / interval).floor() * interval;
-  final double yMax = (maxValue / interval).ceil() * interval;
+  final double yMin = (actualMin / interval).floor() * interval;
+  final double yMax = (actualMax / interval).ceil() * interval;
 
   return ScrollLineChartYAxisRangeModel(min: yMin, max: yMax, interval: interval);
 }
@@ -351,8 +380,6 @@ DateTime monthForIndex({required int index, required DateTime baseMonth}) {
 
 ///
 DateTime addMonths(DateTime base, int deltaMonths) {
-  final int totalMonths = base.year * 12 + (base.month - 1) + deltaMonths;
-  final int newYear = totalMonths ~/ 12;
-  final int newMonth = (totalMonths % 12) + 1;
-  return DateTime(newYear, newMonth);
+  // Using DateTime constructor for safer month arithmetic
+  return DateTime(base.year, base.month + deltaMonths);
 }
