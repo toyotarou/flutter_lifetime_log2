@@ -96,6 +96,10 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   List<Marker> routePolylineInfoMarkerList = <Marker>[];
 
+  String _cacheKey = '';
+
+  bool _cacheBuilt = false;
+
   ///
   @override
   void initState() {
@@ -161,7 +165,50 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   ///
   @override
-  Widget build(BuildContext context) {
+  void didUpdateWidget(covariant LifetimeGeolocMapDisplayAlert oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.date != widget.date ||
+        oldWidget.geolocList?.length != widget.geolocList?.length ||
+        oldWidget.templeGeolocNearlyDateList.length != widget.templeGeolocNearlyDateList.length) {
+      _cacheBuilt = false;
+      _cacheKey = '';
+    }
+  }
+
+  ///
+  String _buildCacheKey() {
+    final int geolocLen = widget.geolocList?.length ?? 0;
+
+    final int templeLen = appParamState.keepTempleMap[widget.date]?.templeDataList.length ?? 0;
+
+    final TransportationModel? t = appParamState.keepTransportationMap[widget.date];
+    final int transLen = t?.spotDataModelListMap.length ?? 0;
+    final bool oufuku = t?.oufuku ?? false;
+
+    final int ghostLen = widget.templeGeolocNearlyDateList.length;
+    final bool ghostFlag = appParamState.isDisplayGhostGeolocPolyline;
+
+    return <Object>[
+      widget.date,
+      geolocLen,
+      templeLen,
+      transLen,
+      if (oufuku) 1 else 0,
+      ghostLen,
+      if (ghostFlag) 1 else 0,
+    ].join('_');
+  }
+
+  ///
+  void _rebuildCachesIfNeeded() {
+    final String key = _buildCacheKey();
+    if (_cacheBuilt && key == _cacheKey) {
+      return;
+    }
+    _cacheKey = key;
+    _cacheBuilt = true;
+
     makeMinMaxLatLng();
     makeMarker();
     makeTransportationGoalMarker();
@@ -171,6 +218,12 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     makeStampRallyMetro20AnniversaryMarker();
     makeStampRallyMetroPokepokeMarker();
     makeDisplayGhostGeolocDateMarker();
+  }
+
+  ///
+  @override
+  Widget build(BuildContext context) {
+    _rebuildCachesIfNeeded();
 
     final DateTime? parsedDate = DateTime.tryParse(widget.date);
     final String youbi = parsedDate != null ? parsedDate.youbiStr.substring(0, 3) : '';
@@ -541,7 +594,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   ///
   void makeDisplayTimeMarker() {
-    final double scaleFactor = currentZoom2 / baseZoom2;
+    final double safeZoom = (currentZoom2.isFinite && currentZoom2 > 0) ? currentZoom2 : baseZoom2;
+    final double scaleFactorRaw = safeZoom / baseZoom2;
+    final double scaleFactor = scaleFactorRaw.clamp(0.6, 2.0);
 
     displayTimeMarkerList.clear();
 
@@ -572,7 +627,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(width: timeContainerWidth),
+                SizedBox(width: timeContainerWidth * scaleFactor),
                 Icon(Icons.location_on, size: 30 * scaleFactor, color: Colors.red),
                 Container(
                   width: timeContainerWidth * scaleFactor,
@@ -711,7 +766,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     if (widget.geolocList != null && widget.geolocList!.isNotEmpty) {
       mapController.rotate(0);
 
-      final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
+      // minLng / maxLng が逆になっていたので修正（ここ重要）
+      final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, minLng), LatLng(maxLat, maxLng)]);
 
       final CameraFit cameraFit = CameraFit.bounds(
         bounds: bounds,
@@ -722,7 +778,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
       final double newZoom = mapController.camera.zoom;
 
-      setState(() => currentZoom = newZoom);
+      if (mounted) {
+        setState(() => currentZoom = newZoom);
+      }
 
       appParamNotifier.setCurrentZoom(zoom: newZoom);
 
@@ -953,7 +1011,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       );
     }
 
-    for (int i = 0; i < centerLatLngOfPolylineList.length; i++) {
+    final int loopNum = transportationModel.oufuku ? 1 : centerLatLngOfPolylineList.length;
+
+    for (int i = 0; i < loopNum; i++) {
       final LatLng? center = centerLatLngOfPolylineList[i];
       if (center == null) {
         continue;
@@ -969,6 +1029,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 widget: RouteInfoDisplayAlert(
                   date: widget.date,
                   spotDataModelList: transportationModel.spotDataModelListMap[i],
+                  oufuku: transportationModel.oufuku,
                 ),
                 paddingTop: context.screenSize.height * 0.5,
                 paddingRight: context.screenSize.width * 0.2,
