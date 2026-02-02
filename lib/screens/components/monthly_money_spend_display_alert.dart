@@ -177,11 +177,9 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                                   return;
                                 }
 
-                                appParamNotifier.clearSelectedMoneySpendPickupListIndexList();
-
                                 LifetimeDialog(
                                   context: context,
-                                  widget: MonthlyMoneySpendPickupAlert(yearmonth: widget.yearmonth),
+                                  widget: MonthlyMoneySpendPickupAlert(yearmonth: genDate.yyyymm),
                                 );
                               },
 
