@@ -275,7 +275,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
             final String youbi = _safeYoubi(e.date);
 
             Color? priceColor;
-            if (e.price > 10000) {
+            if (e.price >= 10000) {
               priceColor = Colors.orangeAccent;
             } else if (e.price < 0) {
               priceColor = const Color(0xFFFBB6CE);
@@ -284,6 +284,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
             final _DateLabelParts dateParts = _safeDateLabelParts(e.date);
 
             return AutoScrollTag(
+              // ignore: always_specify_types
               key: ValueKey(index),
               index: index,
               controller: autoScrollController,

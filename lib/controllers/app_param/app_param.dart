@@ -432,16 +432,13 @@ class AppParam extends _$AppParam {
   ///
   void setSelectedMoneySpendPickupListIndexList({required int index, required int price}) {
     final List<int> list = <int>[...state.selectedMoneySpendPickupListIndexList];
-
     int sum = state.selectedMoneySpendPickupListSum;
 
     if (list.contains(index)) {
       list.remove(index);
-
       sum -= price;
     } else {
       list.add(index);
-
       sum += price;
     }
 
