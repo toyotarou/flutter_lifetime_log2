@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -17,6 +18,15 @@ class MonthlyMoneySpendPickupAlert extends ConsumerStatefulWidget {
 
 class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpendPickupAlert>
     with ControllersMixin<MonthlyMoneySpendPickupAlert> {
+  final AutoScrollController autoScrollController = AutoScrollController();
+
+  ///
+  @override
+  void dispose() {
+    autoScrollController.dispose();
+    super.dispose();
+  }
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -46,16 +56,15 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
       );
     }
 
-    final Map<String, int> itemRank = _makeItemRankMap();
+    final List<MoneySpendModel> rawList = _makeMoneySpendModelListRaw(year: ym.year, month: ym.month);
 
-    final List<MoneySpendModel> displayList = _makeMoneySpendModelList(
-      year: ym.year,
-      month: ym.month,
-      itemRank: itemRank,
-    );
+    final List<String> itemKeys = _makeItemKeysFromDisplayList(rawList);
+    final Map<String, int> itemRank = _makeItemRankMap(itemKeys);
+
+    final List<MoneySpendModel> displayList = _sortMoneySpendModelList(list: rawList, itemRank: itemRank);
 
     final int total = displayList.fold<int>(0, (int sum, MoneySpendModel e) {
-      if (e.price <= 0) {
+      if (!_isCountTarget(e)) {
         return sum;
       }
       return sum + e.price;
@@ -72,8 +81,45 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.yearmonth), Text('${displayList.length}件')],
+                  children: <Widget>[
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[Text(widget.yearmonth), Text('${displayList.length}件')],
+                    ),
+                    Row(
+                      children: <Widget>[
+                        IconButton(
+                          onPressed: () {
+                            if (displayList.isNotEmpty) {
+                              autoScrollController.scrollToIndex(
+                                displayList.length - 1,
+                                preferPosition: AutoScrollPosition.end,
+                                duration: const Duration(milliseconds: 300),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.arrow_downward),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            if (displayList.isNotEmpty) {
+                              autoScrollController.scrollToIndex(
+                                0,
+                                preferPosition: AutoScrollPosition.begin,
+                                duration: const Duration(milliseconds: 300),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.arrow_upward),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
+                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                _itemKeyChips(itemKeys: itemKeys, items: displayList),
+
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
                 Expanded(child: _displayMoneySpendModelList(displayList)),
@@ -84,6 +130,14 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[const SizedBox.shrink(), Text(total.toString().toCurrency())],
                 ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    const SizedBox.shrink(),
+                    Text(appParamState.selectedMoneySpendPickupListSum.toString().toCurrency()),
+                  ],
+                ),
               ],
             ),
           ),
@@ -93,7 +147,206 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
   }
 
   ///
-  Map<String, int> _makeItemRankMap() {
+  Widget _itemKeyChips({required List<String> itemKeys, required List<MoneySpendModel> items}) {
+    if (itemKeys.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final bool isAllOn = _isAllItemsSelected(items: items);
+
+    final Color parentBgColor = isAllOn
+        ? Colors.yellowAccent.withValues(alpha: 0.35)
+        : Colors.black.withValues(alpha: 0.3);
+
+    final Color parentTextColor = isAllOn ? Colors.black : Colors.white;
+
+    return SizedBox(
+      height: 44,
+      child: Row(
+        children: <Widget>[
+          GestureDetector(
+            onTap: () {
+              if (items.isEmpty) {
+                return;
+              }
+
+              if (isAllOn) {
+                final List<int> selectedIndexes = appParamState.selectedMoneySpendPickupListIndexList.cast<int>();
+
+                if (selectedIndexes.isEmpty) {
+                  return;
+                }
+
+                final List<int> safeIndexes = <int>[];
+                final List<int> prices = <int>[];
+
+                for (final int idx in selectedIndexes) {
+                  if (idx >= 0 && idx < items.length) {
+                    safeIndexes.add(idx);
+                    prices.add(items[idx].price);
+                  }
+                }
+
+                if (safeIndexes.isEmpty) {
+                  return;
+                }
+
+                appParamNotifier.setSelectedMoneySpendPickupListIndexListByIndexList(
+                  indexes: safeIndexes,
+                  prices: prices,
+                );
+                return;
+              }
+
+              final List<int> selected = appParamState.selectedMoneySpendPickupListIndexList.cast<int>();
+
+              final List<int> addIndexes = <int>[];
+              final List<int> addPrices = <int>[];
+
+              for (int i = 0; i < items.length; i++) {
+                if (!selected.contains(i)) {
+                  addIndexes.add(i);
+                  addPrices.add(items[i].price);
+                }
+              }
+
+              if (addIndexes.isEmpty) {
+                return;
+              }
+
+              appParamNotifier.setSelectedMoneySpendPickupListIndexListByIndexList(
+                indexes: addIndexes,
+                prices: addPrices,
+              );
+            },
+            child: Container(
+              height: 34,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(color: parentBgColor, borderRadius: BorderRadius.circular(18)),
+              child: Text(
+                'PARENT',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 10, color: parentTextColor),
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 8),
+
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: itemKeys.map((String key) {
+                  final List<int> targetIndexes = _findTargetIndexesByKey(items: items, key: key);
+                  final bool isAllSelected = _isAllSelectedForKey(targetIndexes: targetIndexes);
+
+                  final Color bgColor = isAllSelected
+                      ? Colors.yellowAccent.withValues(alpha: 0.3)
+                      : Colors.black.withValues(alpha: 0.3);
+
+                  final Color textColor = isAllSelected ? Colors.black : Colors.white;
+
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: GestureDetector(
+                      onTap: () {
+                        if (items.isEmpty) {
+                          return;
+                        }
+                        if (targetIndexes.isEmpty) {
+                          return;
+                        }
+
+                        appParamNotifier.setSelectedMoneySpendPickupListIndexListByIndexList(
+                          indexes: targetIndexes,
+                          prices: targetIndexes.map((int idx) => items[idx].price).toList(),
+                        );
+                      },
+                      child: Container(
+                        constraints: const BoxConstraints(minWidth: 40, maxWidth: 100),
+                        height: 34,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(18)),
+                        child: Text(
+                          key,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 10, color: textColor),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  ///
+  bool _isAllItemsSelected({required List<MoneySpendModel> items}) {
+    if (items.isEmpty) {
+      return false;
+    }
+
+    final List<int> selected = appParamState.selectedMoneySpendPickupListIndexList.cast<int>();
+
+    for (int i = 0; i < items.length; i++) {
+      if (!selected.contains(i)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  ///
+  List<int> _findTargetIndexesByKey({required List<MoneySpendModel> items, required String key}) {
+    final List<int> out = <int>[];
+    for (int i = 0; i < items.length; i++) {
+      if (_rankKey(items[i].item) == key) {
+        out.add(i);
+      }
+    }
+    return out;
+  }
+
+  ///
+  bool _isAllSelectedForKey({required List<int> targetIndexes}) {
+    if (targetIndexes.isEmpty) {
+      return false;
+    }
+
+    final List<int> selected = appParamState.selectedMoneySpendPickupListIndexList.cast<int>();
+
+    for (final int idx in targetIndexes) {
+      if (!selected.contains(idx)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  ///
+  bool _isCountTarget(MoneySpendModel e) {
+    return !(e.price == 0 || e.item == 'クレジット');
+  }
+
+  ///
+  String _rankKey(String itemText) {
+    final int p = itemText.indexOf(' / ');
+    if (p <= 0) {
+      return itemText;
+    }
+    return itemText.substring(0, p);
+  }
+
+  List<String> _makeItemKeysFromDisplayList(List<MoneySpendModel> items) {
     final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
 
     const List<String> extraItems = <String>['共済戻り', '年金', 'アイアールシー', 'メルカリ', '牛乳代', '弁当代'];
@@ -104,15 +357,24 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
       }
     }
 
+    final Set<String> presentKeys = <String>{};
+    for (final MoneySpendModel e in items) {
+      final String key = _rankKey(e.item).trim();
+      if (key.isNotEmpty) {
+        presentKeys.add(key);
+      }
+    }
+
+    return itemKeys.where((String key) => presentKeys.contains(key)).toList();
+  }
+
+  ///
+  Map<String, int> _makeItemRankMap(List<String> itemKeys) {
     return <String, int>{for (int i = 0; i < itemKeys.length; i++) itemKeys[i]: i};
   }
 
   ///
-  List<MoneySpendModel> _makeMoneySpendModelList({
-    required int year,
-    required int month,
-    required Map<String, int> itemRank,
-  }) {
+  List<MoneySpendModel> _makeMoneySpendModelListRaw({required int year, required int month}) {
     final List<MoneySpendModel> list = <MoneySpendModel>[];
 
     final int monthEnd = DateTime(year, month + 1, 0).day;
@@ -123,7 +385,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
       final Iterable<MoneySpendModel> spends = appParamState.keepMoneySpendMap[date] ?? const <MoneySpendModel>[];
 
       for (final MoneySpendModel e in spends) {
-        if (e.price <= 0 || e.item == 'クレジット' || e.item == '楽天キャッシュ') {
+        if (!_isCountTarget(e)) {
           continue;
         }
         list.add(e);
@@ -139,20 +401,27 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
         continue;
       }
 
-      if (ymd.year == year && ymd.month == month) {
-        final String date = DateTime(ymd.year, ymd.month, ymd.day).yyyymmdd;
-        list.add(MoneySpendModel(date, cs.item, cs.price, 'credit'));
-      }
+      final String date = DateTime(ymd.year, ymd.month, ymd.day).yyyymmdd;
+      list.add(MoneySpendModel(date, '${cs.item} / ${cs.detail}', cs.price, 'card'));
     }
 
+    return list;
+  }
+
+  ///
+  List<MoneySpendModel> _sortMoneySpendModelList({
+    required List<MoneySpendModel> list,
+    required Map<String, int> itemRank,
+  }) {
     list.sort((MoneySpendModel a, MoneySpendModel b) {
       final int d = a.date.compareTo(b.date);
       if (d != 0) {
         return d;
       }
 
-      final int ra = itemRank[a.item] ?? 999999;
-      final int rb = itemRank[b.item] ?? 999999;
+      final int ra = itemRank[_rankKey(a.item)] ?? 999999;
+      final int rb = itemRank[_rankKey(b.item)] ?? 999999;
+
       final int r = ra.compareTo(rb);
       if (r != 0) {
         return r;
@@ -181,25 +450,78 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
     }
 
     return CustomScrollView(
+      controller: autoScrollController,
       slivers: <Widget>[
         SliverList(
           delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
             final MoneySpendModel e = items[index];
 
-            final Color color = (e.kind == 'credit') ? Colors.greenAccent : Colors.white;
+            final Color color = (e.kind == 'credit')
+                ? Colors.greenAccent
+                : (e.kind == 'card')
+                ? Colors.yellowAccent
+                : Colors.white;
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: DefaultTextStyle(
-                style: TextStyle(color: color, fontSize: 12),
-                child: Row(
-                  children: <Widget>[
-                    SizedBox(width: 90, child: Text(e.date)),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(e.item, maxLines: 1, overflow: TextOverflow.ellipsis)),
-                    const SizedBox(width: 8),
-                    SizedBox(width: 90, child: Text(e.price.toString().toCurrency(), textAlign: TextAlign.right)),
-                  ],
+            final String youbi = _safeYoubi(e.date);
+
+            Color? priceColor;
+            if (e.price > 10000) {
+              priceColor = Colors.orangeAccent;
+            } else if (e.price < 0) {
+              priceColor = const Color(0xFFFBB6CE);
+            }
+
+            final _DateLabelParts dateParts = _safeDateLabelParts(e.date);
+
+            return AutoScrollTag(
+              // ignore: always_specify_types
+              key: ValueKey(index),
+              index: index,
+              controller: autoScrollController,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: DefaultTextStyle(
+                  style: TextStyle(color: color, fontSize: 12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          appParamNotifier.setSelectedMoneySpendPickupListIndexList(index: index, price: e.price);
+                        },
+                        child: CircleAvatar(
+                          radius: 15,
+                          backgroundColor: (appParamState.selectedMoneySpendPickupListIndexList.contains(index))
+                              ? Colors.yellowAccent.withValues(alpha: 0.3)
+                              : Colors.black.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      SizedBox(
+                        width: 80,
+                        child: Row(
+                          children: <Widget>[
+                            Column(children: <Widget>[Text(dateParts.yearText), Text(dateParts.monthDayText)]),
+                            const SizedBox(width: 10),
+                            Text(youbi),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(e.item, maxLines: 1, overflow: TextOverflow.ellipsis),
+                            Text(
+                              e.price.toString().toCurrency(),
+                              textAlign: TextAlign.right,
+                              style: (priceColor != null) ? TextStyle(color: priceColor) : null,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -208,8 +530,38 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
       ],
     );
   }
+
+  ///
+  String _safeYoubi(String ymd) {
+    try {
+      final DateTime dt = DateTime.parse(ymd);
+      final String s = dt.youbiStr;
+      return (s.length >= 3) ? s.substring(0, 3) : s;
+    } catch (_) {
+      return '---';
+    }
+  }
+
+  ///
+  _DateLabelParts _safeDateLabelParts(String ymd) {
+    final List<String> parts = ymd.split('-');
+    if (parts.length >= 3) {
+      return _DateLabelParts(yearText: parts[0], monthDayText: '${parts[1]}-${parts[2]}');
+    }
+
+    return const _DateLabelParts(yearText: '----', monthDayText: '--/--');
+  }
 }
 
+///
+class _DateLabelParts {
+  const _DateLabelParts({required this.yearText, required this.monthDayText});
+
+  final String yearText;
+  final String monthDayText;
+}
+
+///
 class _YearMonth {
   const _YearMonth(this.year, this.month);
 
@@ -217,6 +569,7 @@ class _YearMonth {
   final int month;
 }
 
+///
 class _Ymd {
   const _Ymd(this.year, this.month, this.day);
 

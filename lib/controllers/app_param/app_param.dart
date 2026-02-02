@@ -145,6 +145,9 @@ class AppParamState with _$AppParamState {
     @Default(false) bool isDisplayGhostGeolocPolyline,
 
     @Default('') String selectedGhostPolylineDate,
+
+    @Default(<dynamic>[]) List<int> selectedMoneySpendPickupListIndexList,
+    @Default(0) int selectedMoneySpendPickupListSum,
   }) = _AppParamState;
 }
 
@@ -425,4 +428,69 @@ class AppParam extends _$AppParam {
   ///
   void setSelectedGhostPolylineDate({required String date}) =>
       state = state.copyWith(selectedGhostPolylineDate: (state.selectedGhostPolylineDate == date) ? '' : date);
+
+  ///
+  void setSelectedMoneySpendPickupListIndexList({required int index, required int price}) {
+    final List<int> list = <int>[...state.selectedMoneySpendPickupListIndexList];
+
+    int sum = state.selectedMoneySpendPickupListSum;
+
+    if (list.contains(index)) {
+      list.remove(index);
+
+      sum -= price;
+    } else {
+      list.add(index);
+
+      sum += price;
+    }
+
+    state = state.copyWith(selectedMoneySpendPickupListIndexList: list, selectedMoneySpendPickupListSum: sum);
+  }
+
+  ///
+  void clearSelectedMoneySpendPickupListIndexList() {
+    state = state.copyWith(selectedMoneySpendPickupListIndexList: <int>[], selectedMoneySpendPickupListSum: 0);
+  }
+
+  ///
+  void setSelectedMoneySpendPickupListIndexListByIndexList({required List<int> indexes, required List<int> prices}) {
+    if (indexes.isEmpty) {
+      return;
+    }
+    if (indexes.length != prices.length) {
+      return;
+    }
+
+    final List<int> current = <int>[...state.selectedMoneySpendPickupListIndexList];
+    int sum = state.selectedMoneySpendPickupListSum;
+
+    bool allSelected = true;
+    for (final int idx in indexes) {
+      if (!current.contains(idx)) {
+        allSelected = false;
+        break;
+      }
+    }
+
+    if (allSelected) {
+      for (int i = 0; i < indexes.length; i++) {
+        final int idx = indexes[i];
+        if (current.contains(idx)) {
+          current.remove(idx);
+          sum -= prices[i];
+        }
+      }
+    } else {
+      for (int i = 0; i < indexes.length; i++) {
+        final int idx = indexes[i];
+        if (!current.contains(idx)) {
+          current.add(idx);
+          sum += prices[i];
+        }
+      }
+    }
+
+    state = state.copyWith(selectedMoneySpendPickupListIndexList: current, selectedMoneySpendPickupListSum: sum);
+  }
 }

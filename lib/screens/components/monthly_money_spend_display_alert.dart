@@ -160,7 +160,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                                     0;
 
                                 final int creditSummaryTotal =
-                                    appParamState.keepCreditSummaryMap[widget.yearmonth]?.fold<int>(
+                                    appParamState.keepCreditSummaryMap[genDate.yyyymm]?.fold<int>(
                                       0,
                                       (int sum, CreditSummaryModel e) => sum + e.price,
                                     ) ??
@@ -176,6 +176,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
                                   return;
                                 }
+
+                                appParamNotifier.clearSelectedMoneySpendPickupListIndexList();
 
                                 LifetimeDialog(
                                   context: context,
