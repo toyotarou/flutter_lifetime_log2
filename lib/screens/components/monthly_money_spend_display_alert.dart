@@ -184,7 +184,6 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                                   widget: MonthlyMoneySpendPickupAlert(yearmonth: genDate.yyyymm),
                                 );
                               },
-
                               icon: const Icon(Icons.check),
                             ),
                           ),
@@ -428,8 +427,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
     for (final String key in itemKeys) {
       map[key]?.forEach((MoneySpendModel element) {
-        if (key == 'クレジット' && element.item == 'クレジット') {
-          creditRecordMap[date] = element.price;
+        if (key == 'クレジット' || element.item == 'クレジット') {
+          creditRecordMap[date] = (creditRecordMap[date] ?? 0) + element.price;
         }
 
         list.add(
