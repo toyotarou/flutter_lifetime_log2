@@ -7,10 +7,13 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/credit_summary_model.dart';
 import '../../models/money_spend_model.dart';
 import '../../utility/functions.dart';
 import '../../utility/utility.dart';
+import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
+import 'monthly_money_spend_pickup_alert.dart';
 import 'monthly_money_spend_summary_alert.dart';
 import 'spend_data_input_alert.dart';
 
@@ -23,12 +26,17 @@ class MonthlyMoneySpendDisplayAlert extends ConsumerStatefulWidget {
   ConsumerState<MonthlyMoneySpendDisplayAlert> createState() => _MonthlyMoneySpendDisplayAlertState();
 }
 
-///
 class MonthlyMoneySpendListResult {
-  const MonthlyMoneySpendListResult({required this.listWidget, required this.monthlySum});
+  const MonthlyMoneySpendListResult({
+    required this.listWidget,
+    required this.monthlySum,
+    required this.creditRecordMap,
+  });
 
   final Widget listWidget;
   final int monthlySum;
+
+  final Map<String, int> creditRecordMap;
 }
 
 class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpendDisplayAlert>
@@ -39,24 +47,22 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   late final DateTime _baseMonth;
   int currentIndex = _initialIndex;
 
-  Utility utility = Utility();
-
-  bool todayStockExists = false;
-  bool todayToushiShintakuRelationalIdBlankExists = false;
-
-  final Map<int, int> monthlyGraphAssetsMap = <int, int>{};
+  final Utility utility = Utility();
 
   final AutoScrollController autoScrollController = AutoScrollController();
-  final List<Widget> monthlyAssetsList = <Widget>[];
-
-  List<Widget> monthlyMoneySpendList = <Widget>[];
 
   ///
   @override
   void initState() {
     super.initState();
-
     _baseMonth = DateTime.parse('${widget.yearmonth}-01');
+  }
+
+  ///
+  @override
+  void dispose() {
+    autoScrollController.dispose();
+    super.dispose();
   }
 
   ///
@@ -73,7 +79,6 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
               colorBlendMode: BlendMode.srcIn,
             ),
           ),
-
           CarouselSlider.builder(
             itemCount: _itemCount,
             initialPage: _initialIndex,
@@ -90,9 +95,9 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   Widget makeMonthlyMoneySpendSlide(int index) {
     final DateTime genDate = monthForIndex(index: index, baseMonth: _baseMonth);
 
-    final bool hasData = appParamState.keepMoneyMap.containsKey(
-      '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
-    );
+    final String monthKey = '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01';
+
+    final bool hasData = appParamState.keepMoneyMap.containsKey(monthKey);
 
     final MonthlyMoneySpendListResult? monthlyResult = hasData ? buildMonthlyMoneySpendList(genDate: genDate) : null;
 
@@ -126,10 +131,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                             children: <Widget>[
                               IconButton(
                                 onPressed: () {
-                                  final int lastIndex = monthlyMoneySpendList.isNotEmpty
-                                      ? monthlyMoneySpendList.length - 1
-                                      : 0;
-                                  autoScrollController.scrollToIndex(lastIndex);
+                                  final int lastDay = DateTime(genDate.year, genDate.month + 1, 0).day;
+                                  autoScrollController.scrollToIndex(lastDay);
                                 },
                                 icon: Icon(Icons.arrow_downward, color: Colors.white.withValues(alpha: 0.3)),
                               ),
@@ -143,20 +146,63 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                           ),
                         ],
                       ),
-                      ChoiceChip(
-                        label: const Text('summary', style: TextStyle(fontSize: 10)),
-                        backgroundColor: Colors.black.withValues(alpha: 0.1),
-                        selectedColor: Colors.greenAccent.withValues(alpha: 0.2),
-                        selected: true,
-                        onSelected: (bool isSelected) {
-                          appParamNotifier.setIsMonthlySpendSummaryMinusJogai(flag: false);
+                      Row(
+                        children: <Widget>[
+                          CircleAvatar(
+                            backgroundColor: Colors.black.withValues(alpha: 0.3),
+                            child: IconButton(
+                              onPressed: () {
+                                final int creditTotal =
+                                    monthlyResult?.creditRecordMap.values.fold<int>(
+                                      0,
+                                      (int sum, int price) => sum + price,
+                                    ) ??
+                                    0;
 
-                          LifetimeDialog(
-                            context: context,
-                            widget: MonthlyMoneySpendSummaryAlert(yearmonth: genDate.yyyymm),
-                          );
-                        },
-                        showCheckmark: false,
+                                final int creditSummaryTotal =
+                                    appParamState.keepCreditSummaryMap[widget.yearmonth]?.fold<int>(
+                                      0,
+                                      (int sum, CreditSummaryModel e) => sum + e.price,
+                                    ) ??
+                                    0;
+
+                                if (creditTotal != creditSummaryTotal) {
+                                  error_dialog(
+                                    context: context,
+                                    title: '表示できません。',
+                                    content:
+                                        '二つの値が同値ではありません。\ncreditTotal: $creditTotal\ncreditSummaryTotal: $creditSummaryTotal',
+                                  );
+
+                                  return;
+                                }
+
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: MonthlyMoneySpendPickupAlert(yearmonth: widget.yearmonth),
+                                );
+                              },
+
+                              icon: const Icon(Icons.check),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          ChoiceChip(
+                            label: const Text('summary', style: TextStyle(fontSize: 10)),
+                            backgroundColor: Colors.black.withValues(alpha: 0.1),
+                            selectedColor: Colors.greenAccent.withValues(alpha: 0.2),
+                            selected: true,
+                            onSelected: (bool isSelected) {
+                              appParamNotifier.setIsMonthlySpendSummaryMinusJogai(flag: false);
+
+                              LifetimeDialog(
+                                context: context,
+                                widget: MonthlyMoneySpendSummaryAlert(yearmonth: genDate.yyyymm),
+                              );
+                            },
+                            showCheckmark: false,
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -197,7 +243,9 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
   ///
   MonthlyMoneySpendListResult buildMonthlyMoneySpendList({required DateTime genDate}) {
-    monthlyMoneySpendList.clear();
+    final List<Widget> monthlyMoneySpendList = <Widget>[];
+
+    final Map<String, int> creditRecordMap = <String, int>{};
 
     final int endNum = DateTime(genDate.year, genDate.month + 1, 0).day;
 
@@ -226,12 +274,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
       final int diff = spend - sum;
 
-      bool inputDisplay;
-      if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) {
-        inputDisplay = true;
-      } else {
-        inputDisplay = false;
-      }
+      final bool inputDisplay = DateTime.parse(date).isBeforeOrSameDate(DateTime.now());
 
       if (date == DateTime.now().yyyymmdd) {
         monthlyMoneySpendList.add(const DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3));
@@ -307,7 +350,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                               ),
                             ),
                             if (appParamState.keepMoneySpendMap[date] != null) ...<Widget>[
-                              displayDateMoneySpendList(date: date),
+                              displayDateMoneySpendList(date: date, creditRecordMap: creditRecordMap),
                             ],
                             const SizedBox(height: 5),
                             Row(
@@ -341,6 +384,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
     return MonthlyMoneySpendListResult(
       monthlySum: listSum,
+      creditRecordMap: creditRecordMap,
       listWidget: CustomScrollView(
         controller: autoScrollController,
         slivers: <Widget>[
@@ -356,8 +400,9 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   }
 
   ///
-  Widget displayDateMoneySpendList({required String date}) {
-    if (appParamState.keepMoneySpendMap[date] == null) {
+  Widget displayDateMoneySpendList({required String date, required Map<String, int> creditRecordMap}) {
+    final List<MoneySpendModel>? spends = appParamState.keepMoneySpendMap[date];
+    if (spends == null) {
       return const SizedBox.shrink();
     }
 
@@ -365,9 +410,9 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
     final Map<String, List<MoneySpendModel>> map = <String, List<MoneySpendModel>>{};
 
-    appParamState.keepMoneySpendMap[date]?.forEach(
-      (MoneySpendModel element) => (map[element.item] ??= <MoneySpendModel>[]).add(element),
-    );
+    for (final MoneySpendModel element in spends) {
+      (map[element.item] ??= <MoneySpendModel>[]).add(element);
+    }
 
     final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
 
@@ -381,6 +426,10 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
     for (final String key in itemKeys) {
       map[key]?.forEach((MoneySpendModel element) {
+        if (key == 'クレジット' && element.item == 'クレジット') {
+          creditRecordMap[date] = element.price;
+        }
+
         list.add(
           DefaultTextStyle(
             style: TextStyle(
