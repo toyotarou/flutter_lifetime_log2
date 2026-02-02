@@ -444,4 +444,9 @@ class AppParam extends _$AppParam {
 
     state = state.copyWith(selectedMoneySpendPickupListIndexList: list, selectedMoneySpendPickupListSum: sum);
   }
+
+  ///
+  void clearSelectedMoneySpendPickupListIndexList() {
+    state = state.copyWith(selectedMoneySpendPickupListIndexList: [], selectedMoneySpendPickupListSum: 0);
+  }
 }
