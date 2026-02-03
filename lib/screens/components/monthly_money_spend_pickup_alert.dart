@@ -144,16 +144,41 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                             appParamNotifier.setSelectedMoneySpendPickupItemTextList(item: itemText);
                           }
                         },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                          decoration: BoxDecoration(
-                            color: (appParamState.selectedMoneySpendPickupItemTextList.contains(itemText))
-                                ? Colors.yellowAccent.withValues(alpha: 0.2)
-                                : Colors.white.withValues(alpha: 0.2),
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.7)),
-                          ),
-                          child: Text(itemText, style: const TextStyle(fontSize: 12)),
+
+                        child: Stack(
+                          children: <Widget>[
+                            Container(
+                              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+                              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                              decoration: BoxDecoration(
+                                color: (appParamState.selectedMoneySpendPickupItemTextList.contains(itemText))
+                                    ? Colors.yellowAccent.withValues(alpha: 0.2)
+                                    : Colors.white.withValues(alpha: 0.2),
+                                border: Border.all(color: Colors.white.withValues(alpha: 0.7)),
+                              ),
+                              child: Text(itemText, style: const TextStyle(fontSize: 12)),
+                            ),
+
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+
+                              child: Transform(
+                                alignment: Alignment.centerLeft,
+                                transform: Matrix4.identity()..setEntry(0, 1, -0.8),
+                                child: Text(
+                                  (itemMoneySpendModelMap[itemText] != null)
+                                      ? itemMoneySpendModelMap[itemText]!.length.toString()
+                                      : '',
+                                  style: const TextStyle(
+                                    color: Color(0xFFFBB6CE),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     }).toList(),
