@@ -20,6 +20,12 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
     with ControllersMixin<MonthlyMoneySpendPickupAlert> {
   final AutoScrollController autoScrollController = AutoScrollController();
 
+  List<MoneySpendModel> moneySpendModelList = <MoneySpendModel>[];
+
+  Map<String, List<Map<String, int>>> itemMoneySpendModelMap = <String, List<Map<String, int>>>{};
+
+  Set<String> spendModelItemList = <String>{};
+
   ///
   @override
   void dispose() {
@@ -61,14 +67,16 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
     final List<String> itemKeys = _makeItemKeysFromDisplayList(rawList);
     final Map<String, int> itemRank = _makeItemRankMap(itemKeys);
 
-    final List<MoneySpendModel> displayList = _sortMoneySpendModelList(list: rawList, itemRank: itemRank);
+    moneySpendModelList = _sortMoneySpendModelList(list: rawList, itemRank: itemRank);
 
-    final int total = displayList.fold<int>(0, (int sum, MoneySpendModel e) {
+    final int total = moneySpendModelList.fold<int>(0, (int sum, MoneySpendModel e) {
       if (!_isCountTarget(e)) {
         return sum;
       }
       return sum + e.price;
     });
+
+    makeItemMoneySpendModelMap(itemKeys: itemKeys, moneySpendModelList: moneySpendModelList);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -84,15 +92,15 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                   children: <Widget>[
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[Text(widget.yearmonth), Text('${displayList.length}件')],
+                      children: <Widget>[Text(widget.yearmonth), Text('${moneySpendModelList.length}件')],
                     ),
                     Row(
                       children: <Widget>[
                         IconButton(
                           onPressed: () {
-                            if (displayList.isNotEmpty) {
+                            if (moneySpendModelList.isNotEmpty) {
                               autoScrollController.scrollToIndex(
-                                displayList.length - 1,
+                                moneySpendModelList.length - 1,
                                 preferPosition: AutoScrollPosition.end,
                                 duration: const Duration(milliseconds: 300),
                               );
@@ -102,7 +110,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                         ),
                         IconButton(
                           onPressed: () {
-                            if (displayList.isNotEmpty) {
+                            if (moneySpendModelList.isNotEmpty) {
                               autoScrollController.scrollToIndex(
                                 0,
                                 preferPosition: AutoScrollPosition.begin,
@@ -116,9 +124,45 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                     ),
                   ],
                 ),
+
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                Expanded(child: _displayMoneySpendModelList(displayList)),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: spendModelItemList.map((String itemText) {
+                      return GestureDetector(
+                        onTap: () {
+                          if (itemMoneySpendModelMap[itemText] != null) {
+                            for (final Map<String, int> element in itemMoneySpendModelMap[itemText]!) {
+                              appParamNotifier.setSelectedMoneySpendPickupListIndexList(
+                                index: element['index']!,
+                                price: element['price']!,
+                              );
+                            }
+
+                            appParamNotifier.setSelectedMoneySpendPickupItemTextList(item: itemText);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+                          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                          decoration: BoxDecoration(
+                            color: (appParamState.selectedMoneySpendPickupItemTextList.contains(itemText))
+                                ? Colors.yellowAccent.withValues(alpha: 0.2)
+                                : Colors.white.withValues(alpha: 0.2),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.7)),
+                          ),
+                          child: Text(itemText, style: const TextStyle(fontSize: 12)),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+
+                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                Expanded(child: _displayMoneySpendModelList(moneySpendModelList)),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
@@ -360,6 +404,32 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
     }
 
     return const _DateLabelParts(yearText: '----', monthDayText: '--/--');
+  }
+
+  ///
+  void makeItemMoneySpendModelMap({
+    required List<String> itemKeys,
+
+    required List<MoneySpendModel> moneySpendModelList,
+  }) {
+    itemMoneySpendModelMap.clear();
+
+    spendModelItemList.clear();
+
+    for (final String key in itemKeys) {
+      for (int i = 0; i < moneySpendModelList.length; i++) {
+        final List<String> exItem = moneySpendModelList[i].item.split('/');
+
+        if (exItem[0].trim() == key) {
+          (itemMoneySpendModelMap[key] ??= <Map<String, int>>[]).add(<String, int>{
+            'index': i,
+            'price': moneySpendModelList[i].price,
+          });
+
+          spendModelItemList.add(key);
+        }
+      }
+    }
   }
 }
 

@@ -145,6 +145,8 @@ mixin _$AppParamState {
   List<int> get selectedMoneySpendPickupListIndexList =>
       throw _privateConstructorUsedError;
   int get selectedMoneySpendPickupListSum => throw _privateConstructorUsedError;
+  List<String> get selectedMoneySpendPickupItemTextList =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.
@@ -229,7 +231,8 @@ abstract class $AppParamStateCopyWith<$Res> {
       bool isDisplayGhostGeolocPolyline,
       String selectedGhostPolylineDate,
       List<int> selectedMoneySpendPickupListIndexList,
-      int selectedMoneySpendPickupListSum});
+      int selectedMoneySpendPickupListSum,
+      List<String> selectedMoneySpendPickupItemTextList});
 }
 
 /// @nodoc
@@ -317,6 +320,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? selectedGhostPolylineDate = null,
     Object? selectedMoneySpendPickupListIndexList = null,
     Object? selectedMoneySpendPickupListSum = null,
+    Object? selectedMoneySpendPickupItemTextList = null,
   }) {
     return _then(_value.copyWith(
       keepHolidayList: null == keepHolidayList
@@ -604,6 +608,11 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.selectedMoneySpendPickupListSum
           : selectedMoneySpendPickupListSum // ignore: cast_nullable_to_non_nullable
               as int,
+      selectedMoneySpendPickupItemTextList: null ==
+              selectedMoneySpendPickupItemTextList
+          ? _value.selectedMoneySpendPickupItemTextList
+          : selectedMoneySpendPickupItemTextList // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ) as $Val);
   }
 }
@@ -686,7 +695,8 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       bool isDisplayGhostGeolocPolyline,
       String selectedGhostPolylineDate,
       List<int> selectedMoneySpendPickupListIndexList,
-      int selectedMoneySpendPickupListSum});
+      int selectedMoneySpendPickupListSum,
+      List<String> selectedMoneySpendPickupItemTextList});
 }
 
 /// @nodoc
@@ -772,6 +782,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? selectedGhostPolylineDate = null,
     Object? selectedMoneySpendPickupListIndexList = null,
     Object? selectedMoneySpendPickupListSum = null,
+    Object? selectedMoneySpendPickupItemTextList = null,
   }) {
     return _then(_$AppParamStateImpl(
       keepHolidayList: null == keepHolidayList
@@ -1059,6 +1070,11 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value.selectedMoneySpendPickupListSum
           : selectedMoneySpendPickupListSum // ignore: cast_nullable_to_non_nullable
               as int,
+      selectedMoneySpendPickupItemTextList: null ==
+              selectedMoneySpendPickupItemTextList
+          ? _value._selectedMoneySpendPickupItemTextList
+          : selectedMoneySpendPickupItemTextList // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -1154,8 +1170,9 @@ class _$AppParamStateImpl implements _AppParamState {
       final List<GeolocModel> routePolylinePartsGeolocList = const <GeolocModel>[],
       this.isDisplayGhostGeolocPolyline = false,
       this.selectedGhostPolylineDate = '',
-      final List<int> selectedMoneySpendPickupListIndexList = const [],
-      this.selectedMoneySpendPickupListSum = 0})
+      final List<int> selectedMoneySpendPickupListIndexList = const <int>[],
+      this.selectedMoneySpendPickupListSum = 0,
+      final List<String> selectedMoneySpendPickupItemTextList = const <String>[]})
       : _keepHolidayList = keepHolidayList,
         _keepWalkModelMap = keepWalkModelMap,
         _keepMoneyMap = keepMoneyMap,
@@ -1203,7 +1220,9 @@ class _$AppParamStateImpl implements _AppParamState {
         _monthlyGeolocMapSelectedDateList = monthlyGeolocMapSelectedDateList,
         _routePolylinePartsGeolocList = routePolylinePartsGeolocList,
         _selectedMoneySpendPickupListIndexList =
-            selectedMoneySpendPickupListIndexList;
+            selectedMoneySpendPickupListIndexList,
+        _selectedMoneySpendPickupItemTextList =
+            selectedMoneySpendPickupItemTextList;
 
   final List<String> _keepHolidayList;
   @override
@@ -1729,10 +1748,19 @@ class _$AppParamStateImpl implements _AppParamState {
   @override
   @JsonKey()
   final int selectedMoneySpendPickupListSum;
+  final List<String> _selectedMoneySpendPickupItemTextList;
+  @override
+  @JsonKey()
+  List<String> get selectedMoneySpendPickupItemTextList {
+    if (_selectedMoneySpendPickupItemTextList is EqualUnmodifiableListView)
+      return _selectedMoneySpendPickupItemTextList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_selectedMoneySpendPickupItemTextList);
+  }
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStampRallyMetroAllStationMap: $keepStampRallyMetroAllStationMap, keepTokyoMunicipalList: $keepTokyoMunicipalList, keepTokyoMunicipalMap: $keepTokyoMunicipalMap, keepWorkHistoryModelMap: $keepWorkHistoryModelMap, keepTrainMap: $keepTrainMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, keepTempleDateTimeNameMap: $keepTempleDateTimeNameMap, keepAllDateLifetimeSummaryMap: $keepAllDateLifetimeSummaryMap, keepStampRallyMetro20AnniversaryMap: $keepStampRallyMetro20AnniversaryMap, keepStampRallyMetroPokepokeMap: $keepStampRallyMetroPokepokeMap, keepCreditSummaryTotalMap: $keepCreditSummaryTotalMap, keepAllPolygonsList: $keepAllPolygonsList, keepMoneySumList: $keepMoneySumList, keepNenkinKikinDataList: $keepNenkinKikinDataList, keepInsuranceDataList: $keepInsuranceDataList, keepNearestTempleNameGeolocModelMap: $keepNearestTempleNameGeolocModelMap, homeTabYearMonth: $homeTabYearMonth, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate, selectedCrossCalendarYear: $selectedCrossCalendarYear, gutterWidth: $gutterWidth, isDisplayMunicipalNameOnLifetimeGeolocMap: $isDisplayMunicipalNameOnLifetimeGeolocMap, selectedWorkHistoryModel: $selectedWorkHistoryModel, bottomNavigationSelectedIndex: $bottomNavigationSelectedIndex, selectedStampRallyMapPolylineIndex: $selectedStampRallyMapPolylineIndex, selectedGeolocPointTime: $selectedGeolocPointTime, routePolylinePartsGeolocList: $routePolylinePartsGeolocList, isDisplayGhostGeolocPolyline: $isDisplayGhostGeolocPolyline, selectedGhostPolylineDate: $selectedGhostPolylineDate, selectedMoneySpendPickupListIndexList: $selectedMoneySpendPickupListIndexList, selectedMoneySpendPickupListSum: $selectedMoneySpendPickupListSum)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStampRallyMetroAllStationMap: $keepStampRallyMetroAllStationMap, keepTokyoMunicipalList: $keepTokyoMunicipalList, keepTokyoMunicipalMap: $keepTokyoMunicipalMap, keepWorkHistoryModelMap: $keepWorkHistoryModelMap, keepTrainMap: $keepTrainMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, keepTempleDateTimeNameMap: $keepTempleDateTimeNameMap, keepAllDateLifetimeSummaryMap: $keepAllDateLifetimeSummaryMap, keepStampRallyMetro20AnniversaryMap: $keepStampRallyMetro20AnniversaryMap, keepStampRallyMetroPokepokeMap: $keepStampRallyMetroPokepokeMap, keepCreditSummaryTotalMap: $keepCreditSummaryTotalMap, keepAllPolygonsList: $keepAllPolygonsList, keepMoneySumList: $keepMoneySumList, keepNenkinKikinDataList: $keepNenkinKikinDataList, keepInsuranceDataList: $keepInsuranceDataList, keepNearestTempleNameGeolocModelMap: $keepNearestTempleNameGeolocModelMap, homeTabYearMonth: $homeTabYearMonth, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate, selectedCrossCalendarYear: $selectedCrossCalendarYear, gutterWidth: $gutterWidth, isDisplayMunicipalNameOnLifetimeGeolocMap: $isDisplayMunicipalNameOnLifetimeGeolocMap, selectedWorkHistoryModel: $selectedWorkHistoryModel, bottomNavigationSelectedIndex: $bottomNavigationSelectedIndex, selectedStampRallyMapPolylineIndex: $selectedStampRallyMapPolylineIndex, selectedGeolocPointTime: $selectedGeolocPointTime, routePolylinePartsGeolocList: $routePolylinePartsGeolocList, isDisplayGhostGeolocPolyline: $isDisplayGhostGeolocPolyline, selectedGhostPolylineDate: $selectedGhostPolylineDate, selectedMoneySpendPickupListIndexList: $selectedMoneySpendPickupListIndexList, selectedMoneySpendPickupListSum: $selectedMoneySpendPickupListSum, selectedMoneySpendPickupItemTextList: $selectedMoneySpendPickupItemTextList)';
   }
 
   @override
@@ -1851,7 +1879,8 @@ class _$AppParamStateImpl implements _AppParamState {
             (identical(other.isDisplayGhostGeolocPolyline, isDisplayGhostGeolocPolyline) || other.isDisplayGhostGeolocPolyline == isDisplayGhostGeolocPolyline) &&
             (identical(other.selectedGhostPolylineDate, selectedGhostPolylineDate) || other.selectedGhostPolylineDate == selectedGhostPolylineDate) &&
             const DeepCollectionEquality().equals(other._selectedMoneySpendPickupListIndexList, _selectedMoneySpendPickupListIndexList) &&
-            (identical(other.selectedMoneySpendPickupListSum, selectedMoneySpendPickupListSum) || other.selectedMoneySpendPickupListSum == selectedMoneySpendPickupListSum));
+            (identical(other.selectedMoneySpendPickupListSum, selectedMoneySpendPickupListSum) || other.selectedMoneySpendPickupListSum == selectedMoneySpendPickupListSum) &&
+            const DeepCollectionEquality().equals(other._selectedMoneySpendPickupItemTextList, _selectedMoneySpendPickupItemTextList));
   }
 
   @override
@@ -1929,7 +1958,9 @@ class _$AppParamStateImpl implements _AppParamState {
         selectedGhostPolylineDate,
         const DeepCollectionEquality()
             .hash(_selectedMoneySpendPickupListIndexList),
-        selectedMoneySpendPickupListSum
+        selectedMoneySpendPickupListSum,
+        const DeepCollectionEquality()
+            .hash(_selectedMoneySpendPickupItemTextList)
       ]);
 
   /// Create a copy of AppParamState
@@ -2014,7 +2045,9 @@ abstract class _AppParamState implements AppParamState {
       final bool isDisplayGhostGeolocPolyline,
       final String selectedGhostPolylineDate,
       final List<int> selectedMoneySpendPickupListIndexList,
-      final int selectedMoneySpendPickupListSum}) = _$AppParamStateImpl;
+      final int selectedMoneySpendPickupListSum,
+      final List<String>
+          selectedMoneySpendPickupItemTextList}) = _$AppParamStateImpl;
 
   @override
   List<String> get keepHolidayList;
@@ -2172,6 +2205,8 @@ abstract class _AppParamState implements AppParamState {
   List<int> get selectedMoneySpendPickupListIndexList;
   @override
   int get selectedMoneySpendPickupListSum;
+  @override
+  List<String> get selectedMoneySpendPickupItemTextList;
 
   /// Create a copy of AppParamState
   /// with the given fields replaced by the non-null parameter values.

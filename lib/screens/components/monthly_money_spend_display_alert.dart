@@ -179,6 +179,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
                                 appParamNotifier.clearSelectedMoneySpendPickupListIndexList();
 
+                                appParamNotifier.clearSelectedMoneySpendPickupItemTextList();
+
                                 LifetimeDialog(
                                   context: context,
                                   widget: MonthlyMoneySpendPickupAlert(yearmonth: genDate.yyyymm),

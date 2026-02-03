@@ -146,8 +146,9 @@ class AppParamState with _$AppParamState {
 
     @Default('') String selectedGhostPolylineDate,
 
-    @Default(<dynamic>[]) List<int> selectedMoneySpendPickupListIndexList,
+    @Default(<int>[]) List<int> selectedMoneySpendPickupListIndexList,
     @Default(0) int selectedMoneySpendPickupListSum,
+    @Default(<String>[]) List<String> selectedMoneySpendPickupItemTextList,
   }) = _AppParamState;
 }
 
@@ -447,6 +448,24 @@ class AppParam extends _$AppParam {
 
   ///
   void clearSelectedMoneySpendPickupListIndexList() {
-    state = state.copyWith(selectedMoneySpendPickupListIndexList: [], selectedMoneySpendPickupListSum: 0);
+    state = state.copyWith(selectedMoneySpendPickupListIndexList: <int>[], selectedMoneySpendPickupListSum: 0);
+  }
+
+  ///
+  void setSelectedMoneySpendPickupItemTextList({required String item}) {
+    final List<String> list = <String>[...state.selectedMoneySpendPickupItemTextList];
+
+    if (list.contains(item)) {
+      list.remove(item);
+    } else {
+      list.add(item);
+    }
+
+    state = state.copyWith(selectedMoneySpendPickupItemTextList: list);
+  }
+
+  ///
+  void clearSelectedMoneySpendPickupItemTextList() {
+    state = state.copyWith(selectedMoneySpendPickupItemTextList: <String>[]);
   }
 }
