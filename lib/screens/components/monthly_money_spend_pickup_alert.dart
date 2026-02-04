@@ -135,6 +135,10 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: spendModelItemList.map((String itemText) {
+                      final int? sum = itemMoneySpendModelMap[itemText]?.fold<int>(0, (int sum, Map<String, int> e) {
+                        return sum + e['price']!;
+                      });
+
                       return GestureDetector(
                         onTap: () {
                           if (itemMoneySpendModelMap[itemText] != null) {
@@ -151,22 +155,36 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
 
                         child: Stack(
                           children: <Widget>[
-                            Container(
-                              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                              decoration: BoxDecoration(
-                                color: (appParamState.selectedMoneySpendPickupItemTextList.contains(itemText))
-                                    ? Colors.yellowAccent.withValues(alpha: 0.2)
-                                    : Colors.white.withValues(alpha: 0.2),
-                                border: Border.all(color: Colors.white.withValues(alpha: 0.7)),
-                              ),
-                              child: Text(itemText, style: const TextStyle(fontSize: 12)),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+                                  margin: const EdgeInsets.only(top: 10, right: 5, left: 5, bottom: 3),
+                                  decoration: BoxDecoration(
+                                    color: (appParamState.selectedMoneySpendPickupItemTextList.contains(itemText))
+                                        ? Colors.yellowAccent.withValues(alpha: 0.2)
+                                        : Colors.white.withValues(alpha: 0.2),
+                                    border: Border.all(color: Colors.white.withValues(alpha: 0.7)),
+                                  ),
+                                  child: Text(itemText, style: const TextStyle(fontSize: 12)),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 5, bottom: 5),
+                                  child: Text(
+                                    sum.toString().toCurrency(),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: ((sum ?? 0) >= 30000) ? Colors.orangeAccent : Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
 
                             Positioned(
                               right: 0,
-                              bottom: 0,
-
+                              top: 0,
                               child: Transform(
                                 alignment: Alignment.centerLeft,
                                 transform: Matrix4.identity()..setEntry(0, 1, -0.8),
