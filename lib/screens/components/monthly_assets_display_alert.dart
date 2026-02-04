@@ -142,6 +142,22 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                             children: <Widget>[
                               GestureDetector(
                                 onTap: () {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: displayBeforeLastAssetsList(genDate: genDate),
+                                    paddingTop: context.screenSize.height * 0.05,
+                                    paddingBottom: context.screenSize.height * 0.5,
+                                    paddingLeft: context.screenSize.width * 0.4,
+                                    clearBarrierColor: true,
+                                  );
+                                },
+
+                                child: const Icon(Icons.pages),
+                              ),
+                              const SizedBox(width: 20),
+
+                              GestureDetector(
+                                onTap: () {
                                   final DateTime lastYearEnd = DateTime(genDate.year, 1, 0);
 
                                   final int lastYearFinalAssets = _calcTotalAssetsAtDate(lastYearEnd);
@@ -218,6 +234,149 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  ///
+  Widget displayBeforeLastAssetsList({required DateTime genDate}) {
+    final DateTime thisMonthStart = genDate;
+
+    final DateTime nextMonthStart = DateTime(genDate.year, genDate.month + 1);
+
+    String beforeGoldSum = '';
+    String lastGoldSum = '';
+
+    appParamState.keepGoldMap.forEach((String key, GoldModel value) {
+      if (DateTime.parse(key).isBefore(thisMonthStart) && value.goldValue != '-') {
+        beforeGoldSum = value.goldValue.toString();
+      }
+
+      if (DateTime.parse(key).isBefore(nextMonthStart) && value.goldValue != '-') {
+        lastGoldSum = value.goldValue.toString();
+      }
+    });
+
+    int beforeStockSum = 0;
+    int lastStockSum = 0;
+
+    appParamState.keepStockMap.forEach((String key, List<StockModel> value) {
+      if (DateTime.parse(key).isBefore(thisMonthStart)) {
+        beforeStockSum = 0;
+        for (final StockModel value2 in value) {
+          beforeStockSum += value2.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
+        }
+      }
+
+      if (DateTime.parse(key).isBefore(nextMonthStart)) {
+        lastStockSum = 0;
+        for (final StockModel value2 in value) {
+          lastStockSum += value2.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
+        }
+      }
+    });
+
+    int beforeShintakuSum = 0;
+    int lastShintakuSum = 0;
+
+    appParamState.keepToushiShintakuMap.forEach((String key, List<ToushiShintakuModel> value) {
+      if (DateTime.parse(key).isBefore(thisMonthStart)) {
+        beforeShintakuSum = 0;
+        for (final ToushiShintakuModel value2 in value) {
+          beforeShintakuSum += value2.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
+        }
+      }
+
+      if (DateTime.parse(key).isBefore(nextMonthStart)) {
+        lastShintakuSum = 0;
+        for (final ToushiShintakuModel value2 in value) {
+          lastShintakuSum += value2.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
+        }
+      }
+    });
+
+    final int beforeSum = beforeGoldSum.toInt() + beforeStockSum + beforeShintakuSum;
+    final int lastSum = lastGoldSum.toInt() + lastStockSum + lastShintakuSum;
+
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: DefaultTextStyle(
+        style: const TextStyle(fontSize: 12),
+        child: Column(
+          children: <Widget>[
+            getBeforeLastDisplayWidget(title: 'GOLD', before: beforeGoldSum, last: lastGoldSum),
+
+            getBeforeLastDisplayWidget(
+              title: 'STOCK',
+              before: beforeStockSum.toString(),
+              last: lastStockSum.toString(),
+            ),
+
+            getBeforeLastDisplayWidget(
+              title: 'SHINTAKU',
+              before: beforeShintakuSum.toString(),
+              last: lastShintakuSum.toString(),
+            ),
+
+            const SizedBox(height: 20),
+
+            getBeforeLastDisplayWidget(title: 'SUM', before: beforeSum.toString(), last: lastSum.toString()),
+
+            Padding(
+              padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  const SizedBox.shrink(),
+                  Text(
+                    (lastSum - beforeSum).toString().toCurrency(),
+                    style: const TextStyle(color: Colors.yellowAccent),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  ///
+  Widget getBeforeLastDisplayWidget({required String title, required String before, required String last}) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+      ),
+      padding: const EdgeInsets.all(5),
+
+      child: Stack(
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.only(top: 10),
+            child: const Text('➡️'),
+          ),
+
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(title, style: const TextStyle(color: Colors.yellowAccent)),
+                    Text(before.toCurrency()),
+                  ],
+                ),
+              ),
+
+              Expanded(
+                child: Container(alignment: Alignment.topRight, child: Text(last.toCurrency())),
+              ),
+            ],
           ),
         ],
       ),
