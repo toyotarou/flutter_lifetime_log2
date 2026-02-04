@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/credit_summary_model.dart';
 import '../../models/money_spend_model.dart';
+import '../parts/lifetime_dialog.dart';
+import 'amazon_purchase_list_alert.dart';
+import 'mobile_suica_charge_history_list.dart';
 
 class MonthlyMoneySpendPickupAlert extends ConsumerStatefulWidget {
   const MonthlyMoneySpendPickupAlert({super.key, required this.yearmonth});
@@ -280,6 +284,10 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
         continue;
       }
 
+      if (cs.detail == 'モバイルスイカ') {
+        continue;
+      }
+
       final String date = DateTime(ymd.year, ymd.month, ymd.day).yyyymmdd;
       list.add(MoneySpendModel(date, '${cs.item} / ${cs.detail}', cs.price, 'card'));
     }
@@ -361,44 +369,73 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 child: DefaultTextStyle(
                   style: TextStyle(color: color, fontSize: 12),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Stack(
                     children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          appParamNotifier.setSelectedMoneySpendPickupListIndexList(index: index, price: e.price);
-                        },
-                        child: CircleAvatar(
-                          radius: 15,
-                          backgroundColor: (appParamState.selectedMoneySpendPickupListIndexList.contains(index))
-                              ? Colors.yellowAccent.withValues(alpha: 0.3)
-                              : Colors.black.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      SizedBox(
-                        width: 80,
-                        child: Row(
-                          children: <Widget>[
-                            Column(children: <Widget>[Text(dateParts.yearText), Text(dateParts.monthDayText)]),
-                            const SizedBox(width: 10),
-                            Text(youbi),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(e.item, maxLines: 1, overflow: TextOverflow.ellipsis),
-                            Text(
-                              e.price.toString().toCurrency(),
-                              textAlign: TextAlign.right,
-                              style: (priceColor != null) ? TextStyle(color: priceColor) : null,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              appParamNotifier.setSelectedMoneySpendPickupListIndexList(index: index, price: e.price);
+                            },
+                            child: CircleAvatar(
+                              radius: 15,
+                              backgroundColor: (appParamState.selectedMoneySpendPickupListIndexList.contains(index))
+                                  ? Colors.yellowAccent.withValues(alpha: 0.3)
+                                  : Colors.black.withValues(alpha: 0.3),
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 10),
+                          SizedBox(
+                            width: 80,
+                            child: Row(
+                              children: <Widget>[
+                                Column(children: <Widget>[Text(dateParts.yearText), Text(dateParts.monthDayText)]),
+                                const SizedBox(width: 10),
+                                Text(youbi),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(e.item, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                Text(
+                                  e.price.toString().toCurrency(),
+                                  textAlign: TextAlign.right,
+                                  style: (priceColor != null) ? TextStyle(color: priceColor) : null,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
+
+                      if (e.item == '交通費' || e.item == '雑費 / アマゾン') ...<Widget>[
+                        Positioned(
+                          top: 5,
+                          right: 5,
+                          child: (e.item == '交通費')
+                              ? GestureDetector(
+                                  onTap: () {
+                                    LifetimeDialog(context: context, widget: const MobileSuicaChargeHistoryList());
+                                  },
+                                  child: Icon(Icons.train, color: Colors.white.withValues(alpha: 0.7)),
+                                )
+                              : GestureDetector(
+                                  onTap: () {
+                                    LifetimeDialog(
+                                      context: context,
+                                      widget: AmazonPurchaseListAlert(
+                                        date: '${dateParts.yearText}-${dateParts.monthDayText}',
+                                      ),
+                                    );
+                                  },
+                                  child: Icon(FontAwesomeIcons.amazon, color: Colors.white.withValues(alpha: 0.7)),
+                                ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
