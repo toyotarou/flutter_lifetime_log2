@@ -153,8 +153,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                                     context: context,
                                     widget: displayBeforeLastAssetsList(genDate: genDate),
                                     paddingTop: context.screenSize.height * 0.05,
-                                    paddingBottom: context.screenSize.height * 0.2,
-                                    paddingLeft: context.screenSize.width * 0.3,
+                                    paddingBottom: context.screenSize.height * 0.1,
+                                    paddingLeft: context.screenSize.width * 0.2,
                                     clearBarrierColor: true,
                                   );
                                 },
@@ -244,8 +244,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
   ///
   Widget displayBeforeLastAssetsList({required DateTime genDate}) {
-    final DateTime thisMonthStart = genDate.add(const Duration(days: -1));
-    final DateTime nextMonthStart = DateTime(genDate.year, genDate.month + 1, 0);
+    final DateTime beforeDate = genDate.subtract(const Duration(days: 1));
+    final DateTime monthEndDate = DateTime(genDate.year, genDate.month + 1, 0);
 
     final Map<String, Map<String, int>> thisMonthAssetsMap = _buildMonthlyAssetsMap(
       genDate: genDate,
@@ -253,44 +253,50 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       adjustNum2: 1,
     );
 
-    final Map<String, Map<String, int>> nextMonthAssetsMap = _buildMonthlyAssetsMap(
-      genDate: nextMonthStart,
-      adjustNum: 1,
-      adjustNum2: 1,
-    );
+    final Map<String, int>? beforeAssets = thisMonthAssetsMap[beforeDate.yyyymmdd];
 
-    final Map<String, int>? thisMonthAssets = thisMonthAssetsMap[thisMonthStart.yyyymmdd];
-    final Map<String, int>? nextMonthAssets = nextMonthAssetsMap[nextMonthStart.yyyymmdd];
+    final Map<String, int>? lastAssets = thisMonthAssetsMap[monthEndDate.yyyymmdd];
 
-    if (thisMonthAssets == null || nextMonthAssets == null) {
+    if (beforeAssets == null || lastAssets == null) {
       return const SizedBox.shrink();
     }
 
-    int thisMonthMoneySum = 0;
-    if (appParamState.keepMoneyMap[thisMonthStart.yyyymmdd] != null) {
-      thisMonthMoneySum = appParamState.keepMoneyMap[thisMonthStart.yyyymmdd]!.sum.toInt();
+    int beforeMoneySum = 0;
+    final MoneyModel? beforeMoneyModel = appParamState.keepMoneyMap[beforeDate.yyyymmdd];
+    if (beforeMoneyModel != null) {
+      beforeMoneySum = beforeMoneyModel.sum.toInt();
     }
 
-    int nextMonthMoneySum = 0;
-    appParamState.keepMoneyMap.forEach((String key, MoneyModel value) {
-      nextMonthMoneySum = value.sum.toInt();
-    });
+    int lastMoneySum = 0;
+    DateTime? latest;
+    for (final MapEntry<String, MoneyModel> e in appParamState.keepMoneyMap.entries) {
+      final DateTime d = DateTime.parse(e.key);
+
+      if (d.isAfter(monthEndDate)) {
+        continue;
+      }
+
+      if (latest == null || d.isAfter(latest)) {
+        latest = d;
+        lastMoneySum = e.value.sum.toInt();
+      }
+    }
 
     final int beforeSum =
-        thisMonthMoneySum +
-        thisMonthAssets[_kGold]! +
-        thisMonthAssets[_kStock]! +
-        thisMonthAssets[_kToushi]! +
-        thisMonthAssets[_kInsurance]! +
-        thisMonthAssets[_kNenkinKikin]!;
+        beforeMoneySum +
+        (beforeAssets[_kGold] ?? 0) +
+        (beforeAssets[_kStock] ?? 0) +
+        (beforeAssets[_kToushi] ?? 0) +
+        (beforeAssets[_kInsurance] ?? 0) +
+        (beforeAssets[_kNenkinKikin] ?? 0);
 
     final int lastSum =
-        nextMonthMoneySum +
-        nextMonthAssets[_kGold]! +
-        nextMonthAssets[_kStock]! +
-        nextMonthAssets[_kToushi]! +
-        nextMonthAssets[_kInsurance]! +
-        nextMonthAssets[_kNenkinKikin]!;
+        lastMoneySum +
+        (lastAssets[_kGold] ?? 0) +
+        (lastAssets[_kStock] ?? 0) +
+        (lastAssets[_kToushi] ?? 0) +
+        (lastAssets[_kInsurance] ?? 0) +
+        (lastAssets[_kNenkinKikin] ?? 0);
 
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -298,36 +304,52 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         style: const TextStyle(fontSize: 12),
         child: Column(
           children: <Widget>[
+            DefaultTextStyle(
+              style: const TextStyle(color: Colors.yellowAccent, fontSize: 12, fontWeight: FontWeight.bold),
+              child: Row(
+                children: <Widget>[
+                  Expanded(flex: 3, child: Text(beforeDate.yyyymmdd)),
+                  const Expanded(child: Text('<')),
+                  const Expanded(child: Text('X')),
+                  const Expanded(child: Text('<=')),
+                  Expanded(flex: 3, child: Text(monthEndDate.yyyymmdd)),
+                ],
+              ),
+            ),
+
+            Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
             getBeforeLastDisplayWidget(
               title: 'MONEY',
-              before: thisMonthMoneySum.toString(),
-              last: nextMonthMoneySum.toString(),
+              before: beforeMoneySum.toString(),
+              last: lastMoneySum.toString(),
             ),
             getBeforeLastDisplayWidget(
               title: 'GOLD',
-              before: thisMonthAssets[_kGold].toString(),
-              last: nextMonthAssets[_kGold].toString(),
+              before: (beforeAssets[_kGold] ?? 0).toString(),
+              last: (lastAssets[_kGold] ?? 0).toString(),
             ),
             getBeforeLastDisplayWidget(
               title: 'STOCK',
-              before: thisMonthAssets[_kStock].toString(),
-              last: nextMonthAssets[_kStock].toString(),
+              before: (beforeAssets[_kStock] ?? 0).toString(),
+              last: (lastAssets[_kStock] ?? 0).toString(),
             ),
             getBeforeLastDisplayWidget(
               title: 'SHINTAKU',
-              before: thisMonthAssets[_kToushi].toString(),
-              last: nextMonthAssets[_kToushi].toString(),
+              before: (beforeAssets[_kToushi] ?? 0).toString(),
+              last: (lastAssets[_kToushi] ?? 0).toString(),
             ),
             getBeforeLastDisplayWidget(
               title: 'INSURANCE',
-              before: thisMonthAssets[_kInsurance].toString(),
-              last: nextMonthAssets[_kInsurance].toString(),
+              before: (beforeAssets[_kInsurance] ?? 0).toString(),
+              last: (lastAssets[_kInsurance] ?? 0).toString(),
             ),
             getBeforeLastDisplayWidget(
               title: 'NENKIN_KIKIN',
-              before: thisMonthAssets[_kNenkinKikin].toString(),
-              last: nextMonthAssets[_kNenkinKikin].toString(),
+              before: (beforeAssets[_kNenkinKikin] ?? 0).toString(),
+              last: (lastAssets[_kNenkinKikin] ?? 0).toString(),
             ),
+
             const SizedBox(height: 20),
             getBeforeLastDisplayWidget(title: 'SUM', before: beforeSum.toString(), last: lastSum.toString()),
           ],
@@ -338,70 +360,73 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
   ///
   Widget getBeforeLastDisplayWidget({required String title, required String before, required String last}) {
-    return Column(
-      children: <Widget>[
-        Container(
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+    return DefaultTextStyle(
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+      child: Column(
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+            ),
+            padding: const EdgeInsets.all(5),
+            child: Stack(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.only(top: 10),
+                        child: const Text('➡️'),
+                      ),
+                    ),
+                    const SizedBox(width: 40),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            title,
+                            style: const TextStyle(color: Colors.yellowAccent),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(before.toCurrency()),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(alignment: Alignment.topRight, child: Text(last.toCurrency())),
+                    ),
+                    const SizedBox(width: 20),
+                    utility.dispUpDownMark(before: before.toInt(), after: last.toInt(), size: 18),
+                  ],
+                ),
+              ],
+            ),
           ),
-          padding: const EdgeInsets.all(5),
-          child: Stack(
+          const SizedBox(height: 5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.only(top: 10),
-                      child: const Text('➡️'),
-                    ),
-                  ),
-                  const SizedBox(width: 40),
-                ],
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          title,
-                          style: const TextStyle(color: Colors.yellowAccent),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(before.toCurrency()),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(alignment: Alignment.topRight, child: Text(last.toCurrency())),
-                  ),
-                  const SizedBox(width: 20),
-                  utility.dispUpDownMark(before: before.toInt(), after: last.toInt(), size: 18),
-                ],
+              const SizedBox.shrink(),
+              Padding(
+                padding: const EdgeInsets.only(right: 30),
+                child: Text(
+                  (last.toInt() - before.toInt()).toString().toCurrency(),
+                  style: const TextStyle(color: Colors.yellowAccent),
+                ),
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 5),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            const SizedBox.shrink(),
-            Padding(
-              padding: const EdgeInsets.only(right: 30),
-              child: Text(
-                (last.toInt() - before.toInt()).toString().toCurrency(),
-                style: const TextStyle(color: Colors.yellowAccent),
-              ),
-            ),
-          ],
-        ),
-      ],
+        ],
+      ),
     );
   }
 
