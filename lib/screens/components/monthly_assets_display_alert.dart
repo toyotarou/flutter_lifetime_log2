@@ -7,6 +7,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/gold_model.dart';
+import '../../models/money_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../../utility/assets_calc.dart';
@@ -34,10 +35,19 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   static const int _itemCount = 100000;
   static const int _initialIndex = _itemCount ~/ 2;
 
+  static const String _kMoney = 'money';
+  static const String _kGold = 'gold';
+  static const String _kStock = 'stock';
+  static const String _kToushi = 'toushiShintaku';
+  static const String _kInsurance = 'insurance';
+  static const String _kNenkinKikin = 'nenkinKikin';
+  static const String _kInsurancePassedMonths = 'insurancePassedMonths';
+  static const String _kNenkinKikinPassedMonths = 'nenkinKikinPassedMonths';
+
   late final DateTime _baseMonth;
   int currentIndex = _initialIndex;
 
-  Utility utility = Utility();
+  final Utility utility = Utility();
 
   bool todayStockExists = false;
   bool todayToushiShintakuRelationalIdBlankExists = false;
@@ -45,16 +55,13 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   final AutoScrollController autoScrollController = AutoScrollController();
   final List<Widget> monthlyAssetsList = <Widget>[];
 
-  ///
   @override
   void initState() {
     super.initState();
-
     final DateTime? parsed = DateTime.tryParse('${widget.yearmonth}-01');
     _baseMonth = parsed ?? DateTime(DateTime.now().year, DateTime.now().month);
   }
 
-  ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,20 +153,17 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                                     context: context,
                                     widget: displayBeforeLastAssetsList(genDate: genDate),
                                     paddingTop: context.screenSize.height * 0.05,
-                                    paddingBottom: context.screenSize.height * 0.5,
-                                    paddingLeft: context.screenSize.width * 0.4,
+                                    paddingBottom: context.screenSize.height * 0.2,
+                                    paddingLeft: context.screenSize.width * 0.3,
                                     clearBarrierColor: true,
                                   );
                                 },
-
                                 child: const Icon(Icons.pages),
                               ),
                               const SizedBox(width: 20),
-
                               GestureDetector(
                                 onTap: () {
                                   final DateTime lastYearEnd = DateTime(genDate.year, 1, 0);
-
                                   final int lastYearFinalAssets = _calcTotalAssetsAtDate(lastYearEnd);
 
                                   LifetimeDialog(
@@ -192,14 +196,12 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                                   }
 
                                   final DateTime lastMonthEnd = DateTime(genDate.year, genDate.month, 0);
-
                                   final int lastMonthFinalAssets = _calcTotalAssetsAtDate(lastMonthEnd);
 
                                   LifetimeDialog(
                                     context: context,
                                     widget: MonthlyAssetsGraphAlert(
                                       yearmonth: genDate.yyyymm,
-
                                       monthlyGraphAssetsMap: const <int, int>{},
                                       lastMonthFinalAssets: lastMonthFinalAssets,
                                     ),
@@ -242,63 +244,53 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
   ///
   Widget displayBeforeLastAssetsList({required DateTime genDate}) {
-    final DateTime thisMonthStart = genDate;
+    final DateTime thisMonthStart = genDate.add(const Duration(days: -1));
+    final DateTime nextMonthStart = DateTime(genDate.year, genDate.month + 1, 0);
 
-    final DateTime nextMonthStart = DateTime(genDate.year, genDate.month + 1);
+    final Map<String, Map<String, int>> thisMonthAssetsMap = _buildMonthlyAssetsMap(
+      genDate: genDate,
+      adjustNum: 1,
+      adjustNum2: 1,
+    );
 
-    String beforeGoldSum = '';
-    String lastGoldSum = '';
+    final Map<String, Map<String, int>> nextMonthAssetsMap = _buildMonthlyAssetsMap(
+      genDate: nextMonthStart,
+      adjustNum: 1,
+      adjustNum2: 1,
+    );
 
-    appParamState.keepGoldMap.forEach((String key, GoldModel value) {
-      if (DateTime.parse(key).isBefore(thisMonthStart) && value.goldValue != '-') {
-        beforeGoldSum = value.goldValue.toString();
-      }
+    final Map<String, int>? thisMonthAssets = thisMonthAssetsMap[thisMonthStart.yyyymmdd];
+    final Map<String, int>? nextMonthAssets = nextMonthAssetsMap[nextMonthStart.yyyymmdd];
 
-      if (DateTime.parse(key).isBefore(nextMonthStart) && value.goldValue != '-') {
-        lastGoldSum = value.goldValue.toString();
-      }
+    if (thisMonthAssets == null || nextMonthAssets == null) {
+      return const SizedBox.shrink();
+    }
+
+    int thisMonthMoneySum = 0;
+    if (appParamState.keepMoneyMap[thisMonthStart.yyyymmdd] != null) {
+      thisMonthMoneySum = appParamState.keepMoneyMap[thisMonthStart.yyyymmdd]!.sum.toInt();
+    }
+
+    int nextMonthMoneySum = 0;
+    appParamState.keepMoneyMap.forEach((String key, MoneyModel value) {
+      nextMonthMoneySum = value.sum.toInt();
     });
 
-    int beforeStockSum = 0;
-    int lastStockSum = 0;
+    final int beforeSum =
+        thisMonthMoneySum +
+        thisMonthAssets[_kGold]! +
+        thisMonthAssets[_kStock]! +
+        thisMonthAssets[_kToushi]! +
+        thisMonthAssets[_kInsurance]! +
+        thisMonthAssets[_kNenkinKikin]!;
 
-    appParamState.keepStockMap.forEach((String key, List<StockModel> value) {
-      if (DateTime.parse(key).isBefore(thisMonthStart)) {
-        beforeStockSum = 0;
-        for (final StockModel value2 in value) {
-          beforeStockSum += value2.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
-        }
-      }
-
-      if (DateTime.parse(key).isBefore(nextMonthStart)) {
-        lastStockSum = 0;
-        for (final StockModel value2 in value) {
-          lastStockSum += value2.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
-        }
-      }
-    });
-
-    int beforeShintakuSum = 0;
-    int lastShintakuSum = 0;
-
-    appParamState.keepToushiShintakuMap.forEach((String key, List<ToushiShintakuModel> value) {
-      if (DateTime.parse(key).isBefore(thisMonthStart)) {
-        beforeShintakuSum = 0;
-        for (final ToushiShintakuModel value2 in value) {
-          beforeShintakuSum += value2.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
-        }
-      }
-
-      if (DateTime.parse(key).isBefore(nextMonthStart)) {
-        lastShintakuSum = 0;
-        for (final ToushiShintakuModel value2 in value) {
-          lastShintakuSum += value2.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
-        }
-      }
-    });
-
-    final int beforeSum = beforeGoldSum.toInt() + beforeStockSum + beforeShintakuSum;
-    final int lastSum = lastGoldSum.toInt() + lastStockSum + lastShintakuSum;
+    final int lastSum =
+        nextMonthMoneySum +
+        nextMonthAssets[_kGold]! +
+        nextMonthAssets[_kStock]! +
+        nextMonthAssets[_kToushi]! +
+        nextMonthAssets[_kInsurance]! +
+        nextMonthAssets[_kNenkinKikin]!;
 
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -306,37 +298,38 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         style: const TextStyle(fontSize: 12),
         child: Column(
           children: <Widget>[
-            getBeforeLastDisplayWidget(title: 'GOLD', before: beforeGoldSum, last: lastGoldSum),
-
+            getBeforeLastDisplayWidget(
+              title: 'MONEY',
+              before: thisMonthMoneySum.toString(),
+              last: nextMonthMoneySum.toString(),
+            ),
+            getBeforeLastDisplayWidget(
+              title: 'GOLD',
+              before: thisMonthAssets[_kGold].toString(),
+              last: nextMonthAssets[_kGold].toString(),
+            ),
             getBeforeLastDisplayWidget(
               title: 'STOCK',
-              before: beforeStockSum.toString(),
-              last: lastStockSum.toString(),
+              before: thisMonthAssets[_kStock].toString(),
+              last: nextMonthAssets[_kStock].toString(),
             ),
-
             getBeforeLastDisplayWidget(
               title: 'SHINTAKU',
-              before: beforeShintakuSum.toString(),
-              last: lastShintakuSum.toString(),
+              before: thisMonthAssets[_kToushi].toString(),
+              last: nextMonthAssets[_kToushi].toString(),
             ),
-
+            getBeforeLastDisplayWidget(
+              title: 'INSURANCE',
+              before: thisMonthAssets[_kInsurance].toString(),
+              last: nextMonthAssets[_kInsurance].toString(),
+            ),
+            getBeforeLastDisplayWidget(
+              title: 'NENKIN_KIKIN',
+              before: thisMonthAssets[_kNenkinKikin].toString(),
+              last: nextMonthAssets[_kNenkinKikin].toString(),
+            ),
             const SizedBox(height: 20),
-
             getBeforeLastDisplayWidget(title: 'SUM', before: beforeSum.toString(), last: lastSum.toString()),
-
-            Padding(
-              padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  const SizedBox.shrink(),
-                  Text(
-                    (lastSum - beforeSum).toString().toCurrency(),
-                    style: const TextStyle(color: Colors.yellowAccent),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
@@ -345,41 +338,70 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
   ///
   Widget getBeforeLastDisplayWidget({required String title, required String before, required String last}) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-      ),
-      padding: const EdgeInsets.all(5),
-
-      child: Stack(
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            alignment: Alignment.center,
-            padding: const EdgeInsets.only(top: 10),
-            child: const Text('➡️'),
+    return Column(
+      children: <Widget>[
+        Container(
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
           ),
-
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          padding: const EdgeInsets.all(5),
+          child: Stack(
             children: <Widget>[
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(title, style: const TextStyle(color: Colors.yellowAccent)),
-                    Text(before.toCurrency()),
-                  ],
-                ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.only(top: 10),
+                      child: const Text('➡️'),
+                    ),
+                  ),
+                  const SizedBox(width: 40),
+                ],
               ),
-
-              Expanded(
-                child: Container(alignment: Alignment.topRight, child: Text(last.toCurrency())),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          title,
+                          style: const TextStyle(color: Colors.yellowAccent),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(before.toCurrency()),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(alignment: Alignment.topRight, child: Text(last.toCurrency())),
+                  ),
+                  const SizedBox(width: 20),
+                  utility.dispUpDownMark(before: before.toInt(), after: last.toInt(), size: 18),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            const SizedBox.shrink(),
+            Padding(
+              padding: const EdgeInsets.only(right: 30),
+              child: Text(
+                (last.toInt() - before.toInt()).toString().toCurrency(),
+                style: const TextStyle(color: Colors.yellowAccent),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -387,7 +409,11 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   Widget displayMonthlyAssetsList({required DateTime genDate}) {
     monthlyAssetsList.clear();
 
-    final Map<String, Map<String, int>> monthlyAssetsMap = _buildMonthlyAssetsMap(genDate: genDate);
+    final Map<String, Map<String, int>> monthlyAssetsMap = _buildMonthlyAssetsMap(
+      genDate: genDate,
+      adjustNum: 0.7,
+      adjustNum2: 0.8,
+    );
 
     final int endDay = DateTime(genDate.year, genDate.month + 1, 0).day;
 
@@ -424,8 +450,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       final int total = isBeforeDate ? _calcTotalAssetsAtDate(date) : 0;
       final int totalBefore = isBeforeDate ? _calcTotalAssetsAtDate(beforeDate) : 0;
 
-      final Map<String, int> beforeData = monthlyAssetsBefore ?? <String, int>{};
-      beforeData['money'] = moneyBeforeValue;
+      final Map<String, int> beforeData = <String, int>{...?(monthlyAssetsBefore)};
+      beforeData[_kMoney] = moneyBeforeValue;
 
       if (dateStr == DateTime.now().yyyymmdd) {
         monthlyAssetsList.add(const DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3));
@@ -467,7 +493,11 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   }
 
   ///
-  Map<String, Map<String, int>> _buildMonthlyAssetsMap({required DateTime genDate}) {
+  Map<String, Map<String, int>> _buildMonthlyAssetsMap({
+    required DateTime genDate,
+    required double adjustNum,
+    required double adjustNum2,
+  }) {
     todayStockExists = false;
     todayToushiShintakuRelationalIdBlankExists = false;
 
@@ -481,7 +511,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     }
 
     final DateTime end = DateTime(genDate.year, genDate.month + 1, 0).add(const Duration(days: 10));
-
     final int days = end.difference(start).inDays + 1;
 
     int lastGoldSum = 0;
@@ -520,20 +549,20 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
       final int insurancePassedMonths =
           AssetsCalc.countPaidUpTo(data: appParamState.keepInsuranceDataList, date: date) + 102;
-      lastInsuranceSum = (insurancePassedMonths * 55880 * 0.7).toInt();
+      lastInsuranceSum = (insurancePassedMonths * 55880 * adjustNum).toInt();
 
       final int nenkinKikinPassedMonths =
           AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: date) + 32;
-      final int nenkinKikinSum = (nenkinKikinPassedMonths * 26625 * 0.7).toInt();
+      final int nenkinKikinSum = (nenkinKikinPassedMonths * 26625 * adjustNum).toInt();
 
       monthlyAssetsMap[key] = <String, int>{
-        'gold': (lastGoldSum * 0.8).toInt(),
-        'stock': (lastStockSum * 0.8).toInt(),
-        'toushiShintaku': (lastToushiShintakuSum * 0.8).toInt(),
-        'insurance': lastInsuranceSum,
-        'insurancePassedMonths': insurancePassedMonths,
-        'nenkinKikin': nenkinKikinSum,
-        'nenkinKikinPassedMonths': nenkinKikinPassedMonths,
+        _kGold: (lastGoldSum * adjustNum2).toInt(),
+        _kStock: (lastStockSum * adjustNum2).toInt(),
+        _kToushi: (lastToushiShintakuSum * adjustNum2).toInt(),
+        _kInsurance: lastInsuranceSum,
+        _kInsurancePassedMonths: insurancePassedMonths,
+        _kNenkinKikin: nenkinKikinSum,
+        _kNenkinKikinPassedMonths: nenkinKikinPassedMonths,
       };
     }
 
@@ -629,14 +658,14 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   }) {
     final String money = appParamState.keepMoneyMap[date]?.sum ?? '';
 
-    final String gold = monthlyAssets?['gold']?.toString() ?? '';
-    final String stock = monthlyAssets?['stock']?.toString() ?? '';
-    final String toushiShintaku = monthlyAssets?['toushiShintaku']?.toString() ?? '';
-    final String insurance = monthlyAssets?['insurance']?.toString() ?? '';
-    final String nenkinKikin = monthlyAssets?['nenkinKikin']?.toString() ?? '';
+    final String gold = monthlyAssets?[_kGold]?.toString() ?? '';
+    final String stock = monthlyAssets?[_kStock]?.toString() ?? '';
+    final String toushiShintaku = monthlyAssets?[_kToushi]?.toString() ?? '';
+    final String insurance = monthlyAssets?[_kInsurance]?.toString() ?? '';
+    final String nenkinKikin = monthlyAssets?[_kNenkinKikin]?.toString() ?? '';
 
-    final String insurancePassedMonths = monthlyAssets?['insurancePassedMonths']?.toString() ?? '';
-    final String nenkinKikinPassedMonths = monthlyAssets?['nenkinKikinPassedMonths']?.toString() ?? '';
+    final String insurancePassedMonths = monthlyAssets?[_kInsurancePassedMonths]?.toString() ?? '';
+    final String nenkinKikinPassedMonths = monthlyAssets?[_kNenkinKikinPassedMonths]?.toString() ?? '';
 
     return Container(
       decoration: BoxDecoration(
@@ -719,7 +748,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   priceDisplayParts(
                     date: date,
                     isBeforeDate: isBeforeDate,
-                    title: 'money',
+                    title: _kMoney,
                     price: money,
                     buttonDisp: false,
                     beforeData: beforeData,
@@ -727,7 +756,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   priceDisplayParts(
                     date: date,
                     isBeforeDate: isBeforeDate,
-                    title: 'stock',
+                    title: _kStock,
                     price: stock,
                     buttonDisp: true,
                     beforeData: beforeData,
@@ -735,7 +764,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   priceDisplayParts(
                     date: date,
                     isBeforeDate: isBeforeDate,
-                    title: 'toushiShintaku',
+                    title: _kToushi,
                     price: toushiShintaku,
                     buttonDisp: true,
                     beforeData: beforeData,
@@ -743,7 +772,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   priceDisplayParts(
                     date: date,
                     isBeforeDate: isBeforeDate,
-                    title: 'gold',
+                    title: _kGold,
                     price: gold,
                     buttonDisp: false,
                     beforeData: beforeData,
@@ -774,6 +803,9 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   }
 
   ///
+  bool _isWeekend(String youbi) => youbi == 'Saturday' || youbi == 'Sunday';
+
+  ///
   Widget priceDisplayParts({
     required String date,
     required bool isBeforeDate,
@@ -783,104 +815,48 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     Map<String, int>? beforeData,
   }) {
     final List<String> exTitle = title.split('(');
-    final String youbi = DateTime.tryParse(date)?.youbiStr ?? '';
+    final String baseTitle = exTitle[0].trim();
 
-    final GestureDetector stockInputButton = GestureDetector(
+    final String youbi = DateTime.tryParse(date)?.youbiStr ?? '';
+    final bool isWeekend = _isWeekend(youbi);
+    final bool isToday = date == DateTime.now().yyyymmdd;
+
+    final Widget stockInputButton = GestureDetector(
       onTap: () => LifetimeDialog(
         context: context,
         widget: StockDataInputAlert(date: date),
       ),
       child: Icon(
         Icons.input,
-        color: (date == DateTime.now().yyyymmdd && !todayStockExists)
+        color: (isToday && !todayStockExists)
             ? Colors.greenAccent.withValues(alpha: 0.3)
             : Colors.white.withValues(alpha: 0.3),
       ),
     );
 
-    final GestureDetector toushiShintakuUpdateButton = GestureDetector(
-      onTap: () {
-        if (appParamState.keepToushiShintakuMap[date] == null) {
-          // ignore: always_specify_types
-          Future.delayed(
-            Duration.zero,
-            // ignore: use_build_context_synchronously
-            () => error_dialog(context: context, title: '登録できません。', content: '値を正しく入力してください。'),
-          );
-          return;
-        }
-
-        MapEntry<String, List<ToushiShintakuModel>>? referenceDataMapEntry;
-
-        final List<MapEntry<String, List<ToushiShintakuModel>>> toushiShintakuMapSortedByKey =
-            appParamState.keepToushiShintakuMap.entries.toList()..sort(
-              (MapEntry<String, List<ToushiShintakuModel>> a, MapEntry<String, List<ToushiShintakuModel>> b) =>
-                  a.key.compareTo(b.key),
-            );
-
-        for (int j = 0; j < 7; j++) {
-          final int index = toushiShintakuMapSortedByKey.length - (j + 1);
-          if (index < 0 || index >= toushiShintakuMapSortedByKey.length) {
-            continue;
-          }
-
-          final MapEntry<String, List<ToushiShintakuModel>> reverseDayData = toushiShintakuMapSortedByKey[index];
-
-          final List<ToushiShintakuModel> sortedData = List<ToushiShintakuModel>.from(reverseDayData.value)
-            ..sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
-
-          bool allRelationalIdExists = true;
-          for (final ToushiShintakuModel element in sortedData) {
-            if (element.relationalId == 0) {
-              allRelationalIdExists = false;
-              break;
-            }
-          }
-
-          if (allRelationalIdExists && sortedData.isNotEmpty) {
-            // ignore: always_specify_types
-            referenceDataMapEntry = MapEntry(reverseDayData.key, sortedData);
-            break;
-          }
-        }
-
-        final Map<String, List<ToushiShintakuModel>> referenceNameAndToushiShintakuModelListMap =
-            <String, List<ToushiShintakuModel>>{};
-        referenceDataMapEntry?.value.forEach((ToushiShintakuModel element) {
-          (referenceNameAndToushiShintakuModelListMap[element.name] ??= <ToushiShintakuModel>[]).add(element);
-        });
-
-        List<ToushiShintakuModel> todayDataList = <ToushiShintakuModel>[];
-        final List<ToushiShintakuModel>? keepData = appParamState.keepToushiShintakuMap[date];
-        if (keepData != null) {
-          todayDataList = List<ToushiShintakuModel>.from(keepData)
-            ..sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
-        }
-
-        LifetimeDialog(
-          context: context,
-          widget: ToushiShintakuDataUpdateAlert(
-            date: date,
-            todayDataList: todayDataList,
-            referenceDataMapEntry: referenceDataMapEntry,
-            referenceNameAndToushiShintakuModelListMap: referenceNameAndToushiShintakuModelListMap,
-          ),
-          executeFunctionWhenDialogClose: true,
-          ref: ref,
-          from: 'ToushiShintakuDataUpdateAlert',
-        );
-      },
+    final Widget toushiShintakuUpdateButton = GestureDetector(
+      onTap: () => _onTapToushiShintakuUpdate(date: date),
       child: Icon(
         Icons.input,
-        color: (date == DateTime.now().yyyymmdd && todayToushiShintakuRelationalIdBlankExists)
+        color: (isToday && todayToushiShintakuRelationalIdBlankExists)
             ? Colors.greenAccent.withValues(alpha: 0.3)
             : Colors.white.withValues(alpha: 0.3),
       ),
     );
 
-    final String keyForBefore = exTitle[0].trim();
+    final bool showStockButton = buttonDisp && !isWeekend && isBeforeDate && baseTitle == _kStock;
+    final bool showToushiButton = buttonDisp && !isWeekend && isBeforeDate && baseTitle == _kToushi;
+
+    final Widget leading = showStockButton
+        ? stockInputButton
+        : showToushiButton
+        ? toushiShintakuUpdateButton
+        : const Icon(Icons.square_outlined, color: Colors.transparent);
+
+    final String keyForBefore = baseTitle;
     final int beforeValue = beforeData?[keyForBefore] ?? 0;
-    final int currentPrice = price.toInt();
+
+    final int currentPrice = price.isNotEmpty ? price.toInt() : 0;
 
     return Container(
       decoration: BoxDecoration(
@@ -891,18 +867,9 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         children: <Widget>[
           Row(
             children: <Widget>[
-              if (buttonDisp && youbi != 'Saturday' && youbi != 'Sunday' && isBeforeDate && exTitle[0] == 'stock')
-                stockInputButton
-              else if (buttonDisp &&
-                  youbi != 'Saturday' &&
-                  youbi != 'Sunday' &&
-                  isBeforeDate &&
-                  exTitle[0] == 'toushiShintaku')
-                toushiShintakuUpdateButton
-              else
-                const Icon(Icons.square_outlined, color: Colors.transparent),
+              leading,
               const SizedBox(width: 10),
-              if (<String>['stock', 'toushiShintaku', 'gold'].contains(title))
+              if (<String>[_kStock, _kToushi, _kGold].contains(title))
                 TextButton(
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
@@ -912,7 +879,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   ),
                   onPressed: () {
                     appParamNotifier.setSelectedToushiGraphYear(year: '');
-
                     LifetimeDialog(
                       context: context,
                       widget: AssetsDetailGraphAlert(date: date, title: title),
@@ -968,5 +934,98 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         ],
       ),
     );
+  }
+
+  ///
+  void _onTapToushiShintakuUpdate({required String date}) {
+    if (appParamState.keepToushiShintakuMap[date] == null) {
+      // ignore: always_specify_types, use_build_context_synchronously
+      Future.delayed(Duration.zero, () => error_dialog(context: context, title: '登録できません。', content: '値を正しく入力してください。'));
+      return;
+    }
+
+    final MapEntry<String, List<ToushiShintakuModel>>? referenceDataMapEntry = _findReferenceToushiEntryWithinLastDays(
+      days: 7,
+    );
+
+    final Map<String, List<ToushiShintakuModel>> referenceNameAndToushiShintakuModelListMap = _groupToushiByName(
+      referenceDataMapEntry?.value,
+    );
+
+    final List<ToushiShintakuModel> todayDataList = _getSortedToushiList(date: date);
+
+    LifetimeDialog(
+      context: context,
+      widget: ToushiShintakuDataUpdateAlert(
+        date: date,
+        todayDataList: todayDataList,
+        referenceDataMapEntry: referenceDataMapEntry,
+        referenceNameAndToushiShintakuModelListMap: referenceNameAndToushiShintakuModelListMap,
+      ),
+      executeFunctionWhenDialogClose: true,
+      ref: ref,
+      from: 'ToushiShintakuDataUpdateAlert',
+    );
+  }
+
+  ///
+  MapEntry<String, List<ToushiShintakuModel>>? _findReferenceToushiEntryWithinLastDays({required int days}) {
+    final List<MapEntry<String, List<ToushiShintakuModel>>> sorted =
+        appParamState.keepToushiShintakuMap.entries.toList()..sort(
+          (MapEntry<String, List<ToushiShintakuModel>> a, MapEntry<String, List<ToushiShintakuModel>> b) =>
+              a.key.compareTo(b.key),
+        );
+
+    for (int j = 0; j < days; j++) {
+      final int index = sorted.length - (j + 1);
+      if (index < 0 || index >= sorted.length) {
+        continue;
+      }
+
+      final MapEntry<String, List<ToushiShintakuModel>> reverseDayData = sorted[index];
+
+      final List<ToushiShintakuModel> dayList = List<ToushiShintakuModel>.from(reverseDayData.value)
+        ..sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
+
+      bool allRelationalIdExists = true;
+      for (final ToushiShintakuModel e in dayList) {
+        if (e.relationalId == 0) {
+          allRelationalIdExists = false;
+          break;
+        }
+      }
+
+      if (allRelationalIdExists && dayList.isNotEmpty) {
+        // ignore: always_specify_types
+        return MapEntry(reverseDayData.key, dayList);
+      }
+    }
+
+    return null;
+  }
+
+  ///
+  Map<String, List<ToushiShintakuModel>> _groupToushiByName(List<ToushiShintakuModel>? list) {
+    final Map<String, List<ToushiShintakuModel>> map = <String, List<ToushiShintakuModel>>{};
+    if (list == null) {
+      return map;
+    }
+
+    for (final ToushiShintakuModel e in list) {
+      (map[e.name] ??= <ToushiShintakuModel>[]).add(e);
+    }
+    return map;
+  }
+
+  ///
+  List<ToushiShintakuModel> _getSortedToushiList({required String date}) {
+    final List<ToushiShintakuModel>? keepData = appParamState.keepToushiShintakuMap[date];
+    if (keepData == null) {
+      return <ToushiShintakuModel>[];
+    }
+
+    final List<ToushiShintakuModel> list = List<ToushiShintakuModel>.from(keepData)
+      ..sort((ToushiShintakuModel a, ToushiShintakuModel b) => a.id.compareTo(b.id));
+    return list;
   }
 }
