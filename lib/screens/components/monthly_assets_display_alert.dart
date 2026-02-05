@@ -62,6 +62,13 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     _baseMonth = parsed ?? DateTime(DateTime.now().year, DateTime.now().month);
   }
 
+  ///
+  @override
+  void dispose() {
+    autoScrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,6 +102,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
     );
 
+    final int endDay = DateTime(genDate.year, genDate.month + 1, 0).day;
+
     return DefaultTextStyle(
       style: const TextStyle(fontSize: 12),
       child: Column(
@@ -122,24 +131,40 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                           Row(
                             children: <Widget>[
                               IconButton(
-                                onPressed: () {
-                                  if (monthlyAssetsList.isNotEmpty) {
-                                    autoScrollController.scrollToIndex(
-                                      monthlyAssetsList.length - 1,
+                                onPressed: () async {
+                                  if (monthlyAssetsList.isEmpty) {
+                                    return;
+                                  }
+                                  if (!autoScrollController.hasClients) {
+                                    return;
+                                  }
+
+                                  try {
+                                    await autoScrollController.scrollToIndex(
+                                      endDay,
                                       preferPosition: AutoScrollPosition.end,
                                       duration: const Duration(milliseconds: 300),
                                     );
-                                  }
+                                  } catch (_) {}
                                 },
                                 icon: const Icon(Icons.arrow_downward),
                               ),
                               IconButton(
-                                onPressed: () {
-                                  autoScrollController.scrollToIndex(
-                                    0,
-                                    preferPosition: AutoScrollPosition.begin,
-                                    duration: const Duration(milliseconds: 300),
-                                  );
+                                onPressed: () async {
+                                  if (monthlyAssetsList.isEmpty) {
+                                    return;
+                                  }
+                                  if (!autoScrollController.hasClients) {
+                                    return;
+                                  }
+
+                                  try {
+                                    await autoScrollController.scrollToIndex(
+                                      1,
+                                      preferPosition: AutoScrollPosition.begin,
+                                      duration: const Duration(milliseconds: 300),
+                                    );
+                                  } catch (_) {}
                                 },
                                 icon: const Icon(Icons.arrow_upward),
                               ),
