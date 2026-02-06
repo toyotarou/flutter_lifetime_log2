@@ -87,7 +87,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
             initialPage: _initialIndex,
             slideTransform: const CubeTransform(),
             onSlideChanged: (int index) => setState(() => currentIndex = index),
-            slideBuilder: (int index) => makeMonthlyWorktimeSlide(index),
+            slideBuilder: (int index) => makeMonthlyAssetsDisplaySlide(index),
           ),
         ],
       ),
@@ -95,7 +95,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   }
 
   ///
-  Widget makeMonthlyWorktimeSlide(int index) {
+  Widget makeMonthlyAssetsDisplaySlide(int index) {
     final DateTime genDate = monthForIndex(index: index, baseMonth: _baseMonth);
 
     final bool hasData = appParamState.keepMoneyMap.containsKey(
@@ -286,6 +286,93 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       return const SizedBox.shrink();
     }
 
+    ////////////////////
+
+    GoldModel? beforeGold;
+    GoldModel? lastGold;
+    appParamState.keepGoldMap.forEach((String key, GoldModel value) {
+      if (DateTime.parse(key).isBefore(beforeDate) && value.goldValue != '-') {
+        beforeGold = value;
+      }
+
+      if (DateTime.parse(key).isBefore(monthEndDate.add(const Duration(days: 1))) && value.goldValue != '-') {
+        lastGold = value;
+      }
+    });
+
+    List<StockModel> beforeStockList = <StockModel>[];
+    List<StockModel> lastStockList = <StockModel>[];
+    appParamState.keepStockMap.forEach((String key, List<StockModel> value) {
+      if (DateTime.parse(key).isBefore(beforeDate)) {
+        beforeStockList = value;
+      }
+
+      if (DateTime.parse(key).isBefore(monthEndDate.add(const Duration(days: 1)))) {
+        lastStockList = value;
+      }
+    });
+
+    List<ToushiShintakuModel> beforeToushiList = <ToushiShintakuModel>[];
+    List<ToushiShintakuModel> lastToushiList = <ToushiShintakuModel>[];
+    appParamState.keepToushiShintakuMap.forEach((String key, List<ToushiShintakuModel> value) {
+      if (DateTime.parse(key).isBefore(beforeDate)) {
+        beforeToushiList = value;
+      }
+
+      if (DateTime.parse(key).isBefore(monthEndDate.add(const Duration(days: 1)))) {
+        lastToushiList = value;
+      }
+    });
+
+    if (beforeGold == null ||
+        lastGold == null ||
+        beforeStockList.isEmpty ||
+        lastStockList.isEmpty ||
+        beforeToushiList.isEmpty ||
+        lastToushiList.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final int beforeGoldSum =
+        beforeGold!.goldValue.toString().replaceAll('円', '').replaceAll(',', '').trim().toInt() -
+        beforeGold!.payPrice.toString().replaceAll('円', '').replaceAll(',', '').trim().toInt();
+
+    final int lastGoldSum =
+        lastGold!.goldValue.toString().replaceAll('円', '').replaceAll(',', '').trim().toInt() -
+        lastGold!.payPrice.toString().replaceAll('円', '').replaceAll(',', '').trim().toInt();
+
+    int beforeStockSum = 0;
+    for (final StockModel element in beforeStockList) {
+      final int cost = (element.hoyuuSuuryou * element.heikinShutokuKagaku.replaceAll(',', '').trim().toDouble())
+          .toInt();
+      final int price = element.jikaHyoukagaku.replaceAll(',', '').trim().toInt();
+      beforeStockSum += price - cost;
+    }
+
+    int lastStockSum = 0;
+    for (final StockModel element in lastStockList) {
+      final int cost = (element.hoyuuSuuryou * element.heikinShutokuKagaku.replaceAll(',', '').trim().toDouble())
+          .toInt();
+      final int price = element.jikaHyoukagaku.replaceAll(',', '').trim().toInt();
+      lastStockSum += price - cost;
+    }
+
+    int beforeToushiSum = 0;
+    for (final ToushiShintakuModel element in beforeToushiList) {
+      beforeToushiSum +=
+          element.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt() -
+          element.shutokuSougaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
+    }
+
+    int lastToushiSum = 0;
+    for (final ToushiShintakuModel element in lastToushiList) {
+      lastToushiSum +=
+          element.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt() -
+          element.shutokuSougaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
+    }
+
+    ////////////////////
+
     int beforeMoneySum = 0;
     final MoneyModel? beforeMoneyModel = appParamState.keepMoneyMap[beforeDate.yyyymmdd];
     if (beforeMoneyModel != null) {
@@ -309,17 +396,17 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
     final int beforeSum =
         beforeMoneySum +
-        (beforeAssets[_kGold] ?? 0) +
-        (beforeAssets[_kStock] ?? 0) +
-        (beforeAssets[_kToushi] ?? 0) +
+        beforeGoldSum +
+        beforeStockSum +
+        beforeToushiSum +
         (beforeAssets[_kInsurance] ?? 0) +
         (beforeAssets[_kNenkinKikin] ?? 0);
 
     final int lastSum =
         lastMoneySum +
-        (lastAssets[_kGold] ?? 0) +
-        (lastAssets[_kStock] ?? 0) +
-        (lastAssets[_kToushi] ?? 0) +
+        lastGoldSum +
+        lastStockSum +
+        lastToushiSum +
         (lastAssets[_kInsurance] ?? 0) +
         (lastAssets[_kNenkinKikin] ?? 0);
 
@@ -349,20 +436,16 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
               before: beforeMoneySum.toString(),
               last: lastMoneySum.toString(),
             ),
-            getBeforeLastDisplayWidget(
-              title: 'GOLD',
-              before: (beforeAssets[_kGold] ?? 0).toString(),
-              last: (lastAssets[_kGold] ?? 0).toString(),
-            ),
+            getBeforeLastDisplayWidget(title: 'GOLD', before: beforeGoldSum.toString(), last: lastGoldSum.toString()),
             getBeforeLastDisplayWidget(
               title: 'STOCK',
-              before: (beforeAssets[_kStock] ?? 0).toString(),
-              last: (lastAssets[_kStock] ?? 0).toString(),
+              before: beforeStockSum.toString(),
+              last: lastStockSum.toString(),
             ),
             getBeforeLastDisplayWidget(
               title: 'SHINTAKU',
-              before: (beforeAssets[_kToushi] ?? 0).toString(),
-              last: (lastAssets[_kToushi] ?? 0).toString(),
+              before: beforeToushiSum.toString(),
+              last: lastToushiSum.toString(),
             ),
             getBeforeLastDisplayWidget(
               title: 'INSURANCE',
@@ -385,72 +468,80 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
   ///
   Widget getBeforeLastDisplayWidget({required String title, required String before, required String last}) {
-    return DefaultTextStyle(
-      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-      child: Column(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+    return Container(
+      decoration: BoxDecoration(
+        color: (title == 'GOLD' || title == 'STOCK' || title == 'SHINTAKU')
+            ? const Color(0xFFFBB6CE).withValues(alpha: 0.2)
+            : Colors.transparent,
+      ),
+
+      child: DefaultTextStyle(
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+        child: Column(
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+              ),
+              padding: const EdgeInsets.all(5),
+              child: Stack(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.only(top: 10),
+                          child: const Text('➡️'),
+                        ),
+                      ),
+                      const SizedBox(width: 40),
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              title,
+                              style: const TextStyle(color: Colors.yellowAccent),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(before.toCurrency()),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(alignment: Alignment.topRight, child: Text(last.toCurrency())),
+                      ),
+                      const SizedBox(width: 20),
+                      utility.dispUpDownMark(before: before.toInt(), after: last.toInt(), size: 18),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            padding: const EdgeInsets.all(5),
-            child: Stack(
+            const SizedBox(height: 5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.only(top: 10),
-                        child: const Text('➡️'),
-                      ),
-                    ),
-                    const SizedBox(width: 40),
-                  ],
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            title,
-                            style: const TextStyle(color: Colors.yellowAccent),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(before.toCurrency()),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(alignment: Alignment.topRight, child: Text(last.toCurrency())),
-                    ),
-                    const SizedBox(width: 20),
-                    utility.dispUpDownMark(before: before.toInt(), after: last.toInt(), size: 18),
-                  ],
+                const SizedBox.shrink(),
+                Padding(
+                  padding: const EdgeInsets.only(right: 30),
+                  child: Text(
+                    (last.toInt() - before.toInt()).toString().toCurrency(),
+                    style: const TextStyle(color: Colors.yellowAccent),
+                  ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 5),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              const SizedBox.shrink(),
-              Padding(
-                padding: const EdgeInsets.only(right: 30),
-                child: Text(
-                  (last.toInt() - before.toInt()).toString().toCurrency(),
-                  style: const TextStyle(color: Colors.yellowAccent),
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
