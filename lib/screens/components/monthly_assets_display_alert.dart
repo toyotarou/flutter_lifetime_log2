@@ -333,18 +333,29 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       return const SizedBox.shrink();
     }
 
+    //==================================================================//
+
+    final int beforeGoldCost = beforeGold!.payPrice.toString().replaceAll('円', '').replaceAll(',', '').trim().toInt();
+    final int lastGoldCost = lastGold!.payPrice.toString().replaceAll('円', '').replaceAll(',', '').trim().toInt();
+
     final int beforeGoldSum =
-        beforeGold!.goldValue.toString().replaceAll('円', '').replaceAll(',', '').trim().toInt() -
-        beforeGold!.payPrice.toString().replaceAll('円', '').replaceAll(',', '').trim().toInt();
+        beforeGold!.goldValue.toString().replaceAll('円', '').replaceAll(',', '').trim().toInt() - beforeGoldCost;
 
     final int lastGoldSum =
-        lastGold!.goldValue.toString().replaceAll('円', '').replaceAll(',', '').trim().toInt() -
-        lastGold!.payPrice.toString().replaceAll('円', '').replaceAll(',', '').trim().toInt();
+        lastGold!.goldValue.toString().replaceAll('円', '').replaceAll(',', '').trim().toInt() - lastGoldCost;
+
+    //==================================================================//
+
+    final List<int> beforeStockCostList = <int>[];
+    final List<int> lastStockCostList = <int>[];
 
     int beforeStockSum = 0;
     for (final StockModel element in beforeStockList) {
       final int cost = (element.hoyuuSuuryou * element.heikinShutokuKagaku.replaceAll(',', '').trim().toDouble())
           .toInt();
+
+      beforeStockCostList.add(cost);
+
       final int price = element.jikaHyoukagaku.replaceAll(',', '').trim().toInt();
       beforeStockSum += price - cost;
     }
@@ -353,25 +364,55 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     for (final StockModel element in lastStockList) {
       final int cost = (element.hoyuuSuuryou * element.heikinShutokuKagaku.replaceAll(',', '').trim().toDouble())
           .toInt();
+
+      lastStockCostList.add(cost);
+
       final int price = element.jikaHyoukagaku.replaceAll(',', '').trim().toInt();
       lastStockSum += price - cost;
     }
 
+    final int beforeStockCost = beforeStockCostList.fold<int>(
+      0,
+      (int previousValue, int element) => previousValue + element,
+    );
+    final int lastStockCost = lastStockCostList.fold<int>(
+      0,
+      (int previousValue, int element) => previousValue + element,
+    );
+
+    //==================================================================//
+
+    final List<int> beforeToushiCostList = <int>[];
+    final List<int> lastToushiCostList = <int>[];
+
     int beforeToushiSum = 0;
     for (final ToushiShintakuModel element in beforeToushiList) {
-      beforeToushiSum +=
-          element.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt() -
-          element.shutokuSougaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
+      final int cost = element.shutokuSougaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
+
+      beforeToushiCostList.add(cost);
+
+      beforeToushiSum += element.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt() - cost;
     }
 
     int lastToushiSum = 0;
     for (final ToushiShintakuModel element in lastToushiList) {
-      lastToushiSum +=
-          element.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt() -
-          element.shutokuSougaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
+      final int cost = element.shutokuSougaku.replaceAll('円', '').replaceAll(',', '').trim().toInt();
+
+      lastToushiCostList.add(cost);
+
+      lastToushiSum += element.jikaHyoukagaku.replaceAll('円', '').replaceAll(',', '').trim().toInt() - cost;
     }
 
-    ////////////////////
+    final int beforeToushiCost = beforeToushiCostList.fold<int>(
+      0,
+      (int previousValue, int element) => previousValue + element,
+    );
+    final int lastToushiCost = lastToushiCostList.fold<int>(
+      0,
+      (int previousValue, int element) => previousValue + element,
+    );
+
+    //==================================================================//
 
     int beforeMoneySum = 0;
     final MoneyModel? beforeMoneyModel = appParamState.keepMoneyMap[beforeDate.yyyymmdd];
@@ -452,6 +493,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 last: lastGoldSum.toString(),
                 bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
                 note: 'GAIN',
+                beforeCost: beforeGoldCost,
+                lastCost: lastGoldCost,
               ),
 
               getBeforeLastDisplayWidget(
@@ -467,6 +510,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 last: lastStockSum.toString(),
                 bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
                 note: 'GAIN',
+                beforeCost: beforeStockCost,
+                lastCost: lastStockCost,
               ),
 
               getBeforeLastDisplayWidget(
@@ -482,6 +527,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 last: lastToushiSum.toString(),
                 bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
                 note: 'GAIN',
+                beforeCost: beforeToushiCost,
+                lastCost: lastToushiCost,
               ),
 
               getBeforeLastDisplayWidget(
@@ -518,6 +565,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     required String last,
     required Color bgColor,
     String? note,
+    int? beforeCost,
+    int? lastCost,
   }) {
     return Container(
       decoration: BoxDecoration(color: bgColor),
@@ -596,6 +645,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
               ),
             ),
             const SizedBox(height: 5),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -607,6 +657,23 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                     style: const TextStyle(color: Colors.yellowAccent),
                   ),
                 ),
+              ],
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                const SizedBox.shrink(),
+                if (beforeCost != null && lastCost != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Text(
+                      '${lastCost.toString().toCurrency()} - ${beforeCost.toString().toCurrency()} = ${(lastCost - beforeCost).toString().toCurrency()}',
+                      style: const TextStyle(color: Colors.white60),
+                    ),
+                  )
+                else
+                  const SizedBox.shrink(),
               ],
             ),
           ],
