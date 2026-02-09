@@ -414,66 +414,106 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       padding: const EdgeInsets.all(10),
       child: DefaultTextStyle(
         style: const TextStyle(fontSize: 12),
-        child: Column(
-          children: <Widget>[
-            DefaultTextStyle(
-              style: const TextStyle(color: Colors.yellowAccent, fontSize: 12, fontWeight: FontWeight.bold),
-              child: Row(
-                children: <Widget>[
-                  Expanded(flex: 3, child: Text(beforeDate.yyyymmdd)),
-                  const Expanded(child: Text('<')),
-                  const Expanded(child: Text('X')),
-                  const Expanded(child: Text('<=')),
-                  Expanded(flex: 3, child: Text(monthEndDate.yyyymmdd)),
-                ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              DefaultTextStyle(
+                style: const TextStyle(color: Colors.yellowAccent, fontSize: 12, fontWeight: FontWeight.bold),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(flex: 3, child: Text(beforeDate.yyyymmdd)),
+                    const Expanded(child: Text('<')),
+                    const Expanded(child: Text('X')),
+                    const Expanded(child: Text('<=')),
+                    Expanded(flex: 3, child: Text(monthEndDate.yyyymmdd)),
+                  ],
+                ),
               ),
-            ),
 
-            Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-            getBeforeLastDisplayWidget(
-              title: 'MONEY',
-              before: beforeMoneySum.toString(),
-              last: lastMoneySum.toString(),
-            ),
-            getBeforeLastDisplayWidget(title: 'GOLD', before: beforeGoldSum.toString(), last: lastGoldSum.toString()),
-            getBeforeLastDisplayWidget(
-              title: 'STOCK',
-              before: beforeStockSum.toString(),
-              last: lastStockSum.toString(),
-            ),
-            getBeforeLastDisplayWidget(
-              title: 'SHINTAKU',
-              before: beforeToushiSum.toString(),
-              last: lastToushiSum.toString(),
-            ),
-            getBeforeLastDisplayWidget(
-              title: 'INSURANCE',
-              before: (beforeAssets[_kInsurance] ?? 0).toString(),
-              last: (lastAssets[_kInsurance] ?? 0).toString(),
-            ),
-            getBeforeLastDisplayWidget(
-              title: 'NENKIN_KIKIN',
-              before: (beforeAssets[_kNenkinKikin] ?? 0).toString(),
-              last: (lastAssets[_kNenkinKikin] ?? 0).toString(),
-            ),
+              getBeforeLastDisplayWidget(
+                title: 'MONEY',
+                before: beforeMoneySum.toString(),
+                last: lastMoneySum.toString(),
+                bgColor: Colors.transparent,
+              ),
 
-            const SizedBox(height: 20),
-            getBeforeLastDisplayWidget(title: 'SUM', before: beforeSum.toString(), last: lastSum.toString()),
-          ],
+              getBeforeLastDisplayWidget(
+                title: 'GOLD',
+                before: (beforeAssets[_kGold] ?? 0).toString(),
+                last: (lastAssets[_kGold] ?? 0).toString(),
+                bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
+              ),
+              getBeforeLastDisplayWidget(
+                title: '',
+                before: beforeGoldSum.toString(),
+                last: lastGoldSum.toString(),
+                bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
+              ),
+
+              getBeforeLastDisplayWidget(
+                title: 'STOCK',
+                before: (beforeAssets[_kStock] ?? 0).toString(),
+                last: (lastAssets[_kStock] ?? 0).toString(),
+                bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
+              ),
+              getBeforeLastDisplayWidget(
+                title: '',
+                before: beforeStockSum.toString(),
+                last: lastStockSum.toString(),
+                bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
+              ),
+
+              getBeforeLastDisplayWidget(
+                title: 'SHINTAKU',
+                before: (beforeAssets[_kToushi] ?? 0).toString(),
+                last: (lastAssets[_kToushi] ?? 0).toString(),
+                bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
+              ),
+              getBeforeLastDisplayWidget(
+                title: '',
+                before: beforeToushiSum.toString(),
+                last: lastToushiSum.toString(),
+                bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
+              ),
+
+              getBeforeLastDisplayWidget(
+                title: 'INSURANCE',
+                before: (beforeAssets[_kInsurance] ?? 0).toString(),
+                last: (lastAssets[_kInsurance] ?? 0).toString(),
+                bgColor: Colors.transparent,
+              ),
+              getBeforeLastDisplayWidget(
+                title: 'NENKIN_KIKIN',
+                before: (beforeAssets[_kNenkinKikin] ?? 0).toString(),
+                last: (lastAssets[_kNenkinKikin] ?? 0).toString(),
+                bgColor: Colors.transparent,
+              ),
+
+              const SizedBox(height: 20),
+              getBeforeLastDisplayWidget(
+                title: 'SUM',
+                before: beforeSum.toString(),
+                last: lastSum.toString(),
+                bgColor: Colors.transparent,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   ///
-  Widget getBeforeLastDisplayWidget({required String title, required String before, required String last}) {
+  Widget getBeforeLastDisplayWidget({
+    required String title,
+    required String before,
+    required String last,
+    required Color bgColor,
+  }) {
     return Container(
-      decoration: BoxDecoration(
-        color: (title == 'GOLD' || title == 'STOCK' || title == 'SHINTAKU')
-            ? const Color(0xFFFBB6CE).withValues(alpha: 0.2)
-            : Colors.transparent,
-      ),
+      decoration: BoxDecoration(color: bgColor),
 
       child: DefaultTextStyle(
         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
@@ -506,12 +546,15 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(
-                              title,
-                              style: const TextStyle(color: Colors.yellowAccent),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            if (title != '') ...<Widget>[
+                              Text(
+                                title,
+                                style: const TextStyle(color: Colors.yellowAccent),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+
                             Text(before.toCurrency()),
                           ],
                         ),
