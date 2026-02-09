@@ -444,12 +444,14 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 before: (beforeAssets[_kGold] ?? 0).toString(),
                 last: (lastAssets[_kGold] ?? 0).toString(),
                 bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
+                note: 'ALL',
               ),
               getBeforeLastDisplayWidget(
                 title: '',
                 before: beforeGoldSum.toString(),
                 last: lastGoldSum.toString(),
                 bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
+                note: 'GAIN',
               ),
 
               getBeforeLastDisplayWidget(
@@ -457,12 +459,14 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 before: (beforeAssets[_kStock] ?? 0).toString(),
                 last: (lastAssets[_kStock] ?? 0).toString(),
                 bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
+                note: 'ALL',
               ),
               getBeforeLastDisplayWidget(
                 title: '',
                 before: beforeStockSum.toString(),
                 last: lastStockSum.toString(),
                 bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
+                note: 'GAIN',
               ),
 
               getBeforeLastDisplayWidget(
@@ -470,12 +474,14 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 before: (beforeAssets[_kToushi] ?? 0).toString(),
                 last: (lastAssets[_kToushi] ?? 0).toString(),
                 bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
+                note: 'ALL',
               ),
               getBeforeLastDisplayWidget(
                 title: '',
                 before: beforeToushiSum.toString(),
                 last: lastToushiSum.toString(),
                 bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
+                note: 'GAIN',
               ),
 
               getBeforeLastDisplayWidget(
@@ -511,6 +517,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     required String before,
     required String last,
     required Color bgColor,
+    String? note,
   }) {
     return Container(
       decoration: BoxDecoration(color: bgColor),
@@ -529,11 +536,30 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   Row(
                     children: <Widget>[
                       Expanded(
-                        child: Container(
-                          width: double.infinity,
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.only(top: 10),
-                          child: const Text('➡️'),
+                        child: Stack(
+                          children: <Widget>[
+                            if (note != null) ...<Widget>[
+                              Container(
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.only(top: 10),
+                                child: Transform(
+                                  alignment: Alignment.centerLeft,
+                                  transform: Matrix4.identity()..setEntry(0, 1, -0.8),
+                                  child: Text(
+                                    note,
+                                    style: const TextStyle(color: Color(0xFFFBB6CE), fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ],
+                            Container(
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.only(top: 10),
+                              child: const Text('➡️'),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(width: 40),
