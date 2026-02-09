@@ -315,22 +315,54 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      if (inputDisplay)
-                        GestureDetector(
-                          onTap: () => LifetimeDialog(
-                            context: context,
-                            widget: SpendDateInputAlert(date: date),
-                          ),
-                          child: Icon(
-                            Icons.input,
-                            color: (diff != 0)
-                                ? Colors.greenAccent.withValues(alpha: 0.4)
-                                : Colors.white.withValues(alpha: 0.4),
-                          ),
-                        )
-                      else
-                        const Icon(Icons.square_outlined, color: Colors.transparent),
+                      Column(
+                        children: <Widget>[
+                          if (inputDisplay)
+                            GestureDetector(
+                              onTap: () => LifetimeDialog(
+                                context: context,
+                                widget: SpendDateInputAlert(date: date),
+                              ),
+                              child: Icon(
+                                Icons.input,
+                                color: (diff != 0)
+                                    ? Colors.greenAccent.withValues(alpha: 0.4)
+                                    : Colors.white.withValues(alpha: 0.4),
+                              ),
+                            )
+                          else
+                            const Icon(Icons.square_outlined, color: Colors.transparent),
+
+                          if (DateTime.parse(date).isBefore(DateTime.parse(DateTime.now().yyyymmdd))) ...<Widget>[
+                            const SizedBox(height: 10),
+                            GestureDetector(
+                              onTap: () {
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: displayThisMonthSpendTotal(date: date),
+
+                                  paddingTop: context.screenSize.height * 0.1,
+                                  paddingBottom: context.screenSize.height * 0.4,
+                                  paddingRight: context.screenSize.width * 0.2,
+                                  paddingLeft: context.screenSize.width * 0.2,
+
+                                  clearBarrierColor: true,
+                                );
+
+                                //appParamState.keepMoneySpendMap
+                              },
+                              child: CircleAvatar(
+                                radius: 15,
+                                backgroundColor: Colors.black.withValues(alpha: 0.3),
+                                child: const Icon(Icons.check, size: 10),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+
                       const SizedBox(width: 20),
+
                       Expanded(
                         child: Column(
                           children: <Widget>[
@@ -399,6 +431,33 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
           ),
         ],
       ),
+    );
+  }
+
+  ///
+  Widget displayThisMonthSpendTotal({required String date}) {
+    int total = 0;
+    appParamState.keepMoneySpendMap.forEach((String key, List<MoneySpendModel> value) {
+      // ignore: literal_only_boolean_expressions
+      if ('${key.split('-')[0]}-${key.split('-')[1]}' == '${date.split('-')[0]}-${date.split('-')[1]}') {
+        if (key.split('-')[2].toInt() <= date.split('-')[2].toInt()) {
+          total += value.fold<int>(0, (int previousValue, MoneySpendModel element) => previousValue + element.price);
+        }
+      }
+    });
+
+    return Column(
+      children: <Widget>[
+        const SizedBox(height: 20),
+        const Text('当月使用金額', style: TextStyle(color: Colors.yellowAccent, fontSize: 16)),
+        const SizedBox(height: 20),
+        Text(total.toString().toCurrency()),
+        const SizedBox(height: 10),
+        Text(
+          '${date.split('-')[0]}-${date.split('-')[1]}-01 -> $date',
+          style: const TextStyle(color: Colors.grey, fontSize: 10),
+        ),
+      ],
     );
   }
 
