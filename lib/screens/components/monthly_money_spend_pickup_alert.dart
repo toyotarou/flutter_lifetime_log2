@@ -401,6 +401,10 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                               backgroundColor: (appParamState.selectedMoneySpendPickupListIndexList.contains(index))
                                   ? Colors.yellowAccent.withValues(alpha: 0.3)
                                   : Colors.black.withValues(alpha: 0.3),
+
+                              child: (appParamState.selectedMoneySpendPickupListIndexList.contains(index))
+                                  ? getCircleAvatarIndexNumber(data: e, index: index)
+                                  : const Text(''),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -462,6 +466,31 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
           }, childCount: items.length),
         ),
       ],
+    );
+  }
+
+  ///
+  Widget getCircleAvatarIndexNumber({required MoneySpendModel data, required int index}) {
+    if (appParamState.selectedMoneySpendPickupItemTextList.length != 1) {
+      return const Text('');
+    }
+
+    final String key = data.item.split('/').first.trim();
+    if (key.isEmpty) {
+      return const Text('');
+    }
+
+    final List<Map<String, int>>? categoryItems = itemMoneySpendModelMap[key];
+    if (categoryItems == null) {
+      return const Text('');
+    }
+
+    final int listIndex = categoryItems.indexWhere((Map<String, int> e) => e['index'] == index);
+    final String answer = (listIndex != -1) ? (listIndex + 1).toString() : '';
+
+    return Text(
+      answer,
+      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
     );
   }
 
