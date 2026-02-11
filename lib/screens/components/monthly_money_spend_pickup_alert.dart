@@ -302,10 +302,6 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
         continue;
       }
 
-      if (cs.detail == 'モバイルスイカ') {
-        continue;
-      }
-
       final String date = DateTime(ymd.year, ymd.month, ymd.day).yyyymmdd;
       list.add(MoneySpendModel(date, '${cs.item} / ${cs.detail}', cs.price, 'card'));
     }
