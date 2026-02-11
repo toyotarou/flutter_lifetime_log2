@@ -12,9 +12,11 @@ import 'amazon_purchase_list_alert.dart';
 import 'mobile_suica_charge_history_list.dart';
 
 class MonthlyMoneySpendPickupAlert extends ConsumerStatefulWidget {
-  const MonthlyMoneySpendPickupAlert({super.key, required this.yearmonth});
+  const MonthlyMoneySpendPickupAlert({super.key, required this.yearmonth, required this.creditPriceEqual});
 
   final String yearmonth;
+
+  final bool creditPriceEqual;
 
   @override
   ConsumerState<MonthlyMoneySpendPickupAlert> createState() => _MonthlyMoneySpendPickupAlertState();
@@ -235,7 +237,22 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
 
   ///
   bool _isCountTarget(MoneySpendModel e) {
-    return !(e.price == 0 || e.item == 'クレジット');
+    if (widget.creditPriceEqual) {
+      /// widget.creditPriceEqual
+      /// は、lib/screens/components/monthly_money_spend_display_alert.dartから渡された値
+      ///
+      /// creditPriceEqual: creditTotal == creditSummaryTotal,
+      /// creditTotal: appParamState.keepMoneySpendMapの中の「クレジット」のレコードのpriceの合計値
+      /// creditSummaryTotal: appParamState.keepCreditSummaryMap[genDate.yyyymm]?.foldの値
+      ///
+      /// イコール(true)の場合は
+      /// appParamState.keepMoneySpendMapの中の「クレジット」のレコード
+      /// を表示しない。二重計上になるから
+
+      return !(e.price == 0 || e.item == 'クレジット');
+    } else {
+      return !(e.price == 0);
+    }
   }
 
   ///

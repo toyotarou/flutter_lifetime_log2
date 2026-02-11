@@ -11,7 +11,6 @@ import '../../models/credit_summary_model.dart';
 import '../../models/money_spend_model.dart';
 import '../../utility/functions.dart';
 import '../../utility/utility.dart';
-import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 import 'monthly_money_spend_pickup_alert.dart';
 import 'monthly_money_spend_summary_alert.dart';
@@ -166,24 +165,16 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                                     ) ??
                                     0;
 
-                                if (creditTotal != creditSummaryTotal) {
-                                  error_dialog(
-                                    context: context,
-                                    title: '表示できません。',
-                                    content:
-                                        '二つの値が同値ではありません。\ncreditTotal: $creditTotal\ncreditSummaryTotal: $creditSummaryTotal',
-                                  );
-
-                                  return;
-                                }
-
                                 appParamNotifier.clearSelectedMoneySpendPickupListIndexList();
 
                                 appParamNotifier.clearSelectedMoneySpendPickupItemTextList();
 
                                 LifetimeDialog(
                                   context: context,
-                                  widget: MonthlyMoneySpendPickupAlert(yearmonth: genDate.yyyymm),
+                                  widget: MonthlyMoneySpendPickupAlert(
+                                    yearmonth: genDate.yyyymm,
+                                    creditPriceEqual: creditTotal == creditSummaryTotal,
+                                  ),
                                 );
                               },
                               icon: const Icon(Icons.check),
