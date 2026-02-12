@@ -24,13 +24,13 @@ class MonthlyMoneySpendPickupAlert extends ConsumerStatefulWidget {
 
 class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpendPickupAlert>
     with ControllersMixin<MonthlyMoneySpendPickupAlert> {
+  // autoScrollControllerはStateとして保持する必要があります
   final AutoScrollController autoScrollController = AutoScrollController();
 
-  List<MoneySpendModel> moneySpendModelList = <MoneySpendModel>[];
-
-  Map<String, List<Map<String, int>>> itemMoneySpendModelMap = <String, List<Map<String, int>>>{};
-
-  Set<String> spendModelItemList = <String>{};
+  // buildメソッド内での副作用を避けるため、クラスフィールドとしてのデータ保持変数は削除しました。
+  // List<MoneySpendModel> moneySpendModelList = <MoneySpendModel>[];
+  // Map<String, List<Map<String, int>>> itemMoneySpendModelMap = <String, List<Map<String, int>>>{};
+  // Set<String> spendModelItemList = <String>{};
 
   ///
   @override
@@ -42,6 +42,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
   ///
   @override
   Widget build(BuildContext context) {
+    // yearmonthのパース処理。nullチェックを行い、不正な形式の場合はエラー画面を表示します。
     final _YearMonth? ym = _parseYearMonth(widget.yearmonth);
 
     if (ym == null) {
@@ -68,12 +69,13 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
       );
     }
 
+    // データの生成処理をローカル変数として扱います。これによりbuildメソッドが純粋関数に近づき、予期せぬ状態の残留を防ぎます。
     final List<MoneySpendModel> rawList = _makeMoneySpendModelListRaw(year: ym.year, month: ym.month);
 
     final List<String> itemKeys = _makeItemKeysFromDisplayList(rawList);
     final Map<String, int> itemRank = _makeItemRankMap(itemKeys);
 
-    moneySpendModelList = _sortMoneySpendModelList(list: rawList, itemRank: itemRank);
+    final List<MoneySpendModel> moneySpendModelList = _sortMoneySpendModelList(list: rawList, itemRank: itemRank);
 
     final int total = moneySpendModelList.fold<int>(0, (int sum, MoneySpendModel e) {
       if (!_isCountTarget(e)) {
@@ -82,7 +84,9 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
       return sum + e.price;
     });
 
-    makeItemMoneySpendModelMap(itemKeys: itemKeys, moneySpendModelList: moneySpendModelList);
+    // 集計マップの作成。ローカル変数で受け取ります。
+    final _ItemSpendData itemSpendData =
+        _makeItemMoneySpendModelMap(itemKeys: itemKeys, moneySpendModelList: moneySpendModelList);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -136,15 +140,19 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: spendModelItemList.map((String itemText) {
-                      final int? sum = itemMoneySpendModelMap[itemText]?.fold<int>(0, (int sum, Map<String, int> e) {
-                        return sum + e['price']!;
+                    children: itemSpendData.spendModelItemList.map((String itemText) {
+                      final int? sum = itemSpendData.itemMoneySpendModelMap[itemText]?.fold<int>(0,
+                          (int sum, Map<String, int> e) {
+                        // nullチェックを追加し、安全に加算します
+                        return sum + (e['price'] ?? 0);
                       });
 
                       return GestureDetector(
                         onTap: () {
-                          if (itemMoneySpendModelMap[itemText] != null) {
-                            for (final Map<String, int> element in itemMoneySpendModelMap[itemText]!) {
+                          // itemSpendDataを使用して安全にアクセスします
+                          if (itemSpendData.itemMoneySpendModelMap[itemText] != null) {
+                            for (final Map<String, int> element
+                                in itemSpendData.itemMoneySpendModelMap[itemText]!) {
                               appParamNotifier.setSelectedMoneySpendPickupListIndexList(
                                 index: element['index']!,
                                 price: element['price']!,
@@ -174,7 +182,8 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                                 Padding(
                                   padding: const EdgeInsets.only(right: 5, bottom: 5),
                                   child: Text(
-                                    sum.toString().toCurrency(),
+                                    // nullの場合は0として扱います
+                                    (sum ?? 0).toString().toCurrency(),
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: ((sum ?? 0) >= 30000) ? Colors.orangeAccent : Colors.white,
@@ -191,8 +200,8 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                                 alignment: Alignment.centerLeft,
                                 transform: Matrix4.identity()..setEntry(0, 1, -0.8),
                                 child: Text(
-                                  (itemMoneySpendModelMap[itemText] != null)
-                                      ? itemMoneySpendModelMap[itemText]!.length.toString()
+                                  (itemSpendData.itemMoneySpendModelMap[itemText] != null)
+                                      ? itemSpendData.itemMoneySpendModelMap[itemText]!.length.toString()
                                       : '',
                                   style: const TextStyle(
                                     color: Color(0xFFFBB6CE),
@@ -211,7 +220,13 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                Expanded(child: _displayMoneySpendModelList(moneySpendModelList)),
+                Expanded(
+                  // 必要なデータを引数として渡します
+                  child: _displayMoneySpendModelList(
+                    items: moneySpendModelList,
+                    itemSpendData: itemSpendData,
+                  ),
+                ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
@@ -331,6 +346,8 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
     required List<MoneySpendModel> list,
     required Map<String, int> itemRank,
   }) {
+    // ソート処理: 元のリストを変更しないようコピーを作成してからソートしてもよいですが、
+    // ここではRawリストがこのメソッドのためだけに生成されているため直接ソートします。
     list.sort((MoneySpendModel a, MoneySpendModel b) {
       final int d = a.date.compareTo(b.date);
       if (d != 0) {
@@ -362,7 +379,10 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
   }
 
   ///
-  Widget _displayMoneySpendModelList(List<MoneySpendModel> items) {
+  Widget _displayMoneySpendModelList({
+    required List<MoneySpendModel> items,
+    required _ItemSpendData itemSpendData,
+  }) {
     if (items.isEmpty) {
       return const Center(child: Text('表示できるデータがありません'));
     }
@@ -377,8 +397,8 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
             final Color color = (e.kind == 'credit')
                 ? Colors.greenAccent
                 : (e.kind == 'card')
-                ? Colors.yellowAccent
-                : Colors.white;
+                    ? Colors.yellowAccent
+                    : Colors.white;
 
             final String youbi = _safeYoubi(e.date);
 
@@ -416,7 +436,11 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                                   : Colors.black.withValues(alpha: 0.3),
 
                               child: (appParamState.selectedMoneySpendPickupListIndexList.contains(index))
-                                  ? getCircleAvatarIndexNumber(data: e, index: index)
+                                  ? getCircleAvatarIndexNumber(
+                                      data: e,
+                                      index: index,
+                                      itemMoneySpendModelMap: itemSpendData.itemMoneySpendModelMap,
+                                    )
                                   : const Text(''),
                             ),
                           ),
@@ -483,7 +507,11 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
   }
 
   ///
-  Widget getCircleAvatarIndexNumber({required MoneySpendModel data, required int index}) {
+  Widget getCircleAvatarIndexNumber({
+    required MoneySpendModel data,
+    required int index,
+    required Map<String, List<Map<String, int>>> itemMoneySpendModelMap,
+  }) {
     if (appParamState.selectedMoneySpendPickupItemTextList.length != 1) {
       return const Text('');
     }
@@ -493,6 +521,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
       return const Text('');
     }
 
+    // 引数で受け取ったマップを使用
     final List<Map<String, int>>? categoryItems = itemMoneySpendModelMap[key];
     if (categoryItems == null) {
       return const Text('');
@@ -514,12 +543,13 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
       final String s = dt.youbiStr;
       return (s.length >= 3) ? s.substring(0, 3) : s;
     } catch (_) {
-      return '---';
+      return '---'; // パースエラー時の安全なデフォルト値
     }
   }
 
   ///
   _DateLabelParts _safeDateLabelParts(String ymd) {
+    // "-" で分割し、要素数が足りない場合の安全策を追加
     final List<String> parts = ymd.split('-');
     if (parts.length >= 3) {
       return _DateLabelParts(yearText: parts[0], monthDayText: '${parts[1]}-${parts[2]}');
@@ -528,31 +558,40 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
     return const _DateLabelParts(yearText: '----', monthDayText: '--/--');
   }
 
-  ///
-  void makeItemMoneySpendModelMap({
+  /// クラスフィールドを更新するのではなく、結果を戻り値として返すように変更しました。
+  /// これにより副作用を排除し、テスト容易性と安全性を向上させました。
+  _ItemSpendData _makeItemMoneySpendModelMap({
     required List<String> itemKeys,
-
     required List<MoneySpendModel> moneySpendModelList,
   }) {
-    itemMoneySpendModelMap.clear();
-
-    spendModelItemList.clear();
+    final Map<String, List<Map<String, int>>> map = <String, List<Map<String, int>>>{};
+    final Set<String> list = <String>{};
 
     for (final String key in itemKeys) {
       for (int i = 0; i < moneySpendModelList.length; i++) {
         final List<String> exItem = moneySpendModelList[i].item.split('/');
 
-        if (exItem[0].trim() == key) {
-          (itemMoneySpendModelMap[key] ??= <Map<String, int>>[]).add(<String, int>{
+        // splitの結果が空でないか確認（通常は最低1要素あるが、安全のため）
+        if (exItem.isNotEmpty && exItem[0].trim() == key) {
+          (map[key] ??= <Map<String, int>>[]).add(<String, int>{
             'index': i,
             'price': moneySpendModelList[i].price,
           });
 
-          spendModelItemList.add(key);
+          list.add(key);
         }
       }
     }
+    
+    return _ItemSpendData(map, list);
   }
+}
+
+/// 内部データ受け渡し用のクラス
+class _ItemSpendData {
+  final Map<String, List<Map<String, int>>> itemMoneySpendModelMap;
+  final Set<String> spendModelItemList;
+  _ItemSpendData(this.itemMoneySpendModelMap, this.spendModelItemList);
 }
 
 ///
