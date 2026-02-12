@@ -237,7 +237,7 @@ class Utility {
     final double northSouth = distance.as(LengthUnit.Meter, southWest, northWest);
     final double eastWest = distance.as(LengthUnit.Meter, southWest, southEast);
 
-    final double areaKm2 = (northSouth * eastWest) / 1_000_000;
+    final double areaKm2 = (northSouth * eastWest) / 1000000;
 
     return BoundingBoxInfoModel(minLat: minLat, maxLat: maxLat, minLng: minLng, maxLng: maxLng, areaKm2: areaKm2);
   }
