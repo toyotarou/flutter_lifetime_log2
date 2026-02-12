@@ -19,9 +19,7 @@ mixin _$WalkInputState {
   List<WalkModel> get walkList => throw _privateConstructorUsedError;
   Map<String, WalkModel> get walkMap => throw _privateConstructorUsedError;
 
-  /// Create a copy of WalkInputState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $WalkInputStateCopyWith<WalkInputState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -45,8 +43,6 @@ class _$WalkInputStateCopyWithImpl<$Res, $Val extends WalkInputState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of WalkInputState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -85,8 +81,6 @@ class __$$WalkInputStateImplCopyWithImpl<$Res>
       _$WalkInputStateImpl _value, $Res Function(_$WalkInputStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of WalkInputState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -153,9 +147,7 @@ class _$WalkInputStateImpl implements _WalkInputState {
       const DeepCollectionEquality().hash(_walkList),
       const DeepCollectionEquality().hash(_walkMap));
 
-  /// Create a copy of WalkInputState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$WalkInputStateImplCopyWith<_$WalkInputStateImpl> get copyWith =>
@@ -172,11 +164,8 @@ abstract class _WalkInputState implements WalkInputState {
   List<WalkModel> get walkList;
   @override
   Map<String, WalkModel> get walkMap;
-
-  /// Create a copy of WalkInputState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$WalkInputStateImplCopyWith<_$WalkInputStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

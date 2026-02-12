@@ -6,7 +6,7 @@ part of 'app_param.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appParamHash() => r'836a260e930edb360fbd6c050efdccfdcf4e1db5';
+String _$appParamHash() => r'f967c8bd40a16901a4205e94490574d4305a6e0a';
 
 /// See also [AppParam].
 @ProviderFor(AppParam)
@@ -22,4 +22,4 @@ final appParamProvider =
 
 typedef _$AppParam = AutoDisposeNotifier<AppParamState>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -21,9 +21,7 @@ mixin _$CreditSummaryState {
   Map<String, List<CreditSummaryModel>> get creditSummaryMap =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of CreditSummaryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $CreditSummaryStateCopyWith<CreditSummaryState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -49,8 +47,6 @@ class _$CreditSummaryStateCopyWithImpl<$Res, $Val extends CreditSummaryState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of CreditSummaryState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -91,8 +87,6 @@ class __$$CreditSummaryStateImplCopyWithImpl<$Res>
       $Res Function(_$CreditSummaryStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of CreditSummaryState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -164,9 +158,7 @@ class _$CreditSummaryStateImpl implements _CreditSummaryState {
       const DeepCollectionEquality().hash(_creditSummaryList),
       const DeepCollectionEquality().hash(_creditSummaryMap));
 
-  /// Create a copy of CreditSummaryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$CreditSummaryStateImplCopyWith<_$CreditSummaryStateImpl> get copyWith =>
@@ -184,11 +176,8 @@ abstract class _CreditSummaryState implements CreditSummaryState {
   List<CreditSummaryModel> get creditSummaryList;
   @override
   Map<String, List<CreditSummaryModel>> get creditSummaryMap;
-
-  /// Create a copy of CreditSummaryState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$CreditSummaryStateImplCopyWith<_$CreditSummaryStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

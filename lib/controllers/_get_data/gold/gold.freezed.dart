@@ -20,9 +20,7 @@ mixin _$GoldState {
   Map<String, GoldModel> get goldMap => throw _privateConstructorUsedError;
   bool get goldFlag => throw _privateConstructorUsedError;
 
-  /// Create a copy of GoldState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $GoldStateCopyWith<GoldState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -48,8 +46,6 @@ class _$GoldStateCopyWithImpl<$Res, $Val extends GoldState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of GoldState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -96,8 +92,6 @@ class __$$GoldStateImplCopyWithImpl<$Res>
       _$GoldStateImpl _value, $Res Function(_$GoldStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of GoldState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -177,9 +171,7 @@ class _$GoldStateImpl implements _GoldState {
       const DeepCollectionEquality().hash(_goldMap),
       goldFlag);
 
-  /// Create a copy of GoldState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$GoldStateImplCopyWith<_$GoldStateImpl> get copyWith =>
@@ -198,11 +190,8 @@ abstract class _GoldState implements GoldState {
   Map<String, GoldModel> get goldMap;
   @override
   bool get goldFlag;
-
-  /// Create a copy of GoldState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$GoldStateImplCopyWith<_$GoldStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

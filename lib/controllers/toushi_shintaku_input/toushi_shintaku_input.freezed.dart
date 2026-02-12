@@ -18,9 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ToushiShintakuInputState {
   Map<String, int> get relationalIdMap => throw _privateConstructorUsedError;
 
-  /// Create a copy of ToushiShintakuInputState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $ToushiShintakuInputStateCopyWith<ToushiShintakuInputState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -45,8 +43,6 @@ class _$ToushiShintakuInputStateCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of ToushiShintakuInputState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -83,8 +79,6 @@ class __$$ToushiShintakuInputStateImplCopyWithImpl<$Res>
       $Res Function(_$ToushiShintakuInputStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of ToushiShintakuInputState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -133,9 +127,7 @@ class _$ToushiShintakuInputStateImpl implements _ToushiShintakuInputState {
   int get hashCode => Object.hash(
       runtimeType, const DeepCollectionEquality().hash(_relationalIdMap));
 
-  /// Create a copy of ToushiShintakuInputState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$ToushiShintakuInputStateImplCopyWith<_$ToushiShintakuInputStateImpl>
@@ -150,11 +142,8 @@ abstract class _ToushiShintakuInputState implements ToushiShintakuInputState {
 
   @override
   Map<String, int> get relationalIdMap;
-
-  /// Create a copy of ToushiShintakuInputState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$ToushiShintakuInputStateImplCopyWith<_$ToushiShintakuInputStateImpl>
       get copyWith => throw _privateConstructorUsedError;
 }

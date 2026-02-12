@@ -20,9 +20,7 @@ mixin _$SalaryState {
   Map<String, List<SalaryModel>> get salaryMap =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of SalaryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $SalaryStateCopyWith<SalaryState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -47,8 +45,6 @@ class _$SalaryStateCopyWithImpl<$Res, $Val extends SalaryState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of SalaryState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -88,8 +84,6 @@ class __$$SalaryStateImplCopyWithImpl<$Res>
       _$SalaryStateImpl _value, $Res Function(_$SalaryStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of SalaryState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -159,9 +153,7 @@ class _$SalaryStateImpl implements _SalaryState {
       const DeepCollectionEquality().hash(_salaryList),
       const DeepCollectionEquality().hash(_salaryMap));
 
-  /// Create a copy of SalaryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$SalaryStateImplCopyWith<_$SalaryStateImpl> get copyWith =>
@@ -177,11 +169,8 @@ abstract class _SalaryState implements SalaryState {
   List<SalaryModel> get salaryList;
   @override
   Map<String, List<SalaryModel>> get salaryMap;
-
-  /// Create a copy of SalaryState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$SalaryStateImplCopyWith<_$SalaryStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

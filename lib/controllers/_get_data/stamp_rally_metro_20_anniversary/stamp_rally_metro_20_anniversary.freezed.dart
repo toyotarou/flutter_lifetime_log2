@@ -23,9 +23,7 @@ mixin _$StampRallyMetro20AnniversaryState {
   Map<String, List<StampRallyModel>> get dateStationStampMap =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of StampRallyMetro20AnniversaryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $StampRallyMetro20AnniversaryStateCopyWith<StampRallyMetro20AnniversaryState>
       get copyWith => throw _privateConstructorUsedError;
 }
@@ -55,8 +53,6 @@ class _$StampRallyMetro20AnniversaryStateCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of StampRallyMetro20AnniversaryState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -106,8 +102,6 @@ class __$$StampRallyMetro20AnniversaryStateImplCopyWithImpl<$Res>
       $Res Function(_$StampRallyMetro20AnniversaryStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of StampRallyMetro20AnniversaryState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -200,9 +194,7 @@ class _$StampRallyMetro20AnniversaryStateImpl
       const DeepCollectionEquality().hash(_stationStampMap),
       const DeepCollectionEquality().hash(_dateStationStampMap));
 
-  /// Create a copy of StampRallyMetro20AnniversaryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$StampRallyMetro20AnniversaryStateImplCopyWith<
@@ -225,11 +217,8 @@ abstract class _StampRallyMetro20AnniversaryState
   Map<String, List<StampRallyModel>> get stationStampMap;
   @override
   Map<String, List<StampRallyModel>> get dateStationStampMap;
-
-  /// Create a copy of StampRallyMetro20AnniversaryState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$StampRallyMetro20AnniversaryStateImplCopyWith<
           _$StampRallyMetro20AnniversaryStateImpl>
       get copyWith => throw _privateConstructorUsedError;

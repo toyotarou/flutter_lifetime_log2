@@ -20,9 +20,7 @@ mixin _$LifetimeInputState {
   int get itemPos => throw _privateConstructorUsedError;
   List<String> get lifetimeStringList => throw _privateConstructorUsedError;
 
-  /// Create a copy of LifetimeInputState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $LifetimeInputStateCopyWith<LifetimeInputState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -49,8 +47,6 @@ class _$LifetimeInputStateCopyWithImpl<$Res, $Val extends LifetimeInputState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of LifetimeInputState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -97,8 +93,6 @@ class __$$LifetimeInputStateImplCopyWithImpl<$Res>
       $Res Function(_$LifetimeInputStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of LifetimeInputState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -170,9 +164,7 @@ class _$LifetimeInputStateImpl implements _LifetimeInputState {
   int get hashCode => Object.hash(runtimeType, selectedInputChoiceChip, itemPos,
       const DeepCollectionEquality().hash(_lifetimeStringList));
 
-  /// Create a copy of LifetimeInputState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$LifetimeInputStateImplCopyWith<_$LifetimeInputStateImpl> get copyWith =>
@@ -192,11 +184,8 @@ abstract class _LifetimeInputState implements LifetimeInputState {
   int get itemPos;
   @override
   List<String> get lifetimeStringList;
-
-  /// Create a copy of LifetimeInputState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$LifetimeInputStateImplCopyWith<_$LifetimeInputStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

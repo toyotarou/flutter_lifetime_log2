@@ -18,9 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$HolidayState {
   List<String> get holidayList => throw _privateConstructorUsedError;
 
-  /// Create a copy of HolidayState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $HolidayStateCopyWith<HolidayState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -44,8 +42,6 @@ class _$HolidayStateCopyWithImpl<$Res, $Val extends HolidayState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of HolidayState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -79,8 +75,6 @@ class __$$HolidayStateImplCopyWithImpl<$Res>
       _$HolidayStateImpl _value, $Res Function(_$HolidayStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of HolidayState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -128,9 +122,7 @@ class _$HolidayStateImpl implements _HolidayState {
   int get hashCode => Object.hash(
       runtimeType, const DeepCollectionEquality().hash(_holidayList));
 
-  /// Create a copy of HolidayState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$HolidayStateImplCopyWith<_$HolidayStateImpl> get copyWith =>
@@ -143,11 +135,8 @@ abstract class _HolidayState implements HolidayState {
 
   @override
   List<String> get holidayList;
-
-  /// Create a copy of HolidayState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$HolidayStateImplCopyWith<_$HolidayStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

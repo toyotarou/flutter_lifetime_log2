@@ -22,9 +22,7 @@ mixin _$WorkTimeState {
   Map<String, Map<String, String>> get workTimeDateMap =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of WorkTimeState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $WorkTimeStateCopyWith<WorkTimeState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -51,8 +49,6 @@ class _$WorkTimeStateCopyWithImpl<$Res, $Val extends WorkTimeState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of WorkTimeState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -99,8 +95,6 @@ class __$$WorkTimeStateImplCopyWithImpl<$Res>
       _$WorkTimeStateImpl _value, $Res Function(_$WorkTimeStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of WorkTimeState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -190,9 +184,7 @@ class _$WorkTimeStateImpl implements _WorkTimeState {
       const DeepCollectionEquality().hash(_workTimeMap),
       const DeepCollectionEquality().hash(_workTimeDateMap));
 
-  /// Create a copy of WorkTimeState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$WorkTimeStateImplCopyWith<_$WorkTimeStateImpl> get copyWith =>
@@ -212,11 +204,8 @@ abstract class _WorkTimeState implements WorkTimeState {
   Map<String, WorkTimeModel> get workTimeMap;
   @override
   Map<String, Map<String, String>> get workTimeDateMap;
-
-  /// Create a copy of WorkTimeState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$WorkTimeStateImplCopyWith<_$WorkTimeStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

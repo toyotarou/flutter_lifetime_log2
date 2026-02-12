@@ -34,9 +34,7 @@ mixin _$MoneyInputState {
   bool get isReplaceInputValueList => throw _privateConstructorUsedError;
   String get replaceInputValueListDate => throw _privateConstructorUsedError;
 
-  /// Create a copy of MoneyInputState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $MoneyInputStateCopyWith<MoneyInputState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -66,8 +64,6 @@ class _$MoneyInputStateCopyWithImpl<$Res, $Val extends MoneyInputState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of MoneyInputState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -132,8 +128,6 @@ class __$$MoneyInputStateImplCopyWithImpl<$Res>
       _$MoneyInputStateImpl _value, $Res Function(_$MoneyInputStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of MoneyInputState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -269,9 +263,7 @@ class _$MoneyInputStateImpl implements _MoneyInputState {
       isReplaceInputValueList,
       replaceInputValueListDate);
 
-  /// Create a copy of MoneyInputState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$MoneyInputStateImplCopyWith<_$MoneyInputStateImpl> get copyWith =>
@@ -291,7 +283,8 @@ abstract class _MoneyInputState implements MoneyInputState {
   @override
   List<MoneyModel> get moneyList;
   @override
-  Map<String, MoneyModel> get moneyMap; // ///
+  Map<String, MoneyModel> get moneyMap;
+  @override // ///
 // List<OverlayEntry>? firstEntries,
 // List<OverlayEntry>? secondEntries,
 //
@@ -302,7 +295,6 @@ abstract class _MoneyInputState implements MoneyInputState {
 //
 //
 //
-  @override
   int get pos;
   @override
   List<String> get inputValueList;
@@ -310,11 +302,8 @@ abstract class _MoneyInputState implements MoneyInputState {
   bool get isReplaceInputValueList;
   @override
   String get replaceInputValueListDate;
-
-  /// Create a copy of MoneyInputState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$MoneyInputStateImplCopyWith<_$MoneyInputStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

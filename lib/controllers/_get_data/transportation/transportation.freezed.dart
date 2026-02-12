@@ -23,9 +23,7 @@ mixin _$TransportationState {
   List<StationModel> get stationList => throw _privateConstructorUsedError;
   Map<String, String> get trainMap => throw _privateConstructorUsedError;
 
-  /// Create a copy of TransportationState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $TransportationStateCopyWith<TransportationState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -53,8 +51,6 @@ class _$TransportationStateCopyWithImpl<$Res, $Val extends TransportationState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of TransportationState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -107,8 +103,6 @@ class __$$TransportationStateImplCopyWithImpl<$Res>
       $Res Function(_$TransportationStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of TransportationState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -218,9 +212,7 @@ class _$TransportationStateImpl implements _TransportationState {
       const DeepCollectionEquality().hash(_stationList),
       const DeepCollectionEquality().hash(_trainMap));
 
-  /// Create a copy of TransportationState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$TransportationStateImplCopyWith<_$TransportationStateImpl> get copyWith =>
@@ -243,11 +235,8 @@ abstract class _TransportationState implements TransportationState {
   List<StationModel> get stationList;
   @override
   Map<String, String> get trainMap;
-
-  /// Create a copy of TransportationState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$TransportationStateImplCopyWith<_$TransportationStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

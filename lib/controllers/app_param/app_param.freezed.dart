@@ -148,9 +148,7 @@ mixin _$AppParamState {
   List<String> get selectedMoneySpendPickupItemTextList =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of AppParamState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $AppParamStateCopyWith<AppParamState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -245,8 +243,6 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of AppParamState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -707,8 +703,6 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
       _$AppParamStateImpl _value, $Res Function(_$AppParamStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of AppParamState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1963,9 +1957,7 @@ class _$AppParamStateImpl implements _AppParamState {
             .hash(_selectedMoneySpendPickupItemTextList)
       ]);
 
-  /// Create a copy of AppParamState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$AppParamStateImplCopyWith<_$AppParamStateImpl> get copyWith =>
@@ -2105,9 +2097,9 @@ abstract class _AppParamState implements AppParamState {
   Map<String, WorkHistoryModel> get keepWorkHistoryModelMap;
   @override
   Map<String, String> get keepTrainMap;
+  @override
 
   ///
-  @override
   List<StationModel> get keepStationList;
   @override
   Map<String, List<String>> get keepTempleDateTimeBadgeMap;
@@ -2131,43 +2123,43 @@ abstract class _AppParamState implements AppParamState {
   List<Map<String, String>> get keepInsuranceDataList;
   @override
   Map<String, GeolocModel> get keepNearestTempleNameGeolocModelMap;
+  @override
 
   ///
-  @override
   String get homeTabYearMonth;
+  @override
 
   ///
-  @override
   List<OverlayEntry>? get firstEntries;
   @override
   List<OverlayEntry>? get secondEntries;
   @override
   Offset? get overlayPosition;
+  @override
 
   ///
-  @override
   double get currentZoom;
   @override
   int get currentPaddingIndex;
+  @override
 
   ///
-  @override
   String get selectedYearMonth;
   @override
   List<String> get monthlyGeolocMapSelectedDateList;
   @override
   int get selectedGraphYear;
+  @override
 
   ///
-  @override
   TempleDataModel? get selectedTemple;
+  @override
 
   ///
-  @override
   String get selectedTempleDirection;
+  @override
 
   ///
-  @override
   bool get isMonthlySpendSummaryMinusJogai;
   @override
   String get yearlyAllSpendSelectedYear;
@@ -2207,11 +2199,8 @@ abstract class _AppParamState implements AppParamState {
   int get selectedMoneySpendPickupListSum;
   @override
   List<String> get selectedMoneySpendPickupItemTextList;
-
-  /// Create a copy of AppParamState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$AppParamStateImplCopyWith<_$AppParamStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

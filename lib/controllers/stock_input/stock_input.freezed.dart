@@ -19,9 +19,7 @@ mixin _$StockInputState {
   List<WalkModel> get walkList => throw _privateConstructorUsedError;
   Map<String, WalkModel> get walkMap => throw _privateConstructorUsedError;
 
-  /// Create a copy of StockInputState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $StockInputStateCopyWith<StockInputState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -45,8 +43,6 @@ class _$StockInputStateCopyWithImpl<$Res, $Val extends StockInputState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of StockInputState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -85,8 +81,6 @@ class __$$StockInputStateImplCopyWithImpl<$Res>
       _$StockInputStateImpl _value, $Res Function(_$StockInputStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of StockInputState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -153,9 +147,7 @@ class _$StockInputStateImpl implements _StockInputState {
       const DeepCollectionEquality().hash(_walkList),
       const DeepCollectionEquality().hash(_walkMap));
 
-  /// Create a copy of StockInputState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$StockInputStateImplCopyWith<_$StockInputStateImpl> get copyWith =>
@@ -172,11 +164,8 @@ abstract class _StockInputState implements StockInputState {
   List<WalkModel> get walkList;
   @override
   Map<String, WalkModel> get walkMap;
-
-  /// Create a copy of StockInputState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$StockInputStateImplCopyWith<_$StockInputStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

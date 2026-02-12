@@ -22,9 +22,7 @@ mixin _$SpendInputState {
   List<String> get inputKindList => throw _privateConstructorUsedError;
   String get selectedBankKey => throw _privateConstructorUsedError;
 
-  /// Create a copy of SpendInputState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $SpendInputStateCopyWith<SpendInputState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -53,8 +51,6 @@ class _$SpendInputStateCopyWithImpl<$Res, $Val extends SpendInputState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of SpendInputState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -113,8 +109,6 @@ class __$$SpendInputStateImplCopyWithImpl<$Res>
       _$SpendInputStateImpl _value, $Res Function(_$SpendInputStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of SpendInputState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -226,9 +220,7 @@ class _$SpendInputStateImpl implements _SpendInputState {
       const DeepCollectionEquality().hash(_inputKindList),
       selectedBankKey);
 
-  /// Create a copy of SpendInputState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$SpendInputStateImplCopyWith<_$SpendInputStateImpl> get copyWith =>
@@ -254,11 +246,8 @@ abstract class _SpendInputState implements SpendInputState {
   List<String> get inputKindList;
   @override
   String get selectedBankKey;
-
-  /// Create a copy of SpendInputState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$SpendInputStateImplCopyWith<_$SpendInputStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

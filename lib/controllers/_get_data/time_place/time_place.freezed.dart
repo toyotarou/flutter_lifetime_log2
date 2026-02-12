@@ -20,9 +20,7 @@ mixin _$TimePlaceState {
   Map<String, List<TimePlaceModel>> get timePlaceMap =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of TimePlaceState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $TimePlaceStateCopyWith<TimePlaceState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -48,8 +46,6 @@ class _$TimePlaceStateCopyWithImpl<$Res, $Val extends TimePlaceState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of TimePlaceState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -90,8 +86,6 @@ class __$$TimePlaceStateImplCopyWithImpl<$Res>
       _$TimePlaceStateImpl _value, $Res Function(_$TimePlaceStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of TimePlaceState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -161,9 +155,7 @@ class _$TimePlaceStateImpl implements _TimePlaceState {
       const DeepCollectionEquality().hash(_timePlaceList),
       const DeepCollectionEquality().hash(_timePlaceMap));
 
-  /// Create a copy of TimePlaceState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$TimePlaceStateImplCopyWith<_$TimePlaceStateImpl> get copyWith =>
@@ -181,11 +173,8 @@ abstract class _TimePlaceState implements TimePlaceState {
   List<TimePlaceModel> get timePlaceList;
   @override
   Map<String, List<TimePlaceModel>> get timePlaceMap;
-
-  /// Create a copy of TimePlaceState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$TimePlaceStateImplCopyWith<_$TimePlaceStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

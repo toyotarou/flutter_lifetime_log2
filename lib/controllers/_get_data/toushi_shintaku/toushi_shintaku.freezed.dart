@@ -23,9 +23,7 @@ mixin _$ToushiShintakuState {
   Map<int, List<ToushiShintakuModel>> get toushiShintakuRelationalMap =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of ToushiShintakuState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $ToushiShintakuStateCopyWith<ToushiShintakuState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -52,8 +50,6 @@ class _$ToushiShintakuStateCopyWithImpl<$Res, $Val extends ToushiShintakuState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of ToushiShintakuState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -100,8 +96,6 @@ class __$$ToushiShintakuStateImplCopyWithImpl<$Res>
       $Res Function(_$ToushiShintakuStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of ToushiShintakuState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -196,9 +190,7 @@ class _$ToushiShintakuStateImpl implements _ToushiShintakuState {
       const DeepCollectionEquality().hash(_toushiShintakuMap),
       const DeepCollectionEquality().hash(_toushiShintakuRelationalMap));
 
-  /// Create a copy of ToushiShintakuState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$ToushiShintakuStateImplCopyWith<_$ToushiShintakuStateImpl> get copyWith =>
@@ -219,11 +211,8 @@ abstract class _ToushiShintakuState implements ToushiShintakuState {
   Map<String, List<ToushiShintakuModel>> get toushiShintakuMap;
   @override
   Map<int, List<ToushiShintakuModel>> get toushiShintakuRelationalMap;
-
-  /// Create a copy of ToushiShintakuState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$ToushiShintakuStateImplCopyWith<_$ToushiShintakuStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

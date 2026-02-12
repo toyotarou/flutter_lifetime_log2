@@ -21,9 +21,7 @@ mixin _$AmazonPurchaseState {
   Map<String, List<AmazonPurchaseModel>> get amazonPurchaseMap =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of AmazonPurchaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $AmazonPurchaseStateCopyWith<AmazonPurchaseState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -49,8 +47,6 @@ class _$AmazonPurchaseStateCopyWithImpl<$Res, $Val extends AmazonPurchaseState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of AmazonPurchaseState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -91,8 +87,6 @@ class __$$AmazonPurchaseStateImplCopyWithImpl<$Res>
       $Res Function(_$AmazonPurchaseStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of AmazonPurchaseState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -165,9 +159,7 @@ class _$AmazonPurchaseStateImpl implements _AmazonPurchaseState {
       const DeepCollectionEquality().hash(_amazonPurchaseList),
       const DeepCollectionEquality().hash(_amazonPurchaseMap));
 
-  /// Create a copy of AmazonPurchaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$AmazonPurchaseStateImplCopyWith<_$AmazonPurchaseStateImpl> get copyWith =>
@@ -185,11 +177,8 @@ abstract class _AmazonPurchaseState implements AmazonPurchaseState {
   List<AmazonPurchaseModel> get amazonPurchaseList;
   @override
   Map<String, List<AmazonPurchaseModel>> get amazonPurchaseMap;
-
-  /// Create a copy of AmazonPurchaseState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$AmazonPurchaseStateImplCopyWith<_$AmazonPurchaseStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

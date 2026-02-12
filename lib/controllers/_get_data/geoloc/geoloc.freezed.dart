@@ -20,9 +20,7 @@ mixin _$GeolocState {
   Map<String, List<GeolocModel>> get geolocMap =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of GeolocState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $GeolocStateCopyWith<GeolocState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -47,8 +45,6 @@ class _$GeolocStateCopyWithImpl<$Res, $Val extends GeolocState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of GeolocState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -88,8 +84,6 @@ class __$$GeolocStateImplCopyWithImpl<$Res>
       _$GeolocStateImpl _value, $Res Function(_$GeolocStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of GeolocState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -159,9 +153,7 @@ class _$GeolocStateImpl implements _GeolocState {
       const DeepCollectionEquality().hash(_geolocList),
       const DeepCollectionEquality().hash(_geolocMap));
 
-  /// Create a copy of GeolocState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$GeolocStateImplCopyWith<_$GeolocStateImpl> get copyWith =>
@@ -177,11 +169,8 @@ abstract class _GeolocState implements GeolocState {
   List<GeolocModel> get geolocList;
   @override
   Map<String, List<GeolocModel>> get geolocMap;
-
-  /// Create a copy of GeolocState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$GeolocStateImplCopyWith<_$GeolocStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

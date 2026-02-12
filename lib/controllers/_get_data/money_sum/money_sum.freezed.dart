@@ -21,9 +21,7 @@ mixin _$MoneySumState {
   Map<String, ScrollLineChartModel> get moneySumMap =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of MoneySumState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $MoneySumStateCopyWith<MoneySumState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -49,8 +47,6 @@ class _$MoneySumStateCopyWithImpl<$Res, $Val extends MoneySumState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of MoneySumState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -91,8 +87,6 @@ class __$$MoneySumStateImplCopyWithImpl<$Res>
       _$MoneySumStateImpl _value, $Res Function(_$MoneySumStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of MoneySumState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -163,9 +157,7 @@ class _$MoneySumStateImpl implements _MoneySumState {
       const DeepCollectionEquality().hash(_moneySumList),
       const DeepCollectionEquality().hash(_moneySumMap));
 
-  /// Create a copy of MoneySumState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$MoneySumStateImplCopyWith<_$MoneySumStateImpl> get copyWith =>
@@ -182,11 +174,8 @@ abstract class _MoneySumState implements MoneySumState {
   List<ScrollLineChartModel> get moneySumList;
   @override
   Map<String, ScrollLineChartModel> get moneySumMap;
-
-  /// Create a copy of MoneySumState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$MoneySumStateImplCopyWith<_$MoneySumStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -23,9 +23,7 @@ mixin _$StampRallyMetroPokepokeState {
   Map<String, List<StampRallyModel>> get dateStationStampMap =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of StampRallyMetroPokepokeState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $StampRallyMetroPokepokeStateCopyWith<StampRallyMetroPokepokeState>
       get copyWith => throw _privateConstructorUsedError;
 }
@@ -55,8 +53,6 @@ class _$StampRallyMetroPokepokeStateCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of StampRallyMetroPokepokeState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -106,8 +102,6 @@ class __$$StampRallyMetroPokepokeStateImplCopyWithImpl<$Res>
       $Res Function(_$StampRallyMetroPokepokeStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of StampRallyMetroPokepokeState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -200,9 +194,7 @@ class _$StampRallyMetroPokepokeStateImpl
       const DeepCollectionEquality().hash(_stationStampMap),
       const DeepCollectionEquality().hash(_dateStationStampMap));
 
-  /// Create a copy of StampRallyMetroPokepokeState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$StampRallyMetroPokepokeStateImplCopyWith<
@@ -225,11 +217,8 @@ abstract class _StampRallyMetroPokepokeState
   Map<String, List<StampRallyModel>> get stationStampMap;
   @override
   Map<String, List<StampRallyModel>> get dateStationStampMap;
-
-  /// Create a copy of StampRallyMetroPokepokeState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$StampRallyMetroPokepokeStateImplCopyWith<
           _$StampRallyMetroPokepokeStateImpl>
       get copyWith => throw _privateConstructorUsedError;

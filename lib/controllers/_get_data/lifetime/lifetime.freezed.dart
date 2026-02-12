@@ -20,9 +20,7 @@ mixin _$LifetimeState {
   Map<String, LifetimeModel> get lifetimeMap =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of LifetimeState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $LifetimeStateCopyWith<LifetimeState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -48,8 +46,6 @@ class _$LifetimeStateCopyWithImpl<$Res, $Val extends LifetimeState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of LifetimeState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -90,8 +86,6 @@ class __$$LifetimeStateImplCopyWithImpl<$Res>
       _$LifetimeStateImpl _value, $Res Function(_$LifetimeStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of LifetimeState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -161,9 +155,7 @@ class _$LifetimeStateImpl implements _LifetimeState {
       const DeepCollectionEquality().hash(_lifetimeList),
       const DeepCollectionEquality().hash(_lifetimeMap));
 
-  /// Create a copy of LifetimeState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$LifetimeStateImplCopyWith<_$LifetimeStateImpl> get copyWith =>
@@ -179,11 +171,8 @@ abstract class _LifetimeState implements LifetimeState {
   List<LifetimeModel> get lifetimeList;
   @override
   Map<String, LifetimeModel> get lifetimeMap;
-
-  /// Create a copy of LifetimeState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$LifetimeStateImplCopyWith<_$LifetimeStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
