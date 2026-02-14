@@ -45,6 +45,11 @@ class LifetimeGeolocMapDisplayAlert extends ConsumerStatefulWidget {
 
 class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMapDisplayAlert>
     with ControllersMixin<LifetimeGeolocMapDisplayAlert> {
+  static const int _maxGlobalKeys = 1000;
+  static const int _stampRallyAllStationKeyOffset = 100;
+  static const int _stampRally20AnniversaryKeyOffset = 200;
+  static const int _stampRallyPokepokeKeyOffset = 300;
+
   bool isLoading = false;
 
   List<double> latList = <double>[];
@@ -100,6 +105,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   bool _cacheBuilt = false;
 
+  StreamSubscription<dynamic>? _mapReadySubscription;
+
   ///
   @override
   void initState() {
@@ -108,7 +115,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     fortyEightColor = utility.getFortyEightColor();
 
     // ignore: always_specify_types
-    globalKeyList = List.generate(1000, (int index) => GlobalKey());
+    globalKeyList = List.generate(_maxGlobalKeys, (int index) => GlobalKey());
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) {
@@ -153,14 +160,33 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         }
       }
 
-      // ignore: always_specify_types
-      Future.delayed(const Duration(seconds: 2), () {
+      _mapReadySubscription = mapController.mapEventStream.first.asStream().listen((_) {
         if (mounted) {
           setDefaultBoundsMap();
           setState(() => isLoading = false);
         }
       });
     });
+  }
+
+  ///
+  @override
+  void dispose() {
+    _mapReadySubscription?.cancel();
+
+    for (final OverlayEntry entry in _firstEntries) {
+      entry.remove();
+    }
+    _firstEntries.clear();
+
+    for (final OverlayEntry entry in _secondEntries) {
+      entry.remove();
+    }
+    _secondEntries.clear();
+
+    mapController.dispose();
+
+    super.dispose();
   }
 
   ///
@@ -225,8 +251,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   Widget build(BuildContext context) {
     _rebuildCachesIfNeeded();
 
-    final DateTime? parsedDate = DateTime.tryParse(widget.date);
-    final String youbi = parsedDate != null ? parsedDate.youbiStr.substring(0, 3) : '';
+    final List<GeolocModel>? geolocList = widget.geolocList;
+    final GeolocModel? firstGeoloc = (geolocList != null && geolocList.isNotEmpty) ? geolocList[0] : null;
 
     return Scaffold(
       body: Stack(
@@ -234,8 +260,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           FlutterMap(
             mapController: mapController,
             options: MapOptions(
-              initialCenter: (widget.geolocList != null && widget.geolocList!.isNotEmpty)
-                  ? LatLng(widget.geolocList![0].latitude.toDouble(), widget.geolocList![0].longitude.toDouble())
+              initialCenter: firstGeoloc != null
+                  ? LatLng(firstGeoloc.latitude.toDouble(), firstGeoloc.longitude.toDouble())
                   : const LatLng(zenpukujiLat, zenpukujiLng),
               initialZoom: currentZoomEightTeen,
               onPositionChanged: (MapCamera position, bool isMoving) {
@@ -244,325 +270,322 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 }
               },
             ),
-            children: <Widget>[
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                tileProvider: CachedTileProvider(),
-                userAgentPackageName: 'com.example.app',
-              ),
-              if (appParamState.keepAllPolygonsList.isNotEmpty) ...<Widget>[
-                // ignore: always_specify_types
-                PolygonLayer(
-                  polygons: makeAreaPolygons(
-                    allPolygonsList: appParamState.keepAllPolygonsList,
-                    fortyEightColor: fortyEightColor,
-                  ),
-                ),
-              ],
-              MarkerLayer(markers: markerList),
-              if (appParamState.keepTransportationMap[widget.date] != null &&
-                  appParamState.keepTransportationMap[widget.date]!.spotDataModelListMap.isNotEmpty) ...<Widget>[
-                // ignore: always_specify_types
-                PolylineLayer(polylines: makeTransportationPolyline()),
-                MarkerLayer(markers: routePolylineInfoMarkerList),
-              ],
-              if (appParamState.routePolylinePartsGeolocList.isNotEmpty) ...<Widget>[
-                // ignore: always_specify_types
-                PolylineLayer(polylines: makeRouteGeolocPolyline()),
-              ],
-              MarkerLayer(markers: transportationGoalMarkerList),
-              MarkerLayer(markers: templeMarkerList),
-              MarkerLayer(markers: displayTimeMarkerList),
-              MarkerLayer(markers: stampRallyMetroAllStationMarkerList),
-              MarkerLayer(markers: stampRallyMetro20AnniversaryMarkerList),
-              MarkerLayer(markers: stampRallyMetroPokepokeMarkerList),
-              if (widget.templeGeolocNearlyDateList.isNotEmpty &&
-                  appParamState.isDisplayGhostGeolocPolyline) ...<Widget>[
-                // ignore: always_specify_types
-                PolylineLayer(polylines: makeGhostGeolocPolyline()),
-                MarkerLayer(markers: displayGhostGeolocDateList),
-              ],
-            ],
+            children: _buildMapLayers(),
           ),
-          Positioned(
-            top: 5,
-            right: 5,
-            left: 5,
+          _buildTopInfoPanel(),
+          if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+          if (appParamState.selectedGeolocTime.isNotEmpty) ...<Widget>[_buildBottomAddressPanel()],
+        ],
+      ),
+    );
+  }
+
+  ///
+  List<Widget> _buildMapLayers() {
+    return <Widget>[
+      TileLayer(
+        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        tileProvider: CachedTileProvider(),
+        userAgentPackageName: 'com.example.app',
+      ),
+      if (appParamState.keepAllPolygonsList.isNotEmpty) ...<Widget>[
+        // ignore: always_specify_types
+        PolygonLayer(
+          polygons: makeAreaPolygons(
+            allPolygonsList: appParamState.keepAllPolygonsList,
+            fortyEightColor: fortyEightColor,
+          ),
+        ),
+      ],
+      MarkerLayer(markers: markerList),
+      if (appParamState.keepTransportationMap[widget.date] case final TransportationModel transport
+          when transport.spotDataModelListMap.isNotEmpty) ...<Widget>[
+        // ignore: always_specify_types
+        PolylineLayer(polylines: makeTransportationPolyline()),
+        MarkerLayer(markers: routePolylineInfoMarkerList),
+      ],
+      if (appParamState.routePolylinePartsGeolocList.isNotEmpty) ...<Widget>[
+        // ignore: always_specify_types
+        PolylineLayer(polylines: makeRouteGeolocPolyline()),
+      ],
+      MarkerLayer(markers: transportationGoalMarkerList),
+      MarkerLayer(markers: templeMarkerList),
+      MarkerLayer(markers: displayTimeMarkerList),
+      MarkerLayer(markers: stampRallyMetroAllStationMarkerList),
+      MarkerLayer(markers: stampRallyMetro20AnniversaryMarkerList),
+      MarkerLayer(markers: stampRallyMetroPokepokeMarkerList),
+      if (widget.templeGeolocNearlyDateList.isNotEmpty && appParamState.isDisplayGhostGeolocPolyline) ...<Widget>[
+        // ignore: always_specify_types
+        PolylineLayer(polylines: makeGhostGeolocPolyline()),
+        MarkerLayer(markers: displayGhostGeolocDateList),
+      ],
+    ];
+  }
+
+  ///
+  Widget _buildTopInfoPanel() {
+    final DateTime? parsedDate = DateTime.tryParse(widget.date);
+    final String youbi = parsedDate != null ? parsedDate.youbiStr.substring(0, 3) : '';
+
+    return Positioned(
+      top: 5,
+      right: 5,
+      left: 5,
+      child: Column(
+        children: <Widget>[
+          Container(
+            width: context.screenSize.width,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Container(
-                  width: context.screenSize.width,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          SizedBox(
-                            width: 180,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Text(widget.date, style: const TextStyle(fontSize: 20)),
-                                const SizedBox(width: 10),
-                                Text(youbi),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  const Text('size:'),
-                                  Text(
-                                    appParamState.currentZoom.toStringAsFixed(2),
-                                    style: const TextStyle(fontSize: 20),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (appParamState.keepTempleMap[widget.date] != null) ...<Widget>[
-                        const SizedBox(height: 10),
-                        displayTempleNameList(),
-                      ],
-                      Row(
-                        children: <Widget>[
-                          if (appParamState.keepTransportationMap[widget.date] != null &&
-                              appParamState
-                                  .keepTransportationMap[widget.date]!
-                                  .stationRouteList
-                                  .isNotEmpty) ...<Widget>[
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: appParamState.keepTransportationMap[widget.date]!.stationRouteList
-                                  .map((String e) => Text(e, style: const TextStyle(fontSize: 12)))
-                                  .toList(),
-                            ),
-                          ],
-                          if (!appParamState.isDisplayMunicipalNameOnLifetimeGeolocMap) ...<Widget>[
-                            Expanded(
-                              child: Container(
-                                alignment: Alignment.topRight,
-                                child: GestureDetector(
-                                  onTap: () =>
-                                      appParamNotifier.setIsDisplayMunicipalNameOnLifetimeGeolocMap(flag: true),
-                                  child: Icon(Icons.location_on_outlined, color: Colors.white.withValues(alpha: 0.8)),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                      if (appParamState.selectedGeolocPointTime != '') ...<Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              appParamState.selectedGeolocPointTime,
-                              style: const TextStyle(color: Colors.yellowAccent),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                final List<GeolocModel>? rawList = widget.geolocList;
-                                if (rawList != null && rawList.isNotEmpty) {
-                                  final List<GeolocModel> list = <GeolocModel>[...rawList]
-                                    ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
-                                  final int pos = list.indexWhere(
-                                    (GeolocModel geoloc) => geoloc.time == appParamState.selectedGeolocPointTime,
-                                  );
-                                  if (pos != -1) {
-                                    appParamNotifier.setRoutePolylinePartsGeolocList(geolocModel: list[pos]);
-                                    if (pos + 1 < list.length) {
-                                      appParamNotifier.setSelectedGeolocPointTime(time: list[pos + 1].time);
-                                    }
-
-                                    appParamNotifier.setCurrentZoom(zoom: 15);
-
-                                    mapController.move(
-                                      LatLng(list[pos].latitude.toDouble(), list[pos].longitude.toDouble()),
-                                      15,
-                                    );
-                                    mapController.rotate(0);
-                                  }
-                                }
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.8),
-                                  border: Border.all(color: Colors.indigoAccent),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Row(
-                                  children: <Widget>[
-                                    Icon(Icons.stacked_line_chart, color: Colors.indigoAccent),
-                                    SizedBox(width: 5),
-                                    Icon(Icons.arrow_circle_right_rounded, color: Colors.indigoAccent),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Expanded(
+                    SizedBox(
+                      width: 180,
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
-                          if (appParamState.isDisplayMunicipalNameOnLifetimeGeolocMap) ...<Widget>[
-                            Container(
-                              width: context.screenSize.width * 0.6,
-                              height: context.screenSize.height * 0.1,
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Container(
-                                      padding: const EdgeInsets.only(top: 10, left: 10),
-                                      child: SingleChildScrollView(child: displayDateMunicipalNameWidget()),
-                                    ),
-                                  ),
-                                  Column(
-                                    children: <Widget>[
-                                      const Spacer(),
-                                      GestureDetector(
-                                        onTap: () =>
-                                            appParamNotifier.setIsDisplayMunicipalNameOnLifetimeGeolocMap(flag: false),
-                                        child: Icon(
-                                          Icons.location_on_outlined,
-                                          color: Colors.white.withValues(alpha: 0.8),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 15),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 10),
-                                ],
-                              ),
-                            ),
-                          ],
+                          Text(widget.date, style: const TextStyle(fontSize: 20)),
+                          const SizedBox(width: 10),
+                          Text(youbi),
                         ],
                       ),
                     ),
-                    Column(
-                      children: <Widget>[
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: GestureDetector(
-                            onTap: () {
-                              appParamNotifier.setSelectedGeolocTime(time: '');
-                              setDefaultBoundsMap();
-                            },
-                            child: const Icon(FontAwesomeIcons.expand),
-                          ),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
                         ),
-                        if (appParamState.keepTempleMap[widget.date] != null) ...<Widget>[
-                          const SizedBox(height: 10),
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: GestureDetector(
-                              onTap: () {
-                                closeAllOverlays(ref: ref);
-
-                                appParamNotifier.setSelectedTempleDirection(direction: '');
-
-                                LifetimeDialog(
-                                  context: context,
-                                  widget: TempleListDisplayAlert(
-                                    date: widget.date,
-                                    temple: appParamState.keepTempleMap[widget.date],
-                                  ),
-                                  paddingTop: context.screenSize.height * 0.2,
-                                  paddingRight: context.screenSize.width * 0.3,
-                                  clearBarrierColor: true,
-                                );
-                              },
-                              child: const Icon(FontAwesomeIcons.toriiGate),
-                            ),
-                          ),
-                          if (widget.templeGeolocNearlyDateList.isNotEmpty) ...<Widget>[
-                            const SizedBox(height: 10),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: (appParamState.isDisplayGhostGeolocPolyline)
-                                    ? Colors.yellowAccent.withOpacity(0.3)
-                                    : Colors.black.withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: GestureDetector(
-                                onTap: () {
-                                  appParamNotifier.setIsDisplayGhostGeolocPolyline(
-                                    flag: !appParamState.isDisplayGhostGeolocPolyline,
-                                  );
-                                },
-                                child: const Stack(
-                                  children: <Widget>[
-                                    Positioned(
-                                      bottom: 0,
-                                      child: Text('ghost', style: TextStyle(color: Colors.yellowAccent, fontSize: 8)),
-                                    ),
-                                    Icon(Icons.stacked_line_chart),
-                                  ],
-                                ),
-                              ),
-                            ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            const Text('size:'),
+                            Text(appParamState.currentZoom.toStringAsFixed(2), style: const TextStyle(fontSize: 20)),
                           ],
-                        ],
-                      ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
+                if (appParamState.keepTempleMap[widget.date] != null) ...<Widget>[
+                  const SizedBox(height: 10),
+                  displayTempleNameList(),
+                ],
+                Row(
+                  children: <Widget>[
+                    if (appParamState.keepTransportationMap[widget.date] case final TransportationModel dateTransport
+                        when dateTransport.stationRouteList.isNotEmpty) ...<Widget>[
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: dateTransport.stationRouteList
+                            .map((String e) => Text(e, style: const TextStyle(fontSize: 12)))
+                            .toList(),
+                      ),
+                    ],
+                    if (!appParamState.isDisplayMunicipalNameOnLifetimeGeolocMap) ...<Widget>[
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.topRight,
+                          child: GestureDetector(
+                            onTap: () => appParamNotifier.setIsDisplayMunicipalNameOnLifetimeGeolocMap(flag: true),
+                            child: Icon(Icons.location_on_outlined, color: Colors.white.withValues(alpha: 0.8)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                if (appParamState.selectedGeolocPointTime.isNotEmpty) ...<Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(appParamState.selectedGeolocPointTime, style: const TextStyle(color: Colors.yellowAccent)),
+                      GestureDetector(
+                        onTap: () {
+                          final List<GeolocModel>? list = _sortedGeolocListByTime();
+                          if (list != null) {
+                            final int pos = list.indexWhere(
+                              (GeolocModel geoloc) => geoloc.time == appParamState.selectedGeolocPointTime,
+                            );
+                            if (pos != -1) {
+                              appParamNotifier.setRoutePolylinePartsGeolocList(geolocModel: list[pos]);
+                              if (pos + 1 < list.length) {
+                                appParamNotifier.setSelectedGeolocPointTime(time: list[pos + 1].time);
+                              }
+
+                              appParamNotifier.setCurrentZoom(zoom: 15);
+
+                              mapController.move(
+                                LatLng(list[pos].latitude.toDouble(), list[pos].longitude.toDouble()),
+                                15,
+                              );
+                              mapController.rotate(0);
+                            }
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.8),
+                            border: Border.all(color: Colors.indigoAccent),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Row(
+                            children: <Widget>[
+                              Icon(Icons.stacked_line_chart, color: Colors.indigoAccent),
+                              SizedBox(width: 5),
+                              Icon(Icons.arrow_circle_right_rounded, color: Colors.indigoAccent),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
-          if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
-          if (appParamState.selectedGeolocTime != '') ...<Widget>[
-            Positioned(
-              bottom: 10,
-              right: 5,
-              left: 5,
-              height: 150,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(16),
+          const SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: Row(
+                  children: <Widget>[
+                    if (appParamState.isDisplayMunicipalNameOnLifetimeGeolocMap) ...<Widget>[
+                      Container(
+                        width: context.screenSize.width * 0.6,
+                        height: context.screenSize.height * 0.1,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 10, left: 10),
+                                child: SingleChildScrollView(child: displayDateMunicipalNameWidget()),
+                              ),
+                            ),
+                            Column(
+                              children: <Widget>[
+                                const Spacer(),
+                                GestureDetector(
+                                  onTap: () =>
+                                      appParamNotifier.setIsDisplayMunicipalNameOnLifetimeGeolocMap(flag: false),
+                                  child: Icon(Icons.location_on_outlined, color: Colors.white.withValues(alpha: 0.8)),
+                                ),
+                                const SizedBox(height: 15),
+                              ],
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-                padding: const EdgeInsets.all(5),
-                child: displayLatLngAddressList(),
               ),
-            ),
-          ],
+              Column(
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        appParamNotifier.setSelectedGeolocTime(time: '');
+                        setDefaultBoundsMap();
+                      },
+                      child: const Icon(FontAwesomeIcons.expand),
+                    ),
+                  ),
+                  if (appParamState.keepTempleMap[widget.date] != null) ...<Widget>[
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: GestureDetector(
+                        onTap: () {
+                          closeAllOverlays(ref: ref);
+
+                          appParamNotifier.setSelectedTempleDirection(direction: '');
+
+                          LifetimeDialog(
+                            context: context,
+                            widget: TempleListDisplayAlert(
+                              date: widget.date,
+                              temple: appParamState.keepTempleMap[widget.date],
+                            ),
+                            paddingTop: context.screenSize.height * 0.2,
+                            paddingRight: context.screenSize.width * 0.3,
+                            clearBarrierColor: true,
+                          );
+                        },
+                        child: const Icon(FontAwesomeIcons.toriiGate),
+                      ),
+                    ),
+                    if (widget.templeGeolocNearlyDateList.isNotEmpty) ...<Widget>[
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: (appParamState.isDisplayGhostGeolocPolyline)
+                              ? Colors.yellowAccent.withValues(alpha: 0.3)
+                              : Colors.black.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: GestureDetector(
+                          onTap: () {
+                            appParamNotifier.setIsDisplayGhostGeolocPolyline(
+                              flag: !appParamState.isDisplayGhostGeolocPolyline,
+                            );
+                          },
+                          child: const Stack(
+                            children: <Widget>[
+                              Positioned(
+                                bottom: 0,
+                                child: Text('ghost', style: TextStyle(color: Colors.yellowAccent, fontSize: 8)),
+                              ),
+                              Icon(Icons.stacked_line_chart),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ],
+              ),
+            ],
+          ),
         ],
+      ),
+    );
+  }
+
+  ///
+  Widget _buildBottomAddressPanel() {
+    return Positioned(
+      bottom: 10,
+      right: 5,
+      left: 5,
+      height: 150,
+      child: Container(
+        decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(16)),
+        padding: const EdgeInsets.all(5),
+        child: displayLatLngAddressList(),
       ),
     );
   }
@@ -572,7 +595,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     final List<Widget> list = <Widget>[];
 
     cityTownNames.split('\n').forEach((String element) {
-      if (element != '') {
+      if (element.isNotEmpty) {
         if (dateMunicipalNameSet.contains(element)) {
           list.add(
             Container(
@@ -593,6 +616,15 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   }
 
   ///
+  List<GeolocModel>? _sortedGeolocListByTime() {
+    final List<GeolocModel>? geolocList = widget.geolocList;
+    if (geolocList == null || geolocList.isEmpty) {
+      return null;
+    }
+    return <GeolocModel>[...geolocList]..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
+  }
+
+  ///
   void makeDisplayTimeMarker() {
     final double safeZoom = (currentZoom2.isFinite && currentZoom2 > 0) ? currentZoom2 : baseZoom2;
     final double scaleFactorRaw = safeZoom / baseZoom2;
@@ -601,13 +633,10 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     displayTimeMarkerList.clear();
 
     String keepTime = '';
-    final List<GeolocModel>? geolocList = widget.geolocList;
-    if (geolocList == null) {
+    final List<GeolocModel>? sortedList = _sortedGeolocListByTime();
+    if (sortedList == null) {
       return;
     }
-
-    final List<GeolocModel> sortedList = <GeolocModel>[...geolocList]
-      ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
 
     for (final GeolocModel element in sortedList) {
       final List<String> timeParts = element.time.split(':');
@@ -732,10 +761,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     latList.clear();
     lngList.clear();
 
-    final List<GeolocModel>? geolocList = widget.geolocList;
-    if (geolocList != null) {
-      final List<GeolocModel> sortedList = <GeolocModel>[...geolocList]
-        ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
+    final List<GeolocModel>? sortedList = _sortedGeolocListByTime();
+    if (sortedList != null) {
       for (final GeolocModel element in sortedList) {
         latList.add(element.latitude.toDouble());
         lngList.add(element.longitude.toDouble());
@@ -763,7 +790,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   ///
   void setDefaultBoundsMap() {
-    if (widget.geolocList != null && widget.geolocList!.isNotEmpty) {
+    final List<GeolocModel>? geolocList = widget.geolocList;
+    if (geolocList != null && geolocList.isNotEmpty) {
       mapController.rotate(0);
 
       // minLng / maxLng が逆になっていたので修正（ここ重要）
@@ -804,15 +832,12 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeMarker() {
     markerList.clear();
 
-    final List<GeolocModel>? rawGeolocList = widget.geolocList;
-    if (rawGeolocList == null || rawGeolocList.isEmpty) {
+    final List<GeolocModel>? sortedByTime = _sortedGeolocListByTime();
+    if (sortedByTime == null) {
       return;
     }
 
-    final String boundingBoxArea = utility.getBoundingBoxArea(points: rawGeolocList);
-
-    final List<GeolocModel> sortedByTime = <GeolocModel>[...rawGeolocList]
-      ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
+    final String boundingBoxArea = utility.getBoundingBoxArea(points: sortedByTime);
 
     for (int index = 0; index < sortedByTime.length; index++) {
       final GeolocModel current = sortedByTime[index];
@@ -888,7 +913,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       setStateCallback: setState,
       width: context.screenSize.width * 0.25,
       height: context.screenSize.height * 0.25,
-      color: Colors.blueGrey.withOpacity(0.3),
+      color: Colors.blueGrey.withValues(alpha: 0.3),
       initialPosition: Offset(context.screenSize.width * 0.75, context.screenSize.height * 0.5),
       widget: SizedBox(
         height: context.screenSize.height * 0.2,
@@ -912,11 +937,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     final List<Widget> list = <Widget>[];
 
     String keepTime = '';
-    final List<GeolocModel>? geolocList = widget.geolocList;
-    if (geolocList != null) {
-      final List<GeolocModel> sortedList = <GeolocModel>[...geolocList]
-        ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
-
+    final List<GeolocModel>? sortedList = _sortedGeolocListByTime();
+    if (sortedList != null) {
       for (final GeolocModel element in sortedList) {
         final List<String> timeParts = element.time.split(':');
         if (timeParts.isEmpty) {
@@ -1097,10 +1119,10 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               onTap: () {
                 appParamNotifier.clearRoutePolylinePartsGeolocList();
 
-                if (appParamState.keepNearestTempleNameGeolocModelMap[templeDataModel.name] != null) {
-                  appParamNotifier.setSelectedGeolocPointTime(
-                    time: appParamState.keepNearestTempleNameGeolocModelMap[templeDataModel.name]!.time,
-                  );
+                final GeolocModel? nearestGeoloc =
+                    appParamState.keepNearestTempleNameGeolocModelMap[templeDataModel.name];
+                if (nearestGeoloc != null) {
+                  appParamNotifier.setSelectedGeolocPointTime(time: nearestGeoloc.time);
                 }
 
                 iconToolChipDisplayOverlay(
@@ -1144,7 +1166,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   Widget displayLatLngAddressList() {
     final List<Widget> list = <Widget>[];
 
-    if (appParamState.selectedGeolocTime != '') {
+    if (appParamState.selectedGeolocTime.isNotEmpty) {
       final List<GeolocModel>? searchedGeoloc = widget.geolocList
           ?.where((GeolocModel element) {
             return '${element.year}-${element.month}-${element.day}' == widget.date;
@@ -1194,7 +1216,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeStampRallyMetroAllStationMarker() {
     stampRallyMetroAllStationMarkerList = _buildStampMarkerList(
       data: appParamState.keepStampRallyMetroAllStationMap[widget.date],
-      keyOffset: 100,
+      keyOffset: _stampRallyAllStationKeyOffset,
       colorOf: (_) => Colors.indigo,
     );
   }
@@ -1203,7 +1225,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeStampRallyMetro20AnniversaryMarker() {
     stampRallyMetro20AnniversaryMarkerList = _buildStampMarkerList(
       data: appParamState.keepStampRallyMetro20AnniversaryMap[widget.date],
-      keyOffset: 200,
+      keyOffset: _stampRally20AnniversaryKeyOffset,
       colorOf: (_) => Colors.indigo,
     );
   }
@@ -1212,7 +1234,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void makeStampRallyMetroPokepokeMarker() {
     stampRallyMetroPokepokeMarkerList = _buildStampMarkerList(
       data: appParamState.keepStampRallyMetroPokepokeMap[widget.date],
-      keyOffset: 300,
+      keyOffset: _stampRallyPokepokeKeyOffset,
       colorOf: (_) => Colors.indigo,
     );
   }
@@ -1289,7 +1311,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       final String ghostDate = widget.templeGeolocNearlyDateList[i];
       bool flag = true;
 
-      if (appParamState.selectedGhostPolylineDate != '' && appParamState.selectedGhostPolylineDate != ghostDate) {
+      if (appParamState.selectedGhostPolylineDate.isNotEmpty && appParamState.selectedGhostPolylineDate != ghostDate) {
         flag = false;
       }
 
@@ -1329,7 +1351,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       for (int j = 0; j < templeModel.templeDataList.length; j++) {
         bool flag = true;
 
-        if (appParamState.selectedGhostPolylineDate != '' &&
+        if (appParamState.selectedGhostPolylineDate.isNotEmpty &&
             appParamState.selectedGhostPolylineDate != templeModel.date) {
           flag = false;
         }
@@ -1343,7 +1365,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
               child: (j == 0)
                   ? GestureDetector(
                       onTap: () {
-                        if (appParamState.selectedGhostPolylineDate == '') {
+                        if (appParamState.selectedGhostPolylineDate.isEmpty) {
                           LifetimeDialog(
                             context: context,
                             widget: const LifetimeGeolocGhostTempleInfoAlert(),
