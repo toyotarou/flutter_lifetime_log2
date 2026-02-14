@@ -107,6 +107,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   StreamSubscription<dynamic>? _mapReadySubscription;
 
+  List<Polyline<Object>> ghostPolylines = <Polyline<Object>>[];
+
   ///
   @override
   void initState() {
@@ -282,6 +284,8 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   ///
   List<Widget> _buildMapLayers() {
+    ghostPolylines = makeGhostGeolocPolyline();
+
     return <Widget>[
       TileLayer(
         urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -316,7 +320,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
       MarkerLayer(markers: stampRallyMetroPokepokeMarkerList),
       if (widget.templeGeolocNearlyDateList.isNotEmpty && appParamState.isDisplayGhostGeolocPolyline) ...<Widget>[
         // ignore: always_specify_types
-        PolylineLayer(polylines: makeGhostGeolocPolyline()),
+        PolylineLayer(polylines: ghostPolylines),
         MarkerLayer(markers: displayGhostGeolocDateList),
       ],
     ];
@@ -539,30 +543,53 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                     ),
                     if (widget.templeGeolocNearlyDateList.isNotEmpty) ...<Widget>[
                       const SizedBox(height: 10),
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: (appParamState.isDisplayGhostGeolocPolyline)
-                              ? Colors.yellowAccent.withValues(alpha: 0.3)
-                              : Colors.black.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: GestureDetector(
-                          onTap: () {
-                            appParamNotifier.setIsDisplayGhostGeolocPolyline(
-                              flag: !appParamState.isDisplayGhostGeolocPolyline,
-                            );
-                          },
-                          child: const Stack(
-                            children: <Widget>[
-                              Positioned(
-                                bottom: 0,
-                                child: Text('ghost', style: TextStyle(color: Colors.yellowAccent, fontSize: 8)),
+
+                      Stack(
+                        children: <Widget>[
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: (appParamState.isDisplayGhostGeolocPolyline)
+                                  ? Colors.yellowAccent.withValues(alpha: 0.3)
+                                  : Colors.black.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: GestureDetector(
+                              onTap: () {
+                                appParamNotifier.setIsDisplayGhostGeolocPolyline(
+                                  flag: !appParamState.isDisplayGhostGeolocPolyline,
+                                );
+                              },
+                              child: const Stack(
+                                children: <Widget>[
+                                  Positioned(
+                                    top: 0,
+                                    child: Text('ghost', style: TextStyle(color: Colors.yellowAccent, fontSize: 8)),
+                                  ),
+                                  Icon(Icons.stacked_line_chart),
+                                ],
                               ),
-                              Icon(Icons.stacked_line_chart),
-                            ],
+                            ),
                           ),
-                        ),
+
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              width: 20,
+                              height: 20,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.orangeAccent.withValues(alpha: 0.4),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                ghostPolylines.length.toString(),
+                                style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ],
