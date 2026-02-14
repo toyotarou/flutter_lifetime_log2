@@ -14,6 +14,7 @@ import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'monthly_money_spend_pickup_alert.dart';
 import 'monthly_money_spend_summary_alert.dart';
+import 'same_day_money_spend_display_alert.dart';
 import 'spend_data_input_alert.dart';
 
 class MonthlyMoneySpendDisplayAlert extends ConsumerStatefulWidget {
@@ -221,7 +222,16 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      const SizedBox.shrink(),
+                      ElevatedButton(
+                        onPressed: () {
+                          appParamNotifier.setSelectedSameDay(day: DateTime.now().day.toString().padLeft(2, '0'));
+
+                          LifetimeDialog(context: context, widget: const SameDayMoneySpendDisplayAlert());
+                        },
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                        child: const Text('Same Date'),
+                      ),
+
                       Text('spend : ${monthlySum.toString().toCurrency()}', style: const TextStyle(fontSize: 12)),
                     ],
                   ),

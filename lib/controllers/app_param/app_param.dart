@@ -149,6 +149,8 @@ class AppParamState with _$AppParamState {
     @Default(<int>[]) List<int> selectedMoneySpendPickupListIndexList,
     @Default(0) int selectedMoneySpendPickupListSum,
     @Default(<String>[]) List<String> selectedMoneySpendPickupItemTextList,
+
+    @Default('') String selectedSameDay,
   }) = _AppParamState;
 }
 
@@ -465,7 +467,9 @@ class AppParam extends _$AppParam {
   }
 
   ///
-  void clearSelectedMoneySpendPickupItemTextList() {
-    state = state.copyWith(selectedMoneySpendPickupItemTextList: <String>[]);
-  }
+  void clearSelectedMoneySpendPickupItemTextList() =>
+      state = state.copyWith(selectedMoneySpendPickupItemTextList: <String>[]);
+
+  ///
+  void setSelectedSameDay({required String day}) => state = state.copyWith(selectedSameDay: day);
 }

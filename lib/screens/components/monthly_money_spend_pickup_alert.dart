@@ -589,9 +589,9 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
 
 /// 内部データ受け渡し用のクラス
 class _ItemSpendData {
+  _ItemSpendData(this.itemMoneySpendModelMap, this.spendModelItemList);
   final Map<String, List<Map<String, int>>> itemMoneySpendModelMap;
   final Set<String> spendModelItemList;
-  _ItemSpendData(this.itemMoneySpendModelMap, this.spendModelItemList);
 }
 
 ///
