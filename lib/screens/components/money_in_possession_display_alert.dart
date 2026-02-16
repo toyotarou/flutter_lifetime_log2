@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -24,6 +25,21 @@ class MoneyInPossessionDisplayAlert extends ConsumerStatefulWidget {
 class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessionDisplayAlert>
     with ControllersMixin<MoneyInPossessionDisplayAlert> {
   final AutoScrollController autoScrollController = AutoScrollController();
+
+  static const double _moveAmount = 18;
+  static const int _tickMs = 16;
+
+  Timer? _repeatTimer;
+
+  ///
+  @override
+  void dispose() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+
+    autoScrollController.dispose();
+    super.dispose();
+  }
 
   ///
   DateTime? _tryParseDate(String s) {
@@ -132,18 +148,34 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
                     const SizedBox.shrink(),
                     Row(
                       children: <Widget>[
-                        IconButton(
-                          onPressed: () {
-                            autoScrollController.scrollToIndex(appParamState.keepMoneyMap.length);
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTapDown: (_) {
+                            if (appParamState.keepMoneyMap.isEmpty) {
+                              return;
+                            }
+                            _startRepeating(() => _scrollBy(_moveAmount));
                           },
-                          icon: const Icon(Icons.arrow_downward),
+                          onTapUp: (_) => _stopRepeating(),
+                          onTapCancel: _stopRepeating,
+                          child: const SizedBox(
+                            width: 44,
+                            height: 44,
+                            child: Center(child: Icon(Icons.arrow_downward)),
+                          ),
                         ),
 
-                        IconButton(
-                          onPressed: () {
-                            autoScrollController.scrollToIndex(0);
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTapDown: (_) {
+                            if (appParamState.keepMoneyMap.isEmpty) {
+                              return;
+                            }
+                            _startRepeating(() => _scrollBy(-_moveAmount));
                           },
-                          icon: const Icon(Icons.arrow_upward),
+                          onTapUp: (_) => _stopRepeating(),
+                          onTapCancel: _stopRepeating,
+                          child: const SizedBox(width: 44, height: 44, child: Center(child: Icon(Icons.arrow_upward))),
                         ),
                       ],
                     ),
@@ -157,6 +189,33 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
         ),
       ),
     );
+  }
+
+  ///
+  void _startRepeating(VoidCallback action) {
+    _repeatTimer?.cancel();
+
+    action();
+
+    _repeatTimer = Timer.periodic(const Duration(milliseconds: _tickMs), (_) => action());
+  }
+
+  ///
+  void _stopRepeating() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+  }
+
+  ///
+  void _scrollBy(double delta) {
+    if (!autoScrollController.hasClients) {
+      return;
+    }
+
+    final ScrollPosition pos = autoScrollController.position;
+    final double newOffset = (autoScrollController.offset + delta).clamp(0.0, pos.maxScrollExtent);
+
+    autoScrollController.jumpTo(newOffset);
   }
 
   ///

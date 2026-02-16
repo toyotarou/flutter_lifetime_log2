@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -28,6 +30,21 @@ class WorkInfoYearlyDisplayAlert extends ConsumerStatefulWidget {
 class _WorkInfoYearlyDisplayAlertState extends ConsumerState<WorkInfoYearlyDisplayAlert>
     with ControllersMixin<WorkInfoYearlyDisplayAlert> {
   late final AutoScrollController autoScrollController;
+
+  static const double _moveAmount = 18;
+  static const int _tickMs = 16;
+
+  Timer? _repeatTimer;
+
+  ///
+  @override
+  void dispose() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+
+    autoScrollController.dispose();
+    super.dispose();
+  }
 
   ///
   @override
@@ -183,17 +200,25 @@ class _WorkInfoYearlyDisplayAlertState extends ConsumerState<WorkInfoYearlyDispl
                     Row(
                       children: <Widget>[
                         GestureDetector(
-                          onTap: () {
-                            autoScrollController.scrollToIndex(widget.workInfoList.length);
-                          },
-                          child: const Icon(Icons.arrow_downward),
+                          behavior: HitTestBehavior.opaque,
+                          onTapDown: (_) => _startRepeating(() => _scrollBy(_moveAmount)),
+                          onTapUp: (_) => _stopRepeating(),
+                          onTapCancel: _stopRepeating,
+                          child: const SizedBox(
+                            width: 44,
+                            height: 44,
+                            child: Center(child: Icon(Icons.arrow_downward)),
+                          ),
                         ),
+
                         const SizedBox(width: 10),
+
                         GestureDetector(
-                          onTap: () {
-                            autoScrollController.scrollToIndex(0);
-                          },
-                          child: const Icon(Icons.arrow_upward),
+                          behavior: HitTestBehavior.opaque,
+                          onTapDown: (_) => _startRepeating(() => _scrollBy(-_moveAmount)),
+                          onTapUp: (_) => _stopRepeating(),
+                          onTapCancel: _stopRepeating,
+                          child: const SizedBox(width: 44, height: 44, child: Center(child: Icon(Icons.arrow_upward))),
                         ),
                       ],
                     ),
@@ -300,6 +325,33 @@ class _WorkInfoYearlyDisplayAlertState extends ConsumerState<WorkInfoYearlyDispl
         ),
       ),
     );
+  }
+
+  ///
+  void _startRepeating(VoidCallback action) {
+    _repeatTimer?.cancel();
+
+    action();
+
+    _repeatTimer = Timer.periodic(const Duration(milliseconds: _tickMs), (_) => action());
+  }
+
+  ///
+  void _stopRepeating() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+  }
+
+  ///
+  void _scrollBy(double delta) {
+    if (!autoScrollController.hasClients) {
+      return;
+    }
+
+    final ScrollPosition pos = autoScrollController.position;
+    final double newOffset = (autoScrollController.offset + delta).clamp(0.0, pos.maxScrollExtent);
+
+    autoScrollController.jumpTo(newOffset);
   }
 }
 

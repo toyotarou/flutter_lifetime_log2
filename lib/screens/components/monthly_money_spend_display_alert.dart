@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
@@ -51,6 +53,11 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
   final AutoScrollController autoScrollController = AutoScrollController();
 
+  static const double _moveAmount = 18;
+  static const int _tickMs = 16;
+
+  Timer? _repeatTimer;
+
   ///
   @override
   void initState() {
@@ -61,6 +68,9 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   ///
   @override
   void dispose() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+
     autoScrollController.dispose();
     super.dispose();
   }
@@ -129,18 +139,32 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                           SizedBox(width: 60, child: Text(genDate.yyyymm)),
                           Row(
                             children: <Widget>[
-                              IconButton(
-                                onPressed: () {
-                                  final int lastDay = DateTime(genDate.year, genDate.month + 1, 0).day;
-                                  autoScrollController.scrollToIndex(lastDay);
-                                },
-                                icon: Icon(Icons.arrow_downward, color: Colors.white.withValues(alpha: 0.3)),
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTapDown: (_) => _startRepeating(() => _scrollBy(_moveAmount)),
+                                onTapUp: (_) => _stopRepeating(),
+                                onTapCancel: _stopRepeating,
+                                child: SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: Center(
+                                    child: Icon(Icons.arrow_downward, color: Colors.white.withValues(alpha: 0.3)),
+                                  ),
+                                ),
                               ),
-                              IconButton(
-                                onPressed: () {
-                                  autoScrollController.scrollToIndex(0);
-                                },
-                                icon: Icon(Icons.arrow_upward, color: Colors.white.withValues(alpha: 0.3)),
+
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTapDown: (_) => _startRepeating(() => _scrollBy(-_moveAmount)),
+                                onTapUp: (_) => _stopRepeating(),
+                                onTapCancel: _stopRepeating,
+                                child: SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: Center(
+                                    child: Icon(Icons.arrow_upward, color: Colors.white.withValues(alpha: 0.3)),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -243,6 +267,33 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
         ],
       ),
     );
+  }
+
+  ///
+  void _startRepeating(VoidCallback action) {
+    _repeatTimer?.cancel();
+
+    action();
+
+    _repeatTimer = Timer.periodic(const Duration(milliseconds: _tickMs), (_) => action());
+  }
+
+  ///
+  void _stopRepeating() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+  }
+
+  ///
+  void _scrollBy(double delta) {
+    if (!autoScrollController.hasClients) {
+      return;
+    }
+
+    final ScrollPosition pos = autoScrollController.position;
+    final double newOffset = (autoScrollController.offset + delta).clamp(0.0, pos.maxScrollExtent);
+
+    autoScrollController.jumpTo(newOffset);
   }
 
   ///

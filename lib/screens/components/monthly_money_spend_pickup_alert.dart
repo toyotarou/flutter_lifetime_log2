@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -32,9 +34,17 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
   // Map<String, List<Map<String, int>>> itemMoneySpendModelMap = <String, List<Map<String, int>>>{};
   // Set<String> spendModelItemList = <String>{};
 
+  static const double _moveAmount = 18;
+  static const int _tickMs = 16;
+
+  Timer? _repeatTimer;
+
   ///
   @override
   void dispose() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+
     autoScrollController.dispose();
     super.dispose();
   }
@@ -85,8 +95,10 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
     });
 
     // 集計マップの作成。ローカル変数で受け取ります。
-    final _ItemSpendData itemSpendData =
-        _makeItemMoneySpendModelMap(itemKeys: itemKeys, moneySpendModelList: moneySpendModelList);
+    final _ItemSpendData itemSpendData = _makeItemMoneySpendModelMap(
+      itemKeys: itemKeys,
+      moneySpendModelList: moneySpendModelList,
+    );
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -106,29 +118,34 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                     ),
                     Row(
                       children: <Widget>[
-                        IconButton(
-                          onPressed: () {
-                            if (moneySpendModelList.isNotEmpty) {
-                              autoScrollController.scrollToIndex(
-                                moneySpendModelList.length - 1,
-                                preferPosition: AutoScrollPosition.end,
-                                duration: const Duration(milliseconds: 300),
-                              );
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTapDown: (_) {
+                            if (moneySpendModelList.isEmpty) {
+                              return;
                             }
+                            _startRepeating(() => _scrollBy(_moveAmount));
                           },
-                          icon: const Icon(Icons.arrow_downward),
+                          onTapUp: (_) => _stopRepeating(),
+                          onTapCancel: _stopRepeating,
+                          child: const SizedBox(
+                            width: 44,
+                            height: 44,
+                            child: Center(child: Icon(Icons.arrow_downward)),
+                          ),
                         ),
-                        IconButton(
-                          onPressed: () {
-                            if (moneySpendModelList.isNotEmpty) {
-                              autoScrollController.scrollToIndex(
-                                0,
-                                preferPosition: AutoScrollPosition.begin,
-                                duration: const Duration(milliseconds: 300),
-                              );
+
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTapDown: (_) {
+                            if (moneySpendModelList.isEmpty) {
+                              return;
                             }
+                            _startRepeating(() => _scrollBy(-_moveAmount));
                           },
-                          icon: const Icon(Icons.arrow_upward),
+                          onTapUp: (_) => _stopRepeating(),
+                          onTapCancel: _stopRepeating,
+                          child: const SizedBox(width: 44, height: 44, child: Center(child: Icon(Icons.arrow_upward))),
                         ),
                       ],
                     ),
@@ -141,8 +158,10 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: itemSpendData.spendModelItemList.map((String itemText) {
-                      final int? sum = itemSpendData.itemMoneySpendModelMap[itemText]?.fold<int>(0,
-                          (int sum, Map<String, int> e) {
+                      final int? sum = itemSpendData.itemMoneySpendModelMap[itemText]?.fold<int>(0, (
+                        int sum,
+                        Map<String, int> e,
+                      ) {
                         // nullチェックを追加し、安全に加算します
                         return sum + (e['price'] ?? 0);
                       });
@@ -151,8 +170,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                         onTap: () {
                           // itemSpendDataを使用して安全にアクセスします
                           if (itemSpendData.itemMoneySpendModelMap[itemText] != null) {
-                            for (final Map<String, int> element
-                                in itemSpendData.itemMoneySpendModelMap[itemText]!) {
+                            for (final Map<String, int> element in itemSpendData.itemMoneySpendModelMap[itemText]!) {
                               appParamNotifier.setSelectedMoneySpendPickupListIndexList(
                                 index: element['index']!,
                                 price: element['price']!,
@@ -222,10 +240,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
 
                 Expanded(
                   // 必要なデータを引数として渡します
-                  child: _displayMoneySpendModelList(
-                    items: moneySpendModelList,
-                    itemSpendData: itemSpendData,
-                  ),
+                  child: _displayMoneySpendModelList(items: moneySpendModelList, itemSpendData: itemSpendData),
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
@@ -248,6 +263,33 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
         ),
       ),
     );
+  }
+
+  ///
+  void _startRepeating(VoidCallback action) {
+    _repeatTimer?.cancel();
+
+    action();
+
+    _repeatTimer = Timer.periodic(const Duration(milliseconds: _tickMs), (_) => action());
+  }
+
+  ///
+  void _stopRepeating() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+  }
+
+  ///
+  void _scrollBy(double delta) {
+    if (!autoScrollController.hasClients) {
+      return;
+    }
+
+    final ScrollPosition pos = autoScrollController.position;
+    final double newOffset = (autoScrollController.offset + delta).clamp(0.0, pos.maxScrollExtent);
+
+    autoScrollController.jumpTo(newOffset);
   }
 
   ///
@@ -379,10 +421,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
   }
 
   ///
-  Widget _displayMoneySpendModelList({
-    required List<MoneySpendModel> items,
-    required _ItemSpendData itemSpendData,
-  }) {
+  Widget _displayMoneySpendModelList({required List<MoneySpendModel> items, required _ItemSpendData itemSpendData}) {
     if (items.isEmpty) {
       return const Center(child: Text('表示できるデータがありません'));
     }
@@ -397,8 +436,8 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
             final Color color = (e.kind == 'credit')
                 ? Colors.greenAccent
                 : (e.kind == 'card')
-                    ? Colors.yellowAccent
-                    : Colors.white;
+                ? Colors.yellowAccent
+                : Colors.white;
 
             final String youbi = _safeYoubi(e.date);
 
@@ -573,16 +612,13 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
 
         // splitの結果が空でないか確認（通常は最低1要素あるが、安全のため）
         if (exItem.isNotEmpty && exItem[0].trim() == key) {
-          (map[key] ??= <Map<String, int>>[]).add(<String, int>{
-            'index': i,
-            'price': moneySpendModelList[i].price,
-          });
+          (map[key] ??= <Map<String, int>>[]).add(<String, int>{'index': i, 'price': moneySpendModelList[i].price});
 
           list.add(key);
         }
       }
     }
-    
+
     return _ItemSpendData(map, list);
   }
 }
@@ -590,6 +626,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
 /// 内部データ受け渡し用のクラス
 class _ItemSpendData {
   _ItemSpendData(this.itemMoneySpendModelMap, this.spendModelItemList);
+
   final Map<String, List<Map<String, int>>> itemMoneySpendModelMap;
   final Set<String> spendModelItemList;
 }

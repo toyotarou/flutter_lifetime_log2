@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
@@ -55,6 +57,12 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   final AutoScrollController autoScrollController = AutoScrollController();
   final List<Widget> monthlyAssetsList = <Widget>[];
 
+  static const double _moveAmount = 18;
+  static const int _tickMs = 16;
+
+  Timer? _repeatTimer;
+
+  ///
   @override
   void initState() {
     super.initState();
@@ -62,9 +70,11 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     _baseMonth = parsed ?? DateTime(DateTime.now().year, DateTime.now().month);
   }
 
-  ///
   @override
   void dispose() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+
     autoScrollController.dispose();
     super.dispose();
   }
@@ -102,7 +112,12 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
     );
 
-    final int endDay = DateTime(genDate.year, genDate.month + 1, 0).day;
+    // final int endDay = DateTime(genDate.year, genDate.month + 1, 0).day;
+    //
+    //
+    //
+    //
+    //
 
     return DefaultTextStyle(
       style: const TextStyle(fontSize: 12),
@@ -130,8 +145,9 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                         children: <Widget>[
                           Row(
                             children: <Widget>[
-                              IconButton(
-                                onPressed: () async {
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTapDown: (_) {
                                   if (monthlyAssetsList.isEmpty) {
                                     return;
                                   }
@@ -139,18 +155,20 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                                     return;
                                   }
 
-                                  try {
-                                    await autoScrollController.scrollToIndex(
-                                      endDay,
-                                      preferPosition: AutoScrollPosition.end,
-                                      duration: const Duration(milliseconds: 300),
-                                    );
-                                  } catch (_) {}
+                                  _startRepeating(() => _scrollMonthlyListBy(_moveAmount));
                                 },
-                                icon: const Icon(Icons.arrow_downward),
+                                onTapUp: (_) => _stopRepeating(),
+                                onTapCancel: _stopRepeating,
+                                child: const SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: Center(child: Icon(Icons.arrow_downward)),
+                                ),
                               ),
-                              IconButton(
-                                onPressed: () async {
+
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTapDown: (_) {
                                   if (monthlyAssetsList.isEmpty) {
                                     return;
                                   }
@@ -158,15 +176,15 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                                     return;
                                   }
 
-                                  try {
-                                    await autoScrollController.scrollToIndex(
-                                      1,
-                                      preferPosition: AutoScrollPosition.begin,
-                                      duration: const Duration(milliseconds: 300),
-                                    );
-                                  } catch (_) {}
+                                  _startRepeating(() => _scrollMonthlyListBy(-_moveAmount));
                                 },
-                                icon: const Icon(Icons.arrow_upward),
+                                onTapUp: (_) => _stopRepeating(),
+                                onTapCancel: _stopRepeating,
+                                child: const SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: Center(child: Icon(Icons.arrow_upward)),
+                                ),
                               ),
                             ],
                           ),
@@ -265,6 +283,33 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         ],
       ),
     );
+  }
+
+  ///
+  void _startRepeating(VoidCallback action) {
+    _repeatTimer?.cancel();
+
+    action();
+
+    _repeatTimer = Timer.periodic(const Duration(milliseconds: _tickMs), (_) => action());
+  }
+
+  ///
+  void _stopRepeating() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+  }
+
+  ///
+  void _scrollMonthlyListBy(double delta) {
+    if (!autoScrollController.hasClients) {
+      return;
+    }
+
+    final ScrollPosition pos = autoScrollController.position;
+    final double newOffset = (autoScrollController.offset + delta).clamp(0.0, pos.maxScrollExtent);
+
+    autoScrollController.jumpTo(newOffset);
   }
 
   ///

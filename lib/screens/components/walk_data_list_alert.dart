@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,10 +38,23 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
   bool todayStockExists = false;
   bool todayToushiShintakuRelationalIdBlankExists = false;
 
-  //  final Map<int, int> monthlyGraphAssetsMap = <int, int>{};
-
   final AutoScrollController autoScrollController = AutoScrollController();
   final List<Widget> walkDataList = <Widget>[];
+
+  static const double _moveAmount = 18;
+  static const int _tickMs = 16;
+
+  Timer? _repeatTimer;
+
+  ///
+  @override
+  void dispose() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+
+    autoScrollController.dispose();
+    super.dispose();
+  }
 
   ///
   @override
@@ -111,25 +126,28 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                         children: <Widget>[
                           Row(
                             children: <Widget>[
-                              IconButton(
-                                onPressed: () {
-                                  autoScrollController.scrollToIndex(
-                                    walkDataList.length,
-                                    preferPosition: AutoScrollPosition.end,
-                                    duration: const Duration(milliseconds: 300),
-                                  );
-                                },
-                                icon: const Icon(Icons.arrow_downward),
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTapDown: (_) => _startRepeating(() => _scrollBy(_moveAmount)),
+                                onTapUp: (_) => _stopRepeating(),
+                                onTapCancel: _stopRepeating,
+                                child: const SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: Center(child: Icon(Icons.arrow_downward)),
+                                ),
                               ),
-                              IconButton(
-                                onPressed: () {
-                                  autoScrollController.scrollToIndex(
-                                    0,
-                                    preferPosition: AutoScrollPosition.begin,
-                                    duration: const Duration(milliseconds: 300),
-                                  );
-                                },
-                                icon: const Icon(Icons.arrow_upward),
+
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTapDown: (_) => _startRepeating(() => _scrollBy(-_moveAmount)),
+                                onTapUp: (_) => _stopRepeating(),
+                                onTapCancel: _stopRepeating,
+                                child: const SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: Center(child: Icon(Icons.arrow_upward)),
+                                ),
                               ),
                             ],
                           ),
@@ -164,6 +182,33 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
         ],
       ),
     );
+  }
+
+  ///
+  void _startRepeating(VoidCallback action) {
+    _repeatTimer?.cancel();
+
+    action();
+
+    _repeatTimer = Timer.periodic(const Duration(milliseconds: _tickMs), (_) => action());
+  }
+
+  ///
+  void _stopRepeating() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+  }
+
+  ///
+  void _scrollBy(double delta) {
+    if (!autoScrollController.hasClients) {
+      return;
+    }
+
+    final ScrollPosition pos = autoScrollController.position;
+    final double newOffset = (autoScrollController.offset + delta).clamp(0.0, pos.maxScrollExtent);
+
+    autoScrollController.jumpTo(newOffset);
   }
 
   ///

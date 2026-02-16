@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -32,6 +34,21 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
   final AutoScrollController autoScrollController = AutoScrollController();
 
+  static const double _moveAmount = 18;
+  static const int _tickMs = 16;
+
+  Timer? _repeatTimer;
+
+  ///
+  @override
+  void dispose() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+
+    autoScrollController.dispose();
+    super.dispose();
+  }
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -58,15 +75,33 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         Row(
                           children: <Widget>[
                             GestureDetector(
-                              onTap: () => autoScrollController.scrollToIndex(
-                                DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day,
+                              behavior: HitTestBehavior.opaque,
+                              onTapDown: (_) => _startRepeating(() => _scrollBy(_moveAmount)),
+                              onTapUp: (_) => _stopRepeating(),
+                              onTapCancel: _stopRepeating,
+                              child: SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: Center(
+                                  child: Icon(Icons.arrow_downward, color: Colors.white.withValues(alpha: 0.3)),
+                                ),
                               ),
-                              child: Icon(Icons.arrow_downward, color: Colors.white.withValues(alpha: 0.3)),
                             ),
+
                             const SizedBox(width: 20),
+
                             GestureDetector(
-                              onTap: () => autoScrollController.scrollToIndex(0),
-                              child: Icon(Icons.arrow_upward, color: Colors.white.withValues(alpha: 0.3)),
+                              behavior: HitTestBehavior.opaque,
+                              onTapDown: (_) => _startRepeating(() => _scrollBy(-_moveAmount)),
+                              onTapUp: (_) => _stopRepeating(),
+                              onTapCancel: _stopRepeating,
+                              child: SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: Center(
+                                  child: Icon(Icons.arrow_upward, color: Colors.white.withValues(alpha: 0.3)),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -84,6 +119,33 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
         ),
       ),
     );
+  }
+
+  ///
+  void _startRepeating(VoidCallback action) {
+    _repeatTimer?.cancel();
+
+    action();
+
+    _repeatTimer = Timer.periodic(const Duration(milliseconds: _tickMs), (_) => action());
+  }
+
+  ///
+  void _stopRepeating() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+  }
+
+  ///
+  void _scrollBy(double delta) {
+    if (!autoScrollController.hasClients) {
+      return;
+    }
+
+    final ScrollPosition pos = autoScrollController.position;
+    final double newOffset = (autoScrollController.offset + delta).clamp(0.0, pos.maxScrollExtent);
+
+    autoScrollController.jumpTo(newOffset);
   }
 
   ///

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,11 +43,26 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
 
   List<YearDayAssetsModel> monthEndAssetsList = <YearDayAssetsModel>[];
 
+  static const double _moveAmount = 18;
+  static const int _tickMs = 16;
+
+  Timer? _repeatTimer;
+
   ///
   @override
   void initState() {
     super.initState();
     year = widget.date.split('-')[0].toInt();
+  }
+
+  ///
+  @override
+  void dispose() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+
+    autoScrollController.dispose();
+    super.dispose();
   }
 
   ///
@@ -77,32 +94,38 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                           Row(
                             children: <Widget>[
                               GestureDetector(
-                                onTap: () {
+                                behavior: HitTestBehavior.opaque,
+                                onTapDown: (_) {
                                   if (yearlyDayAssetsList.isEmpty) {
                                     return;
                                   }
-                                  autoScrollController.scrollToIndex(
-                                    yearlyDayAssetsList.length - 1,
-                                    preferPosition: AutoScrollPosition.end,
-                                    duration: const Duration(milliseconds: 300),
-                                  );
+                                  _startRepeating(() => _scrollBy(_moveAmount));
                                 },
-                                child: const Icon(Icons.arrow_downward),
+                                onTapUp: (_) => _stopRepeating(),
+                                onTapCancel: _stopRepeating,
+                                child: const SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: Center(child: Icon(Icons.arrow_downward)),
+                                ),
                               ),
                               const SizedBox(width: 20),
 
                               GestureDetector(
-                                onTap: () {
+                                behavior: HitTestBehavior.opaque,
+                                onTapDown: (_) {
                                   if (yearlyDayAssetsList.isEmpty) {
                                     return;
                                   }
-                                  autoScrollController.scrollToIndex(
-                                    0,
-                                    preferPosition: AutoScrollPosition.begin,
-                                    duration: const Duration(milliseconds: 300),
-                                  );
+                                  _startRepeating(() => _scrollBy(-_moveAmount));
                                 },
-                                child: const Icon(Icons.arrow_upward),
+                                onTapUp: (_) => _stopRepeating(),
+                                onTapCancel: _stopRepeating,
+                                child: const SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: Center(child: Icon(Icons.arrow_upward)),
+                                ),
                               ),
                             ],
                           ),
@@ -236,6 +259,33 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
         ),
       ),
     );
+  }
+
+  ///
+  void _startRepeating(VoidCallback action) {
+    _repeatTimer?.cancel();
+
+    action();
+
+    _repeatTimer = Timer.periodic(const Duration(milliseconds: _tickMs), (_) => action());
+  }
+
+  ///
+  void _stopRepeating() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+  }
+
+  ///
+  void _scrollBy(double delta) {
+    if (!autoScrollController.hasClients) {
+      return;
+    }
+
+    final ScrollPosition pos = autoScrollController.position;
+    final double newOffset = (autoScrollController.offset + delta).clamp(0.0, pos.maxScrollExtent);
+
+    autoScrollController.jumpTo(newOffset);
   }
 
   ///
