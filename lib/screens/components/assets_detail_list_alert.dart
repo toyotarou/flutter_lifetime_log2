@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -26,16 +28,26 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
   // パフォーマンス向上のため、フォーマッタをstaticで保持して再利用する
   static final NumberFormat _currencyFormatter = NumberFormat('#,###');
 
+  static const double _moveAmount = 18;
+  static const int _tickMs = 16;
+
+  Timer? _repeatTimer;
+
+  ///
+  @override
+  void dispose() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+
+    autoScrollController.dispose();
+    super.dispose();
+  }
+
+  ///
   @override
   void initState() {
     super.initState();
     autoScrollController = AutoScrollController();
-  }
-
-  @override
-  void dispose() {
-    autoScrollController.dispose();
-    super.dispose();
   }
 
   /// 文字列から数値を安全かつ高速に取得するためのヘルパー
@@ -48,6 +60,7 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
     return double.tryParse(cleaned) ?? 0.0;
   }
 
+  ///
   @override
   Widget build(BuildContext context) {
     // 必要なデータのみを select でピンポイントに監視
@@ -102,6 +115,7 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
     );
   }
 
+  ///
   Widget _buildHeader(List<dynamic> dataList) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -115,13 +129,31 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
         ),
         Row(
           children: <Widget>[
-            IconButton(
-              onPressed: () => _scrollTo(dataList.isEmpty ? 0 : dataList.length - 1, AutoScrollPosition.end),
-              icon: const Icon(Icons.arrow_downward, color: Colors.white70),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTapDown: (_) {
+                if (dataList.isEmpty) return;
+                _startRepeating(() => _scrollBy(_moveAmount));
+              },
+              onTapUp: (_) => _stopRepeating(),
+              onTapCancel: _stopRepeating,
+              child: const SizedBox(
+                width: 44,
+                height: 44,
+                child: Center(child: Icon(Icons.arrow_downward, color: Colors.white70)),
+              ),
             ),
-            IconButton(
-              onPressed: () => _scrollTo(0, AutoScrollPosition.begin),
-              icon: const Icon(Icons.arrow_upward, color: Colors.white70),
+
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTapDown: (_) => _startRepeating(() => _scrollBy(-_moveAmount)),
+              onTapUp: (_) => _stopRepeating(),
+              onTapCancel: _stopRepeating,
+              child: const SizedBox(
+                width: 44,
+                height: 44,
+                child: Center(child: Icon(Icons.arrow_upward, color: Colors.white70)),
+              ),
             ),
           ],
         ),
@@ -129,10 +161,34 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
     );
   }
 
-  void _scrollTo(int index, AutoScrollPosition position) {
-    autoScrollController.scrollToIndex(index, preferPosition: position, duration: const Duration(milliseconds: 300));
+  ///
+  void _startRepeating(VoidCallback action) {
+    _repeatTimer?.cancel();
+
+    action();
+
+    _repeatTimer = Timer.periodic(const Duration(milliseconds: _tickMs), (_) => action());
   }
 
+  ///
+  void _stopRepeating() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+  }
+
+  ///
+  void _scrollBy(double delta) {
+    if (!autoScrollController.hasClients) {
+      return;
+    }
+
+    final ScrollPosition pos = autoScrollController.position;
+    final double newOffset = (autoScrollController.offset + delta).clamp(0.0, pos.maxScrollExtent);
+
+    autoScrollController.jumpTo(newOffset);
+  }
+
+  ///
   Widget _buildListItem(int index, List<dynamic> dataList) {
     final dynamic item = dataList[index];
 
@@ -190,6 +246,7 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
     );
   }
 
+  ///
   Widget _buildPriceText(int value, {int lastCost = 0, bool isCost = false, bool isDiff = false}) {
     Color textColor = Colors.white;
     if (isCost && value != lastCost && lastCost != 0) {
