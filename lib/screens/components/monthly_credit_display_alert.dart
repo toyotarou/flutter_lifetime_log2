@@ -6,6 +6,7 @@ import '../../extensions/extensions.dart';
 import '../../models/credit_summary_model.dart';
 import '../../models/money_spend_model.dart';
 import '../parts/lifetime_dialog.dart';
+import 'credit_calendar_display_alert.dart';
 import 'monthly_credit_summary_alert.dart';
 
 class MonthlyCreditDisplayAlert extends ConsumerStatefulWidget {
@@ -44,18 +45,35 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
                       children: <Widget>[const Text('クレジット'), Text(widget.yearmonth)],
                     ),
 
-                    ChoiceChip(
-                      label: const Text('summary', style: TextStyle(fontSize: 10)),
-                      backgroundColor: Colors.black.withValues(alpha: 0.1),
-                      selectedColor: Colors.greenAccent.withValues(alpha: 0.2),
-                      selected: true,
-                      onSelected: (bool isSelected) {
-                        LifetimeDialog(
-                          context: context,
-                          widget: MonthlyCreditSummaryAlert(yearmonth: widget.yearmonth),
-                        );
-                      },
-                      showCheckmark: false,
+                    Row(
+                      children: <Widget>[
+                        ChoiceChip(
+                          label: const Text('calendar', style: TextStyle(fontSize: 10)),
+                          backgroundColor: Colors.black.withValues(alpha: 0.1),
+                          selectedColor: Colors.greenAccent.withValues(alpha: 0.2),
+                          selected: true,
+                          onSelected: (bool isSelected) {
+                            LifetimeDialog(context: context, widget: const CreditCalendarDisplayAlert());
+                          },
+                          showCheckmark: false,
+                        ),
+
+                        const SizedBox(width: 20),
+
+                        ChoiceChip(
+                          label: const Text('summary', style: TextStyle(fontSize: 10)),
+                          backgroundColor: Colors.black.withValues(alpha: 0.1),
+                          selectedColor: Colors.greenAccent.withValues(alpha: 0.2),
+                          selected: true,
+                          onSelected: (bool isSelected) {
+                            LifetimeDialog(
+                              context: context,
+                              widget: MonthlyCreditSummaryAlert(yearmonth: widget.yearmonth),
+                            );
+                          },
+                          showCheckmark: false,
+                        ),
+                      ],
                     ),
                   ],
                 ),
