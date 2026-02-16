@@ -127,14 +127,7 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
     final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
 
-    const List<String> extraItems = <String>[
-      '共済戻り',
-      '年金',
-      'アイアールシー',
-      'メルカリ',
-      '牛乳代',
-      '弁当代',
-    ];
+    const List<String> extraItems = <String>['共済戻り', '年金', 'アイアールシー', 'メルカリ', '牛乳代', '弁当代'];
 
     for (final String item in extraItems) {
       if (!itemKeys.contains(item)) {
@@ -204,7 +197,7 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
                                               widget: MonthlyCreditDisplayAlert(yearmonth: widget.yearmonth),
                                             );
                                           },
-                                          child: Icon(Icons.star, color: Colors.white.withValues(alpha: 0.4)),
+                                          child: Icon(Icons.star, color: Colors.yellowAccent.withValues(alpha: 0.4)),
                                         )
                                 : const Icon(Icons.square_outlined, color: Colors.transparent),
                           ),

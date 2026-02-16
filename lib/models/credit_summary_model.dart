@@ -7,6 +7,7 @@ class CreditSummaryModel {
     required this.item,
     required this.detail,
     required this.price,
+    required this.subscription,
   });
 
   /// JSON → モデル変換
@@ -19,6 +20,7 @@ class CreditSummaryModel {
       item: json['item'] as String,
       detail: json['detail'] as String,
       price: json['price'] as int,
+      subscription: json['subscription'] as int,
     );
   }
 
@@ -29,6 +31,7 @@ class CreditSummaryModel {
   final String item;
   final String detail;
   final int price;
+  final int subscription;
 
   /// モデル → JSON変換
   Map<String, dynamic> toJson() {
@@ -40,6 +43,7 @@ class CreditSummaryModel {
       'item': item,
       'detail': detail,
       'price': price,
+      'subscription': subscription,
     };
   }
 }

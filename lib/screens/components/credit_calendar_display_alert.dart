@@ -97,7 +97,7 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
 
   ///
   Widget _buildGrid() {
-    const double colWidth = 200;
+    final double colWidth = context.screenSize.width * 0.5;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,6 +129,23 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
                 ),
               ),
               displayCreditSummaryList(yearmonth: e, colWidth: colWidth),
+
+              Container(
+                width: colWidth,
+
+                height: 30,
+                alignment: Alignment.center,
+                margin: const EdgeInsets.all(1),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white.withOpacity(0.4)),
+                  color: Colors.yellowAccent.withValues(alpha: 0.2),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[Text(e), Text(total.toString().toCurrency())],
+                ),
+              ),
             ],
           ),
         );
@@ -173,11 +190,23 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
 
                     return DefaultTextStyle(
                       style: TextStyle(color: color, fontSize: 10),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(child: Text(e.detail, maxLines: 1, overflow: TextOverflow.ellipsis)),
-                          Text(e.price.toString().toCurrency()),
-                        ],
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: (e.subscription == 0)
+                                  ? Colors.yellowAccent.withValues(alpha: 0.6)
+                                  : Colors.transparent,
+                            ),
+                          ),
+                        ),
+
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(child: Text(e.detail, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                            Text(e.price.toString().toCurrency()),
+                          ],
+                        ),
                       ),
                     );
                   }).toList(),
@@ -250,7 +279,7 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
 
     return Container(
       padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(color: Colors.black.withOpacity(0.55), borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(color: Colors.black.withOpacity(0.4), borderRadius: BorderRadius.circular(12)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[

@@ -654,7 +654,9 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   padding: const EdgeInsets.only(right: 30),
                   child: Text(
                     (last.toInt() - before.toInt()).toString().toCurrency(),
-                    style: const TextStyle(color: Colors.yellowAccent),
+                    style: TextStyle(
+                      color: ((last.toInt() - before.toInt()) < 0) ? Colors.orangeAccent : Colors.yellowAccent,
+                    ),
                   ),
                 ),
               ],
