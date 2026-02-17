@@ -415,7 +415,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                 ),
                                               ),
 
-                                              const SizedBox(width: 15),
+                                              const SizedBox(width: 10),
 
                                               if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
                                                 GestureDetector(
@@ -754,8 +754,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                     if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
                       Positioned(
-                        top: 45,
-                        left: 110,
+                        top: 55,
+                        left: 100,
                         child: CircleAvatar(
                           backgroundColor: Colors.white.withValues(alpha: 0.1),
                           radius: 14,
