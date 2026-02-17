@@ -83,6 +83,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     tokyoMunicipalNotifier.getAllTokyoMunicipalData();
     workHistoryNotifier.getAllWorkHistoryData();
     moneySumNotifier.getAllMoneySumData();
+    fortuneNotifier.getAllFortuneData();
   }
 
   ///
@@ -145,6 +146,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           stampRallyMetroPokepokeMap: stampRallyMetroPokepokeState.dateStationStampMap,
           workHistoryModelMap: workHistoryState.workHistoryModelMap,
           moneySumList: moneySumState.moneySumList,
+          fortuneMap: fortuneState.fortuneMap,
         ),
       ),
     );

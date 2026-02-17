@@ -12,6 +12,7 @@ import '../../models/salary_model.dart';
 import '../../models/temple_model.dart';
 import '../../utility/functions.dart';
 import '../../utility/utility.dart';
+import '../components/fortune_display_alert.dart';
 import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
 import '../components/money_data_input_alert.dart';
@@ -391,7 +392,30 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                 child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
                                               ),
 
-                                              const SizedBox(width: 20),
+                                              const SizedBox(width: 15),
+
+                                              GestureDetector(
+                                                onTap: () {
+                                                  LifetimeDialog(
+                                                    context: context,
+                                                    widget: FortuneDisplayAlert(date: date),
+                                                  );
+                                                },
+                                                child: Opacity(
+                                                  opacity: 0.4,
+                                                  child: CircleAvatar(
+                                                    radius: 15,
+                                                    backgroundColor: Colors.orangeAccent.withValues(alpha: 0.4),
+                                                    child: Image.asset(
+                                                      'assets/images/leo_mark.png',
+                                                      width: 15,
+                                                      height: 15,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+
+                                              const SizedBox(width: 15),
 
                                               if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
                                                 GestureDetector(
@@ -731,7 +755,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                     if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
                       Positioned(
                         top: 45,
-                        left: 70,
+                        left: 110,
                         child: CircleAvatar(
                           backgroundColor: Colors.white.withValues(alpha: 0.1),
                           radius: 14,

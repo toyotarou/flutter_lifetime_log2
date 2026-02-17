@@ -6,6 +6,7 @@ import '../../models/amazon_purchase_model.dart';
 import '../../models/common/scroll_line_chart_model.dart';
 import '../../models/common/work_history_model.dart';
 import '../../models/credit_summary_model.dart';
+import '../../models/fortune_model.dart';
 import '../../models/fund_model.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/gold_model.dart';
@@ -60,6 +61,7 @@ class AppParamState with _$AppParamState {
     @Default(<String, MunicipalModel>{}) Map<String, MunicipalModel> keepTokyoMunicipalMap,
     @Default(<String, WorkHistoryModel>{}) Map<String, WorkHistoryModel> keepWorkHistoryModelMap,
     @Default(<String, String>{}) Map<String, String> keepTrainMap,
+    @Default(<String, FortuneModel>{}) Map<String, FortuneModel> keepFortuneMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -313,6 +315,9 @@ class AppParam extends _$AppParam {
 
   ///
   void setKeepTrainMap({required Map<String, String> map}) => state = state.copyWith(keepTrainMap: map);
+
+  ///
+  void setKeepFortuneMap({required Map<String, FortuneModel> map}) => state = state.copyWith(keepFortuneMap: map);
 
   //===================================================
 

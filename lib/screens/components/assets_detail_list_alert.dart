@@ -132,7 +132,9 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
             GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTapDown: (_) {
-                if (dataList.isEmpty) return;
+                if (dataList.isEmpty) {
+                  return;
+                }
                 _startRepeating(() => _scrollBy(_moveAmount));
               },
               onTapUp: (_) => _stopRepeating(),

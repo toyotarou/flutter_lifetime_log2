@@ -10,6 +10,7 @@ import '../models/amazon_purchase_model.dart';
 import '../models/common/scroll_line_chart_model.dart';
 import '../models/common/work_history_model.dart';
 import '../models/credit_summary_model.dart';
+import '../models/fortune_model.dart';
 import '../models/fund_model.dart';
 import '../models/geoloc_model.dart';
 import '../models/gold_model.dart';
@@ -101,6 +102,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.tokyoMunicipalList,
     required this.workHistoryModelMap,
     required this.moneySumList,
+    required this.fortuneMap,
   });
 
   final List<String> holidayList;
@@ -135,6 +137,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, MunicipalModel> tokyoMunicipalMap;
   final Map<String, WorkHistoryModel> workHistoryModelMap;
   final List<ScrollLineChartModel> moneySumList;
+  final Map<String, FortuneModel> fortuneMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -227,6 +230,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         appParamNotifier.setKeepWorkHistoryModelMap(map: widget.workHistoryModelMap);
         appParamNotifier.setKeepMoneySumList(list: widget.moneySumList);
         appParamNotifier.setKeepTrainMap(map: widget.trainMap);
+        appParamNotifier.setKeepFortuneMap(map: widget.fortuneMap);
       } catch (e) {
         debugPrint('setKeep error: $e');
       }

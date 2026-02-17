@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '_get_data/amazon_purchase/amazon_purchase.dart';
 import '_get_data/credit_summary/credit_summary.dart';
 import '_get_data/directions/directions.dart';
+import '_get_data/fortune/fortune.dart';
 import '_get_data/fund/fund.dart';
 import '_get_data/geoloc/geoloc.dart';
 import '_get_data/gold/gold.dart';
@@ -245,6 +246,12 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   MoneySumState get moneySumState => ref.watch(moneySumProvider);
 
   MoneySum get moneySumNotifier => ref.read(moneySumProvider.notifier);
+
+  //==========================================//
+
+  FortuneState get fortuneState => ref.watch(fortuneProvider);
+
+  Fortune get fortuneNotifier => ref.read(fortuneProvider.notifier);
 
   //==========================================//
   Directions get directionsNotifier => ref.read(directionsProvider.notifier);

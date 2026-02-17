@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'app_param.dart';
+part of 'fortune.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appParamHash() => r'df7ef1c8b8e8872ef384d6f89464dc6bc1733a0b';
+String _$fortuneHash() => r'29461195fc18424e5d937fdae91c317f38380d48';
 
-/// See also [AppParam].
-@ProviderFor(AppParam)
-final appParamProvider =
-    AutoDisposeNotifierProvider<AppParam, AppParamState>.internal(
-  AppParam.new,
-  name: r'appParamProvider',
+/// See also [Fortune].
+@ProviderFor(Fortune)
+final fortuneProvider =
+    AutoDisposeNotifierProvider<Fortune, FortuneState>.internal(
+  Fortune.new,
+  name: r'fortuneProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$appParamHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$fortuneHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$AppParam = AutoDisposeNotifier<AppParamState>;
+typedef _$Fortune = AutoDisposeNotifier<FortuneState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
