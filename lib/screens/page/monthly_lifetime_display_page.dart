@@ -166,7 +166,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
           ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
           : Colors.blueGrey.withValues(alpha: 0.2);
 
-      double constrainedBoxHeight = context.screenSize.height / 6;
+      double constrainedBoxHeight = context.screenSize.height / 5;
 
       if (DateTime.parse(date).isAfter(DateTime.now())) {
         cardColor = Colors.transparent;
@@ -223,6 +223,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                 constraints: BoxConstraints(minHeight: constrainedBoxHeight),
                 child: Stack(
                   children: <Widget>[
+                    /// 勤務時間
                     if (appParamState.keepWorkTimeDateMap[date] != null &&
                         appParamState.keepWorkTimeDateMap[date]!['start'] != '' &&
                         appParamState.keepWorkTimeDateMap[date]!['end'] != '') ...<Widget>[
@@ -244,6 +245,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                       ),
                     ],
 
+                    /// 天気
                     if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
                       Positioned(
                         bottom: 10,
@@ -259,6 +261,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                       ),
                     ],
 
+                    /// 収入
                     if (appParamState.keepSalaryMap[date] != null) ...<Widget>[
                       Positioned(
                         bottom: 30,
@@ -302,14 +305,204 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               SizedBox(
                                 width: context.screenSize.width * 0.3,
 
-                                child: Stack(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+
                                   children: <Widget>[
-                                    Positioned(
-                                      top: 5,
-                                      right: 10,
-                                      child: Column(
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Text(i.toString().padLeft(2, '0'), style: const TextStyle(fontSize: 20)),
+                                            const SizedBox(width: 5),
+                                            Text(youbi),
+                                          ],
+                                        ),
+                                        const SizedBox.shrink(),
+                                      ],
+                                    ),
+
+                                    if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
+                                      const SizedBox(height: 10),
+
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
+                                          //====================================================// lifetime input // s
+                                          GestureDetector(
+                                            onTap: () {
+                                              if (appParamState.keepLifetimeItemList.isEmpty) {
+                                                // ignore: always_specify_types
+                                                Future.delayed(
+                                                  Duration.zero,
+                                                  () => error_dialog(
+                                                    // ignore: use_build_context_synchronously
+                                                    context: context,
+                                                    title: '表示できません。',
+                                                    content: 'appParamState.keepLifetimeItemListが作成されていません。',
+                                                  ),
+                                                );
+
+                                                return;
+                                              }
+
+                                              LifetimeDialog(
+                                                context: context,
+                                                widget: LifetimeInputAlert(
+                                                  date: date,
+                                                  dateLifetime: appParamState.keepLifetimeMap[date],
+                                                  isReloadHomeScreen: true,
+                                                ),
+                                              );
+                                            },
+
+                                            child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
+                                          ),
+
+                                          //====================================================// lifetime input // e
+                                          const SizedBox(width: 15),
+
+                                          //====================================================// leo fortune // s
+                                          GestureDetector(
+                                            onTap: () {
+                                              LifetimeDialog(
+                                                context: context,
+                                                widget: FortuneDisplayAlert(date: date),
+                                              );
+                                            },
+                                            child: Opacity(
+                                              opacity: 0.4,
+                                              child: CircleAvatar(
+                                                radius: 15,
+                                                backgroundColor: Colors.orangeAccent.withValues(alpha: 0.4),
+                                                child: Image.asset('assets/images/leo_mark.png', width: 15, height: 15),
+                                              ),
+                                            ),
+                                          ),
+
+                                          //====================================================// leo fortune // s
+                                        ],
+                                      ),
+
+                                      const SizedBox(height: 5),
+
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          //====================================================// geoloc // s
+                                          Stack(
+                                            children: <Widget>[
+                                              Container(
+                                                width: 45,
+                                                height: 40,
+                                                alignment: Alignment.topLeft,
+                                                child: (appParamState.keepGeolocMap[date] != null)
+                                                    ? GestureDetector(
+                                                        onTap: () {
+                                                          appParamNotifier.setSelectedGeolocTime(time: '');
+
+                                                          appParamNotifier.setSelectedGeolocPointTime(time: '');
+
+                                                          appParamNotifier.setIsDisplayGhostGeolocPolyline(flag: false);
+                                                          appParamNotifier.setSelectedGhostPolylineDate(date: '');
+
+                                                          List<String> templeGeolocNearlyDateList = <String>[];
+
+                                                          if (appParamState.keepTempleMap[date] != null) {
+                                                            //////////////////////////////////////////////
+                                                            final Map<String, GeolocModel>
+                                                            nearestTempleNameGeolocModelMap = <String, GeolocModel>{};
+
+                                                            for (final TempleDataModel element
+                                                                in appParamState.keepTempleMap[date]!.templeDataList) {
+                                                              final GeolocModel? nearestGeolocModel = utility
+                                                                  .findNearestGeoloc(
+                                                                    geolocModelList: appParamState.keepGeolocMap[date]!,
+                                                                    latStr: element.latitude,
+                                                                    lonStr: element.longitude,
+                                                                  );
+
+                                                              if (nearestGeolocModel != null) {
+                                                                nearestTempleNameGeolocModelMap[element.name] =
+                                                                    nearestGeolocModel;
+                                                              }
+                                                            }
+
+                                                            appParamNotifier.setKeepNearestTempleNameGeolocModelMap(
+                                                              map: nearestTempleNameGeolocModelMap,
+                                                            );
+
+                                                            //////////////////////////////////////////////
+
+                                                            templeGeolocNearlyDateList = utility
+                                                                .getTempleGeolocNearlyDateList(
+                                                                  date: date,
+                                                                  templeMap: appParamState.keepTempleMap,
+                                                                );
+                                                          }
+
+                                                          LifetimeDialog(
+                                                            context: context,
+                                                            widget: LifetimeGeolocMapDisplayAlert(
+                                                              date: date,
+                                                              geolocList: appParamState.keepGeolocMap[date],
+                                                              templeGeolocNearlyDateList: templeGeolocNearlyDateList,
+                                                            ),
+
+                                                            executeFunctionWhenDialogClose: true,
+                                                            from: 'LifetimeGeolocMapDisplayAlert',
+                                                            ref: ref,
+                                                          );
+                                                        },
+
+                                                        child: Column(
+                                                          children: <Widget>[
+                                                            Icon(
+                                                              (boundingBoxArea.substring(0, 3) == '0.0')
+                                                                  ? Icons.home_outlined
+                                                                  : Icons.map,
+                                                              color: Colors.white.withValues(alpha: 0.3),
+                                                            ),
+                                                            const SizedBox(height: 5),
+                                                            Text(
+                                                              appParamState.keepGeolocMap[date]!.length.toString(),
+                                                              style: const TextStyle(fontSize: 8),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    : Container(),
+                                              ),
+
+                                              if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
+                                                Positioned(
+                                                  right: 0,
+                                                  child: CircleAvatar(
+                                                    backgroundColor: Colors.white.withValues(alpha: 0.1),
+                                                    radius: 14,
+
+                                                    child: Text(
+                                                      (appParamState.keepTimePlaceMap[date] != null)
+                                                          ? appParamState.keepTimePlaceMap[date]!.length.toString()
+                                                          : '',
+
+                                                      style: TextStyle(
+                                                        color: Colors.white.withValues(alpha: 0.5),
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ],
+                                          ),
+                                          //====================================================// geoloc // e
+
+                                          //====================================================// temple // s
                                           if (appParamState.keepTempleMap[date] != null) ...<Widget>[
+                                            const SizedBox(width: 10),
                                             Column(
                                               children: <Widget>[
                                                 Icon(
@@ -317,7 +510,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                   size: 20,
                                                   color: Colors.white.withValues(alpha: 0.3),
                                                 ),
-                                                const SizedBox(height: 5),
+                                                const SizedBox(height: 10),
                                                 Text(
                                                   appParamState.keepTempleMap[date]!.templeDataList.length.toString(),
                                                   style: const TextStyle(fontSize: 8),
@@ -326,182 +519,19 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                             ),
                                             const SizedBox(height: 10),
                                           ],
+                                          //====================================================// temple // e
 
+                                          //====================================================// train // s
                                           if (appParamState.keepTransportationMap[date] != null) ...<Widget>[
+                                            const SizedBox(width: 10),
                                             Icon(Icons.train, size: 20, color: Colors.white.withValues(alpha: 0.3)),
                                           ],
+
+                                          //====================================================// train // e
+                                          const SizedBox(width: 2),
                                         ],
                                       ),
-                                    ),
-
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-
-                                      children: <Widget>[
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Row(
-                                              crossAxisAlignment: CrossAxisAlignment.end,
-                                              children: <Widget>[
-                                                Text(
-                                                  i.toString().padLeft(2, '0'),
-                                                  style: const TextStyle(fontSize: 20),
-                                                ),
-                                                const SizedBox(width: 5),
-                                                Text(youbi),
-                                              ],
-                                            ),
-                                            const SizedBox.shrink(),
-                                          ],
-                                        ),
-
-                                        if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
-                                          const SizedBox(height: 10),
-
-                                          Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              GestureDetector(
-                                                onTap: () {
-                                                  if (appParamState.keepLifetimeItemList.isEmpty) {
-                                                    // ignore: always_specify_types
-                                                    Future.delayed(
-                                                      Duration.zero,
-                                                      () => error_dialog(
-                                                        // ignore: use_build_context_synchronously
-                                                        context: context,
-                                                        title: '表示できません。',
-                                                        content: 'appParamState.keepLifetimeItemListが作成されていません。',
-                                                      ),
-                                                    );
-
-                                                    return;
-                                                  }
-
-                                                  LifetimeDialog(
-                                                    context: context,
-                                                    widget: LifetimeInputAlert(
-                                                      date: date,
-                                                      dateLifetime: appParamState.keepLifetimeMap[date],
-                                                      isReloadHomeScreen: true,
-                                                    ),
-                                                  );
-                                                },
-
-                                                child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
-                                              ),
-
-                                              const SizedBox(width: 15),
-
-                                              GestureDetector(
-                                                onTap: () {
-                                                  LifetimeDialog(
-                                                    context: context,
-                                                    widget: FortuneDisplayAlert(date: date),
-                                                  );
-                                                },
-                                                child: Opacity(
-                                                  opacity: 0.4,
-                                                  child: CircleAvatar(
-                                                    radius: 15,
-                                                    backgroundColor: Colors.orangeAccent.withValues(alpha: 0.4),
-                                                    child: Image.asset(
-                                                      'assets/images/leo_mark.png',
-                                                      width: 15,
-                                                      height: 15,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-
-                                              const SizedBox(width: 10),
-
-                                              if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    appParamNotifier.setSelectedGeolocTime(time: '');
-
-                                                    appParamNotifier.setSelectedGeolocPointTime(time: '');
-
-                                                    appParamNotifier.setIsDisplayGhostGeolocPolyline(flag: false);
-                                                    appParamNotifier.setSelectedGhostPolylineDate(date: '');
-
-                                                    List<String> templeGeolocNearlyDateList = <String>[];
-
-                                                    if (appParamState.keepTempleMap[date] != null) {
-                                                      //////////////////////////////////////////////
-                                                      final Map<String, GeolocModel> nearestTempleNameGeolocModelMap =
-                                                          <String, GeolocModel>{};
-
-                                                      for (final TempleDataModel element
-                                                          in appParamState.keepTempleMap[date]!.templeDataList) {
-                                                        final GeolocModel? nearestGeolocModel = utility
-                                                            .findNearestGeoloc(
-                                                              geolocModelList: appParamState.keepGeolocMap[date]!,
-                                                              latStr: element.latitude,
-                                                              lonStr: element.longitude,
-                                                            );
-
-                                                        if (nearestGeolocModel != null) {
-                                                          nearestTempleNameGeolocModelMap[element.name] =
-                                                              nearestGeolocModel;
-                                                        }
-                                                      }
-
-                                                      appParamNotifier.setKeepNearestTempleNameGeolocModelMap(
-                                                        map: nearestTempleNameGeolocModelMap,
-                                                      );
-
-                                                      //////////////////////////////////////////////
-
-                                                      templeGeolocNearlyDateList = utility
-                                                          .getTempleGeolocNearlyDateList(
-                                                            date: date,
-                                                            templeMap: appParamState.keepTempleMap,
-                                                          );
-                                                    }
-
-                                                    LifetimeDialog(
-                                                      context: context,
-                                                      widget: LifetimeGeolocMapDisplayAlert(
-                                                        date: date,
-                                                        geolocList: appParamState.keepGeolocMap[date],
-                                                        templeGeolocNearlyDateList: templeGeolocNearlyDateList,
-                                                      ),
-
-                                                      executeFunctionWhenDialogClose: true,
-                                                      from: 'LifetimeGeolocMapDisplayAlert',
-                                                      ref: ref,
-                                                    );
-                                                  },
-
-                                                  child: Column(
-                                                    children: <Widget>[
-                                                      Icon(
-                                                        (boundingBoxArea.substring(0, 3) == '0.0')
-                                                            ? Icons.home_outlined
-                                                            : Icons.map,
-                                                        color: Colors.white.withValues(alpha: 0.3),
-                                                      ),
-                                                      const SizedBox(height: 5),
-                                                      Text(
-                                                        appParamState.keepGeolocMap[date]!.length.toString(),
-                                                        style: const TextStyle(fontSize: 8),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-
-                                              if (appParamState.keepGeolocMap[date] == null) ...<Widget>[
-                                                const SizedBox(height: 38),
-                                              ],
-                                            ],
-                                          ),
-                                        ],
-                                      ],
-                                    ),
+                                    ],
                                   ],
                                 ),
                               ),
@@ -512,54 +542,61 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                     if (appParamState.keepLifetimeMap[date] != null) ...<Widget>[
                                       Stack(
                                         children: <Widget>[
-                                          if (boundingBoxArea != '') ...<Widget>[
-                                            Row(
-                                              children: <Widget>[
-                                                SizedBox(width: context.screenSize.width * 0.1),
+                                          //====================================================// boundingBoxArea // s
+                                          SizedBox(
+                                            height: 40,
 
-                                                Expanded(
-                                                  child: Opacity(
-                                                    opacity: 0.3,
-                                                    child: Container(
-                                                      alignment: Alignment.topRight,
-                                                      padding: const EdgeInsets.only(top: 15),
-                                                      child: Transform(
-                                                        alignment: Alignment.centerLeft,
-                                                        transform: Matrix4.identity()..setEntry(0, 1, -0.8),
-                                                        child: RichText(
-                                                          text: TextSpan(
-                                                            children: <InlineSpan>[
-                                                              TextSpan(
-                                                                text: boundingBoxArea.split('.')[0],
-                                                                style: const TextStyle(
-                                                                  fontSize: 24,
-                                                                  color: Colors.white,
-                                                                  fontWeight: FontWeight.w900,
+                                            child: (boundingBoxArea != '')
+                                                ? Row(
+                                                    children: <Widget>[
+                                                      SizedBox(width: context.screenSize.width * 0.1),
+
+                                                      Expanded(
+                                                        child: Opacity(
+                                                          opacity: 0.3,
+                                                          child: Container(
+                                                            alignment: Alignment.topRight,
+                                                            padding: const EdgeInsets.only(top: 15),
+                                                            child: Transform(
+                                                              alignment: Alignment.centerLeft,
+                                                              transform: Matrix4.identity()..setEntry(0, 1, -0.8),
+                                                              child: RichText(
+                                                                text: TextSpan(
+                                                                  children: <InlineSpan>[
+                                                                    TextSpan(
+                                                                      text: boundingBoxArea.split('.')[0],
+                                                                      style: const TextStyle(
+                                                                        fontSize: 24,
+                                                                        color: Colors.white,
+                                                                        fontWeight: FontWeight.w900,
+                                                                      ),
+                                                                    ),
+                                                                    TextSpan(
+                                                                      text: '.${boundingBoxArea.split('.')[1]}',
+                                                                      style: const TextStyle(
+                                                                        fontSize: 12,
+                                                                        color: Colors.white,
+                                                                        fontWeight: FontWeight.bold,
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
                                                               ),
-                                                              TextSpan(
-                                                                text: '.${boundingBoxArea.split('.')[1]}',
-                                                                style: const TextStyle(
-                                                                  fontSize: 12,
-                                                                  color: Colors.white,
-                                                                  fontWeight: FontWeight.bold,
-                                                                ),
-                                                              ),
-                                                            ],
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ),
-                                                ),
 
-                                                const SizedBox(width: 40),
-                                              ],
-                                            ),
-                                          ],
+                                                      const SizedBox(width: 40),
+                                                    ],
+                                                  )
+                                                : const SizedBox(),
+                                          ),
 
+                                          //====================================================// boundingBoxArea // s
                                           Row(
                                             children: <Widget>[
+                                              //====================================================// step // s
                                               Expanded(
                                                 child: Stack(
                                                   children: <Widget>[
@@ -588,8 +625,11 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                   ],
                                                 ),
                                               ),
+
+                                              //====================================================// step // e
                                               const SizedBox(width: 5),
 
+                                              //====================================================// distance // s
                                               Expanded(
                                                 child: Stack(
                                                   children: <Widget>[
@@ -619,6 +659,9 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                 ),
                                               ),
 
+                                              //====================================================// distance // e
+
+                                              //====================================================// step input // s
                                               SizedBox(
                                                 width: 30,
                                                 child: Container(
@@ -643,6 +686,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                   ),
                                                 ),
                                               ),
+
+                                              //====================================================// step input // e
                                             ],
                                           ),
                                         ],
@@ -650,6 +695,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                       Row(
                                         children: <Widget>[
+                                          //====================================================// spend // s
                                           Expanded(
                                             child: Stack(
                                               children: <Widget>[
@@ -677,8 +723,11 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                               ],
                                             ),
                                           ),
+
+                                          //====================================================// spend // e
                                           const SizedBox(width: 5),
 
+                                          //====================================================// money // s
                                           Expanded(
                                             child: Stack(
                                               children: <Widget>[
@@ -705,6 +754,9 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                             ),
                                           ),
 
+                                          //====================================================// money // e
+
+                                          //====================================================// money input // s
                                           SizedBox(
                                             width: 30,
 
@@ -729,6 +781,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                               ),
                                             ),
                                           ),
+
+                                          //====================================================// money input // e
                                         ],
                                       ),
                                     ],
@@ -738,6 +792,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                             ],
                           ),
 
+                          //====================================================// hour // s
                           if (appParamState.keepLifetimeMap[date] != null) ...<Widget>[
                             const SizedBox(height: 10),
                             Row(
@@ -748,28 +803,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               ).map((int e) => getLifetimeDisplayCell(date: date, num: e)).toList(),
                             ),
                           ],
+                          //====================================================// hour // e
                         ],
                       ),
                     ),
-
-                    if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
-                      Positioned(
-                        top: 55,
-                        left: 100,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.white.withValues(alpha: 0.1),
-                          radius: 14,
-
-                          child: Text(
-                            (appParamState.keepTimePlaceMap[date] != null)
-                                ? appParamState.keepTimePlaceMap[date]!.length.toString()
-                                : '',
-
-                            style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
-                          ),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
