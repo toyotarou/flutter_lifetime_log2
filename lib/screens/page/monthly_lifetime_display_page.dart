@@ -785,31 +785,35 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                           ],
 
                           //====================================================// hour // e
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              //====================================================// leo fortune // s
-                              GestureDetector(
-                                onTap: () {
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: FortuneDisplayAlert(date: date),
-                                  );
-                                },
-                                child: Opacity(
-                                  opacity: 0.4,
-                                  child: CircleAvatar(
-                                    radius: 15,
-                                    backgroundColor: Colors.orangeAccent.withValues(alpha: 0.4),
-                                    child: Image.asset('assets/images/leo_mark.png', width: 15, height: 15),
+
+                          //====================================================// leo fortune // s
+                          if (appParamState.keepFortuneMap[date] != null) ...<Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () {
+                                    LifetimeDialog(
+                                      context: context,
+                                      widget: FortuneDisplayAlert(date: date),
+                                    );
+                                  },
+                                  child: Opacity(
+                                    opacity: 0.4,
+                                    child: CircleAvatar(
+                                      radius: 15,
+                                      backgroundColor: Colors.orangeAccent.withValues(alpha: 0.4),
+                                      child: Image.asset('assets/images/leo_mark.png', width: 15, height: 15),
+                                    ),
                                   ),
                                 ),
-                              ),
 
-                              //====================================================// leo fortune // e
-                              const SizedBox.shrink(),
-                            ],
-                          ),
+                                const SizedBox.shrink(),
+                              ],
+                            ),
+                          ],
+
+                          //====================================================// leo fortune // e
                         ],
                       ),
                     ),
