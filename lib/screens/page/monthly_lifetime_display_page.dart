@@ -166,7 +166,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
           ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
           : Colors.blueGrey.withValues(alpha: 0.2);
 
-      double constrainedBoxHeight = context.screenSize.height / 5;
+      double constrainedBoxHeight = context.screenSize.height / 4.5;
 
       if (DateTime.parse(date).isAfter(DateTime.now())) {
         cardColor = Colors.transparent;
@@ -264,7 +264,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                     /// 収入
                     if (appParamState.keepSalaryMap[date] != null) ...<Widget>[
                       Positioned(
-                        bottom: 30,
+                        bottom: 25,
                         right: 10,
                         left: 10,
 
@@ -274,7 +274,6 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                             const SizedBox.shrink(),
 
                             Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
                                 Icon(Icons.diamond, color: Colors.yellowAccent.withValues(alpha: 0.3)),
 
@@ -294,6 +293,39 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         ),
                       ),
                     ],
+
+                    Positioned(
+                      top: 20,
+                      left: 90,
+                      child: Column(
+                        children: [
+                          //====================================================// temple // s
+                          if (appParamState.keepTempleMap[date] != null) ...<Widget>[
+                            const SizedBox(width: 10),
+                            Column(
+                              children: <Widget>[
+                                Icon(FontAwesomeIcons.toriiGate, size: 20, color: Colors.white.withValues(alpha: 0.3)),
+                                const SizedBox(height: 10),
+                                Text(
+                                  appParamState.keepTempleMap[date]!.templeDataList.length.toString(),
+                                  style: const TextStyle(fontSize: 8),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+                          //====================================================// temple // e
+
+                          //====================================================// train // s
+                          if (appParamState.keepTransportationMap[date] != null) ...<Widget>[
+                            const SizedBox(width: 10),
+                            Icon(Icons.train, size: 20, color: Colors.white.withValues(alpha: 0.3)),
+                          ],
+
+                          //====================================================// train // e
+                        ],
+                      ),
+                    ),
 
                     Padding(
                       padding: const EdgeInsets.all(10),
@@ -364,33 +396,6 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                           //====================================================// lifetime input // e
                                           const SizedBox(width: 15),
 
-                                          //====================================================// leo fortune // s
-                                          GestureDetector(
-                                            onTap: () {
-                                              LifetimeDialog(
-                                                context: context,
-                                                widget: FortuneDisplayAlert(date: date),
-                                              );
-                                            },
-                                            child: Opacity(
-                                              opacity: 0.4,
-                                              child: CircleAvatar(
-                                                radius: 15,
-                                                backgroundColor: Colors.orangeAccent.withValues(alpha: 0.4),
-                                                child: Image.asset('assets/images/leo_mark.png', width: 15, height: 15),
-                                              ),
-                                            ),
-                                          ),
-
-                                          //====================================================// leo fortune // s
-                                        ],
-                                      ),
-
-                                      const SizedBox(height: 5),
-
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: <Widget>[
                                           //====================================================// geoloc // s
                                           Stack(
                                             children: <Widget>[
@@ -478,6 +483,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                                               if (DateTime.parse(date).isBeforeOrSameDate(DateTime.now())) ...<Widget>[
                                                 Positioned(
+                                                  top: 10,
                                                   right: 0,
                                                   child: CircleAvatar(
                                                     backgroundColor: Colors.white.withValues(alpha: 0.1),
@@ -498,37 +504,9 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                               ],
                                             ],
                                           ),
+
                                           //====================================================// geoloc // e
-
-                                          //====================================================// temple // s
-                                          if (appParamState.keepTempleMap[date] != null) ...<Widget>[
-                                            const SizedBox(width: 10),
-                                            Column(
-                                              children: <Widget>[
-                                                Icon(
-                                                  FontAwesomeIcons.toriiGate,
-                                                  size: 20,
-                                                  color: Colors.white.withValues(alpha: 0.3),
-                                                ),
-                                                const SizedBox(height: 10),
-                                                Text(
-                                                  appParamState.keepTempleMap[date]!.templeDataList.length.toString(),
-                                                  style: const TextStyle(fontSize: 8),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 10),
-                                          ],
-                                          //====================================================// temple // e
-
-                                          //====================================================// train // s
-                                          if (appParamState.keepTransportationMap[date] != null) ...<Widget>[
-                                            const SizedBox(width: 10),
-                                            Icon(Icons.train, size: 20, color: Colors.white.withValues(alpha: 0.3)),
-                                          ],
-
-                                          //====================================================// train // e
-                                          const SizedBox(width: 2),
+                                          const SizedBox(width: 15),
                                         ],
                                       ),
                                     ],
@@ -785,6 +763,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                           //====================================================// money input // e
                                         ],
                                       ),
+
+                                      SizedBox(height: 10),
                                     ],
                                   ],
                                 ),
@@ -803,7 +783,33 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               ).map((int e) => getLifetimeDisplayCell(date: date, num: e)).toList(),
                             ),
                           ],
+
                           //====================================================// hour // e
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              //====================================================// leo fortune // s
+                              GestureDetector(
+                                onTap: () {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: FortuneDisplayAlert(date: date),
+                                  );
+                                },
+                                child: Opacity(
+                                  opacity: 0.4,
+                                  child: CircleAvatar(
+                                    radius: 15,
+                                    backgroundColor: Colors.orangeAccent.withValues(alpha: 0.4),
+                                    child: Image.asset('assets/images/leo_mark.png', width: 15, height: 15),
+                                  ),
+                                ),
+                              ),
+
+                              //====================================================// leo fortune // e
+                              const SizedBox.shrink(),
+                            ],
+                          ),
                         ],
                       ),
                     ),
