@@ -145,7 +145,36 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    const SizedBox.shrink(),
+                    /// 一気ボタン / s
+                    Row(
+                      children: <Widget>[
+                        IconButton(
+                          tooltip: '一気に下',
+                          onPressed: () {
+                            if (!autoScrollController.hasClients) {
+                              return;
+                            }
+                            autoScrollController.jumpTo(autoScrollController.position.maxScrollExtent);
+                          },
+                          icon: const Icon(Icons.vertical_align_bottom),
+                        ),
+
+                        IconButton(
+                          tooltip: '一気に上',
+                          onPressed: () {
+                            if (!autoScrollController.hasClients) {
+                              return;
+                            }
+                            autoScrollController.jumpTo(0.0);
+                          },
+                          icon: const Icon(Icons.vertical_align_top),
+                        ),
+                      ],
+                    ),
+
+                    /// 一気ボタン / e
+
+                    /// 押しっぱなしボタン / s
                     Row(
                       children: <Widget>[
                         GestureDetector(
@@ -179,6 +208,8 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
                         ),
                       ],
                     ),
+
+                    /// 押しっぱなしボタン / e
                   ],
                 ),
 

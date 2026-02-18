@@ -117,46 +117,93 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
 
   ///
   Widget _buildHeader(List<dynamic> dataList) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       children: <Widget>[
-        Expanded(
-          child: Text(
-            widget.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapDown: (_) {
-                if (dataList.isEmpty) {
-                  return;
-                }
-                _startRepeating(() => _scrollBy(_moveAmount));
-              },
-              onTapUp: (_) => _stopRepeating(),
-              onTapCancel: _stopRepeating,
-              child: const SizedBox(
-                width: 44,
-                height: 44,
-                child: Center(child: Icon(Icons.arrow_downward, color: Colors.white70)),
+            Expanded(
+              child: Text(
+                widget.name,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
 
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapDown: (_) => _startRepeating(() => _scrollBy(-_moveAmount)),
-              onTapUp: (_) => _stopRepeating(),
-              onTapCancel: _stopRepeating,
-              child: const SizedBox(
-                width: 44,
-                height: 44,
-                child: Center(child: Icon(Icons.arrow_upward, color: Colors.white70)),
-              ),
+            const SizedBox.shrink(),
+          ],
+        ),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            /// 一気ボタン / s
+            Row(
+              children: <Widget>[
+                IconButton(
+                  tooltip: '一気に下',
+                  onPressed: () {
+                    if (!autoScrollController.hasClients) {
+                      return;
+                    }
+
+                    final double max = autoScrollController.position.maxScrollExtent;
+                    autoScrollController.jumpTo(max);
+                  },
+                  icon: const Icon(Icons.vertical_align_bottom, color: Colors.white70),
+                ),
+
+                IconButton(
+                  tooltip: '一気に上',
+                  onPressed: () {
+                    if (!autoScrollController.hasClients) {
+                      return;
+                    }
+
+                    autoScrollController.jumpTo(0.0);
+                  },
+                  icon: const Icon(Icons.vertical_align_top, color: Colors.white70),
+                ),
+              ],
             ),
+
+            /// 一気ボタン / e
+
+            /// 押しっぱなしボタン / s
+            Row(
+              children: <Widget>[
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: (_) {
+                    if (dataList.isEmpty) {
+                      return;
+                    }
+                    _startRepeating(() => _scrollBy(_moveAmount));
+                  },
+                  onTapUp: (_) => _stopRepeating(),
+                  onTapCancel: _stopRepeating,
+                  child: const SizedBox(
+                    width: 44,
+                    height: 44,
+                    child: Center(child: Icon(Icons.arrow_downward, color: Colors.white70)),
+                  ),
+                ),
+
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: (_) => _startRepeating(() => _scrollBy(-_moveAmount)),
+                  onTapUp: (_) => _stopRepeating(),
+                  onTapCancel: _stopRepeating,
+                  child: const SizedBox(
+                    width: 44,
+                    height: 44,
+                    child: Center(child: Icon(Icons.arrow_upward, color: Colors.white70)),
+                  ),
+                ),
+              ],
+            ),
+
+            /// 押しっぱなしボタン / e
           ],
         ),
       ],

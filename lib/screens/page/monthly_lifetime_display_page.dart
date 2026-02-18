@@ -298,7 +298,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                       top: 20,
                       left: 90,
                       child: Column(
-                        children: [
+                        children: <Widget>[
                           //====================================================// temple // s
                           if (appParamState.keepTempleMap[date] != null) ...<Widget>[
                             const SizedBox(width: 10),
@@ -764,7 +764,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                         ],
                                       ),
 
-                                      SizedBox(height: 10),
+                                      const SizedBox(height: 10),
                                     ],
                                   ],
                                 ),
@@ -787,7 +787,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                           //====================================================// hour // e
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
+                            children: <Widget>[
                               //====================================================// leo fortune // s
                               GestureDetector(
                                 onTap: () {

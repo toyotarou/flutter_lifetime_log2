@@ -82,57 +82,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          const SizedBox(height: 10),
-
-                          Text('$year 年 資産推移'),
-
-                          Row(
-                            children: <Widget>[
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTapDown: (_) {
-                                  if (yearlyDayAssetsList.isEmpty) {
-                                    return;
-                                  }
-                                  _startRepeating(() => _scrollBy(_moveAmount));
-                                },
-                                onTapUp: (_) => _stopRepeating(),
-                                onTapCancel: _stopRepeating,
-                                child: const SizedBox(
-                                  width: 44,
-                                  height: 44,
-                                  child: Center(child: Icon(Icons.arrow_downward)),
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTapDown: (_) {
-                                  if (yearlyDayAssetsList.isEmpty) {
-                                    return;
-                                  }
-                                  _startRepeating(() => _scrollBy(-_moveAmount));
-                                },
-                                onTapUp: (_) => _stopRepeating(),
-                                onTapCancel: _stopRepeating,
-                                child: const SizedBox(
-                                  width: 44,
-                                  height: 44,
-                                  child: Center(child: Icon(Icons.arrow_upward)),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                  Text('$year 年 資産推移'),
 
                   Row(
                     children: <Widget>[
@@ -178,6 +128,76 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                   ),
                 ],
               ),
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                /// 一気ボタン / s
+                Row(
+                  children: <Widget>[
+                    IconButton(
+                      tooltip: '末尾へ',
+                      onPressed: () {
+                        if (!autoScrollController.hasClients) {
+                          return;
+                        }
+                        final ScrollPosition pos = autoScrollController.position;
+                        autoScrollController.jumpTo(pos.maxScrollExtent);
+                      },
+                      icon: const Icon(Icons.vertical_align_bottom),
+                    ),
+
+                    IconButton(
+                      tooltip: '先頭へ',
+                      onPressed: () {
+                        if (!autoScrollController.hasClients) {
+                          return;
+                        }
+                        autoScrollController.jumpTo(0.0);
+                      },
+                      icon: const Icon(Icons.vertical_align_top),
+                    ),
+                  ],
+                ),
+
+                /// 一気ボタン / e
+
+                /// 押しっぱなしボタン / s
+                Row(
+                  children: <Widget>[
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTapDown: (_) {
+                        if (yearlyDayAssetsList.isEmpty) {
+                          return;
+                        }
+                        _startRepeating(() => _scrollBy(_moveAmount));
+                      },
+                      onTapUp: (_) => _stopRepeating(),
+                      onTapCancel: _stopRepeating,
+                      child: const SizedBox(width: 44, height: 44, child: Center(child: Icon(Icons.arrow_downward))),
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTapDown: (_) {
+                        if (yearlyDayAssetsList.isEmpty) {
+                          return;
+                        }
+                        _startRepeating(() => _scrollBy(-_moveAmount));
+                      },
+                      onTapUp: (_) => _stopRepeating(),
+                      onTapCancel: _stopRepeating,
+                      child: const SizedBox(width: 44, height: 44, child: Center(child: Icon(Icons.arrow_upward))),
+                    ),
+                  ],
+                ),
+
+                /// 押しっぱなしボタン / e
+              ],
             ),
 
             Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
