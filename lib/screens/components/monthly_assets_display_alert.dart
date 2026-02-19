@@ -351,6 +351,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     autoScrollController.jumpTo(newOffset);
   }
 
+  ////////
+
   ///
   Widget displayBeforeLastAssetsList({required DateTime genDate}) {
     final DateTime beforeDate = genDate.subtract(const Duration(days: 1));
@@ -579,6 +581,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 note: 'GAIN',
                 beforeCost: beforeGoldCost,
                 lastCost: lastGoldCost,
+                allPrice: (beforeAssets[_kGold] ?? 0) - (lastAssets[_kGold] ?? 0),
               ),
 
               getBeforeLastDisplayWidget(
@@ -596,6 +599,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 note: 'GAIN',
                 beforeCost: beforeStockCost,
                 lastCost: lastStockCost,
+                allPrice: (beforeAssets[_kStock] ?? 0) - (lastAssets[_kStock] ?? 0),
               ),
 
               getBeforeLastDisplayWidget(
@@ -613,6 +617,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 note: 'GAIN',
                 beforeCost: beforeToushiCost,
                 lastCost: lastToushiCost,
+                allPrice: (beforeAssets[_kToushi] ?? 0) - (lastAssets[_kToushi] ?? 0),
               ),
 
               getBeforeLastDisplayWidget(
@@ -651,6 +656,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     String? note,
     int? beforeCost,
     int? lastCost,
+    int? allPrice,
   }) {
     return Container(
       decoration: BoxDecoration(color: bgColor),
@@ -730,38 +736,74 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
             ),
             const SizedBox(height: 5),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                const SizedBox.shrink(),
-                Padding(
-                  padding: const EdgeInsets.only(right: 30),
-                  child: Text(
-                    (last.toInt() - before.toInt()).toString().toCurrency(),
-                    style: TextStyle(
-                      color: ((last.toInt() - before.toInt()) < 0) ? Colors.orangeAccent : Colors.yellowAccent,
+            if (beforeCost != null && lastCost != null) ...<Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        const SizedBox(height: 12),
+
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              const SizedBox.shrink(),
+
+                              Text(
+                                '${lastCost.toString().toCurrency()} - ${beforeCost.toString().toCurrency()} =',
+                                style: const TextStyle(color: Colors.white60),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                const SizedBox.shrink(),
-                if (beforeCost != null && lastCost != null)
+                  Container(
+                    decoration: BoxDecoration(border: Border.all(color: Colors.yellowAccent.withValues(alpha: 0.5))),
+
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text(
+                          (last.toInt() - before.toInt()).toString().toCurrency(),
+                          style: TextStyle(
+                            color: ((last.toInt() - before.toInt()) < 0) ? Colors.orangeAccent : Colors.yellowAccent,
+                          ),
+                        ),
+
+                        Text(
+                          '+${(lastCost - beforeCost).toString().toCurrency()}',
+                          style: const TextStyle(color: Colors.white60),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(width: 10),
+                ],
+              ),
+            ] else ...<Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  const SizedBox.shrink(),
                   Padding(
                     padding: const EdgeInsets.only(right: 10),
                     child: Text(
-                      '${lastCost.toString().toCurrency()} - ${beforeCost.toString().toCurrency()} = ${(lastCost - beforeCost).toString().toCurrency()}',
-                      style: const TextStyle(color: Colors.white60),
+                      (last.toInt() - before.toInt()).toString().toCurrency(),
+                      style: TextStyle(
+                        color: ((last.toInt() - before.toInt()) < 0) ? Colors.orangeAccent : Colors.yellowAccent,
+                      ),
                     ),
-                  )
-                else
-                  const SizedBox.shrink(),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
