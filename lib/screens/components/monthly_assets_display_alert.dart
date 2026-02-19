@@ -137,127 +137,166 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
               ),
               child: Column(
                 children: <Widget>[
-                  Stack(
+                  const SizedBox(height: 10),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(genDate.yyyymm, style: const TextStyle(fontSize: 20)),
+                        Row(
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () {
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: displayBeforeLastAssetsList(genDate: genDate),
+                                  paddingTop: context.screenSize.height * 0.05,
+                                  paddingBottom: context.screenSize.height * 0.1,
+                                  paddingLeft: context.screenSize.width * 0.2,
+                                  clearBarrierColor: true,
+                                );
+                              },
+                              child: const Icon(Icons.pages),
+                            ),
+                            const SizedBox(width: 20),
+                            GestureDetector(
+                              onTap: () {
+                                final DateTime lastYearEnd = DateTime(genDate.year, 1, 0);
+                                final int lastYearFinalAssets = _calcTotalAssetsAtDate(lastYearEnd);
+
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: YearlyAssetsDisplayAlert(
+                                    date: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
+                                    lastYearFinalAssets: lastYearFinalAssets,
+                                  ),
+                                );
+                              },
+                              child: const Icon(Icons.calendar_view_month),
+                            ),
+                            const SizedBox(width: 20),
+                            GestureDetector(
+                              onTap: () {
+                                if (DateTime.now().year == genDate.year &&
+                                    DateTime.now().month == genDate.month &&
+                                    DateTime.now().day == 1) {
+                                  // ignore: always_specify_types
+                                  Future.delayed(
+                                    Duration.zero,
+                                    () => error_dialog(
+                                      // ignore: use_build_context_synchronously
+                                      context: context,
+                                      title: '表示できません。',
+                                      content: 'データが1日分しかないため、assets graphが表示できません。',
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                final DateTime lastMonthEnd = DateTime(genDate.year, genDate.month, 0);
+                                final int lastMonthFinalAssets = _calcTotalAssetsAtDate(lastMonthEnd);
+
+                                LifetimeDialog(
+                                  context: context,
+                                  widget: MonthlyAssetsGraphAlert(
+                                    yearmonth: genDate.yyyymm,
+                                    monthlyGraphAssetsMap: const <int, int>{},
+                                    lastMonthFinalAssets: lastMonthFinalAssets,
+                                  ),
+                                );
+                              },
+                              child: const Icon(Icons.graphic_eq),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Positioned(top: 20, right: 5, left: 5, child: Center(child: Text(genDate.yyyymm))),
+                      /// 一気ボタン / s
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTapDown: (_) {
-                                  if (monthlyAssetsList.isEmpty) {
-                                    return;
-                                  }
-                                  if (!autoScrollController.hasClients) {
-                                    return;
-                                  }
+                          IconButton(
+                            tooltip: '一気に下',
+                            onPressed: () {
+                              if (!autoScrollController.hasClients) {
+                                return;
+                              }
 
-                                  _startRepeating(() => _scrollMonthlyListBy(_moveAmount));
-                                },
-                                onTapUp: (_) => _stopRepeating(),
-                                onTapCancel: _stopRepeating,
-                                child: const SizedBox(
-                                  width: 44,
-                                  height: 44,
-                                  child: Center(child: Icon(Icons.arrow_downward)),
-                                ),
-                              ),
-
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTapDown: (_) {
-                                  if (monthlyAssetsList.isEmpty) {
-                                    return;
-                                  }
-                                  if (!autoScrollController.hasClients) {
-                                    return;
-                                  }
-
-                                  _startRepeating(() => _scrollMonthlyListBy(-_moveAmount));
-                                },
-                                onTapUp: (_) => _stopRepeating(),
-                                onTapCancel: _stopRepeating,
-                                child: const SizedBox(
-                                  width: 44,
-                                  height: 44,
-                                  child: Center(child: Icon(Icons.arrow_upward)),
-                                ),
-                              ),
-                            ],
+                              final double max = autoScrollController.position.maxScrollExtent;
+                              autoScrollController.jumpTo(max);
+                            },
+                            icon: const Icon(Icons.vertical_align_bottom),
                           ),
-                          Row(
-                            children: <Widget>[
-                              GestureDetector(
-                                onTap: () {
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: displayBeforeLastAssetsList(genDate: genDate),
-                                    paddingTop: context.screenSize.height * 0.05,
-                                    paddingBottom: context.screenSize.height * 0.1,
-                                    paddingLeft: context.screenSize.width * 0.2,
-                                    clearBarrierColor: true,
-                                  );
-                                },
-                                child: const Icon(Icons.pages),
-                              ),
-                              const SizedBox(width: 20),
-                              GestureDetector(
-                                onTap: () {
-                                  final DateTime lastYearEnd = DateTime(genDate.year, 1, 0);
-                                  final int lastYearFinalAssets = _calcTotalAssetsAtDate(lastYearEnd);
 
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: YearlyAssetsDisplayAlert(
-                                      date: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}-01',
-                                      lastYearFinalAssets: lastYearFinalAssets,
-                                    ),
-                                  );
-                                },
-                                child: const Icon(Icons.calendar_view_month),
-                              ),
-                              const SizedBox(width: 20),
-                              GestureDetector(
-                                onTap: () {
-                                  if (DateTime.now().year == genDate.year &&
-                                      DateTime.now().month == genDate.month &&
-                                      DateTime.now().day == 1) {
-                                    // ignore: always_specify_types
-                                    Future.delayed(
-                                      Duration.zero,
-                                      () => error_dialog(
-                                        // ignore: use_build_context_synchronously
-                                        context: context,
-                                        title: '表示できません。',
-                                        content: 'データが1日分しかないため、assets graphが表示できません。',
-                                      ),
-                                    );
-                                    return;
-                                  }
+                          IconButton(
+                            tooltip: '一気に上',
+                            onPressed: () {
+                              if (!autoScrollController.hasClients) {
+                                return;
+                              }
 
-                                  final DateTime lastMonthEnd = DateTime(genDate.year, genDate.month, 0);
-                                  final int lastMonthFinalAssets = _calcTotalAssetsAtDate(lastMonthEnd);
+                              autoScrollController.jumpTo(0.0);
+                            },
+                            icon: const Icon(Icons.vertical_align_top),
+                          ),
+                        ],
+                      ),
 
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: MonthlyAssetsGraphAlert(
-                                      yearmonth: genDate.yyyymm,
-                                      monthlyGraphAssetsMap: const <int, int>{},
-                                      lastMonthFinalAssets: lastMonthFinalAssets,
-                                    ),
-                                  );
-                                },
-                                child: const Icon(Icons.graphic_eq),
-                              ),
-                            ],
+                      /// 一気ボタン / e
+                      Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTapDown: (_) {
+                              if (monthlyAssetsList.isEmpty) {
+                                return;
+                              }
+                              if (!autoScrollController.hasClients) {
+                                return;
+                              }
+
+                              _startRepeating(() => _scrollMonthlyListBy(_moveAmount));
+                            },
+                            onTapUp: (_) => _stopRepeating(),
+                            onTapCancel: _stopRepeating,
+                            child: const SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: Center(child: Icon(Icons.arrow_downward)),
+                            ),
+                          ),
+
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTapDown: (_) {
+                              if (monthlyAssetsList.isEmpty) {
+                                return;
+                              }
+                              if (!autoScrollController.hasClients) {
+                                return;
+                              }
+
+                              _startRepeating(() => _scrollMonthlyListBy(-_moveAmount));
+                            },
+                            onTapUp: (_) => _stopRepeating(),
+                            onTapCancel: _stopRepeating,
+                            child: const SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: Center(child: Icon(Icons.arrow_upward)),
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
+
                   Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
                   if (hasData) ...<Widget>[
                     Expanded(child: displayMonthlyAssetsList(genDate: genDate)),

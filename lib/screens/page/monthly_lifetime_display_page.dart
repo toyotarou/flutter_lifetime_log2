@@ -71,8 +71,37 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        const SizedBox.shrink(),
+                        /// 一気ボタン / s
+                        Row(
+                          children: <Widget>[
+                            IconButton(
+                              tooltip: '一気に下',
+                              onPressed: () {
+                                if (!autoScrollController.hasClients) {
+                                  return;
+                                }
 
+                                final double max = autoScrollController.position.maxScrollExtent;
+                                autoScrollController.jumpTo(max);
+                              },
+                              icon: Icon(Icons.vertical_align_bottom, color: Colors.white.withValues(alpha: 0.3)),
+                            ),
+
+                            IconButton(
+                              tooltip: '一気に上',
+                              onPressed: () {
+                                if (!autoScrollController.hasClients) {
+                                  return;
+                                }
+
+                                autoScrollController.jumpTo(0.0);
+                              },
+                              icon: Icon(Icons.vertical_align_top, color: Colors.white.withValues(alpha: 0.3)),
+                            ),
+                          ],
+                        ),
+
+                        /// 一気ボタン / e
                         Row(
                           children: <Widget>[
                             GestureDetector(
