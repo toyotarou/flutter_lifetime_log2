@@ -827,13 +827,51 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                       widget: FortuneDisplayAlert(date: date),
                                     );
                                   },
-                                  child: Opacity(
-                                    opacity: 0.4,
-                                    child: CircleAvatar(
-                                      radius: 15,
-                                      backgroundColor: Colors.orangeAccent.withValues(alpha: 0.4),
-                                      child: Image.asset('assets/images/leo_mark.png', width: 15, height: 15),
-                                    ),
+                                  child: Stack(
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 10),
+                                        child: Opacity(
+                                          opacity: 0.4,
+                                          child: CircleAvatar(
+                                            radius: 15,
+                                            backgroundColor: Colors.orangeAccent.withValues(alpha: 0.4),
+                                            child: Image.asset('assets/images/leo_mark.png', width: 15, height: 15),
+                                          ),
+                                        ),
+                                      ),
+
+                                      Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: Container(
+                                          width: 18,
+                                          height: 18,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.white.withValues(alpha: 0.2),
+                                          ),
+
+                                          child: Center(
+                                            child: Text(
+                                              appParamState.keepFortuneMap[date]!.rank,
+                                              style: const TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      const Positioned(
+                                        bottom: 0,
+                                        right: 0,
+
+                                        child: Text('tomorrow', style: TextStyle(fontSize: 8)),
+                                      ),
+                                    ],
                                   ),
                                 ),
 

@@ -45,7 +45,7 @@ class Fortune extends _$Fortune {
 
           list.add(val);
 
-          map['${val.year}-${val.month}-${val.day}'] = val;
+          map[DateTime.parse('${val.year}-${val.month}-${val.day}').add(const Duration(days: -1)).yyyymmdd] = val;
         }
       });
 
