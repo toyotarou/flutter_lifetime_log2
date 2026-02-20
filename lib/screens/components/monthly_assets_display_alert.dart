@@ -567,6 +567,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
               getBeforeLastDisplayWidget(
                 title: 'MONEY',
+                guideNumStr: '①',
                 before: beforeMoneySum.toString(),
                 last: lastMoneySum.toString(),
                 bgColor: Colors.transparent,
@@ -581,6 +582,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
               ),
               getBeforeLastDisplayWidget(
                 title: '',
+                guideNumStr: '②',
                 before: beforeGoldDiff.toString(),
                 last: lastGoldDiff.toString(),
                 bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
@@ -599,6 +601,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
               ),
               getBeforeLastDisplayWidget(
                 title: '',
+                guideNumStr: '③',
                 before: beforeStockDiff.toString(),
                 last: lastStockDiff.toString(),
                 bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
@@ -617,6 +620,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
               ),
               getBeforeLastDisplayWidget(
                 title: '',
+                guideNumStr: '④',
                 before: beforeToushiDiff.toString(),
                 last: lastToushiDiff.toString(),
                 bgColor: const Color(0xFFFBB6CE).withValues(alpha: 0.2),
@@ -628,12 +632,14 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
               getBeforeLastDisplayWidget(
                 title: 'INSURANCE',
+                guideNumStr: '⑤',
                 before: (beforeAssets[_kInsurance] ?? 0).toString(),
                 last: (lastAssets[_kInsurance] ?? 0).toString(),
                 bgColor: Colors.transparent,
               ),
               getBeforeLastDisplayWidget(
                 title: 'NENKIN_KIKIN',
+                guideNumStr: '⑥',
                 before: (beforeAssets[_kNenkinKikin] ?? 0).toString(),
                 last: (lastAssets[_kNenkinKikin] ?? 0).toString(),
                 bgColor: Colors.transparent,
@@ -645,6 +651,11 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                 before: beforeSum.toString(),
                 last: lastSum.toString(),
                 bgColor: Colors.transparent,
+              ),
+
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [SizedBox.shrink(), Text('①②③④⑤⑥')],
               ),
             ],
           ),
@@ -663,6 +674,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     int? beforeCost,
     int? lastCost,
     int? allPrice,
+    String? guideNumStr,
   }) {
     return Container(
       decoration: BoxDecoration(color: bgColor),
@@ -749,7 +761,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
-                        const SizedBox(height: 12),
+                        Text((guideNumStr != null) ? guideNumStr : '', style: const TextStyle(fontSize: 12)),
+                        const SizedBox(width: 10),
 
                         Padding(
                           padding: const EdgeInsets.only(right: 10),
@@ -758,9 +771,13 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                             children: <Widget>[
                               const SizedBox.shrink(),
 
-                              Text(
-                                '${lastCost.toString().toCurrency()} - ${beforeCost.toString().toCurrency()} =',
-                                style: const TextStyle(color: Colors.white60),
+                              Row(
+                                children: [
+                                  Text(
+                                    '${lastCost.toString().toCurrency()} - ${beforeCost.toString().toCurrency()} =',
+                                    style: const TextStyle(color: Colors.white60),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -800,11 +817,19 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   const SizedBox.shrink(),
                   Padding(
                     padding: const EdgeInsets.only(right: 10),
-                    child: Text(
-                      (last.toInt() - before.toInt()).toString().toCurrency(),
-                      style: TextStyle(
-                        color: ((last.toInt() - before.toInt()) < 0) ? Colors.orangeAccent : Colors.yellowAccent,
-                      ),
+                    child: Row(
+                      children: [
+                        Text((guideNumStr != null) ? guideNumStr : '', style: const TextStyle(fontSize: 12)),
+
+                        const SizedBox(width: 10),
+
+                        Text(
+                          (last.toInt() - before.toInt()).toString().toCurrency(),
+                          style: TextStyle(
+                            color: ((last.toInt() - before.toInt()) < 0) ? Colors.orangeAccent : Colors.yellowAccent,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
