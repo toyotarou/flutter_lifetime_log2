@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
@@ -124,6 +126,39 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
+                          /// 一気ボタン / s
+                          Row(
+                            children: <Widget>[
+                              IconButton(
+                                tooltip: '一気に下',
+                                onPressed: () {
+                                  if (!autoScrollController.hasClients) {
+                                    return;
+                                  }
+
+                                  final double max = autoScrollController.position.maxScrollExtent;
+                                  autoScrollController.jumpTo(max);
+                                },
+                                icon: const Icon(Icons.vertical_align_bottom),
+                              ),
+
+                              IconButton(
+                                tooltip: '一気に上',
+                                onPressed: () {
+                                  if (!autoScrollController.hasClients) {
+                                    return;
+                                  }
+
+                                  autoScrollController.jumpTo(0.0);
+                                },
+                                icon: const Icon(Icons.vertical_align_top),
+                              ),
+                            ],
+                          ),
+
+                          /// 一気ボタン / e
+
+                          /// 押しっぱなしボタン / s
                           Row(
                             children: <Widget>[
                               GestureDetector(
@@ -152,7 +187,7 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                             ],
                           ),
 
-                          const SizedBox.shrink(),
+                          /// 押しっぱなしボタン / e
                         ],
                       ),
                     ],
@@ -239,150 +274,164 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
           key: ValueKey(day),
           index: day,
           controller: autoScrollController,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 5),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList),
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: (boundingBoxArea != '' && boundingBoxArea.substring(0, 3) != '0.0' && transportation != null)
-                    ? 120
-                    : 20,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        flex: 2,
-                        child: Row(
-                          children: <Widget>[
-                            Text(day.toString().padLeft(2, '0')),
-                            const SizedBox(width: 10),
-                            Text(DateTime.parse(date).youbiStr.substring(0, 3)),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.topRight,
-                          child: Text((value != null) ? value.step.toString().toCurrency() : '0'),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.topRight,
-                          child: Text((value != null) ? value.distance.toString().toCurrency() : '0'),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Container(alignment: Alignment.topRight, child: Text(boundingBoxArea)),
-                      ),
-                    ],
-                  ),
+          child: Stack(
+            children: <Widget>[
+              if (geolocModelList != null &&
+                  geolocModelList.isNotEmpty &&
+                  boundingBoxArea.substring(0, 3) != '0.0') ...<Widget>[
+                Positioned(left: 10, bottom: 10, child: buildGeolocThumbMap(geolocModelList)),
+              ],
 
-                  Row(
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList),
+                ),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 100),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      if (boundingBoxArea.split('.')[0] != '0' && transportation != null) ...<Widget>[
-                        Expanded(
-                          child: ExpansionTile(
-                            tilePadding: EdgeInsets.zero,
-                            dense: true,
-                            visualDensity: VisualDensity.compact,
-                            iconColor: Colors.white,
-                            collapsedIconColor: Colors.white,
-                            title: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                              color: Colors.black.withValues(alpha: 0.2),
-                              child: const Text('StationRoute', style: TextStyle(fontSize: 12, color: Colors.white)),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            flex: 2,
+                            child: Row(
+                              children: <Widget>[
+                                Text(day.toString().padLeft(2, '0')),
+                                const SizedBox(width: 10),
+                                Text(DateTime.parse(date).youbiStr.substring(0, 3)),
+                              ],
                             ),
-                            children: <Widget>[
-                              Column(
-                                children: transportation.stationRouteList.map((String e) {
-                                  return Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(e, maxLines: 1, overflow: TextOverflow.ellipsis),
-                                  );
-                                }).toList(),
-                              ),
-
-                              const SizedBox(height: 10),
-
-                              displayExpensesList(date: date),
-                            ],
                           ),
-                        ),
-                        const SizedBox(height: 30),
-                      ] else ...<Widget>[const Expanded(child: SizedBox.shrink())],
+                          Expanded(
+                            child: Container(
+                              alignment: Alignment.topRight,
+                              child: Text((value != null) ? value.step.toString().toCurrency() : '0'),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              alignment: Alignment.topRight,
+                              child: Text((value != null) ? value.distance.toString().toCurrency() : '0'),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Container(alignment: Alignment.topRight, child: Text(boundingBoxArea)),
+                          ),
+                        ],
+                      ),
 
-                      Container(
-                        width: 40,
-                        alignment: Alignment.topRight,
-                        child: Column(
-                          children: <Widget>[
-                            const SizedBox(height: 10),
-                            if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
-                              GestureDetector(
-                                onTap: () {
-                                  appParamNotifier.setSelectedGeolocTime(time: '');
-
-                                  final List<String> templeGeolocNearlyDateList = utility.getTempleGeolocNearlyDateList(
-                                    date: date,
-                                    templeMap: appParamState.keepTempleMap,
-                                  );
-
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: LifetimeGeolocMapDisplayAlert(
-                                      date: date,
-                                      geolocList: appParamState.keepGeolocMap[date],
-                                      templeGeolocNearlyDateList: templeGeolocNearlyDateList,
-                                    ),
-                                    executeFunctionWhenDialogClose: true,
-                                    from: 'LifetimeGeolocMapDisplayAlert',
-                                    ref: ref,
-                                  );
-                                },
-                                child: Column(
-                                  children: <Widget>[
-                                    Icon(
-                                      (boundingBoxArea.substring(0, 3) == '0.0') ? Icons.home_outlined : Icons.map,
-                                      color: Colors.white.withValues(alpha: 0.3),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Text(
-                                      appParamState.keepGeolocMap[date]!.length.toString(),
-                                      style: const TextStyle(fontSize: 8),
-                                    ),
-                                  ],
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          if (boundingBoxArea.split('.')[0] != '0' && transportation != null) ...<Widget>[
+                            Expanded(
+                              child: ExpansionTile(
+                                tilePadding: EdgeInsets.zero,
+                                dense: true,
+                                visualDensity: VisualDensity.compact,
+                                iconColor: Colors.white,
+                                collapsedIconColor: Colors.white,
+                                title: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  child: const Text(
+                                    'StationRoute',
+                                    style: TextStyle(fontSize: 12, color: Colors.white),
+                                  ),
                                 ),
-                              ),
-                            ],
-                            if (appParamState.keepTempleMap[date] != null) ...<Widget>[
-                              const SizedBox(height: 10),
-                              Icon(FontAwesomeIcons.toriiGate, size: 20, color: Colors.white.withValues(alpha: 0.3)),
-                            ],
+                                children: <Widget>[
+                                  Column(
+                                    children: transportation.stationRouteList.map((String e) {
+                                      return Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(e, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                      );
+                                    }).toList(),
+                                  ),
 
-                            if (appParamState.keepStampRallyMetroAllStationMap[date] != null ||
-                                appParamState.keepStampRallyMetro20AnniversaryMap[date] != null ||
-                                appParamState.keepStampRallyMetroPokepokeMap[date] != null) ...<Widget>[
-                              const SizedBox(height: 10),
-                              Icon(FontAwesomeIcons.stamp, size: 20, color: Colors.white.withValues(alpha: 0.3)),
-                            ],
-                          ],
-                        ),
+                                  const SizedBox(height: 10),
+
+                                  displayExpensesList(date: date),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+                          ] else ...<Widget>[const Expanded(child: SizedBox.shrink())],
+
+                          Container(
+                            width: 40,
+                            alignment: Alignment.topRight,
+                            child: Column(
+                              children: <Widget>[
+                                const SizedBox(height: 10),
+                                if (appParamState.keepGeolocMap[date] != null) ...<Widget>[
+                                  GestureDetector(
+                                    onTap: () {
+                                      appParamNotifier.setSelectedGeolocTime(time: '');
+
+                                      final List<String> templeGeolocNearlyDateList = utility
+                                          .getTempleGeolocNearlyDateList(
+                                            date: date,
+                                            templeMap: appParamState.keepTempleMap,
+                                          );
+
+                                      LifetimeDialog(
+                                        context: context,
+                                        widget: LifetimeGeolocMapDisplayAlert(
+                                          date: date,
+                                          geolocList: appParamState.keepGeolocMap[date],
+                                          templeGeolocNearlyDateList: templeGeolocNearlyDateList,
+                                        ),
+                                        executeFunctionWhenDialogClose: true,
+                                        from: 'LifetimeGeolocMapDisplayAlert',
+                                        ref: ref,
+                                      );
+                                    },
+                                    child: Column(
+                                      children: <Widget>[
+                                        Icon(
+                                          (boundingBoxArea.substring(0, 3) == '0.0') ? Icons.home_outlined : Icons.map,
+                                          color: Colors.white.withValues(alpha: 0.3),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          appParamState.keepGeolocMap[date]!.length.toString(),
+                                          style: const TextStyle(fontSize: 8),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                                if (appParamState.keepTempleMap[date] != null) ...<Widget>[
+                                  const SizedBox(height: 10),
+                                  Icon(
+                                    FontAwesomeIcons.toriiGate,
+                                    size: 20,
+                                    color: Colors.white.withValues(alpha: 0.3),
+                                  ),
+                                ],
+
+                                if (appParamState.keepStampRallyMetroAllStationMap[date] != null ||
+                                    appParamState.keepStampRallyMetro20AnniversaryMap[date] != null ||
+                                    appParamState.keepStampRallyMetroPokepokeMap[date] != null) ...<Widget>[
+                                  const SizedBox(height: 10),
+                                  Icon(FontAwesomeIcons.stamp, size: 20, color: Colors.white.withValues(alpha: 0.3)),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       );
@@ -398,6 +447,145 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
           ),
         ),
       ],
+    );
+  }
+
+  ///
+  LatLngBounds? buildBoundsFromGeoloc(List<GeolocModel> list) {
+    if (list.isEmpty) {
+      return null;
+    }
+
+    double? minLat, maxLat, minLng, maxLng;
+
+    for (final GeolocModel e in list) {
+      final double lat = double.tryParse(e.latitude) ?? 0;
+      final double lng = double.tryParse(e.longitude) ?? 0;
+
+      minLat = (minLat == null) ? lat : (lat < minLat ? lat : minLat);
+      maxLat = (maxLat == null) ? lat : (lat > maxLat ? lat : maxLat);
+      minLng = (minLng == null) ? lng : (lng < minLng ? lng : minLng);
+      maxLng = (maxLng == null) ? lng : (lng > maxLng ? lng : maxLng);
+    }
+
+    const double pad = 0.0005;
+
+    return LatLngBounds(
+      LatLng((minLat ?? 0) - pad, (minLng ?? 0) - pad),
+      LatLng((maxLat ?? 0) + pad, (maxLng ?? 0) + pad),
+    );
+  }
+
+  Widget buildGeolocThumbMap(List<GeolocModel> geolocList) {
+    const double thumbWidth = 140;
+    const double thumbHeight = 80;
+    const double thumbRadius = 6;
+
+    const double boundsPadLatLng = 0.0005;
+    const double cameraFitPaddingPx = 8;
+
+    const double mapDarkenOpacity = 0.35;
+
+    const double markerSize = 8;
+    const double markerFillOpacity = 0.3;
+
+    const Color markerFillColorBase = Color(0xFFFBB6CE);
+
+    const int tileKeepBuffer = 0;
+    const String tileUrlTemplate = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const String userAgentPackageName = 'your.app.package';
+
+    final List<LatLng> points = geolocList
+        .map((GeolocModel e) {
+          final double? lat = double.tryParse(e.latitude);
+          final double? lng = double.tryParse(e.longitude);
+
+          if (lat == null || lng == null) {
+            return null;
+          }
+          if (!lat.isFinite || !lng.isFinite) {
+            return null;
+          }
+          if (lat < -90 || lat > 90) {
+            return null;
+          }
+          if (lng < -180 || lng > 180) {
+            return null;
+          }
+
+          return LatLng(lat, lng);
+        })
+        .whereType<LatLng>()
+        .toList();
+
+    if (points.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    double minLat = points.first.latitude;
+    double maxLat = points.first.latitude;
+    double minLng = points.first.longitude;
+    double maxLng = points.first.longitude;
+
+    for (final LatLng p in points) {
+      if (p.latitude < minLat) {
+        minLat = p.latitude;
+      }
+      if (p.latitude > maxLat) {
+        maxLat = p.latitude;
+      }
+      if (p.longitude < minLng) {
+        minLng = p.longitude;
+      }
+      if (p.longitude > maxLng) {
+        maxLng = p.longitude;
+      }
+    }
+
+    final LatLngBounds bounds = LatLngBounds(
+      LatLng(minLat - boundsPadLatLng, minLng - boundsPadLatLng),
+      LatLng(maxLat + boundsPadLatLng, maxLng + boundsPadLatLng),
+    );
+
+    final List<Marker> markers = points.map((LatLng p) {
+      return Marker(
+        point: p,
+        width: markerSize,
+        height: markerSize,
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: markerFillColorBase.withValues(alpha: markerFillOpacity),
+          ),
+        ),
+      );
+    }).toList();
+
+    return SizedBox(
+      width: thumbWidth,
+      height: thumbHeight,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(thumbRadius),
+        child: FlutterMap(
+          options: MapOptions(
+            interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
+            initialCameraFit: CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(cameraFitPaddingPx)),
+            backgroundColor: Colors.black,
+          ),
+          children: <Widget>[
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(Colors.black.withOpacity(mapDarkenOpacity), BlendMode.darken),
+              child: TileLayer(
+                urlTemplate: tileUrlTemplate,
+                userAgentPackageName: userAgentPackageName,
+                keepBuffer: tileKeepBuffer,
+              ),
+            ),
+
+            MarkerLayer(markers: markers),
+          ],
+        ),
+      ),
     );
   }
 

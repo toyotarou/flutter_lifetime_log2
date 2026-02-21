@@ -249,6 +249,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                       ),
 
                       /// 一気ボタン / e
+
+                      /// 押しっぱなしボタン / s
                       Row(
                         children: <Widget>[
                           GestureDetector(
@@ -294,6 +296,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                           ),
                         ],
                       ),
+
+                      /// 押しっぱなしボタン / e
                     ],
                   ),
 
@@ -655,7 +659,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
               const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [SizedBox.shrink(), Text('①②③④⑤⑥')],
+                children: <Widget>[SizedBox.shrink(), Text('①②③④⑤⑥')],
               ),
             ],
           ),
@@ -772,7 +776,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                               const SizedBox.shrink(),
 
                               Row(
-                                children: [
+                                children: <Widget>[
                                   Text(
                                     '${lastCost.toString().toCurrency()} - ${beforeCost.toString().toCurrency()} =',
                                     style: const TextStyle(color: Colors.white60),
@@ -818,7 +822,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   Padding(
                     padding: const EdgeInsets.only(right: 10),
                     child: Row(
-                      children: [
+                      children: <Widget>[
                         Text((guideNumStr != null) ? guideNumStr : '', style: const TextStyle(fontSize: 12)),
 
                         const SizedBox(width: 10),
