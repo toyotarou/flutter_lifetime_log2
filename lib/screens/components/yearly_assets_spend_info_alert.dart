@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,6 +25,13 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
   late final DateTime _asOf;
   late final Future<List<Map<String, dynamic>>> _futureDisplayData;
 
+  final ScrollController _listController = ScrollController();
+
+  static const double _moveAmount = 18;
+  static const int _tickMs = 16;
+
+  Timer? _repeatTimer;
+
   ///
   @override
   void initState() {
@@ -32,6 +41,16 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
     _asOf = DateTime(now.year, now.month, now.day, now.hour, now.minute, now.second);
 
     _futureDisplayData = Future<List<Map<String, dynamic>>>(() => _generateData(asOf: _asOf));
+  }
+
+  ///
+  @override
+  void dispose() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+
+    _listController.dispose();
+    super.dispose();
   }
 
   ///
@@ -47,6 +66,78 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[Text('資産変動推移 (月次・年次)'), SizedBox.shrink()],
             ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                /// 一気ボタン / s
+                Row(
+                  children: <Widget>[
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        if (!_listController.hasClients) {
+                          return;
+                        }
+                        final double max = _listController.position.maxScrollExtent;
+                        _listController.jumpTo(max);
+                      },
+
+                      child: const SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Center(child: Icon(Icons.vertical_align_bottom, color: Colors.white)),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        if (!_listController.hasClients) {
+                          return;
+                        }
+                        _listController.jumpTo(0.0);
+                      },
+                      child: const SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Center(child: Icon(Icons.vertical_align_top, color: Colors.white)),
+                      ),
+                    ),
+                  ],
+                ),
+
+                /// 一気ボタン / e
+                Row(
+                  children: <Widget>[
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTapDown: (_) => _startRepeating(() => _scrollBy(_moveAmount)),
+                      onTapUp: (_) => _stopRepeating(),
+                      onTapCancel: _stopRepeating,
+                      child: const SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Center(child: Icon(Icons.arrow_downward, color: Colors.white)),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTapDown: (_) => _startRepeating(() => _scrollBy(-_moveAmount)),
+                      onTapUp: (_) => _stopRepeating(),
+                      onTapCancel: _stopRepeating,
+                      child: const SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Center(child: Icon(Icons.arrow_upward, color: Colors.white)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
             Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
             Expanded(
@@ -75,6 +166,7 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
                   final List<Map<String, dynamic>> displayData = snapshot.data ?? <Map<String, dynamic>>[];
 
                   return ListView.builder(
+                    controller: _listController,
                     itemCount: displayData.length,
                     itemBuilder: (BuildContext context, int index) {
                       final Map<String, dynamic> data = displayData[index];
@@ -96,6 +188,33 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
         ),
       ),
     );
+  }
+
+  ///
+  void _startRepeating(VoidCallback action) {
+    _repeatTimer?.cancel();
+
+    action();
+
+    _repeatTimer = Timer.periodic(const Duration(milliseconds: _tickMs), (_) => action());
+  }
+
+  ///
+  void _stopRepeating() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+  }
+
+  ///
+  void _scrollBy(double delta) {
+    if (!_listController.hasClients) {
+      return;
+    }
+
+    final ScrollPosition pos = _listController.position;
+    final double newOffset = (_listController.offset + delta).clamp(0.0, pos.maxScrollExtent);
+
+    _listController.jumpTo(newOffset);
   }
 
   ///

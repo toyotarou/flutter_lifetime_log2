@@ -134,42 +134,8 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          SizedBox(width: 60, child: Text(genDate.yyyymm)),
-                          Row(
-                            children: <Widget>[
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTapDown: (_) => _startRepeating(() => _scrollBy(_moveAmount)),
-                                onTapUp: (_) => _stopRepeating(),
-                                onTapCancel: _stopRepeating,
-                                child: SizedBox(
-                                  width: 44,
-                                  height: 44,
-                                  child: Center(
-                                    child: Icon(Icons.arrow_downward, color: Colors.white.withValues(alpha: 0.3)),
-                                  ),
-                                ),
-                              ),
+                      Text(genDate.yyyymm, style: const TextStyle(fontSize: 24)),
 
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTapDown: (_) => _startRepeating(() => _scrollBy(-_moveAmount)),
-                                onTapUp: (_) => _stopRepeating(),
-                                onTapCancel: _stopRepeating,
-                                child: SizedBox(
-                                  width: 44,
-                                  height: 44,
-                                  child: Center(
-                                    child: Icon(Icons.arrow_upward, color: Colors.white.withValues(alpha: 0.3)),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
                       Row(
                         children: <Widget>[
                           CircleAvatar(
@@ -225,6 +191,85 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                       ),
                     ],
                   ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      /// 一気ボタン / s
+                      Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+
+                            onTap: () {
+                              if (!autoScrollController.hasClients) {
+                                return;
+                              }
+
+                              final double max = autoScrollController.position.maxScrollExtent;
+                              autoScrollController.jumpTo(max);
+                            },
+                            child: const SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: Center(child: Icon(Icons.vertical_align_bottom, color: Colors.white)),
+                            ),
+                          ),
+
+                          const SizedBox(width: 20),
+
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+
+                            onTap: () {
+                              if (!autoScrollController.hasClients) {
+                                return;
+                              }
+
+                              autoScrollController.jumpTo(0.0);
+                            },
+                            child: const SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: Center(child: Icon(Icons.vertical_align_top, color: Colors.white)),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      /// 一気ボタン / e
+                      Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTapDown: (_) => _startRepeating(() => _scrollBy(_moveAmount)),
+                            onTapUp: (_) => _stopRepeating(),
+                            onTapCancel: _stopRepeating,
+                            child: const SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: Center(child: Icon(Icons.arrow_downward, color: Colors.white)),
+                            ),
+                          ),
+
+                          const SizedBox(width: 20),
+
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTapDown: (_) => _startRepeating(() => _scrollBy(-_moveAmount)),
+                            onTapUp: (_) => _stopRepeating(),
+                            onTapCancel: _stopRepeating,
+                            child: const SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: Center(child: Icon(Icons.arrow_upward, color: Colors.white)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
                   Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
                   if (hasData) ...<Widget>[Expanded(child: monthlyResult!.listWidget)] else ...<Widget>[
                     const Expanded(

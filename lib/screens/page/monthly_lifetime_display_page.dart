@@ -66,7 +66,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
               children: <Widget>[
                 Stack(
                   children: <Widget>[
-                    Container(alignment: Alignment.center, child: Text(widget.yearmonth)),
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text(widget.yearmonth, style: const TextStyle(fontSize: 24)),
+                    ),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -74,9 +77,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         /// 一気ボタン / s
                         Row(
                           children: <Widget>[
-                            IconButton(
-                              tooltip: '一気に下',
-                              onPressed: () {
+                            GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+
+                              onTap: () {
                                 if (!autoScrollController.hasClients) {
                                   return;
                                 }
@@ -84,19 +88,30 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                 final double max = autoScrollController.position.maxScrollExtent;
                                 autoScrollController.jumpTo(max);
                               },
-                              icon: Icon(Icons.vertical_align_bottom, color: Colors.white.withValues(alpha: 0.3)),
+                              child: const SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: Center(child: Icon(Icons.vertical_align_bottom, color: Colors.white)),
+                              ),
                             ),
 
-                            IconButton(
-                              tooltip: '一気に上',
-                              onPressed: () {
+                            const SizedBox(width: 20),
+
+                            GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+
+                              onTap: () {
                                 if (!autoScrollController.hasClients) {
                                   return;
                                 }
 
                                 autoScrollController.jumpTo(0.0);
                               },
-                              icon: Icon(Icons.vertical_align_top, color: Colors.white.withValues(alpha: 0.3)),
+                              child: const SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: Center(child: Icon(Icons.vertical_align_top, color: Colors.white)),
+                              ),
                             ),
                           ],
                         ),
@@ -109,12 +124,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               onTapDown: (_) => _startRepeating(() => _scrollBy(_moveAmount)),
                               onTapUp: (_) => _stopRepeating(),
                               onTapCancel: _stopRepeating,
-                              child: SizedBox(
+                              child: const SizedBox(
                                 width: 44,
                                 height: 44,
-                                child: Center(
-                                  child: Icon(Icons.arrow_downward, color: Colors.white.withValues(alpha: 0.3)),
-                                ),
+                                child: Center(child: Icon(Icons.arrow_downward, color: Colors.white)),
                               ),
                             ),
 
@@ -125,12 +138,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               onTapDown: (_) => _startRepeating(() => _scrollBy(-_moveAmount)),
                               onTapUp: (_) => _stopRepeating(),
                               onTapCancel: _stopRepeating,
-                              child: SizedBox(
+                              child: const SizedBox(
                                 width: 44,
                                 height: 44,
-                                child: Center(
-                                  child: Icon(Icons.arrow_upward, color: Colors.white.withValues(alpha: 0.3)),
-                                ),
+                                child: Center(child: Icon(Icons.arrow_upward, color: Colors.white)),
                               ),
                             ),
                           ],
