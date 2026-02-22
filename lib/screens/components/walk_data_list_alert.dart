@@ -48,6 +48,8 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
 
   Timer? _repeatTimer;
 
+  String thumbnailTrainRouteDate = '';
+
   ///
   @override
   void dispose() {
@@ -279,7 +281,11 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
               if (geolocModelList != null &&
                   geolocModelList.isNotEmpty &&
                   boundingBoxArea.substring(0, 3) != '0.0') ...<Widget>[
-                Positioned(left: 10, bottom: 10, child: buildGeolocThumbMap(geolocModelList)),
+                Positioned(
+                  left: 10,
+                  top: 40,
+                  child: buildGeolocThumbMap(geolocList: geolocModelList, date: date),
+                ),
               ],
 
               Container(
@@ -343,13 +349,28 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                                     style: TextStyle(fontSize: 12, color: Colors.white),
                                   ),
                                 ),
+
+                                onExpansionChanged: (bool expanded) {
+                                  if (expanded) {
+                                    setState(() => thumbnailTrainRouteDate = date);
+                                  } else {
+                                    setState(() => thumbnailTrainRouteDate = '');
+                                  }
+                                },
+
                                 children: <Widget>[
                                   Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: transportation.stationRouteList.map((String e) {
-                                      return Container(
+                                      return Padding(
                                         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(e, maxLines: 1, overflow: TextOverflow.ellipsis),
+
+                                        child: Row(
+                                          children: <Widget>[
+                                            Expanded(child: Text(e)),
+                                            const SizedBox(),
+                                          ],
+                                        ),
                                       );
                                     }).toList(),
                                   ),
@@ -476,7 +497,8 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
     );
   }
 
-  Widget buildGeolocThumbMap(List<GeolocModel> geolocList) {
+  ///
+  Widget buildGeolocThumbMap({required List<GeolocModel> geolocList, required String date}) {
     const double thumbWidth = 140;
     const double thumbHeight = 80;
     const double thumbRadius = 6;
@@ -561,6 +583,13 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
       );
     }).toList();
 
+    // ignore: always_specify_types
+    List<Polyline>? thumbnailTrainRoutePolyline;
+
+    if (thumbnailTrainRouteDate != '' && thumbnailTrainRouteDate == date) {
+      thumbnailTrainRoutePolyline = makeThumbnailTrainRoutePolyline();
+    }
+
     return SizedBox(
       width: thumbWidth,
       height: thumbHeight,
@@ -583,10 +612,50 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
             ),
 
             MarkerLayer(markers: markers),
+
+            // ignore: always_specify_types
+            if (thumbnailTrainRoutePolyline != null) ...<Widget>[
+              // ignore: always_specify_types
+              PolylineLayer(polylines: thumbnailTrainRoutePolyline),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  ///
+  List<Polyline<Object>>? makeThumbnailTrainRoutePolyline() {
+    // ignore: always_specify_types
+    final List<Polyline> polylines = <Polyline>[];
+
+    if (thumbnailTrainRouteDate != '') {
+      if (appParamState.keepTransportationMap[thumbnailTrainRouteDate] != null) {
+        final List<Color> fortyEightColor = utility.getFortyEightColor();
+
+        final TransportationModel? transportationModel = appParamState.keepTransportationMap[thumbnailTrainRouteDate];
+
+        if (transportationModel != null) {
+          for (int i = 0; i < transportationModel.spotDataModelListMap.length; i++) {
+            final List<SpotDataModel>? spots = transportationModel.spotDataModelListMap[i];
+            if (spots == null || spots.isEmpty) {
+              continue;
+            }
+
+            polylines.add(
+              // ignore: always_specify_types
+              Polyline(
+                points: spots.map((SpotDataModel t) => LatLng(t.lat.toDouble(), t.lng.toDouble())).toList(),
+                color: (transportationModel.oufuku) ? fortyEightColor[0] : fortyEightColor[i % 48],
+                strokeWidth: 3,
+              ),
+            );
+          }
+        }
+      }
+    }
+
+    return polylines;
   }
 
   ///
