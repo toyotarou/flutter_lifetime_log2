@@ -1497,6 +1497,21 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         if (flag) {
           final DateTime? dt = DateTime.tryParse(templeModel.date);
 
+          final TempleDataModel templeData = templeModel.templeDataList[j];
+
+          displayGhostGeolocDateList.add(
+            Marker(
+              point: LatLng(templeData.latitude.toDouble(), templeData.longitude.toDouble()),
+              child: Center(
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                ),
+              ),
+            ),
+          );
+
           //=====================================================//
           if (j == 0) {
             displayGhostGeolocDateList.add(
@@ -1540,21 +1555,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
             );
           }
           //=====================================================//
-
-          final TempleDataModel templeData = templeModel.templeDataList[j];
-
-          displayGhostGeolocDateList.add(
-            Marker(
-              point: LatLng(templeData.latitude.toDouble(), templeData.longitude.toDouble()),
-              child: Center(
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                ),
-              ),
-            ),
-          );
         }
       }
     }
