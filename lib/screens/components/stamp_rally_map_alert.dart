@@ -248,7 +248,7 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
             ),
             children: <Widget>[
               TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate: 'https://tile.openstreetmap.jp/{z}/{x}/{y}.png',
                 tileProvider: CachedTileProvider(),
                 userAgentPackageName: 'com.example.app',
               ),

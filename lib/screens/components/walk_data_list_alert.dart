@@ -514,7 +514,7 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
     const Color markerFillColorBase = Color(0xFFFBB6CE);
 
     const int tileKeepBuffer = 0;
-    const String tileUrlTemplate = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const String tileUrlTemplate = 'https://tile.openstreetmap.jp/{z}/{x}/{y}.png';
     const String userAgentPackageName = 'your.app.package';
 
     final List<LatLng> points = geolocList

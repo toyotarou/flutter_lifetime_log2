@@ -9,6 +9,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../const/const.dart';
 import '../../controllers/_get_data/lat_lng_address/lat_lng_address.dart';
+import '../../controllers/app_param/app_param.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
@@ -109,10 +110,26 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   List<Polyline<Object>> ghostPolylines = <Polyline<Object>>[];
 
-  ///
+  /// ===== zoom更新のデバウンス用 =====
+  Timer? _zoomDebounce;
+
+  /// ref.watch の代わりに ref.read を使用（サブスクリプションを作らない）。
+  /// 再描画は initState の ref.listen が担う。
+  @override
+  AppParamState get appParamState => ref.read(appParamProvider);
+
+  ProviderSubscription<AppParamState>? _appParamSub;
+
   @override
   void initState() {
     super.initState();
+
+    // ✅ initState では listenManual を使う
+    _appParamSub = ref.listenManual<AppParamState>(appParamProvider, (_, __) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
 
     fortyEightColor = utility.getFortyEightColor();
 
@@ -127,18 +144,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
       final List<GeolocModel>? geolocList = widget.geolocList;
       if (geolocList != null && geolocList.isNotEmpty) {
-        final List<LatLng> points = geolocList.map((GeolocModel geolocModel) {
-          final String? municipality = findMunicipalityForPoint(
-            geolocModel.latitude.toDouble(),
-            geolocModel.longitude.toDouble(),
-            appParamState.keepTokyoMunicipalList,
-          );
-          if (municipality != null && municipality.isNotEmpty) {
-            dateMunicipalNameSet.add(municipality);
-          }
-
-          return LatLng(geolocModel.latitude.toDouble(), geolocModel.longitude.toDouble());
-        }).toList();
+        final List<LatLng> points = geolocList
+            .map((GeolocModel g) => LatLng(g.latitude.toDouble(), g.longitude.toDouble()))
+            .toList();
 
         if (points.isNotEmpty) {
           final LatLngBounds bounds = LatLngBounds.fromPoints(points);
@@ -162,7 +170,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         }
       }
 
-      _mapReadySubscription = mapController.mapEventStream.first.asStream().listen((_) {
+      _mapReadySubscription = mapController.mapEventStream.take(1).listen((_) {
         if (mounted) {
           setDefaultBoundsMap();
           setState(() => isLoading = false);
@@ -174,19 +182,15 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   ///
   @override
   void dispose() {
-    _mapReadySubscription?.cancel();
+    try {
+      _zoomDebounce?.cancel();
+      _mapReadySubscription?.cancel();
 
-    for (final OverlayEntry entry in _firstEntries) {
-      entry.remove();
+      // ✅ listenManual は dispose で close
+      _appParamSub?.close();
+    } catch (e) {
+      debugPrint('dispose error: $e');
     }
-    _firstEntries.clear();
-
-    for (final OverlayEntry entry in _secondEntries) {
-      entry.remove();
-    }
-    _secondEntries.clear();
-
-    mapController.dispose();
 
     super.dispose();
   }
@@ -229,6 +233,25 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   }
 
   ///
+  void _rebuildMunicipalNameSet() {
+    dateMunicipalNameSet.clear();
+    final List<GeolocModel>? geolocList = widget.geolocList;
+    if (geolocList == null || geolocList.isEmpty) {
+      return;
+    }
+    for (final GeolocModel geolocModel in geolocList) {
+      final String? municipality = findMunicipalityForPoint(
+        geolocModel.latitude.toDouble(),
+        geolocModel.longitude.toDouble(),
+        appParamState.keepTokyoMunicipalList,
+      );
+      if (municipality != null && municipality.isNotEmpty) {
+        dateMunicipalNameSet.add(municipality);
+      }
+    }
+  }
+
+  ///
   void _rebuildCachesIfNeeded() {
     final String key = _buildCacheKey();
     if (_cacheBuilt && key == _cacheKey) {
@@ -237,6 +260,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     _cacheKey = key;
     _cacheBuilt = true;
 
+    _rebuildMunicipalNameSet();
     makeMinMaxLatLng();
     makeMarker();
     makeTransportationGoalMarker();
@@ -246,6 +270,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     makeStampRallyMetro20AnniversaryMarker();
     makeStampRallyMetroPokepokeMarker();
     makeDisplayGhostGeolocDateMarker();
+    ghostPolylines = makeGhostGeolocPolyline();
   }
 
   ///
@@ -266,10 +291,29 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   ? LatLng(firstGeoloc.latitude.toDouble(), firstGeoloc.longitude.toDouble())
                   : const LatLng(zenpukujiLat, zenpukujiLng),
               initialZoom: currentZoomEightTeen,
-              onPositionChanged: (MapCamera position, bool isMoving) {
-                if (isMoving) {
-                  appParamNotifier.setCurrentZoom(zoom: position.zoom);
+
+              /// ✅ ここが落ちてた原因
+              /// 初期描画 / fitCamera / move でも呼ばれるので、
+              /// provider更新を「ユーザー操作 + デバウンス + 次フレーム」に限定する
+              onPositionChanged: (MapCamera position, bool hasGesture) {
+                // ユーザー操作でない（初期描画/fit/move等）なら provider 更新しない
+                if (!hasGesture) {
+                  return;
                 }
+
+                _zoomDebounce?.cancel();
+                _zoomDebounce = Timer(const Duration(milliseconds: 80), () {
+                  if (!mounted) {
+                    return;
+                  }
+
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (!mounted) {
+                      return;
+                    }
+                    appParamNotifier.setCurrentZoom(zoom: position.zoom);
+                  });
+                });
               },
             ),
             children: _buildMapLayers(),
@@ -284,11 +328,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   ///
   List<Widget> _buildMapLayers() {
-    ghostPolylines = makeGhostGeolocPolyline();
-
     return <Widget>[
       TileLayer(
-        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        urlTemplate: 'https://tile.openstreetmap.jp/{z}/{x}/{y}.png',
         tileProvider: CachedTileProvider(),
         userAgentPackageName: 'com.example.app',
       ),
@@ -666,11 +708,10 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     }
 
     for (final GeolocModel element in sortedList) {
-      final List<String> timeParts = element.time.split(':');
-      if (timeParts.isEmpty) {
+      if (element.time.isEmpty) {
         continue;
       }
-
+      final List<String> timeParts = element.time.split(':');
       final String hour = timeParts[0];
       if (keepTime != hour) {
         final String minute = timeParts.length > 1 ? timeParts[1] : '00';
@@ -826,7 +867,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
       final CameraFit cameraFit = CameraFit.bounds(
         bounds: bounds,
-        padding: EdgeInsets.all(appParamState.currentPaddingIndex * 10),
+        padding: EdgeInsets.all(ref.read(appParamProvider).currentPaddingIndex * 10),
       );
 
       mapController.fitCamera(cameraFit);
@@ -837,9 +878,16 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         setState(() => currentZoom = newZoom);
       }
 
-      appParamNotifier.setCurrentZoom(zoom: newZoom);
+      /// ✅ fitCamera直後は onPositionChanged が走り得るので、
+      /// provider更新は次フレームにずらして安全化
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        appParamNotifier.setCurrentZoom(zoom: newZoom);
+      });
 
-      if (appParamState.keepTimePlaceMap[widget.date] != null) {
+      if (ref.read(appParamProvider).keepTimePlaceMap[widget.date] != null) {
         LifetimeDialog(
           context: context,
           widget: TimePlaceDisplayAlert(date: widget.date),
@@ -886,7 +934,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           width: 40,
           height: 40,
           child: Center(
-            child: (boundingBoxArea.length >= 3 && boundingBoxArea.substring(0, 3) == '0.0')
+            child: boundingBoxArea.startsWith('0.0')
                 ? const Icon(Icons.ac_unit, color: Colors.black, size: 22)
                 : Transform.rotate(
                     angle: bearingDegrees * pi / 180.0,
@@ -967,11 +1015,10 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     final List<GeolocModel>? sortedList = _sortedGeolocListByTime();
     if (sortedList != null) {
       for (final GeolocModel element in sortedList) {
-        final List<String> timeParts = element.time.split(':');
-        if (timeParts.isEmpty) {
+        if (element.time.isEmpty) {
           continue;
         }
-
+        final List<String> timeParts = element.time.split(':');
         final String hour = timeParts[0];
         if (keepTime != hour) {
           final String minute = timeParts.length > 1 ? timeParts[1] : '00';
@@ -984,7 +1031,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 appParamNotifier.setCurrentZoom(zoom: 18);
                 mapController.move(LatLng(element.latitude.toDouble(), element.longitude.toDouble()), 18);
                 mapController.rotate(0);
-                if (appParamState.keepTimePlaceMap[widget.date] != null) {
+                if (ref.read(appParamProvider).keepTimePlaceMap[widget.date] != null) {
                   onCloseDialogFromOverlay();
                 }
               },
@@ -1196,7 +1243,9 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     if (appParamState.selectedGeolocTime.isNotEmpty) {
       final List<GeolocModel>? searchedGeoloc = widget.geolocList
           ?.where((GeolocModel element) {
-            return '${element.year}-${element.month}-${element.day}' == widget.date;
+            final String m = element.month.padLeft(2, '0');
+            final String d = element.day.padLeft(2, '0');
+            return '${element.year}-$m-$d' == widget.date;
           })
           .where((GeolocModel element2) {
             final List<String> timeParts = element2.time.split(':');
@@ -1348,10 +1397,20 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           continue;
         }
 
+        // 解決できなかった場合は null になるため、非 null のみ追加する
+        final TempleDataModel? startData = getStartEndTempleDataModel(point: templeModel.startPoint);
+        final TempleDataModel? endData = getStartEndTempleDataModel(point: templeModel.endPoint);
+
+        final List<TempleDataModel> polylineTempleDataList = <TempleDataModel>[
+          if (startData != null) startData,
+          ...templeModel.templeDataList,
+          if (endData != null) endData,
+        ];
+
         polylines.add(
           // ignore: always_specify_types
           Polyline(
-            points: templeModel.templeDataList
+            points: polylineTempleDataList
                 .map((TempleDataModel t) => LatLng(t.latitude.toDouble(), t.longitude.toDouble()))
                 .toList(),
             color: fortyEightColor[i % 48].withValues(alpha: 0.5),
@@ -1362,6 +1421,58 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     }
 
     return polylines;
+  }
+
+  ///
+  /// startPoint / endPoint の文字列から TempleDataModel を返す。
+  /// 解決できない場合（空文字・数値変換失敗・駅未発見）は null を返す。
+  TempleDataModel? getStartEndTempleDataModel({required String point}) {
+    if (point.isEmpty) {
+      return null;
+    }
+
+    switch (point) {
+      case '自宅':
+        return TempleDataModel(
+          name: point,
+          address: '千葉県船橋市二子町492-25-101',
+          latitude: funabashiLat.toString(),
+          longitude: funabashiLng.toString(),
+          rank: '',
+        );
+
+      case '実家':
+        return TempleDataModel(
+          name: point,
+          address: '東京都杉並区善福寺4-22-11',
+          latitude: zenpukujiLat.toString(),
+          longitude: zenpukujiLng.toString(),
+          rank: '',
+        );
+
+      default:
+        // point.toInt() 拡張は parse 失敗で例外になるため int.tryParse を使用
+        final int? stationId = int.tryParse(point);
+        if (stationId == null) {
+          return null;
+        }
+
+        final Iterable<StationModel> matches = appParamState.keepStationList.where(
+          (StationModel element) => element.id == stationId,
+        );
+        if (matches.isEmpty) {
+          return null;
+        }
+
+        final StationModel stationModel = matches.first;
+        return TempleDataModel(
+          name: stationModel.stationName,
+          address: stationModel.address,
+          latitude: stationModel.lat,
+          longitude: stationModel.lng,
+          rank: '',
+        );
+    }
   }
 
   ///
@@ -1384,56 +1495,92 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         }
 
         if (flag) {
-          final TempleDataModel templeData = templeModel.templeDataList[j];
           final DateTime? dt = DateTime.tryParse(templeModel.date);
+
+          //=====================================================//
+          if (j == 0) {
+            displayGhostGeolocDateList.add(
+              Marker(
+                point: getZeroFirstCenterLatLng(templeModel: templeModel),
+
+                child: GestureDetector(
+                  onTap: () {
+                    if (appParamState.selectedGhostPolylineDate.isEmpty) {
+                      LifetimeDialog(
+                        context: context,
+                        widget: const LifetimeGeolocGhostTempleInfoAlert(),
+                        paddingRight: context.screenSize.width * 0.3,
+                        paddingTop: context.screenSize.height * 0.3,
+                        paddingBottom: context.screenSize.height * 0.1,
+                        clearBarrierColor: true,
+                      );
+                    }
+
+                    appParamNotifier.setSelectedGhostPolylineDate(date: templeModel.date);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: fortyEightColor[i % 48]),
+                    ),
+                    child: DefaultTextStyle(
+                      style: TextStyle(color: fortyEightColor[i % 48], fontSize: 8, fontWeight: FontWeight.bold),
+                      child: Column(
+                        children: <Widget>[
+                          const Spacer(),
+                          Text(dt?.year.toString() ?? ''),
+                          Text(dt?.mmdd ?? ''),
+                          const Spacer(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
+          //=====================================================//
+
+          final TempleDataModel templeData = templeModel.templeDataList[j];
+
           displayGhostGeolocDateList.add(
             Marker(
               point: LatLng(templeData.latitude.toDouble(), templeData.longitude.toDouble()),
-              child: (j == 0)
-                  ? GestureDetector(
-                      onTap: () {
-                        if (appParamState.selectedGhostPolylineDate.isEmpty) {
-                          LifetimeDialog(
-                            context: context,
-                            widget: const LifetimeGeolocGhostTempleInfoAlert(),
-                            paddingRight: context.screenSize.width * 0.3,
-                            paddingTop: context.screenSize.height * 0.3,
-                            paddingBottom: context.screenSize.height * 0.1,
-                            clearBarrierColor: true,
-                          );
-                        }
-
-                        appParamNotifier.setSelectedGhostPolylineDate(date: templeModel.date);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: fortyEightColor[i % 48]),
-                        ),
-                        child: DefaultTextStyle(
-                          style: TextStyle(color: fortyEightColor[i % 48], fontSize: 8, fontWeight: FontWeight.bold),
-                          child: Column(
-                            children: <Widget>[
-                              const Spacer(),
-                              Text(dt?.year.toString() ?? ''),
-                              Text(dt?.mmdd ?? ''),
-                              const Spacer(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  : Center(
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                      ),
-                    ),
+              child: Center(
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                ),
+              ),
             ),
           );
         }
       }
     }
+  }
+
+  ///
+  /// startPoint と最初の寺の中間座標を返す。
+  /// startPoint が解決できない場合は最初の寺の座標をそのまま返す。
+  /// templeDataList が空の場合は定数座標にフォールバックする。
+  LatLng getZeroFirstCenterLatLng({required TempleModel templeModel}) {
+    if (templeModel.templeDataList.isEmpty) {
+      return const LatLng(zenpukujiLat, zenpukujiLng);
+    }
+
+    final TempleDataModel firstTemple = templeModel.templeDataList[0];
+    final LatLng firstTempleLatLng = LatLng(firstTemple.latitude.toDouble(), firstTemple.longitude.toDouble());
+
+    final TempleDataModel? startPointData = getStartEndTempleDataModel(point: templeModel.startPoint);
+    if (startPointData == null) {
+      // startPoint が解決できない場合は最初の寺の座標を返す
+      return firstTempleLatLng;
+    }
+
+    final double centerLat = (startPointData.latitude.toDouble() + firstTemple.latitude.toDouble()) / 2;
+    final double centerLng = (startPointData.longitude.toDouble() + firstTemple.longitude.toDouble()) / 2;
+
+    return LatLng(centerLat, centerLng);
   }
 }
