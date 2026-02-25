@@ -101,13 +101,13 @@ class _SameDayMoneySpendDisplayAlertState extends ConsumerState<SameDayMoneySpen
             Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
             SizedBox(
-              height: context.screenSize.height * 0.2,
+              height: context.screenSize.height * 0.5,
               child: PageView.builder(
                 controller: _controller,
                 onPageChanged: (int index) => setState(() => _currentIndex = index),
                 itemBuilder: (BuildContext context, int index) {
                   final DateTime month = _monthFromIndex(index);
-                  return _buildMonthCard(label: month.yyyymm);
+                  return _buildMonthCard(yearmonth: month.yyyymm);
                 },
               ),
             ),
@@ -169,14 +169,14 @@ class _SameDayMoneySpendDisplayAlertState extends ConsumerState<SameDayMoneySpen
   }
 
   ///
-  Widget _buildMonthCard({required String label}) {
+  Widget _buildMonthCard({required String yearmonth}) {
     int total = 0;
 
     if (DateTime.parse(
-      '$label-${appParamState.selectedSameDay}',
+      '$yearmonth-${appParamState.selectedSameDay}',
     ).isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
       for (int i = 0; i < appParamState.selectedSameDay.toInt(); i++) {
-        final String date = '$label-${(i + 1).toString().padLeft(2, '0')}';
+        final String date = '$yearmonth-${(i + 1).toString().padLeft(2, '0')}';
 
         appParamState.keepMoneySpendMap[date]?.forEach((MoneySpendModel element) => total += element.price);
       }
@@ -193,21 +193,100 @@ class _SameDayMoneySpendDisplayAlertState extends ConsumerState<SameDayMoneySpen
             child: const Text('使用金額', style: TextStyle(color: Colors.white)),
           ),
 
-          const Spacer(),
+          const SizedBox(height: 50),
 
           if (DateTime.parse(
-            '$label-${appParamState.selectedSameDay}',
+            '$yearmonth-${appParamState.selectedSameDay}',
           ).isBefore(DateTime.now().subtract(const Duration(days: 1)))) ...<Widget>[
             Text(total.toString().toCurrency()),
           ] else ...<Widget>[const Text('no data', style: TextStyle(color: Colors.yellowAccent))],
 
-          const Spacer(),
+          const SizedBox(height: 50),
 
-          Text('$label-${appParamState.selectedSameDay}', style: const TextStyle(color: Colors.grey)),
+          Text('$yearmonth-${appParamState.selectedSameDay}', style: const TextStyle(color: Colors.grey)),
 
           const SizedBox(height: 10),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                  decoration: BoxDecoration(color: Colors.yellowAccent.withValues(alpha: 0.2)),
+                  width: context.screenSize.width * 0.3,
+                  alignment: Alignment.center,
+                  child: const Text('高額消費'),
+                ),
+                const SizedBox.shrink(),
+              ],
+            ),
+          ),
+
+          Expanded(child: displayOver10000Items(yearmonth: yearmonth)),
+
+          const SizedBox(height: 20),
         ],
       ),
+    );
+  }
+
+  ///
+  Widget displayOver10000Items({required String yearmonth}) {
+    final List<Widget> list = <Widget>[];
+
+    if (DateTime.parse(
+      '$yearmonth-${appParamState.selectedSameDay}',
+    ).isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
+      for (int i = 0; i < appParamState.selectedSameDay.toInt(); i++) {
+        final String date = '$yearmonth-${(i + 1).toString().padLeft(2, '0')}';
+
+        appParamState.keepMoneySpendMap[date]?.forEach((MoneySpendModel element) {
+          if (element.price >= 10000 || element.item == '送金' || element.item == '社会保険') {
+            list.add(
+              DefaultTextStyle(
+                style: TextStyle(
+                  fontSize: 12,
+
+                  color: (element.item == '送金' || element.item == '社会保険')
+                      ? Colors.orangeAccent.withValues(alpha: 0.5)
+                      : Colors.white60,
+                ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
+                  ),
+
+                  child: Row(
+                    children: <Widget>[
+                      SizedBox(width: 80, child: Text(element.date)),
+
+                      Expanded(child: Text(element.item)),
+
+                      Expanded(
+                        child: Align(alignment: Alignment.topRight, child: Text(element.price.toString().toCurrency())),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+        });
+      }
+    }
+
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) => list[index],
+            childCount: list.length,
+          ),
+        ),
+      ],
     );
   }
 }
