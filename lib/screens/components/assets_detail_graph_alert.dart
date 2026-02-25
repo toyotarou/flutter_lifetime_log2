@@ -82,19 +82,32 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                       children: <Widget>[Text(widget.title), const SizedBox(height: 5), Text(widget.date)],
                     ),
 
-                    GestureDetector(
-                      onTap: () {
-                        LifetimeDialog(
-                          context: context,
-                          widget: AssetsDetailPercentDisplayAlert(
-                            title: widget.title,
-                            goldMap: appParamState.keepGoldMap,
-                            stockTickerMap: appParamState.keepStockTickerMap,
-                            toushiShintakuRelationalMap: appParamState.keepToushiShintakuRelationalMap,
-                          ),
-                        );
-                      },
-                      child: const Icon(Icons.list),
+                    Row(
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            appParamNotifier.setIsShowAssetsDetailGraph(flag: !appParamState.isShowAssetsDetailGraph);
+                          },
+                          child: const Icon(Icons.check_box_outline_blank),
+                        ),
+
+                        const SizedBox(width: 20),
+
+                        GestureDetector(
+                          onTap: () {
+                            LifetimeDialog(
+                              context: context,
+                              widget: AssetsDetailPercentDisplayAlert(
+                                title: widget.title,
+                                goldMap: appParamState.keepGoldMap,
+                                stockTickerMap: appParamState.keepStockTickerMap,
+                                toushiShintakuRelationalMap: appParamState.keepToushiShintakuRelationalMap,
+                              ),
+                            );
+                          },
+                          child: const Icon(Icons.list),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -103,35 +116,37 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
                 Expanded(child: displayAssetsNameList()),
 
-                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+                if (appParamState.isShowAssetsDetailGraph) ...<Widget>[
+                  Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                SizedBox(
-                  height: (widget.title == 'gold')
-                      ? context.screenSize.height * 0.65
-                      : (widget.title == 'stock')
-                      ? context.screenSize.height * 0.5
-                      : context.screenSize.height * 0.4,
-                  child: Stack(
-                    children: <Widget>[
-                      if (zoomMode)
-                        InteractiveViewer(
-                          transformationController: transformationController,
+                  SizedBox(
+                    height: (widget.title == 'gold')
+                        ? context.screenSize.height * 0.65
+                        : (widget.title == 'stock')
+                        ? context.screenSize.height * 0.5
+                        : context.screenSize.height * 0.4,
+                    child: Stack(
+                      children: <Widget>[
+                        if (zoomMode)
+                          InteractiveViewer(
+                            transformationController: transformationController,
 
-                          panEnabled: zoomMode,
-                          scaleEnabled: zoomMode,
+                            panEnabled: zoomMode,
+                            scaleEnabled: zoomMode,
 
-                          minScale: 1.0,
-                          maxScale: 10.0,
+                            minScale: 1.0,
+                            maxScale: 10.0,
 
-                          child: AbsorbPointer(
-                            child: Stack(children: <Widget>[LineChart(graphData2), LineChart(graphData)]),
-                          ),
-                        )
-                      else
-                        Stack(children: <Widget>[LineChart(graphData2), LineChart(graphData)]),
-                    ],
+                            child: AbsorbPointer(
+                              child: Stack(children: <Widget>[LineChart(graphData2), LineChart(graphData)]),
+                            ),
+                          )
+                        else
+                          Stack(children: <Widget>[LineChart(graphData2), LineChart(graphData)]),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -875,7 +890,15 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                                       Column(
                                         crossAxisAlignment: CrossAxisAlignment.end,
                                         children: <Widget>[
-                                          Text((lastDiffMap[element] ?? 0).toString().toCurrency()),
+                                          Text(
+                                            (lastDiffMap[element] ?? 0).toString().toCurrency(),
+
+                                            style: TextStyle(
+                                              color: ((lastDiffMap[element] ?? 0) > 100000)
+                                                  ? Colors.yellowAccent
+                                                  : Colors.white,
+                                            ),
+                                          ),
                                           Text(lastDateMap[element] ?? ''),
                                         ],
                                       ),

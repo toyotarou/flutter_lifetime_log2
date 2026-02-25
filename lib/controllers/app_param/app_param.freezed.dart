@@ -150,6 +150,7 @@ mixin _$AppParamState {
   List<String> get selectedMoneySpendPickupItemTextList =>
       throw _privateConstructorUsedError;
   String get selectedSameDay => throw _privateConstructorUsedError;
+  bool get isShowAssetsDetailGraph => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AppParamStateCopyWith<AppParamState> get copyWith =>
@@ -235,7 +236,8 @@ abstract class $AppParamStateCopyWith<$Res> {
       List<int> selectedMoneySpendPickupListIndexList,
       int selectedMoneySpendPickupListSum,
       List<String> selectedMoneySpendPickupItemTextList,
-      String selectedSameDay});
+      String selectedSameDay,
+      bool isShowAssetsDetailGraph});
 }
 
 /// @nodoc
@@ -324,6 +326,7 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? selectedMoneySpendPickupListSum = null,
     Object? selectedMoneySpendPickupItemTextList = null,
     Object? selectedSameDay = null,
+    Object? isShowAssetsDetailGraph = null,
   }) {
     return _then(_value.copyWith(
       keepHolidayList: null == keepHolidayList
@@ -624,6 +627,10 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.selectedSameDay
           : selectedSameDay // ignore: cast_nullable_to_non_nullable
               as String,
+      isShowAssetsDetailGraph: null == isShowAssetsDetailGraph
+          ? _value.isShowAssetsDetailGraph
+          : isShowAssetsDetailGraph // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -709,7 +716,8 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       List<int> selectedMoneySpendPickupListIndexList,
       int selectedMoneySpendPickupListSum,
       List<String> selectedMoneySpendPickupItemTextList,
-      String selectedSameDay});
+      String selectedSameDay,
+      bool isShowAssetsDetailGraph});
 }
 
 /// @nodoc
@@ -796,6 +804,7 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? selectedMoneySpendPickupListSum = null,
     Object? selectedMoneySpendPickupItemTextList = null,
     Object? selectedSameDay = null,
+    Object? isShowAssetsDetailGraph = null,
   }) {
     return _then(_$AppParamStateImpl(
       keepHolidayList: null == keepHolidayList
@@ -1096,6 +1105,10 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value.selectedSameDay
           : selectedSameDay // ignore: cast_nullable_to_non_nullable
               as String,
+      isShowAssetsDetailGraph: null == isShowAssetsDetailGraph
+          ? _value.isShowAssetsDetailGraph
+          : isShowAssetsDetailGraph // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -1195,7 +1208,8 @@ class _$AppParamStateImpl implements _AppParamState {
       final List<int> selectedMoneySpendPickupListIndexList = const <int>[],
       this.selectedMoneySpendPickupListSum = 0,
       final List<String> selectedMoneySpendPickupItemTextList = const <String>[],
-      this.selectedSameDay = ''})
+      this.selectedSameDay = '',
+      this.isShowAssetsDetailGraph = false})
       : _keepHolidayList = keepHolidayList,
         _keepWalkModelMap = keepWalkModelMap,
         _keepMoneyMap = keepMoneyMap,
@@ -1794,10 +1808,13 @@ class _$AppParamStateImpl implements _AppParamState {
   @override
   @JsonKey()
   final String selectedSameDay;
+  @override
+  @JsonKey()
+  final bool isShowAssetsDetailGraph;
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStampRallyMetroAllStationMap: $keepStampRallyMetroAllStationMap, keepTokyoMunicipalList: $keepTokyoMunicipalList, keepTokyoMunicipalMap: $keepTokyoMunicipalMap, keepWorkHistoryModelMap: $keepWorkHistoryModelMap, keepTrainMap: $keepTrainMap, keepFortuneMap: $keepFortuneMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, keepTempleDateTimeNameMap: $keepTempleDateTimeNameMap, keepAllDateLifetimeSummaryMap: $keepAllDateLifetimeSummaryMap, keepStampRallyMetro20AnniversaryMap: $keepStampRallyMetro20AnniversaryMap, keepStampRallyMetroPokepokeMap: $keepStampRallyMetroPokepokeMap, keepCreditSummaryTotalMap: $keepCreditSummaryTotalMap, keepAllPolygonsList: $keepAllPolygonsList, keepMoneySumList: $keepMoneySumList, keepNenkinKikinDataList: $keepNenkinKikinDataList, keepInsuranceDataList: $keepInsuranceDataList, keepNearestTempleNameGeolocModelMap: $keepNearestTempleNameGeolocModelMap, homeTabYearMonth: $homeTabYearMonth, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate, selectedCrossCalendarYear: $selectedCrossCalendarYear, gutterWidth: $gutterWidth, isDisplayMunicipalNameOnLifetimeGeolocMap: $isDisplayMunicipalNameOnLifetimeGeolocMap, selectedWorkHistoryModel: $selectedWorkHistoryModel, bottomNavigationSelectedIndex: $bottomNavigationSelectedIndex, selectedStampRallyMapPolylineIndex: $selectedStampRallyMapPolylineIndex, selectedGeolocPointTime: $selectedGeolocPointTime, routePolylinePartsGeolocList: $routePolylinePartsGeolocList, isDisplayGhostGeolocPolyline: $isDisplayGhostGeolocPolyline, selectedGhostPolylineDate: $selectedGhostPolylineDate, selectedMoneySpendPickupListIndexList: $selectedMoneySpendPickupListIndexList, selectedMoneySpendPickupListSum: $selectedMoneySpendPickupListSum, selectedMoneySpendPickupItemTextList: $selectedMoneySpendPickupItemTextList, selectedSameDay: $selectedSameDay)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStampRallyMetroAllStationMap: $keepStampRallyMetroAllStationMap, keepTokyoMunicipalList: $keepTokyoMunicipalList, keepTokyoMunicipalMap: $keepTokyoMunicipalMap, keepWorkHistoryModelMap: $keepWorkHistoryModelMap, keepTrainMap: $keepTrainMap, keepFortuneMap: $keepFortuneMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, keepTempleDateTimeNameMap: $keepTempleDateTimeNameMap, keepAllDateLifetimeSummaryMap: $keepAllDateLifetimeSummaryMap, keepStampRallyMetro20AnniversaryMap: $keepStampRallyMetro20AnniversaryMap, keepStampRallyMetroPokepokeMap: $keepStampRallyMetroPokepokeMap, keepCreditSummaryTotalMap: $keepCreditSummaryTotalMap, keepAllPolygonsList: $keepAllPolygonsList, keepMoneySumList: $keepMoneySumList, keepNenkinKikinDataList: $keepNenkinKikinDataList, keepInsuranceDataList: $keepInsuranceDataList, keepNearestTempleNameGeolocModelMap: $keepNearestTempleNameGeolocModelMap, homeTabYearMonth: $homeTabYearMonth, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate, selectedCrossCalendarYear: $selectedCrossCalendarYear, gutterWidth: $gutterWidth, isDisplayMunicipalNameOnLifetimeGeolocMap: $isDisplayMunicipalNameOnLifetimeGeolocMap, selectedWorkHistoryModel: $selectedWorkHistoryModel, bottomNavigationSelectedIndex: $bottomNavigationSelectedIndex, selectedStampRallyMapPolylineIndex: $selectedStampRallyMapPolylineIndex, selectedGeolocPointTime: $selectedGeolocPointTime, routePolylinePartsGeolocList: $routePolylinePartsGeolocList, isDisplayGhostGeolocPolyline: $isDisplayGhostGeolocPolyline, selectedGhostPolylineDate: $selectedGhostPolylineDate, selectedMoneySpendPickupListIndexList: $selectedMoneySpendPickupListIndexList, selectedMoneySpendPickupListSum: $selectedMoneySpendPickupListSum, selectedMoneySpendPickupItemTextList: $selectedMoneySpendPickupItemTextList, selectedSameDay: $selectedSameDay, isShowAssetsDetailGraph: $isShowAssetsDetailGraph)';
   }
 
   @override
@@ -1919,7 +1936,8 @@ class _$AppParamStateImpl implements _AppParamState {
             const DeepCollectionEquality().equals(other._selectedMoneySpendPickupListIndexList, _selectedMoneySpendPickupListIndexList) &&
             (identical(other.selectedMoneySpendPickupListSum, selectedMoneySpendPickupListSum) || other.selectedMoneySpendPickupListSum == selectedMoneySpendPickupListSum) &&
             const DeepCollectionEquality().equals(other._selectedMoneySpendPickupItemTextList, _selectedMoneySpendPickupItemTextList) &&
-            (identical(other.selectedSameDay, selectedSameDay) || other.selectedSameDay == selectedSameDay));
+            (identical(other.selectedSameDay, selectedSameDay) || other.selectedSameDay == selectedSameDay) &&
+            (identical(other.isShowAssetsDetailGraph, isShowAssetsDetailGraph) || other.isShowAssetsDetailGraph == isShowAssetsDetailGraph));
   }
 
   @override
@@ -2001,7 +2019,8 @@ class _$AppParamStateImpl implements _AppParamState {
         selectedMoneySpendPickupListSum,
         const DeepCollectionEquality()
             .hash(_selectedMoneySpendPickupItemTextList),
-        selectedSameDay
+        selectedSameDay,
+        isShowAssetsDetailGraph
       ]);
 
   @JsonKey(ignore: true)
@@ -2087,7 +2106,8 @@ abstract class _AppParamState implements AppParamState {
       final List<int> selectedMoneySpendPickupListIndexList,
       final int selectedMoneySpendPickupListSum,
       final List<String> selectedMoneySpendPickupItemTextList,
-      final String selectedSameDay}) = _$AppParamStateImpl;
+      final String selectedSameDay,
+      final bool isShowAssetsDetailGraph}) = _$AppParamStateImpl;
 
   @override
   List<String> get keepHolidayList;
@@ -2251,6 +2271,8 @@ abstract class _AppParamState implements AppParamState {
   List<String> get selectedMoneySpendPickupItemTextList;
   @override
   String get selectedSameDay;
+  @override
+  bool get isShowAssetsDetailGraph;
   @override
   @JsonKey(ignore: true)
   _$$AppParamStateImplCopyWith<_$AppParamStateImpl> get copyWith =>

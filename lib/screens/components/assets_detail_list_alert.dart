@@ -2,13 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/app_param/app_param.dart';
 import '../../controllers/controllers_mixin.dart';
+import '../../extensions/extensions.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
+import '../parts/lifetime_dialog.dart';
+import 'weekly_assets_average_display_alert.dart';
 
 class AssetsDetailListAlert extends ConsumerStatefulWidget {
   const AssetsDetailListAlert({super.key, required this.title, required this.item, required this.name});
@@ -25,13 +27,14 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
     with ControllersMixin<AssetsDetailListAlert> {
   late final AutoScrollController autoScrollController;
 
-  // パフォーマンス向上のため、フォーマッタをstaticで保持して再利用する
-  static final NumberFormat _currencyFormatter = NumberFormat('#,###');
-
   static const double _moveAmount = 18;
   static const int _tickMs = 16;
 
   Timer? _repeatTimer;
+
+  List<dynamic> dataList = <dynamic>[];
+
+  Map<String, int> dateDiffMap = <String, int>{};
 
   ///
   @override
@@ -63,8 +66,6 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
   ///
   @override
   Widget build(BuildContext context) {
-    // 必要なデータのみを select でピンポイントに監視
-    final List<dynamic> dataList;
     if (widget.title == 'stock') {
       dataList =
           ref.watch(appParamProvider.select((AppParamState s) => s.keepStockTickerMap[widget.item])) ?? <dynamic>[];
@@ -123,14 +124,48 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Expanded(
-              child: Text(
-                widget.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
-              ),
+              child: Text(widget.name, style: const TextStyle(fontWeight: FontWeight.bold)),
             ),
 
-            const SizedBox.shrink(),
+            GestureDetector(
+              onTap: () {
+                // ignore: always_specify_types
+                for (final item in dataList) {
+                  if (widget.title == 'stock' && item is StockModel) {
+                    final String date = '${item.year}-${item.month}-${item.day}';
+                    final int cost = (item.hoyuuSuuryou * _safeParseDouble(item.heikinShutokuKagaku)).toInt();
+                    final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
+                    final int diff = price - cost;
+
+                    dateDiffMap[date] = diff;
+                  } else if (widget.title == 'toushiShintaku' && item is ToushiShintakuModel) {
+                    final String date = '${item.year}-${item.month}-${item.day}';
+                    final int cost = _safeParseDouble(item.shutokuSougaku).toInt();
+                    final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
+                    final int diff = price - cost;
+
+                    dateDiffMap[date] = diff;
+                  }
+                }
+
+                final Map<String, int> weeklyAverageMap = createWeeklyAverageMap(dataMap: dateDiffMap);
+
+                LifetimeDialog(
+                  context: context,
+                  widget: WeeklyAssetsAverageDisplayAlert(weeklyAverageMap: weeklyAverageMap),
+                  clearBarrierColor: true,
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.yellowAccent.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                child: const Column(children: <Widget>[Text('week'), Text('average')]),
+              ),
+            ),
           ],
         ),
 
@@ -208,6 +243,48 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
         ),
       ],
     );
+  }
+
+  ///
+  Map<String, int> createWeeklyAverageMap({required Map<String, int> dataMap}) {
+    if (dataMap.isEmpty) {
+      return <String, int>{};
+    }
+
+    final List<MapEntry<DateTime, int>> entries =
+        // ignore: always_specify_types
+        dataMap.entries.map((MapEntry<String, int> e) => MapEntry(DateTime.parse(e.key), e.value)).toList()
+          ..sort((MapEntry<DateTime, int> a, MapEntry<DateTime, int> b) => a.key.compareTo(b.key));
+
+    final Map<String, List<int>> weeklyBuckets = <String, List<int>>{};
+
+    for (final MapEntry<DateTime, int> entry in entries) {
+      final DateTime date = entry.key;
+
+      final DateTime startOfWeek = date.subtract(Duration(days: date.weekday % 7));
+      final DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
+
+      final String key = '${_formatDate(startOfWeek)}_${_formatDate(endOfWeek)}';
+
+      weeklyBuckets.putIfAbsent(key, () => <int>[]).add(entry.value);
+    }
+
+    final Map<String, int> result = <String, int>{};
+
+    weeklyBuckets.forEach((String weekKey, List<int> values) {
+      final int total = values.reduce((int a, int b) => a + b);
+
+      result[weekKey] = (total / values.length).round();
+    });
+
+    return result;
+  }
+
+  ///
+  String _formatDate(DateTime date) {
+    return "${date.year.toString().padLeft(4, '0')}-"
+        "${date.month.toString().padLeft(2, '0')}-"
+        "${date.day.toString().padLeft(2, '0')}";
   }
 
   ///
@@ -306,7 +383,7 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
 
     return Expanded(
       child: Text(
-        _currencyFormatter.format(value),
+        value.toString().toCurrency(),
         textAlign: TextAlign.right,
         style: TextStyle(color: textColor, fontFeatures: const <FontFeature>[FontFeature.tabularFigures()]),
       ),

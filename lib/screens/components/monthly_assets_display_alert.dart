@@ -355,8 +355,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     autoScrollController.jumpTo(newOffset);
   }
 
-  ////////
-
   ///
   Widget displayBeforeLastAssetsList({required DateTime genDate}) {
     final DateTime beforeDate = genDate.subtract(const Duration(days: 1));
@@ -375,8 +373,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     if (beforeAssets == null || lastAssets == null) {
       return const SizedBox.shrink();
     }
-
-    ////////////////////
 
     GoldModel? beforeGold;
     GoldModel? lastGold;
@@ -1319,6 +1315,9 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                   ),
                   onPressed: () {
                     appParamNotifier.setSelectedToushiGraphYear(year: '');
+
+                    appParamNotifier.setIsShowAssetsDetailGraph(flag: true);
+
                     LifetimeDialog(
                       context: context,
                       widget: AssetsDetailGraphAlert(date: date, title: title),

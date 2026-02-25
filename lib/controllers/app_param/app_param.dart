@@ -153,6 +153,8 @@ class AppParamState with _$AppParamState {
     @Default(<String>[]) List<String> selectedMoneySpendPickupItemTextList,
 
     @Default('') String selectedSameDay,
+
+    @Default(false) bool isShowAssetsDetailGraph,
   }) = _AppParamState;
 }
 
@@ -477,4 +479,7 @@ class AppParam extends _$AppParam {
 
   ///
   void setSelectedSameDay({required String day}) => state = state.copyWith(selectedSameDay: day);
+
+  ///
+  void setIsShowAssetsDetailGraph({required bool flag}) => state = state.copyWith(isShowAssetsDetailGraph: flag);
 }
