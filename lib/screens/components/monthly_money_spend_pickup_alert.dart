@@ -109,13 +109,48 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
             padding: const EdgeInsets.all(20),
             child: Column(
               children: <Widget>[
+                DefaultTextStyle(
+                  style: const TextStyle(fontSize: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[Text(widget.yearmonth), Text('${moneySpendModelList.length}件')],
+                  ),
+                ),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[Text(widget.yearmonth), Text('${moneySpendModelList.length}件')],
+                    /// 一気ボタン / s
+                    Row(
+                      children: <Widget>[
+                        IconButton(
+                          tooltip: '一気に下',
+                          onPressed: () {
+                            if (!autoScrollController.hasClients) {
+                              return;
+                            }
+
+                            final double max = autoScrollController.position.maxScrollExtent;
+                            autoScrollController.jumpTo(max);
+                          },
+                          icon: const Icon(Icons.vertical_align_bottom),
+                        ),
+
+                        IconButton(
+                          tooltip: '一気に上',
+                          onPressed: () {
+                            if (!autoScrollController.hasClients) {
+                              return;
+                            }
+
+                            autoScrollController.jumpTo(0.0);
+                          },
+                          icon: const Icon(Icons.vertical_align_top),
+                        ),
+                      ],
                     ),
+
+                    /// 一気ボタン / e
                     Row(
                       children: <Widget>[
                         GestureDetector(
@@ -134,6 +169,8 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                             child: Center(child: Icon(Icons.arrow_downward)),
                           ),
                         ),
+
+                        const SizedBox(width: 10),
 
                         GestureDetector(
                           behavior: HitTestBehavior.opaque,
