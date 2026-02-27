@@ -418,7 +418,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                             GestureDetector(
                               onTap: () => LifetimeDialog(
                                 context: context,
-                                widget: SpendDateInputAlert(date: date),
+                                widget: SpendDateInputAlert(date: date, data: appParamState.keepMoneySpendMap[date]),
                               ),
                               child: Icon(
                                 Icons.input,

@@ -9,9 +9,10 @@ import '../../utility/utility.dart';
 import '../parts/error_dialog.dart';
 
 class SpendDateInputAlert extends ConsumerStatefulWidget {
-  const SpendDateInputAlert({super.key, required this.date});
+  const SpendDateInputAlert({super.key, required this.date, this.data});
 
   final String date;
+  final List<MoneySpendModel>? data;
 
   @override
   ConsumerState<SpendDateInputAlert> createState() => _SpendInputAlertState();
@@ -39,6 +40,23 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
 
     // ignore: always_specify_types
     focusNodeList = List.generate(10, (int index) => FocusNode());
+
+    if (widget.data != null) {
+      // ignore: always_specify_types
+      Future(() {
+        for (int i = 0; i < widget.data!.length; i++) {
+          spendInputNotifier.setInputKindList(
+            pos: i,
+            kind: (widget.data![i].kind == 'credit') ? widget.data![i].kind : 'daily',
+          );
+
+          spendInputNotifier.setInputItemList(pos: i, item: widget.data![i].item);
+          spendInputNotifier.setInputValueList(pos: i, value: widget.data![i].price.toString());
+
+          priceTecs[i].text = widget.data![i].price.toString();
+        }
+      });
+    }
   }
 
   ///
