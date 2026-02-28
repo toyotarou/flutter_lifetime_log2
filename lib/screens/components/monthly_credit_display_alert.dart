@@ -53,7 +53,10 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
                           selectedColor: Colors.greenAccent.withValues(alpha: 0.2),
                           selected: true,
                           onSelected: (bool isSelected) {
-                            LifetimeDialog(context: context, widget: const CreditCalendarDisplayAlert());
+                            LifetimeDialog(
+                              context: context,
+                              widget: CreditCalendarDisplayAlert(yearmonth: widget.yearmonth),
+                            );
                           },
                           showCheckmark: false,
                         ),

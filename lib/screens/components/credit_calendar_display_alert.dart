@@ -8,7 +8,9 @@ import '../../extensions/extensions.dart';
 import '../../models/credit_summary_model.dart';
 
 class CreditCalendarDisplayAlert extends ConsumerStatefulWidget {
-  const CreditCalendarDisplayAlert({super.key});
+  const CreditCalendarDisplayAlert({super.key, required this.yearmonth});
+
+  final String yearmonth;
 
   @override
   ConsumerState<CreditCalendarDisplayAlert> createState() => _CreditCalendarDisplayAlertState();
@@ -21,11 +23,9 @@ class _CreditCalendarDisplayAlertState extends ConsumerState<CreditCalendarDispl
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-
       body: SafeArea(
         child: DefaultTextStyle(
           style: const TextStyle(color: Colors.white, fontSize: 12),
-
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -34,10 +34,9 @@ class _CreditCalendarDisplayAlertState extends ConsumerState<CreditCalendarDispl
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[Text('クレジットカレンダー'), SizedBox.shrink()],
                 ),
-
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                const Expanded(child: CreditCalendar()),
+                Expanded(child: CreditCalendar(yearmonth: widget.yearmonth)),
 
                 const SizedBox(height: 20),
               ],
@@ -48,10 +47,13 @@ class _CreditCalendarDisplayAlertState extends ConsumerState<CreditCalendarDispl
     );
   }
 }
+
 ///////////////////////////////////////////////////////////
 
 class CreditCalendar extends ConsumerStatefulWidget {
-  const CreditCalendar({super.key});
+  const CreditCalendar({super.key, required this.yearmonth});
+
+  final String yearmonth;
 
   @override
   ConsumerState<CreditCalendar> createState() => _CreditCalendarState();
@@ -70,6 +72,8 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
       <String, Map<String, List<CreditSummaryModel>>>{};
 
   List<String> targetYmList = <String>[];
+
+  String? _builtBaseYm;
 
   ///
   @override
@@ -114,7 +118,6 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
             children: <Widget>[
               Container(
                 width: colWidth,
-
                 height: 30,
                 alignment: Alignment.center,
                 margin: const EdgeInsets.all(1),
@@ -129,10 +132,8 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
                 ),
               ),
               displayCreditSummaryList(yearmonth: e, colWidth: colWidth),
-
               Container(
                 width: colWidth,
-
                 height: 30,
                 alignment: Alignment.center,
                 margin: const EdgeInsets.all(1),
@@ -200,7 +201,6 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
                             ),
                           ),
                         ),
-
                         child: Row(
                           children: <Widget>[
                             Expanded(child: Text(e.detail, maxLines: 1, overflow: TextOverflow.ellipsis)),
@@ -212,7 +212,6 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
                   }).toList(),
                 ),
               ],
-
               Positioned(
                 right: 0,
                 bottom: 0,
@@ -268,13 +267,9 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
 
   ///
   Widget _buildCrossKey() {
-    ///
     void scrollUp() => _scrollVerticalBy(-moveAmount);
-
     void scrollDown() => _scrollVerticalBy(moveAmount);
-
     void scrollLeft() => _scrollHorizontalBy(-moveAmount);
-
     void scrollRight() => _scrollHorizontalBy(moveAmount);
 
     return Container(
@@ -326,7 +321,11 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      makeCreditSummaryDateMap();
+      if (_builtBaseYm != widget.yearmonth) {
+        makeCreditSummaryDateMap();
+        _builtBaseYm = widget.yearmonth;
+        setState(() {});
+      }
     });
 
     return Stack(
@@ -339,7 +338,6 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
             child: _buildGrid(),
           ),
         ),
-
         Positioned(right: 12, bottom: 12, child: _buildCrossKey()),
       ],
     );
@@ -347,16 +345,34 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
 
   ///
   void makeCreditSummaryDateMap() {
-    final String? lastDate = appParamState.keepCreditSummaryMap.isEmpty
-        ? null
-        : appParamState.keepCreditSummaryMap.keys.reduce((String a, String b) => a.compareTo(b) > 0 ? a : b);
+    String? baseYm = widget.yearmonth;
 
-    if (lastDate == null) {
-      return;
+    DateTime? baseDt;
+    try {
+      baseDt = DateTime.parse('$baseYm-01');
+    } catch (_) {
+      baseDt = null;
     }
 
-    final DateTime last = DateTime.parse('$lastDate-01');
-    final DateTime firstDayOfMonth = DateTime(last.year, last.month);
+    if (baseDt == null) {
+      final String? lastDate = appParamState.keepCreditSummaryMap.isEmpty
+          ? null
+          : appParamState.keepCreditSummaryMap.keys.reduce((String a, String b) => a.compareTo(b) > 0 ? a : b);
+
+      if (lastDate == null) {
+        return;
+      }
+
+      baseYm = lastDate;
+
+      try {
+        baseDt = DateTime.parse('$baseYm-01');
+      } catch (_) {
+        return;
+      }
+    }
+
+    final DateTime firstDayOfMonth = DateTime(baseDt.year, baseDt.month);
 
     final Set<String> ymSet = <String>{};
     for (int i = 0; i < 100; i++) {
