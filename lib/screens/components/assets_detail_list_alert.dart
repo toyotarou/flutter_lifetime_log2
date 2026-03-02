@@ -10,6 +10,7 @@ import '../../extensions/extensions.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../parts/lifetime_dialog.dart';
+import 'assets_detail_yearly_graph_alert.dart';
 import 'weekly_assets_average_display_alert.dart';
 
 class AssetsDetailListAlert extends ConsumerStatefulWidget {
@@ -121,51 +122,95 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
     return Column(
       children: <Widget>[
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Expanded(
               child: Text(widget.name, style: const TextStyle(fontWeight: FontWeight.bold)),
             ),
 
-            GestureDetector(
-              onTap: () {
-                // ignore: always_specify_types
-                for (final item in dataList) {
-                  if (widget.title == 'stock' && item is StockModel) {
-                    final String date = '${item.year}-${item.month}-${item.day}';
-                    final int cost = (item.hoyuuSuuryou * _safeParseDouble(item.heikinShutokuKagaku)).toInt();
-                    final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
-                    final int diff = price - cost;
+            const SizedBox.shrink(),
+          ],
+        ),
 
-                    dateDiffMap[date] = diff;
-                  } else if (widget.title == 'toushiShintaku' && item is ToushiShintakuModel) {
-                    final String date = '${item.year}-${item.month}-${item.day}';
-                    final int cost = _safeParseDouble(item.shutokuSougaku).toInt();
-                    final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
-                    final int diff = price - cost;
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    // ignore: always_specify_types
+                    for (final item in dataList) {
+                      if (widget.title == 'stock' && item is StockModel) {
+                        final String date = '${item.year}-${item.month}-${item.day}';
+                        final int cost = (item.hoyuuSuuryou * _safeParseDouble(item.heikinShutokuKagaku)).toInt();
+                        final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
+                        final int diff = price - cost;
 
-                    dateDiffMap[date] = diff;
-                  }
-                }
+                        dateDiffMap[date] = diff;
+                      } else if (widget.title == 'toushiShintaku' && item is ToushiShintakuModel) {
+                        final String date = '${item.year}-${item.month}-${item.day}';
+                        final int cost = _safeParseDouble(item.shutokuSougaku).toInt();
+                        final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
+                        final int diff = price - cost;
 
-                final Map<String, int> weeklyAverageMap = createWeeklyAverageMap(dataMap: dateDiffMap);
+                        dateDiffMap[date] = diff;
+                      }
+                    }
 
-                LifetimeDialog(
-                  context: context,
-                  widget: WeeklyAssetsAverageDisplayAlert(weeklyAverageMap: weeklyAverageMap),
-                  clearBarrierColor: true,
-                );
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.yellowAccent.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
+                    final Map<String, int> weeklyAverageMap = createWeeklyAverageMap(dataMap: dateDiffMap);
+
+                    LifetimeDialog(
+                      context: context,
+                      widget: WeeklyAssetsAverageDisplayAlert(weeklyAverageMap: weeklyAverageMap),
+                      clearBarrierColor: true,
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.yellowAccent.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                    child: const Column(children: <Widget>[Text('weekly'), Text('average')]),
+                  ),
                 ),
 
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                child: const Column(children: <Widget>[Text('week'), Text('average')]),
-              ),
+                const SizedBox(width: 10),
+
+                IconButton(
+                  onPressed: () {
+                    // ignore: always_specify_types
+                    for (final item in dataList) {
+                      if (widget.title == 'stock' && item is StockModel) {
+                        final String date = '${item.year}-${item.month}-${item.day}';
+                        final int cost = (item.hoyuuSuuryou * _safeParseDouble(item.heikinShutokuKagaku)).toInt();
+                        final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
+                        final int diff = price - cost;
+
+                        dateDiffMap[date] = diff;
+                      } else if (widget.title == 'toushiShintaku' && item is ToushiShintakuModel) {
+                        final String date = '${item.year}-${item.month}-${item.day}';
+                        final int cost = _safeParseDouble(item.shutokuSougaku).toInt();
+                        final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
+                        final int diff = price - cost;
+
+                        dateDiffMap[date] = diff;
+                      }
+                    }
+
+                    LifetimeDialog(
+                      context: context,
+                      widget: AssetsDetailYearlyGraphAlert(name: widget.name, dateDiffMap: dateDiffMap),
+                      clearBarrierColor: true,
+                    );
+                  },
+                  icon: const Icon(Icons.stacked_line_chart),
+                ),
+              ],
             ),
+
+            const SizedBox.shrink(),
           ],
         ),
 
