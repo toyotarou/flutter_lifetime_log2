@@ -71,6 +71,7 @@ class Utility {
         return Colors.green.withValues(alpha: opa);
 
       case '仕事':
+      case '面談':
         return Colors.indigo.withValues(alpha: opa);
 
       case '外出':
