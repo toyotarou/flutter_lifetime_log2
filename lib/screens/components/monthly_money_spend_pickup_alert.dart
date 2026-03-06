@@ -12,6 +12,7 @@ import '../../models/money_spend_model.dart';
 import '../parts/lifetime_dialog.dart';
 import 'amazon_purchase_list_alert.dart';
 import 'mobile_suica_charge_history_list.dart';
+import 'monthly_money_spend_pickup_list_alert.dart';
 
 class MonthlyMoneySpendPickupAlert extends ConsumerStatefulWidget {
   const MonthlyMoneySpendPickupAlert({super.key, required this.yearmonth, required this.creditPriceEqual});
@@ -191,86 +192,110 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: itemSpendData.spendModelItemList.map((String itemText) {
-                      final int? sum = itemSpendData.itemMoneySpendModelMap[itemText]?.fold<int>(0, (
-                        int sum,
-                        Map<String, int> e,
-                      ) {
-                        // nullチェックを追加し、安全に加算します
-                        return sum + (e['price'] ?? 0);
-                      });
+                Row(
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () {
+                        LifetimeDialog(
+                          context: context,
+                          widget: MonthlyMoneySpendPickupListAlert(yearmonth: widget.yearmonth),
+                        );
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: Colors.greenAccent.withValues(alpha: 0.2),
+                        child: const DefaultTextStyle(
+                          style: TextStyle(fontSize: 10),
+                          child: Column(children: <Widget>[Spacer(), Text('12'), Text('months'), Spacer()]),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
 
-                      return GestureDetector(
-                        onTap: () {
-                          // itemSpendDataを使用して安全にアクセスします
-                          if (itemSpendData.itemMoneySpendModelMap[itemText] != null) {
-                            for (final Map<String, int> element in itemSpendData.itemMoneySpendModelMap[itemText]!) {
-                              appParamNotifier.setSelectedMoneySpendPickupListIndexList(
-                                index: element['index']!,
-                                price: element['price']!,
-                              );
-                            }
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: itemSpendData.spendModelItemList.map((String itemText) {
+                            final int? sum = itemSpendData.itemMoneySpendModelMap[itemText]?.fold<int>(0, (
+                              int sum,
+                              Map<String, int> e,
+                            ) {
+                              // nullチェックを追加し、安全に加算します
+                              return sum + (e['price'] ?? 0);
+                            });
 
-                            appParamNotifier.setSelectedMoneySpendPickupItemTextList(item: itemText);
-                          }
-                        },
+                            return GestureDetector(
+                              onTap: () {
+                                // itemSpendDataを使用して安全にアクセスします
+                                if (itemSpendData.itemMoneySpendModelMap[itemText] != null) {
+                                  for (final Map<String, int> element
+                                      in itemSpendData.itemMoneySpendModelMap[itemText]!) {
+                                    appParamNotifier.setSelectedMoneySpendPickupListIndexList(
+                                      index: element['index']!,
+                                      price: element['price']!,
+                                    );
+                                  }
 
-                        child: Stack(
-                          children: <Widget>[
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                                  margin: const EdgeInsets.only(top: 10, right: 5, left: 5, bottom: 3),
-                                  decoration: BoxDecoration(
-                                    color: (appParamState.selectedMoneySpendPickupItemTextList.contains(itemText))
-                                        ? Colors.yellowAccent.withValues(alpha: 0.2)
-                                        : Colors.white.withValues(alpha: 0.2),
-                                    border: Border.all(color: Colors.white.withValues(alpha: 0.7)),
+                                  appParamNotifier.setSelectedMoneySpendPickupItemTextList(item: itemText);
+                                }
+                              },
+
+                              child: Stack(
+                                children: <Widget>[
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: <Widget>[
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+                                        margin: const EdgeInsets.only(top: 10, right: 5, left: 5, bottom: 3),
+                                        decoration: BoxDecoration(
+                                          color: (appParamState.selectedMoneySpendPickupItemTextList.contains(itemText))
+                                              ? Colors.yellowAccent.withValues(alpha: 0.2)
+                                              : Colors.white.withValues(alpha: 0.2),
+                                          border: Border.all(color: Colors.white.withValues(alpha: 0.7)),
+                                        ),
+                                        child: Text(itemText, style: const TextStyle(fontSize: 12)),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 5, bottom: 5),
+                                        child: Text(
+                                          // nullの場合は0として扱います
+                                          (sum ?? 0).toString().toCurrency(),
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: ((sum ?? 0) >= 30000) ? Colors.orangeAccent : Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  child: Text(itemText, style: const TextStyle(fontSize: 12)),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 5, bottom: 5),
-                                  child: Text(
-                                    // nullの場合は0として扱います
-                                    (sum ?? 0).toString().toCurrency(),
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: ((sum ?? 0) >= 30000) ? Colors.orangeAccent : Colors.white,
+
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Transform(
+                                      alignment: Alignment.centerLeft,
+                                      transform: Matrix4.identity()..setEntry(0, 1, -0.8),
+                                      child: Text(
+                                        (itemSpendData.itemMoneySpendModelMap[itemText] != null)
+                                            ? itemSpendData.itemMoneySpendModelMap[itemText]!.length.toString()
+                                            : '',
+                                        style: const TextStyle(
+                                          color: Color(0xFFFBB6CE),
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child: Transform(
-                                alignment: Alignment.centerLeft,
-                                transform: Matrix4.identity()..setEntry(0, 1, -0.8),
-                                child: Text(
-                                  (itemSpendData.itemMoneySpendModelMap[itemText] != null)
-                                      ? itemSpendData.itemMoneySpendModelMap[itemText]!.length.toString()
-                                      : '',
-                                  style: const TextStyle(
-                                    color: Color(0xFFFBB6CE),
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                ],
                               ),
-                            ),
-                          ],
+                            );
+                          }).toList(),
                         ),
-                      );
-                    }).toList(),
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
@@ -358,6 +383,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
     return itemText.substring(0, p);
   }
 
+  ///
   List<String> _makeItemKeysFromDisplayList(List<MoneySpendModel> items) {
     final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
 
