@@ -230,9 +230,14 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                                 if (itemSpendData.itemMoneySpendModelMap[itemText] != null) {
                                   for (final Map<String, int> element
                                       in itemSpendData.itemMoneySpendModelMap[itemText]!) {
+                                    final int? index = element['index'];
+                                    final int? price = element['price'];
+                                    if (index == null || price == null) {
+                                      continue;
+                                    }
                                     appParamNotifier.setSelectedMoneySpendPickupListIndexList(
-                                      index: element['index']!,
-                                      price: element['price']!,
+                                      index: index,
+                                      price: price,
                                     );
                                   }
 
@@ -586,10 +591,15 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                                 )
                               : GestureDetector(
                                   onTap: () {
+                                    final _Ymd? ymd = _parseYmd(e.date);
+                                    if (ymd == null) {
+                                      return;
+                                    }
+
                                     LifetimeDialog(
                                       context: context,
                                       widget: AmazonPurchaseListAlert(
-                                        date: '${dateParts.yearText}-${dateParts.monthDayText}',
+                                        date: DateTime(ymd.year, ymd.month, ymd.day).yyyymmdd,
                                       ),
                                     );
                                   },
@@ -640,21 +650,22 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
 
   ///
   String _safeYoubi(String ymd) {
-    try {
-      final DateTime dt = DateTime.parse(ymd);
-      final String s = dt.youbiStr;
-      return (s.length >= 3) ? s.substring(0, 3) : s;
-    } catch (_) {
-      return '---'; // パースエラー時の安全なデフォルト値
+    final DateTime? dt = DateTime.tryParse(ymd);
+    if (dt == null) {
+      return '---';
     }
+
+    final String s = dt.youbiStr;
+    return (s.length >= 3) ? s.substring(0, 3) : s;
   }
 
   ///
   _DateLabelParts _safeDateLabelParts(String ymd) {
-    // "-" で分割し、要素数が足りない場合の安全策を追加
-    final List<String> parts = ymd.split('-');
-    if (parts.length >= 3) {
-      return _DateLabelParts(yearText: parts[0], monthDayText: '${parts[1]}-${parts[2]}');
+    final _Ymd? parsed = _parseYmd(ymd);
+    if (parsed != null) {
+      final String month = parsed.month.toString().padLeft(2, '0');
+      final String day = parsed.day.toString().padLeft(2, '0');
+      return _DateLabelParts(yearText: parsed.year.toString(), monthDayText: '$month-$day');
     }
 
     return const _DateLabelParts(yearText: '----', monthDayText: '--/--');
