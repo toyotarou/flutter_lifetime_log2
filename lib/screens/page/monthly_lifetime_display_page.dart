@@ -43,14 +43,21 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   // yearmonth (例: "2024-01") を一度だけ安全にパース
   late final int _year;
   late final int _month;
+  late final String _safeYearMonth;
 
   ///
   @override
   void initState() {
     super.initState();
     final List<String> parts = widget.yearmonth.split('-');
-    _year = parts.isNotEmpty ? (int.tryParse(parts[0]) ?? DateTime.now().year) : DateTime.now().year;
-    _month = parts.length > 1 ? (int.tryParse(parts[1]) ?? DateTime.now().month) : DateTime.now().month;
+    final DateTime now = DateTime.now();
+
+    _year = parts.isNotEmpty ? (int.tryParse(parts[0]) ?? now.year) : now.year;
+
+    final int rawMonth = parts.length > 1 ? (int.tryParse(parts[1]) ?? now.month) : now.month;
+    _month = rawMonth.clamp(1, 12);
+
+    _safeYearMonth = '${_year.toString().padLeft(4, '0')}-${_month.toString().padLeft(2, '0')}';
   }
 
   ///
@@ -81,7 +88,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                   children: <Widget>[
                     Container(
                       alignment: Alignment.center,
-                      child: Text(widget.yearmonth, style: const TextStyle(fontSize: 24)),
+                      child: Text(_safeYearMonth, style: const TextStyle(fontSize: 24)),
                     ),
 
                     Row(
@@ -223,13 +230,12 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
   ///
   Widget _buildDayCard({required int day}) {
-    final String date = '${widget.yearmonth}-${day.toString().padLeft(2, '0')}';
-
+    final DateTime parsedDate = DateTime(_year, _month, day);
+    final String date = parsedDate.yyyymmdd;
     final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
 
     // DateTime.now() は一度だけ取得
     final DateTime now = DateTime.now();
-    final DateTime parsedDate = DateTime.parse(date);
 
     Color cardColor = (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(date))
         ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
@@ -243,7 +249,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     }
 
     //////////////////////////////////////////////////////////////////////
-    final DateTime beforeDate = DateTime(_year, _month, day).add(const Duration(days: -1));
+    final DateTime beforeDate = parsedDate.add(const Duration(days: -1));
 
     // ?. 演算子で null を安全に扱う
     final String dateSum = appParamState.keepMoneyMap[date]?.sum ?? '';
@@ -264,8 +270,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
     return AutoScrollTag(
       // ignore: always_specify_types
-      key: ValueKey(day),
-      index: day,
+      key: ValueKey(date),
+      index: day - 1,
       controller: autoScrollController,
 
       child: Card(
@@ -858,53 +864,55 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
   /// geoloc タップ処理を抽出
   void _onGeolocTap({required String date, required List<GeolocModel> geolocModelList}) {
-    appParamNotifier.setSelectedGeolocTime(time: '');
+    try {
+      appParamNotifier.setSelectedGeolocTime(time: '');
+      appParamNotifier.setSelectedGeolocPointTime(time: '');
+      appParamNotifier.setIsDisplayGhostGeolocPolyline(flag: false);
+      appParamNotifier.setSelectedGhostPolylineDate(date: '');
 
-    appParamNotifier.setSelectedGeolocPointTime(time: '');
+      List<String> templeGeolocNearlyDateList = <String>[];
 
-    appParamNotifier.setIsDisplayGhostGeolocPolyline(flag: false);
-    appParamNotifier.setSelectedGhostPolylineDate(date: '');
+      if (appParamState.keepTempleMap[date] != null) {
+        final Map<String, GeolocModel> nearestTempleNameGeolocModelMap = <String, GeolocModel>{};
 
-    List<String> templeGeolocNearlyDateList = <String>[];
+        for (final TempleDataModel element in appParamState.keepTempleMap[date]!.templeDataList) {
+          final GeolocModel? nearestGeolocModel = utility.findNearestGeoloc(
+            geolocModelList: geolocModelList,
+            latStr: element.latitude,
+            lonStr: element.longitude,
+          );
 
-    if (appParamState.keepTempleMap[date] != null) {
-      //////////////////////////////////////////////
-      final Map<String, GeolocModel> nearestTempleNameGeolocModelMap = <String, GeolocModel>{};
-
-      for (final TempleDataModel element in appParamState.keepTempleMap[date]!.templeDataList) {
-        final GeolocModel? nearestGeolocModel = utility.findNearestGeoloc(
-          geolocModelList: geolocModelList,
-          latStr: element.latitude,
-          lonStr: element.longitude,
-        );
-
-        if (nearestGeolocModel != null) {
-          nearestTempleNameGeolocModelMap[element.name] = nearestGeolocModel;
+          if (nearestGeolocModel != null) {
+            nearestTempleNameGeolocModelMap[element.name] = nearestGeolocModel;
+          }
         }
+
+        appParamNotifier.setKeepNearestTempleNameGeolocModelMap(map: nearestTempleNameGeolocModelMap);
+
+        templeGeolocNearlyDateList = utility.getTempleGeolocNearlyDateList(
+          date: date,
+          templeMap: appParamState.keepTempleMap,
+        );
       }
 
-      appParamNotifier.setKeepNearestTempleNameGeolocModelMap(map: nearestTempleNameGeolocModelMap);
+      LifetimeDialog(
+        context: context,
+        widget: LifetimeGeolocMapDisplayAlert(
+          date: date,
+          geolocList: geolocModelList,
+          templeGeolocNearlyDateList: templeGeolocNearlyDateList,
+        ),
 
-      //////////////////////////////////////////////
-
-      templeGeolocNearlyDateList = utility.getTempleGeolocNearlyDateList(
-        date: date,
-        templeMap: appParamState.keepTempleMap,
+        executeFunctionWhenDialogClose: true,
+        from: 'LifetimeGeolocMapDisplayAlert',
+        ref: ref,
       );
+    } catch (e) {
+      debugPrint('_onGeolocTap error: $e');
+      if (mounted) {
+        error_dialog(context: context, title: '表示できません。', content: '位置情報の表示処理でエラーが発生しました。');
+      }
     }
-
-    LifetimeDialog(
-      context: context,
-      widget: LifetimeGeolocMapDisplayAlert(
-        date: date,
-        geolocList: appParamState.keepGeolocMap[date],
-        templeGeolocNearlyDateList: templeGeolocNearlyDateList,
-      ),
-
-      executeFunctionWhenDialogClose: true,
-      from: 'LifetimeGeolocMapDisplayAlert',
-      ref: ref,
-    );
   }
 
   ///
