@@ -58,6 +58,12 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
     fortyEightColor = utility.getFortyEightColor();
   }
 
+  @override
+  void dispose() {
+    transformationController.dispose();
+    super.dispose();
+  }
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -158,6 +164,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
   ///
   void setChartData() {
     flspotsList.clear();
+    toushiGraphSelectYearList.clear();
 
     List<String> dateList = <String>[];
 
@@ -248,11 +255,16 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           }
 
           if (flag) {
-            if (int.tryParse(value.goldValue.toString()) != null && int.tryParse(value.payPrice.toString()) != null) {
-              final int pos = dateList.indexWhere((String element2) => element2 == key);
+            final int? goldValue = _tryParseIntValue(value.goldValue.toString());
+            final int? payPrice = _tryParseIntValue(value.payPrice.toString());
 
-              final double onedata = (value.goldValue.toString().toInt() - value.payPrice.toString().toInt())
-                  .toDouble();
+            if (goldValue != null && payPrice != null) {
+              final int pos = dateList.indexWhere((String element2) => element2 == key);
+              if (pos < 0) {
+                return;
+              }
+
+              final double onedata = (goldValue - payPrice).toDouble();
 
               flspots.add(FlSpot(pos.toDouble(), onedata));
 
@@ -283,8 +295,16 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
               final int pos = dateList.indexWhere(
                 (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
               );
+              if (pos < 0) {
+                return;
+              }
 
-              final double diff = jikaHyoukagaku.toInt() - (element2.hoyuuSuuryou * heikinShutokuKagaku.toDouble());
+              final double? jika = _tryParseDoubleValue(jikaHyoukagaku);
+              final double? heikin = _tryParseDoubleValue(heikinShutokuKagaku);
+              if (jika == null || heikin == null) {
+                return;
+              }
+              final double diff = jika - (element2.hoyuuSuuryou * heikin);
 
               flspots.add(FlSpot(pos.toDouble(), diff));
 
@@ -327,8 +347,16 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                 final int pos = dateList.indexWhere(
                   (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
                 );
+                if (pos < 0) {
+                  return;
+                }
 
-                final double diff = (jikaHyoukagaku.toInt() - shutokuSougaku.toInt()).toDouble();
+                final int? jika = _tryParseIntValue(jikaHyoukagaku);
+                final int? shutoku = _tryParseIntValue(shutokuSougaku);
+                if (jika == null || shutoku == null) {
+                  return;
+                }
+                final double diff = (jika - shutoku).toDouble();
 
                 flspots.add(FlSpot(pos.toDouble(), diff));
 
@@ -346,9 +374,13 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           });
     }
 
-    setState(() {
-      lastAssetsDate = lastDate;
-    });
+    lastAssetsDate = lastDate;
+
+    if (dateList.isEmpty) {
+      graphData = LineChartData();
+      graphData2 = LineChartData();
+      return;
+    }
 
     if (list.isNotEmpty) {
       final int warisuu = (widget.title == 'stock') ? 10000 : 50000;
@@ -381,9 +413,13 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
               final List<String> toolTipDisplayValue = <String>[];
 
               for (final LineBarSpot element in touchedSpots) {
-                final String date = dateList[element.x.toInt()];
+                final int x = element.x.toInt();
+                if (x < 0 || x >= dateList.length) {
+                  continue;
+                }
+                final String date = dateList[x];
 
-                final int? maxPrice = dateMaxValueMap[element.x.toInt()];
+                final int? maxPrice = dateMaxValueMap[x];
                 if (element.y.toInt() == maxPrice) {
                   toolTipDisplayValue.add(date);
                 }
@@ -424,7 +460,11 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           },
 
           getDrawingVerticalLine: (double value) {
-            final String date = dateList[value.toInt()];
+            final int idx = value.toInt();
+            if (idx < 0 || idx >= dateList.length) {
+              return const FlLine(color: Colors.transparent);
+            }
+            final String date = dateList[idx];
 
             return FlLine(
               color: (eachMonthStartDateList.contains(date))
@@ -447,7 +487,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
               spots: flspotsList[i],
               barWidth: 1,
               isStrokeCapRound: true,
-              color: fortyEightColor[i % 48],
+              color: _colorAt(i),
               dotData: const FlDotData(show: false),
             ),
         ],
@@ -523,6 +563,9 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         ///
         lineBarsData: <LineChartBarData>[],
       );
+    } else {
+      graphData = LineChartData();
+      graphData2 = LineChartData();
     }
   }
 
@@ -545,8 +588,17 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                   if (appParamState.keepGoldMap.isNotEmpty) {
                     final List<String> sortedKeys = appParamState.keepGoldMap.keys.toList()
                       ..sort((String a, String b) {
-                        final DateTime dateA = DateTime.parse(a);
-                        final DateTime dateB = DateTime.parse(b);
+                        final DateTime? dateA = _tryParseDate(a);
+                        final DateTime? dateB = _tryParseDate(b);
+                        if (dateA == null && dateB == null) {
+                          return a.compareTo(b);
+                        }
+                        if (dateA == null) {
+                          return -1;
+                        }
+                        if (dateB == null) {
+                          return 1;
+                        }
                         return dateA.compareTo(dateB);
                       });
 
@@ -554,11 +606,17 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                       final List<int> sumList = <int>[];
 
                       for (final String key3 in sortedKeys) {
-                        final GoldModel value3 = appParamState.keepGoldMap[key3]!;
+                        final GoldModel? value3 = appParamState.keepGoldMap[key3];
+                        if (value3 == null) {
+                          continue;
+                        }
 
                         if (value3.goldValue != '-' && value3.goldPrice != '-') {
-                          final int goldValue = value3.goldValue.toString().toInt();
-                          final int payPrice = value3.payPrice.toString().toInt();
+                          final int? goldValue = _tryParseIntValue(value3.goldValue.toString());
+                          final int? payPrice = _tryParseIntValue(value3.payPrice.toString());
+                          if (goldValue == null || payPrice == null) {
+                            continue;
+                          }
                           final int sum = goldValue - payPrice;
 
                           scrollLineChartModelList.add(ScrollLineChartModel(date: key3, sum: sum));
@@ -567,16 +625,25 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                         }
                       }
 
+                      if (sumList.isEmpty || scrollLineChartModelList.isEmpty) {
+                        return;
+                      }
+
                       final ScrollLineChartYAxisRangeModel yAxisRange = calcYAxisRange(
                         minValue: sumList.reduce(min).toDouble(),
                         maxValue: sumList.reduce(max).toDouble(),
                       );
 
+                      final DateTime? startDate = _tryParseDate(sortedKeys[0]);
+                      if (startDate == null) {
+                        return;
+                      }
+
                       LifetimeDialog(
                         context: context,
                         widget: ScrollLineChart(
                           name: 'gold',
-                          startDate: DateTime.parse(sortedKeys[0]),
+                          startDate: startDate,
                           windowDays: 35,
                           pixelsPerDay: 16.0,
                           fixedMinY: yAxisRange.min,
@@ -590,7 +657,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                     }
                   }
                 },
-                child: CircleAvatar(radius: 15, backgroundColor: fortyEightColor[0].withValues(alpha: 0.3)),
+                child: CircleAvatar(radius: 15, backgroundColor: _colorAt(0).withValues(alpha: 0.3)),
               ),
 
               const SizedBox.shrink(),
@@ -610,7 +677,12 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
             final String jikaHyoukagaku = element2.jikaHyoukagaku.replaceAll(',', '');
             final String heikinShutokuKagaku = element2.heikinShutokuKagaku.replaceAll(',', '');
             if (int.tryParse(jikaHyoukagaku) != null && double.tryParse(heikinShutokuKagaku) != null) {
-              diff = jikaHyoukagaku.toDouble().toInt() - element2.hoyuuSuuryou * heikinShutokuKagaku.toDouble();
+              final double? jika = _tryParseDoubleValue(jikaHyoukagaku);
+              final double? heikin = _tryParseDoubleValue(heikinShutokuKagaku);
+              if (jika == null || heikin == null) {
+                return;
+              }
+              diff = jika.toInt() - element2.hoyuuSuuryou * heikin;
               date = '${element2.year}-${element2.month}-${element2.day}';
             }
           });
@@ -654,11 +726,11 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
                               for (final StockModel element3 in sorted) {
                                 final int hoyuuSuuryou = element3.hoyuuSuuryou;
-                                final double heikinShutokuKagaku = element3.heikinShutokuKagaku
-                                    .replaceAll(',', '')
-                                    .toDouble();
-
-                                final double jikaHyoukagaku = element3.jikaHyoukagaku.replaceAll(',', '').toDouble();
+                                final double? heikinShutokuKagaku = _tryParseDoubleValue(element3.heikinShutokuKagaku);
+                                final double? jikaHyoukagaku = _tryParseDoubleValue(element3.jikaHyoukagaku);
+                                if (heikinShutokuKagaku == null || jikaHyoukagaku == null) {
+                                  continue;
+                                }
 
                                 final int sum = (jikaHyoukagaku - (heikinShutokuKagaku * hoyuuSuuryou)).toInt();
 
@@ -672,17 +744,28 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                                 sumList.add(sum);
                               }
 
+                              if (sumList.isEmpty || scrollLineChartModelList.isEmpty) {
+                                return;
+                              }
+
                               final ScrollLineChartYAxisRangeModel yAxisRange = calcYAxisRange(
                                 minValue: sumList.reduce(min).toDouble(),
                                 maxValue: sumList.reduce(max).toDouble(),
                               );
+
+                              final DateTime? startDate = _tryParseDate(
+                                '${sorted[0].year}-${sorted[0].month}-${sorted[0].day}',
+                              );
+                              if (startDate == null) {
+                                return;
+                              }
 
                               LifetimeDialog(
                                 context: context,
 
                                 widget: ScrollLineChart(
                                   name: '[${element2.ticker}] ${element2.name}',
-                                  startDate: DateTime.parse('${sorted[0].year}-${sorted[0].month}-${sorted[0].day}'),
+                                  startDate: startDate,
                                   windowDays: 35,
                                   pixelsPerDay: 16.0,
                                   fixedMinY: yAxisRange.min,
@@ -695,10 +778,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                               );
                             }
                           },
-                          child: CircleAvatar(
-                            radius: 15,
-                            backgroundColor: fortyEightColor[i % 48].withValues(alpha: 0.3),
-                          ),
+                          child: CircleAvatar(radius: 15, backgroundColor: _colorAt(i).withValues(alpha: 0.3)),
                         ),
 
                         const SizedBox(width: 20),
@@ -777,7 +857,12 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
               final String shutokuSougaku = element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim();
 
               if (int.tryParse(jikaHyoukagaku) != null && int.tryParse(shutokuSougaku) != null) {
-                diff = jikaHyoukagaku.toDouble().toInt() - shutokuSougaku.toInt().toDouble();
+                final int? jika = _tryParseIntValue(jikaHyoukagaku);
+                final int? shutoku = _tryParseIntValue(shutokuSougaku);
+                if (jika == null || shutoku == null) {
+                  return;
+                }
+                diff = jika.toDouble() - shutoku.toDouble();
                 date = '${element2.year}-${element2.month}-${element2.day}';
               }
             });
@@ -822,17 +907,11 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                                 final List<int> sumList = <int>[];
 
                                 for (final ToushiShintakuModel element3 in sorted) {
-                                  final int shutokuSougaku = element3.shutokuSougaku
-                                      .replaceAll(',', '')
-                                      .replaceAll('円', '')
-                                      .trim()
-                                      .toInt();
-
-                                  final int jikaHyoukagaku = element3.jikaHyoukagaku
-                                      .replaceAll(',', '')
-                                      .replaceAll('円', '')
-                                      .trim()
-                                      .toInt();
+                                  final int? shutokuSougaku = _tryParseIntValue(element3.shutokuSougaku);
+                                  final int? jikaHyoukagaku = _tryParseIntValue(element3.jikaHyoukagaku);
+                                  if (shutokuSougaku == null || jikaHyoukagaku == null) {
+                                    continue;
+                                  }
 
                                   final int sum = jikaHyoukagaku - shutokuSougaku;
 
@@ -846,16 +925,27 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                                   sumList.add(sum);
                                 }
 
+                                if (sumList.isEmpty || scrollLineChartModelList.isEmpty) {
+                                  return;
+                                }
+
                                 final ScrollLineChartYAxisRangeModel yAxisRange = calcYAxisRange(
                                   minValue: sumList.reduce(min).toDouble(),
                                   maxValue: sumList.reduce(max).toDouble(),
                                 );
 
+                                final DateTime? startDate = _tryParseDate(
+                                  '${sorted[0].year}-${sorted[0].month}-${sorted[0].day}',
+                                );
+                                if (startDate == null) {
+                                  return;
+                                }
+
                                 LifetimeDialog(
                                   context: context,
                                   widget: ScrollLineChart(
                                     name: '[${element2.relationalId}] ${element2.name}',
-                                    startDate: DateTime.parse('${sorted[0].year}-${sorted[0].month}-${sorted[0].day}'),
+                                    startDate: startDate,
                                     windowDays: 35,
                                     pixelsPerDay: 16.0,
                                     fixedMinY: yAxisRange.min,
@@ -868,10 +958,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                                 );
                               }
                             },
-                            child: CircleAvatar(
-                              radius: 15,
-                              backgroundColor: fortyEightColor[i % 48].withValues(alpha: 0.3),
-                            ),
+                            child: CircleAvatar(radius: 15, backgroundColor: _colorAt(i).withValues(alpha: 0.3)),
                           ),
 
                           const SizedBox(width: 20),
@@ -963,5 +1050,28 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
       default:
         return 100000;
     }
+  }
+
+  ///
+  int? _tryParseIntValue(String raw) {
+    final String normalized = raw.replaceAll(',', '').replaceAll('円', '').trim();
+    return int.tryParse(normalized);
+  }
+
+  ///
+  double? _tryParseDoubleValue(String raw) {
+    final String normalized = raw.replaceAll(',', '').replaceAll('円', '').trim();
+    return double.tryParse(normalized);
+  }
+
+  ///
+  DateTime? _tryParseDate(String ymd) => DateTime.tryParse(ymd);
+
+  ///
+  Color _colorAt(int index) {
+    if (fortyEightColor.isEmpty) {
+      return Colors.white;
+    }
+    return fortyEightColor[index % fortyEightColor.length];
   }
 }
