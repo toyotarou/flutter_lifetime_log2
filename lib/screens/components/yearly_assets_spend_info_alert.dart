@@ -415,42 +415,59 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
   ///
   Widget _buildMonthItem(Map<String, dynamic> data) {
     final int value = data['value'] as int;
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.1))),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+
+    final String aaa = data['prevTotal'].toString().substring(0, 4);
+    final String bbb = data['total'].toString().substring(0, 4);
+
+    return Stack(
+      children: <Widget>[
+        Center(
+          child: Column(
             children: <Widget>[
-              Text(data['title'] as String, style: const TextStyle(color: Colors.white, fontSize: 14)),
-              Text(
-                '${(data['prevTotal'] as int).toString().toCurrency()} → ${(data['total'] as int).toString().toCurrency()}',
-                style: const TextStyle(color: Colors.white, fontSize: 10),
+              const SizedBox(height: 20),
+              Text('$aaa / $bbb', style: const TextStyle(color: Color(0xFFFBB6CE))),
+            ],
+          ),
+        ),
+
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.1))),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(data['title'] as String, style: const TextStyle(color: Colors.white, fontSize: 14)),
+                  Text(
+                    '${(data['prevTotal'] as int).toString().toCurrency()} → ${(data['total'] as int).toString().toCurrency()}',
+                    style: const TextStyle(color: Colors.white, fontSize: 10),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Text(
+                    value >= 0 ? '+${value.toString().toCurrency()}' : value.toString().toCurrency(),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: value >= 0
+                          ? Colors.yellowAccent.withValues(alpha: 0.8)
+                          : Colors.redAccent.withValues(alpha: 0.8),
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  utility.dispUpDownMark(before: 0, after: value, size: 16),
+                ],
               ),
             ],
           ),
-          Row(
-            children: <Widget>[
-              Text(
-                value >= 0 ? '+${value.toString().toCurrency()}' : value.toString().toCurrency(),
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: value >= 0
-                      ? Colors.yellowAccent.withValues(alpha: 0.8)
-                      : Colors.redAccent.withValues(alpha: 0.8),
-                ),
-              ),
-              const SizedBox(width: 5),
-              utility.dispUpDownMark(before: 0, after: value, size: 16),
-            ],
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
