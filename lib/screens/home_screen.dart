@@ -148,10 +148,292 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
   final Utility utility = Utility();
 
   TabController? _tabController;
+  bool _postFrameSyncQueued = false;
+  bool _needsDataSync = true;
 
   List<Map<String, String>> insuranceDataList = <Map<String, String>>[];
 
   List<Map<String, String>> nenkinKikinDataList = <Map<String, String>>[];
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+    _scheduleDataSync();
+  }
+
+  ///
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _needsDataSync = true;
+    _scheduleDataSync();
+  }
+
+  ///
+  void _scheduleDataSync() {
+    if (_postFrameSyncQueued || !_needsDataSync) {
+      return;
+    }
+
+    _postFrameSyncQueued = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _postFrameSyncQueued = false;
+
+      if (!mounted || !_needsDataSync) {
+        return;
+      }
+
+      _needsDataSync = false;
+      _syncDataAfterFrame();
+    });
+  }
+
+  ///
+  void _syncDataAfterFrame() {
+    try {
+      appParamNotifier.setKeepHolidayList(list: widget.holidayList);
+      appParamNotifier.setKeepWalkModelMap(map: widget.walkMap);
+      appParamNotifier.setKeepMoneyMap(map: widget.moneyMap);
+      appParamNotifier.setKeepLifetimeMap(map: widget.lifetimeMap);
+      appParamNotifier.setKeepLifetimeItemList(list: widget.lifetimeItemList);
+      appParamNotifier.setKeepGeolocMap(map: widget.geolocMap);
+      appParamNotifier.setKeepTempleMap(map: widget.templeMap);
+      appParamNotifier.setKeepGeoSpotModelMap(map: widget.transportationMap);
+      appParamNotifier.setKeepMoneySpendMap(map: widget.moneySpendMap);
+      appParamNotifier.setKeepWorkTimeMap(map: widget.workTimeMap);
+      appParamNotifier.setKeepWorkTimeDateMap(map: widget.workTimeDateMap);
+      appParamNotifier.setKeepWeatherMap(map: widget.weatherMap);
+      appParamNotifier.setKeepMoneySpendItemMap(map: widget.moneySpendItemMap);
+      appParamNotifier.setKeepSalaryMap(map: widget.salaryMap);
+      appParamNotifier.setKeepGoldMap(map: widget.goldMap);
+      appParamNotifier.setKeepStockMap(map: widget.stockMap);
+      appParamNotifier.setKeepToushiShintakuMap(map: widget.toushiShintakuMap);
+      appParamNotifier.setKeepStationList(list: widget.stationList);
+      appParamNotifier.setKeepCreditSummaryMap(map: widget.creditSummaryMap);
+      appParamNotifier.setKeepFundRelationMap(map: widget.fundRelationMap);
+      appParamNotifier.setKeepStockTickerMap(map: widget.stockTickerMap);
+      appParamNotifier.setKeepToushiShintakuRelationalMap(map: widget.toushiShintakuRelationalMap);
+      appParamNotifier.setKeepTimePlaceMap(map: widget.timePlaceMap);
+      appParamNotifier.setKeepAmazonPurchaseMap(map: widget.amazonPurchaseMap);
+      appParamNotifier.setKeepStampRallyMetroAllStationMap(map: widget.stampRallyMetroAllStationMap);
+      appParamNotifier.setKeepTokyoMunicipalList(list: widget.tokyoMunicipalList);
+      appParamNotifier.setKeepTokyoMunicipalMap(map: widget.tokyoMunicipalMap);
+      appParamNotifier.setKeepWorkHistoryModelMap(map: widget.workHistoryModelMap);
+      appParamNotifier.setKeepMoneySumList(list: widget.moneySumList);
+      appParamNotifier.setKeepTrainMap(map: widget.trainMap);
+      appParamNotifier.setKeepFortuneMap(map: widget.fortuneMap);
+    } catch (e) {
+      debugPrint('setKeep error: $e');
+    }
+
+    try {
+      final Map<String, List<String>> templeDateTimeBadgeMap = <String, List<String>>{};
+      final Map<String, String> templeDateTimeNameMap = <String, String>{};
+
+      widget.templeMap.forEach((String key, TempleModel value) {
+        final List<String> tempBadgeList = <String>[];
+        final Map<String, String> tempNameMap = <String, String>{};
+        bool hasError = false;
+
+        try {
+          final List<TempleDataModel> templeDataList = value.templeDataList;
+
+          for (final TempleDataModel element in templeDataList) {
+            final List<TemplePhotoModel>? photoModelList = element.templePhotoModelList;
+            if (photoModelList == null) {
+              continue;
+            }
+
+            for (final TemplePhotoModel element2 in photoModelList) {
+              final List<String> photos = element2.templephotos;
+              if (photos.isEmpty) {
+                continue;
+              }
+
+              final List<String> sortedPhotos = List<String>.from(photos)..sort();
+              final String fileName = sortedPhotos.first;
+
+              if (fileName.isEmpty) {
+                continue;
+              }
+
+              final List<String> exFileName = fileName.split('/');
+              if (exFileName.isEmpty) {
+                continue;
+              }
+
+              final String lastPart = exFileName.last;
+              if (lastPart.isEmpty) {
+                continue;
+              }
+
+              final List<String> exFileNameLast = lastPart.split('_');
+              if (exFileNameLast.isEmpty) {
+                continue;
+              }
+
+              final String keyWithoutHyphen = key.replaceAll('-', '');
+              if (exFileNameLast.first == keyWithoutHyphen) {
+                if (exFileNameLast.length < 2) {
+                  continue;
+                }
+
+                final List<String> exFileNameLastLast = exFileNameLast.last.split('.');
+                if (exFileNameLastLast.isEmpty) {
+                  continue;
+                }
+
+                final String timePart = exFileNameLastLast.first;
+                if (timePart.length >= 4) {
+                  final String fileHourMinute = timePart.substring(0, 4);
+                  final String hour = fileHourMinute.substring(0, 2);
+                  final String minute = fileHourMinute.substring(2);
+
+                  tempBadgeList.add('$hour:$minute');
+                  tempNameMap['$key|$hour:$minute'] = element2.temple;
+                }
+              }
+            }
+          }
+        } catch (e) {
+          hasError = true;
+          debugPrint('templeMap processing error for key $key: $e');
+        }
+
+        if (!hasError && tempBadgeList.isNotEmpty) {
+          templeDateTimeBadgeMap[key] = tempBadgeList;
+          tempNameMap.forEach((String k, String v) {
+            templeDateTimeNameMap[k] = v;
+          });
+        }
+      });
+
+      final Map<String, List<Map<String, dynamic>>> allDateLifetimeSummaryMap = <String, List<Map<String, dynamic>>>{};
+
+      widget.lifetimeMap.forEach((String key, LifetimeModel value) {
+        try {
+          final List<String> lifetimeData = getLifetimeData(lifetimeModel: value);
+          final Map<int, String> duplicateConsecutiveMap = getDuplicateConsecutiveMap(lifetimeData);
+          final List<Map<String, dynamic>> startEndTitleList = getStartEndTitleList(data: duplicateConsecutiveMap);
+          allDateLifetimeSummaryMap[key] = startEndTitleList;
+        } catch (e) {
+          debugPrint('lifetimeMap processing error for key $key: $e');
+        }
+      });
+
+      Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap = <String, List<StampRallyModel>>{};
+      try {
+        stampRallyMetro20AnniversaryMap = makeStampRallyDisplayDataMap(
+          stampRallyMetroAllStationMap: widget.stampRallyMetroAllStationMap,
+          type: 'Metro20Anniversary',
+          stampRallyMetro20AnniversaryMapSrc: widget.stampRallyMetro20AnniversaryMap,
+          stampRallyMetroPokepokeMapSrc: <String, List<StampRallyModel>>{},
+          geolocMap: widget.geolocMap,
+          stationList: widget.stationList,
+          trainMap: widget.trainMap,
+          utility: utility,
+        );
+      } catch (e) {
+        debugPrint('stampRallyMetro20AnniversaryMap error: $e');
+      }
+
+      Map<String, List<StampRallyModel>> stampRallyMetroPokepokeMap = <String, List<StampRallyModel>>{};
+      try {
+        stampRallyMetroPokepokeMap = makeStampRallyDisplayDataMap(
+          stampRallyMetroAllStationMap: widget.stampRallyMetroAllStationMap,
+          type: 'MetroPokepoke',
+          stampRallyMetro20AnniversaryMapSrc: <String, List<StampRallyModel>>{},
+          stampRallyMetroPokepokeMapSrc: widget.stampRallyMetroPokepokeMap,
+          geolocMap: widget.geolocMap,
+          stationList: widget.stationList,
+          trainMap: widget.trainMap,
+          utility: utility,
+        );
+      } catch (e) {
+        debugPrint('stampRallyMetroPokepokeMap error: $e');
+      }
+
+      final Map<int, Map<String, int>> creditSummaryTotalMap = <int, Map<String, int>>{};
+      final Map<int, Map<String, List<int>>> creditSummaryListMap = <int, Map<String, List<int>>>{};
+
+      try {
+        final List<String> creditItemList = utility.getCreditItemList();
+        final String? homeTabYear = appParamState.homeTabYearMonth.split('-').firstOrNull;
+
+        widget.creditSummaryMap.forEach((String key, List<CreditSummaryModel> value) {
+          try {
+            final String? keyYear = key.split('-').firstOrNull;
+            if (homeTabYear != null && keyYear == homeTabYear) {
+              final Map<String, List<int>> creditListMap = <String, List<int>>{};
+
+              for (final String element2 in creditItemList) {
+                for (final CreditSummaryModel element in value) {
+                  if (element2 == element.item) {
+                    (creditListMap[element2] ??= <int>[]).add(element.price);
+                  }
+                }
+              }
+
+              final List<String> keyParts = key.split('-');
+              if (keyParts.length >= 2) {
+                final int? monthInt = int.tryParse(keyParts[1]);
+                if (monthInt != null) {
+                  creditSummaryListMap[monthInt] = creditListMap;
+                }
+              }
+            }
+          } catch (e) {
+            debugPrint('creditSummaryMap processing error for key $key: $e');
+          }
+        });
+
+        creditSummaryListMap.forEach((int key, Map<String, List<int>> value) {
+          final Map<String, int> creditCategoryTotalMap = <String, int>{};
+          value.forEach((String key2, List<int> value2) {
+            int total = 0;
+            for (final int element in value2) {
+              total += element;
+            }
+            creditCategoryTotalMap[key2] = total;
+          });
+          creditSummaryTotalMap[key] = creditCategoryTotalMap;
+        });
+      } catch (e) {
+        debugPrint('creditSummary processing error: $e');
+      }
+
+      final List<List<List<List<double>>>> allPolygonsList = <List<List<List<double>>>>[];
+
+      try {
+        for (final MunicipalModel element in widget.tokyoMunicipalList) {
+          final List<List<List<List<double>>>> polygons = element.polygons;
+          allPolygonsList.addAll(polygons);
+        }
+      } catch (e) {
+        debugPrint('allPolygonsList error: $e');
+      }
+
+      if (mounted) {
+        appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
+        appParamNotifier.setKeepTempleDateTimeNameMap(map: templeDateTimeNameMap);
+        appParamNotifier.setKeepAllDateLifetimeSummaryMap(map: allDateLifetimeSummaryMap);
+        appParamNotifier.setKeepStampRallyMetro20AnniversaryMap(map: stampRallyMetro20AnniversaryMap);
+        appParamNotifier.setKeepStampRallyMetroPokepokeMap(map: stampRallyMetroPokepokeMap);
+        appParamNotifier.setKeepCreditSummaryTotalMap(map: creditSummaryTotalMap);
+        appParamNotifier.setKeepAllPolygonsList(list: allPolygonsList);
+      }
+    } catch (e) {
+      debugPrint('sync derived data error: $e');
+    }
+
+    try {
+      makeNenkinKikinDataList();
+    } catch (e) {
+      debugPrint('makeNenkinKikinDataList error: $e');
+    }
+  }
 
   ///
   void _onTabChanged() {
@@ -193,279 +475,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
     } catch (e) {
       debugPrint('_makeTab error: $e');
     }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) {
-        return;
-      }
-
-      try {
-        appParamNotifier.setKeepHolidayList(list: widget.holidayList);
-        appParamNotifier.setKeepWalkModelMap(map: widget.walkMap);
-        appParamNotifier.setKeepMoneyMap(map: widget.moneyMap);
-        appParamNotifier.setKeepLifetimeMap(map: widget.lifetimeMap);
-        appParamNotifier.setKeepLifetimeItemList(list: widget.lifetimeItemList);
-        appParamNotifier.setKeepGeolocMap(map: widget.geolocMap);
-        appParamNotifier.setKeepTempleMap(map: widget.templeMap);
-        appParamNotifier.setKeepGeoSpotModelMap(map: widget.transportationMap);
-        appParamNotifier.setKeepMoneySpendMap(map: widget.moneySpendMap);
-        appParamNotifier.setKeepWorkTimeMap(map: widget.workTimeMap);
-        appParamNotifier.setKeepWorkTimeDateMap(map: widget.workTimeDateMap);
-        appParamNotifier.setKeepWeatherMap(map: widget.weatherMap);
-        appParamNotifier.setKeepMoneySpendItemMap(map: widget.moneySpendItemMap);
-        appParamNotifier.setKeepSalaryMap(map: widget.salaryMap);
-        appParamNotifier.setKeepGoldMap(map: widget.goldMap);
-        appParamNotifier.setKeepStockMap(map: widget.stockMap);
-        appParamNotifier.setKeepToushiShintakuMap(map: widget.toushiShintakuMap);
-        appParamNotifier.setKeepStationList(list: widget.stationList);
-        appParamNotifier.setKeepCreditSummaryMap(map: widget.creditSummaryMap);
-        appParamNotifier.setKeepFundRelationMap(map: widget.fundRelationMap);
-        appParamNotifier.setKeepStockTickerMap(map: widget.stockTickerMap);
-        appParamNotifier.setKeepToushiShintakuRelationalMap(map: widget.toushiShintakuRelationalMap);
-        appParamNotifier.setKeepTimePlaceMap(map: widget.timePlaceMap);
-        appParamNotifier.setKeepAmazonPurchaseMap(map: widget.amazonPurchaseMap);
-        appParamNotifier.setKeepStampRallyMetroAllStationMap(map: widget.stampRallyMetroAllStationMap);
-        appParamNotifier.setKeepTokyoMunicipalList(list: widget.tokyoMunicipalList);
-        appParamNotifier.setKeepTokyoMunicipalMap(map: widget.tokyoMunicipalMap);
-        appParamNotifier.setKeepWorkHistoryModelMap(map: widget.workHistoryModelMap);
-        appParamNotifier.setKeepMoneySumList(list: widget.moneySumList);
-        appParamNotifier.setKeepTrainMap(map: widget.trainMap);
-        appParamNotifier.setKeepFortuneMap(map: widget.fortuneMap);
-      } catch (e) {
-        debugPrint('setKeep error: $e');
-      }
-
-      //===========================================//
-
-      try {
-        final Map<String, List<String>> templeDateTimeBadgeMap = <String, List<String>>{};
-        final Map<String, String> templeDateTimeNameMap = <String, String>{};
-
-        widget.templeMap.forEach((String key, TempleModel value) {
-          // 一時変数：このキーの処理が全て成功した場合のみ本番に追加
-          final List<String> tempBadgeList = <String>[];
-          final Map<String, String> tempNameMap = <String, String>{};
-          bool hasError = false;
-
-          try {
-            final List<TempleDataModel> templeDataList = value.templeDataList;
-
-            for (final TempleDataModel element in templeDataList) {
-              final List<TemplePhotoModel>? photoModelList = element.templePhotoModelList;
-              if (photoModelList == null) {
-                continue;
-              }
-
-              for (final TemplePhotoModel element2 in photoModelList) {
-                final List<String> photos = element2.templephotos;
-                if (photos.isEmpty) {
-                  continue;
-                }
-
-                final List<String> sortedPhotos = List<String>.from(photos)..sort();
-                final String fileName = sortedPhotos.first;
-
-                if (fileName.isEmpty) {
-                  continue;
-                }
-
-                final List<String> exFileName = fileName.split('/');
-                if (exFileName.isEmpty) {
-                  continue;
-                }
-
-                final String lastPart = exFileName.last;
-                if (lastPart.isEmpty) {
-                  continue;
-                }
-
-                final List<String> exFileNameLast = lastPart.split('_');
-                if (exFileNameLast.isEmpty) {
-                  continue;
-                }
-
-                final String keyWithoutHyphen = key.replaceAll('-', '');
-                if (exFileNameLast.first == keyWithoutHyphen) {
-                  if (exFileNameLast.length < 2) {
-                    continue;
-                  }
-
-                  final List<String> exFileNameLastLast = exFileNameLast.last.split('.');
-                  if (exFileNameLastLast.isEmpty) {
-                    continue;
-                  }
-
-                  final String timePart = exFileNameLastLast.first;
-                  if (timePart.length >= 4) {
-                    final String fileHourMinute = timePart.substring(0, 4);
-                    final String hour = fileHourMinute.substring(0, 2);
-                    final String minute = fileHourMinute.substring(2);
-
-                    tempBadgeList.add('$hour:$minute');
-                    tempNameMap['$key|$hour:$minute'] = element2.temple;
-                  }
-                }
-              }
-            }
-          } catch (e) {
-            hasError = true;
-            debugPrint('templeMap processing error for key $key: $e');
-          }
-
-          // エラーがなく、データがある場合のみ本番マップに追加
-          if (!hasError && tempBadgeList.isNotEmpty) {
-            templeDateTimeBadgeMap[key] = tempBadgeList;
-            tempNameMap.forEach((String k, String v) {
-              templeDateTimeNameMap[k] = v;
-            });
-          }
-        });
-
-        ///////////////////////
-
-        final Map<String, List<Map<String, dynamic>>> allDateLifetimeSummaryMap =
-            <String, List<Map<String, dynamic>>>{};
-
-        widget.lifetimeMap.forEach((String key, LifetimeModel value) {
-          try {
-            final List<String> lifetimeData = getLifetimeData(lifetimeModel: value);
-            final Map<int, String> duplicateConsecutiveMap = getDuplicateConsecutiveMap(lifetimeData);
-            final List<Map<String, dynamic>> startEndTitleList = getStartEndTitleList(data: duplicateConsecutiveMap);
-            allDateLifetimeSummaryMap[key] = startEndTitleList;
-          } catch (e) {
-            debugPrint('lifetimeMap processing error for key $key: $e');
-          }
-        });
-
-        ///////////////////////
-
-        Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap = <String, List<StampRallyModel>>{};
-        try {
-          stampRallyMetro20AnniversaryMap = makeStampRallyDisplayDataMap(
-            stampRallyMetroAllStationMap: widget.stampRallyMetroAllStationMap,
-            type: 'Metro20Anniversary',
-            stampRallyMetro20AnniversaryMapSrc: widget.stampRallyMetro20AnniversaryMap,
-            stampRallyMetroPokepokeMapSrc: <String, List<StampRallyModel>>{},
-            geolocMap: widget.geolocMap,
-            stationList: widget.stationList,
-            trainMap: widget.trainMap,
-            utility: utility,
-          );
-        } catch (e) {
-          debugPrint('stampRallyMetro20AnniversaryMap error: $e');
-        }
-
-        ///////////////////////
-
-        Map<String, List<StampRallyModel>> stampRallyMetroPokepokeMap = <String, List<StampRallyModel>>{};
-        try {
-          stampRallyMetroPokepokeMap = makeStampRallyDisplayDataMap(
-            stampRallyMetroAllStationMap: widget.stampRallyMetroAllStationMap,
-            type: 'MetroPokepoke',
-            stampRallyMetro20AnniversaryMapSrc: <String, List<StampRallyModel>>{},
-            stampRallyMetroPokepokeMapSrc: widget.stampRallyMetroPokepokeMap,
-            geolocMap: widget.geolocMap,
-            stationList: widget.stationList,
-            trainMap: widget.trainMap,
-            utility: utility,
-          );
-        } catch (e) {
-          debugPrint('stampRallyMetroPokepokeMap error: $e');
-        }
-
-        ///////////////////////
-
-        final Map<int, Map<String, int>> creditSummaryTotalMap = <int, Map<String, int>>{};
-        final Map<int, Map<String, List<int>>> creditSummaryListMap = <int, Map<String, List<int>>>{};
-
-        try {
-          final List<String> creditItemList = utility.getCreditItemList();
-          final String? homeTabYear = appParamState.homeTabYearMonth.split('-').firstOrNull;
-
-          widget.creditSummaryMap.forEach((String key, List<CreditSummaryModel> value) {
-            try {
-              final String? keyYear = key.split('-').firstOrNull;
-              if (homeTabYear != null && keyYear == homeTabYear) {
-                final Map<String, List<int>> creditListMap = <String, List<int>>{};
-
-                for (final String element2 in creditItemList) {
-                  for (final CreditSummaryModel element in value) {
-                    if (element2 == element.item) {
-                      (creditListMap[element2] ??= <int>[]).add(element.price);
-                    }
-                  }
-                }
-
-                final List<String> keyParts = key.split('-');
-                if (keyParts.length >= 2) {
-                  final int? monthInt = int.tryParse(keyParts[1]);
-                  if (monthInt != null) {
-                    creditSummaryListMap[monthInt] = creditListMap;
-                  }
-                }
-              }
-            } catch (e) {
-              debugPrint('creditSummaryMap processing error for key $key: $e');
-            }
-          });
-
-          creditSummaryListMap.forEach((int key, Map<String, List<int>> value) {
-            final Map<String, int> creditCategoryTotalMap = <String, int>{};
-            value.forEach((String key2, List<int> value2) {
-              int total = 0;
-              for (final int element in value2) {
-                total += element;
-              }
-              creditCategoryTotalMap[key2] = total;
-            });
-            creditSummaryTotalMap[key] = creditCategoryTotalMap;
-          });
-        } catch (e) {
-          debugPrint('creditSummary processing error: $e');
-        }
-
-        ///////////////////////
-
-        final List<List<List<List<double>>>> allPolygonsList = <List<List<List<double>>>>[];
-
-        try {
-          for (final MunicipalModel element in widget.tokyoMunicipalList) {
-            final List<List<List<List<double>>>> polygons = element.polygons;
-            allPolygonsList.addAll(polygons);
-          }
-        } catch (e) {
-          debugPrint('allPolygonsList error: $e');
-        }
-
-        ///////////////////////
-
-        if (mounted) {
-          // ignore: always_specify_types
-          Future(() {
-            try {
-              appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
-              appParamNotifier.setKeepTempleDateTimeNameMap(map: templeDateTimeNameMap);
-              appParamNotifier.setKeepAllDateLifetimeSummaryMap(map: allDateLifetimeSummaryMap);
-              appParamNotifier.setKeepStampRallyMetro20AnniversaryMap(map: stampRallyMetro20AnniversaryMap);
-              appParamNotifier.setKeepStampRallyMetroPokepokeMap(map: stampRallyMetroPokepokeMap);
-              appParamNotifier.setKeepCreditSummaryTotalMap(map: creditSummaryTotalMap);
-              appParamNotifier.setKeepAllPolygonsList(list: allPolygonsList);
-            } catch (e) {
-              debugPrint('Future setKeep error: $e');
-            }
-          });
-        }
-      } catch (e) {
-        debugPrint('addPostFrameCallback main error: $e');
-      }
-      //===========================================//
-
-      try {
-        makeNenkinKikinDataList();
-      } catch (e) {
-        debugPrint('makeNenkinKikinDataList error: $e');
-      }
-    });
+    _scheduleDataSync();
 
     if (_tabs.isEmpty) {
       return Scaffold(
@@ -489,29 +499,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       length: _tabs.length,
       child: Builder(
         builder: (BuildContext tabScopeContext) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted) {
-              return;
-            }
+          try {
+            final TabController newController = DefaultTabController.of(tabScopeContext);
+            if (newController != _tabController) {
+              _tabController?.removeListener(_onTabChanged);
+              _tabController = newController;
+              _tabController?.addListener(_onTabChanged);
 
-            try {
-              final TabController newController = DefaultTabController.of(tabScopeContext);
-              if (newController != _tabController) {
-                _tabController?.removeListener(_onTabChanged);
-                _tabController = newController;
-                _tabController?.addListener(_onTabChanged);
-
-                if (_tabController != null && _tabs.isNotEmpty) {
-                  final int index = _tabController!.index;
-                  if (index >= 0 && index < _tabs.length) {
-                    appParamNotifier.setHomeTabYearMonth(yearmonth: _tabs[index].label);
-                  }
+              if (_tabs.isNotEmpty) {
+                final int index = _tabController!.index;
+                if (index >= 0 && index < _tabs.length) {
+                  appParamNotifier.setHomeTabYearMonth(yearmonth: _tabs[index].label);
                 }
               }
-            } catch (e) {
-              debugPrint('TabController setup error: $e');
             }
-          });
+          } catch (e) {
+            debugPrint('TabController setup error: $e');
+          }
 
           return Scaffold(
             backgroundColor: Colors.transparent,
@@ -1041,17 +1045,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       }
 
       final List<String> yearmonthList = <String>[];
+      final Set<String> yearmonthSet = <String>{};
 
       final List<LifetimeModel> sortedList = List<LifetimeModel>.from(lifetimeList);
       sortedList.sort((LifetimeModel a, LifetimeModel b) {
-        final String aKey = '${a.year}-${a.month}';
-        final String bKey = '${b.year}-${b.month}';
-        return bKey.compareTo(aKey);
+        final int ay = int.tryParse(a.year) ?? 0;
+        final int by = int.tryParse(b.year) ?? 0;
+        if (ay != by) {
+          return by.compareTo(ay);
+        }
+
+        final int am = int.tryParse(a.month) ?? 0;
+        final int bm = int.tryParse(b.month) ?? 0;
+        return bm.compareTo(am);
       });
 
       for (final LifetimeModel element in sortedList) {
         final String ym = '${element.year}-${element.month}';
-        if (!yearmonthList.contains(ym)) {
+        if (yearmonthSet.add(ym)) {
           yearmonthList.add(ym);
         }
       }
