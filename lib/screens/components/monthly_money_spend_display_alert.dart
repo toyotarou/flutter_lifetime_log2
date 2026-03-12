@@ -46,7 +46,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   static const int _itemCount = 100000;
   static const int _initialIndex = _itemCount ~/ 2;
 
-  late final DateTime _baseMonth;
+  late DateTime _baseMonth;
   int currentIndex = _initialIndex;
 
   final Utility utility = Utility();
@@ -62,7 +62,16 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   @override
   void initState() {
     super.initState();
-    _baseMonth = DateTime.parse('${widget.yearmonth}-01');
+    _baseMonth = _parseYearMonth(widget.yearmonth);
+  }
+
+  ///
+  @override
+  void didUpdateWidget(covariant MonthlyMoneySpendDisplayAlert oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.yearmonth != widget.yearmonth) {
+      _baseMonth = _parseYearMonth(widget.yearmonth);
+    }
   }
 
   ///
@@ -342,19 +351,45 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   }
 
   ///
+  DateTime _parseYearMonth(String yearmonth) {
+    final List<String> parts = yearmonth.split('-');
+    final DateTime now = DateTime.now();
+
+    final int year = parts.isNotEmpty ? (int.tryParse(parts.first) ?? now.year) : now.year;
+    final int rawMonth = parts.length > 1 ? (int.tryParse(parts[1]) ?? now.month) : now.month;
+    final int month = rawMonth.clamp(1, 12);
+
+    return DateTime(year, month);
+  }
+
+  ///
+  DateTime? _parseDateSafe(String date) => DateTime.tryParse(date);
+
+  ///
+  int _toIntSafe(String? value) {
+    if (value == null) {
+      return 0;
+    }
+    final String normalized = value.replaceAll(',', '').replaceAll('円', '').trim();
+    return int.tryParse(normalized) ?? 0;
+  }
+
+  ///
   MonthlyMoneySpendListResult buildMonthlyMoneySpendList({required DateTime genDate}) {
     final List<Widget> monthlyMoneySpendList = <Widget>[];
 
     final Map<String, int> creditRecordMap = <String, int>{};
 
     final int endNum = DateTime(genDate.year, genDate.month + 1, 0).day;
+    final DateTime now = DateTime.now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
 
     final List<int> listSumList = <int>[];
 
     for (int i = 1; i <= endNum; i++) {
-      final String date = '${genDate.yyyymm}-${i.toString().padLeft(2, '0')}';
-
-      final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
+      final DateTime dateObj = DateTime(genDate.year, genDate.month, i);
+      final String date = dateObj.yyyymmdd;
+      final String youbi = dateObj.youbiStr;
 
       final Color headColor = (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(date))
           ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
@@ -367,14 +402,14 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
       int spend = 0;
       if (appParamState.keepWalkModelMap[date] != null) {
-        spend = appParamState.keepWalkModelMap[date]!.spend.replaceAll(',', '').replaceAll('円', '').toInt();
+        spend = _toIntSafe(appParamState.keepWalkModelMap[date]!.spend);
       }
 
       listSumList.add(spend);
 
       final int diff = spend - sum;
 
-      final bool inputDisplay = DateTime.parse(date).isBeforeOrSameDate(DateTime.now());
+      final bool inputDisplay = dateObj.isBeforeOrSameDate(now);
 
       if (date == DateTime.now().yyyymmdd) {
         monthlyMoneySpendList.add(const DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3));
@@ -384,7 +419,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
         AutoScrollTag(
           // ignore: always_specify_types
           key: ValueKey(i),
-          index: i,
+          index: i - 1,
           controller: autoScrollController,
           child: Stack(
             children: <Widget>[
@@ -430,7 +465,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                           else
                             const Icon(Icons.square_outlined, color: Colors.transparent),
 
-                          if (DateTime.parse(date).isBefore(DateTime.parse(DateTime.now().yyyymmdd))) ...<Widget>[
+                          if (dateObj.isBefore(today)) ...<Widget>[
                             const SizedBox(height: 10),
                             GestureDetector(
                               onTap: () {
@@ -533,13 +568,20 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
   ///
   Widget displayThisMonthSpendTotal({required String date}) {
+    final DateTime? targetDate = _parseDateSafe(date);
+    if (targetDate == null) {
+      return const SizedBox.shrink();
+    }
+
     int total = 0;
     appParamState.keepMoneySpendMap.forEach((String key, List<MoneySpendModel> value) {
-      // ignore: literal_only_boolean_expressions
-      if ('${key.split('-')[0]}-${key.split('-')[1]}' == '${date.split('-')[0]}-${date.split('-')[1]}') {
-        if (key.split('-')[2].toInt() <= date.split('-')[2].toInt()) {
-          total += value.fold<int>(0, (int previousValue, MoneySpendModel element) => previousValue + element.price);
-        }
+      final DateTime? keyDate = _parseDateSafe(key);
+      if (keyDate == null) {
+        return;
+      }
+
+      if (keyDate.year == targetDate.year && keyDate.month == targetDate.month && !keyDate.isAfter(targetDate)) {
+        total += value.fold<int>(0, (int previousValue, MoneySpendModel element) => previousValue + element.price);
       }
     });
 
@@ -551,7 +593,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
         Text(total.toString().toCurrency()),
         const SizedBox(height: 10),
         Text(
-          '${date.split('-')[0]}-${date.split('-')[1]}-01 -> $date',
+          '${targetDate.year}-${targetDate.month.toString().padLeft(2, '0')}-01 -> $date',
           style: const TextStyle(color: Colors.grey, fontSize: 10),
         ),
       ],
