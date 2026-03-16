@@ -124,7 +124,7 @@ class AppParamState with _$AppParamState {
 
     @Default('') String selectedGeolocTime,
 
-    @Default(90.0) double weeklyHistoryHeaderHeight,
+    @Default(110.0) double weeklyHistoryHeaderHeight,
 
     @Default('') String weeklyHistorySelectedDate,
 

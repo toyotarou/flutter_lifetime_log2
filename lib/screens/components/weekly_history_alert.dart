@@ -466,7 +466,7 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
   ///
   @override
   Widget build(BuildContext context) {
-    final String displayWeekDayStr = '${widget.date} / ${weeklyHistoryDisplayWeekDate.entries.last.value}';
+    final String displayWeekDayStr = '${widget.date}|${weeklyHistoryDisplayWeekDate.entries.last.value}';
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
@@ -478,7 +478,7 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[Text(displayWeekDayStr), const SizedBox.shrink()],
+              children: <Widget>[Text(displayWeekDayStr.split('|')[0]), Text(displayWeekDayStr.split('|')[1])],
             ),
 
             const SizedBox(height: 5),
@@ -499,6 +499,11 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                       '${weeklyHistoryDisplayWeekDate[youbi]!.split('-')[1]}-${weeklyHistoryDisplayWeekDate[youbi]!.split('-')[2]}';
 
                   date = '$year-$monthDay';
+                }
+
+                String boundingBoxArea = '';
+                if (widget.isNeedGeolocMapDisplayHeight && appParamState.keepGeolocMap[date] != null) {
+                  boundingBoxArea = utility.getBoundingBoxArea(points: appParamState.keepGeolocMap[date]!);
                 }
 
                 return Container(
@@ -526,7 +531,14 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                           child: DefaultTextStyle(
                             style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 10),
 
-                            child: Column(children: <Widget>[Text(year), Text(monthDay), Text(youbi.substring(0, 3))]),
+                            child: Column(
+                              children: <Widget>[
+                                Text(year),
+                                Text(monthDay),
+                                Text(youbi.substring(0, 3)),
+                                Text(boundingBoxArea.split('.')[0]),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -536,12 +548,16 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                           height: 30,
                           child: (appParamState.keepGeolocMap[date] != null)
                               ? GestureDetector(
-                                  child: Icon(
-                                    Icons.map,
-                                    size: 20,
-                                    color: (appParamState.weeklyHistorySelectedDate == date)
-                                        ? Colors.yellowAccent.withValues(alpha: 0.4)
-                                        : Colors.white.withValues(alpha: 0.4),
+                                  child: Stack(
+                                    children: <Widget>[
+                                      Icon(
+                                        (boundingBoxArea.split('.')[0] == '0') ? Icons.home : Icons.map,
+                                        size: 20,
+                                        color: (appParamState.weeklyHistorySelectedDate == date)
+                                            ? Colors.yellowAccent.withValues(alpha: 0.4)
+                                            : Colors.white.withValues(alpha: 0.4),
+                                      ),
+                                    ],
                                   ),
                                   onTap: () {
                                     appParamNotifier.setWeeklyHistorySelectedDate(date: date);

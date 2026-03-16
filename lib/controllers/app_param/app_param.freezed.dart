@@ -1193,7 +1193,7 @@ class _$AppParamStateImpl implements _AppParamState {
       this.yearlyAllSpendSelectedPrice = '',
       this.selectedToushiGraphYear = '',
       this.selectedGeolocTime = '',
-      this.weeklyHistoryHeaderHeight = 90.0,
+      this.weeklyHistoryHeaderHeight = 110.0,
       this.weeklyHistorySelectedDate = '',
       this.selectedCrossCalendarYear = 0,
       this.gutterWidth = 56,

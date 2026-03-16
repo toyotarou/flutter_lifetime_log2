@@ -93,12 +93,6 @@ mixin MonthlyGeolocMapDateListMixin on ConsumerState<MonthlyGeolocMapDateListWid
                                         children: <Widget>[
                                           const SizedBox.shrink(),
 
-
-
-
-
-
-
                                           Text(utility.getBoundingBoxArea(points: e.value)),
                                         ],
                                       ),
