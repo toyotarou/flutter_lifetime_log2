@@ -536,7 +536,10 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                                 Text(year),
                                 Text(monthDay),
                                 Text(youbi.substring(0, 3)),
-                                Text(boundingBoxArea.split('.')[0]),
+                                Text(
+                                  boundingBoxArea.split('.')[0].replaceAll(',', ''),
+                                  style: const TextStyle(fontSize: 8),
+                                ),
                               ],
                             ),
                           ),
