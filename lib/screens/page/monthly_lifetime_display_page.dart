@@ -18,6 +18,7 @@ import '../components/fortune_display_alert.dart';
 import '../components/lifetime_geoloc_map_display_alert.dart';
 import '../components/lifetime_input_alert.dart';
 import '../components/money_data_input_alert.dart';
+import '../components/tarot_info_display_alert.dart';
 import '../components/walk_data_input_alert.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
@@ -829,7 +830,6 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                   shape: BoxShape.circle,
                                                   color: Colors.white.withValues(alpha: 0.2),
                                                 ),
-
                                                 child: Center(
                                                   child: Text(
                                                     appParamState.keepFortuneMap[date]!.rank,
@@ -846,7 +846,6 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                             const Positioned(
                                               bottom: 0,
                                               right: 0,
-
                                               child: Text('tomorrow', style: TextStyle(fontSize: 8)),
                                             ),
                                           ],
@@ -861,12 +860,13 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               //====================================================// tarot // s
                               SizedBox(
                                 width: 40,
-
                                 child: (appParamState.keepTarotHistoryMap[date] != null)
                                     ? GestureDetector(
                                         onTap: () {
-                                          print(tarot);
-                                          print(tarotHistory);
+                                          LifetimeDialog(
+                                            context: context,
+                                            widget: TarotInfoDisplayAlert(tarot: tarot, tarotHistory: tarotHistory),
+                                          );
                                         },
 
                                         child: Stack(
