@@ -96,6 +96,10 @@ mixin _$AppParamState {
       throw _privateConstructorUsedError;
   Map<String, GeolocModel> get keepNearestTempleNameGeolocModelMap =>
       throw _privateConstructorUsedError;
+  Map<String, TarotModel> get keepTarotMap =>
+      throw _privateConstructorUsedError;
+  Map<String, TarotHistoryModel> get keepTarotHistoryMap =>
+      throw _privateConstructorUsedError;
 
   ///
   String get homeTabYearMonth => throw _privateConstructorUsedError;
@@ -205,6 +209,8 @@ abstract class $AppParamStateCopyWith<$Res> {
       List<Map<String, String>> keepNenkinKikinDataList,
       List<Map<String, String>> keepInsuranceDataList,
       Map<String, GeolocModel> keepNearestTempleNameGeolocModelMap,
+      Map<String, TarotModel> keepTarotMap,
+      Map<String, TarotHistoryModel> keepTarotHistoryMap,
       String homeTabYearMonth,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
@@ -294,6 +300,8 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
     Object? keepNenkinKikinDataList = null,
     Object? keepInsuranceDataList = null,
     Object? keepNearestTempleNameGeolocModelMap = null,
+    Object? keepTarotMap = null,
+    Object? keepTarotHistoryMap = null,
     Object? homeTabYearMonth = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
@@ -495,6 +503,14 @@ class _$AppParamStateCopyWithImpl<$Res, $Val extends AppParamState>
           ? _value.keepNearestTempleNameGeolocModelMap
           : keepNearestTempleNameGeolocModelMap // ignore: cast_nullable_to_non_nullable
               as Map<String, GeolocModel>,
+      keepTarotMap: null == keepTarotMap
+          ? _value.keepTarotMap
+          : keepTarotMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, TarotModel>,
+      keepTarotHistoryMap: null == keepTarotHistoryMap
+          ? _value.keepTarotHistoryMap
+          : keepTarotHistoryMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, TarotHistoryModel>,
       homeTabYearMonth: null == homeTabYearMonth
           ? _value.homeTabYearMonth
           : homeTabYearMonth // ignore: cast_nullable_to_non_nullable
@@ -685,6 +701,8 @@ abstract class _$$AppParamStateImplCopyWith<$Res>
       List<Map<String, String>> keepNenkinKikinDataList,
       List<Map<String, String>> keepInsuranceDataList,
       Map<String, GeolocModel> keepNearestTempleNameGeolocModelMap,
+      Map<String, TarotModel> keepTarotMap,
+      Map<String, TarotHistoryModel> keepTarotHistoryMap,
       String homeTabYearMonth,
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
@@ -772,6 +790,8 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
     Object? keepNenkinKikinDataList = null,
     Object? keepInsuranceDataList = null,
     Object? keepNearestTempleNameGeolocModelMap = null,
+    Object? keepTarotMap = null,
+    Object? keepTarotHistoryMap = null,
     Object? homeTabYearMonth = null,
     Object? firstEntries = freezed,
     Object? secondEntries = freezed,
@@ -973,6 +993,14 @@ class __$$AppParamStateImplCopyWithImpl<$Res>
           ? _value._keepNearestTempleNameGeolocModelMap
           : keepNearestTempleNameGeolocModelMap // ignore: cast_nullable_to_non_nullable
               as Map<String, GeolocModel>,
+      keepTarotMap: null == keepTarotMap
+          ? _value._keepTarotMap
+          : keepTarotMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, TarotModel>,
+      keepTarotHistoryMap: null == keepTarotHistoryMap
+          ? _value._keepTarotHistoryMap
+          : keepTarotHistoryMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, TarotHistoryModel>,
       homeTabYearMonth: null == homeTabYearMonth
           ? _value.homeTabYearMonth
           : homeTabYearMonth // ignore: cast_nullable_to_non_nullable
@@ -1177,6 +1205,8 @@ class _$AppParamStateImpl implements _AppParamState {
       final List<Map<String, String>> keepNenkinKikinDataList = const <Map<String, String>>[],
       final List<Map<String, String>> keepInsuranceDataList = const <Map<String, String>>[],
       final Map<String, GeolocModel> keepNearestTempleNameGeolocModelMap = const <String, GeolocModel>{},
+      final Map<String, TarotModel> keepTarotMap = const <String, TarotModel>{},
+      final Map<String, TarotHistoryModel> keepTarotHistoryMap = const <String, TarotHistoryModel>{},
       this.homeTabYearMonth = '',
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
@@ -1253,6 +1283,8 @@ class _$AppParamStateImpl implements _AppParamState {
         _keepInsuranceDataList = keepInsuranceDataList,
         _keepNearestTempleNameGeolocModelMap =
             keepNearestTempleNameGeolocModelMap,
+        _keepTarotMap = keepTarotMap,
+        _keepTarotHistoryMap = keepTarotHistoryMap,
         _firstEntries = firstEntries,
         _secondEntries = secondEntries,
         _monthlyGeolocMapSelectedDateList = monthlyGeolocMapSelectedDateList,
@@ -1660,6 +1692,25 @@ class _$AppParamStateImpl implements _AppParamState {
     return EqualUnmodifiableMapView(_keepNearestTempleNameGeolocModelMap);
   }
 
+  final Map<String, TarotModel> _keepTarotMap;
+  @override
+  @JsonKey()
+  Map<String, TarotModel> get keepTarotMap {
+    if (_keepTarotMap is EqualUnmodifiableMapView) return _keepTarotMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_keepTarotMap);
+  }
+
+  final Map<String, TarotHistoryModel> _keepTarotHistoryMap;
+  @override
+  @JsonKey()
+  Map<String, TarotHistoryModel> get keepTarotHistoryMap {
+    if (_keepTarotHistoryMap is EqualUnmodifiableMapView)
+      return _keepTarotHistoryMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_keepTarotHistoryMap);
+  }
+
   ///
   @override
   @JsonKey()
@@ -1814,7 +1865,7 @@ class _$AppParamStateImpl implements _AppParamState {
 
   @override
   String toString() {
-    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStampRallyMetroAllStationMap: $keepStampRallyMetroAllStationMap, keepTokyoMunicipalList: $keepTokyoMunicipalList, keepTokyoMunicipalMap: $keepTokyoMunicipalMap, keepWorkHistoryModelMap: $keepWorkHistoryModelMap, keepTrainMap: $keepTrainMap, keepFortuneMap: $keepFortuneMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, keepTempleDateTimeNameMap: $keepTempleDateTimeNameMap, keepAllDateLifetimeSummaryMap: $keepAllDateLifetimeSummaryMap, keepStampRallyMetro20AnniversaryMap: $keepStampRallyMetro20AnniversaryMap, keepStampRallyMetroPokepokeMap: $keepStampRallyMetroPokepokeMap, keepCreditSummaryTotalMap: $keepCreditSummaryTotalMap, keepAllPolygonsList: $keepAllPolygonsList, keepMoneySumList: $keepMoneySumList, keepNenkinKikinDataList: $keepNenkinKikinDataList, keepInsuranceDataList: $keepInsuranceDataList, keepNearestTempleNameGeolocModelMap: $keepNearestTempleNameGeolocModelMap, homeTabYearMonth: $homeTabYearMonth, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate, selectedCrossCalendarYear: $selectedCrossCalendarYear, gutterWidth: $gutterWidth, isDisplayMunicipalNameOnLifetimeGeolocMap: $isDisplayMunicipalNameOnLifetimeGeolocMap, selectedWorkHistoryModel: $selectedWorkHistoryModel, bottomNavigationSelectedIndex: $bottomNavigationSelectedIndex, selectedStampRallyMapPolylineIndex: $selectedStampRallyMapPolylineIndex, selectedGeolocPointTime: $selectedGeolocPointTime, routePolylinePartsGeolocList: $routePolylinePartsGeolocList, isDisplayGhostGeolocPolyline: $isDisplayGhostGeolocPolyline, selectedGhostPolylineDate: $selectedGhostPolylineDate, selectedMoneySpendPickupListIndexList: $selectedMoneySpendPickupListIndexList, selectedMoneySpendPickupListSum: $selectedMoneySpendPickupListSum, selectedMoneySpendPickupItemTextList: $selectedMoneySpendPickupItemTextList, selectedSameDay: $selectedSameDay, isShowAssetsDetailGraph: $isShowAssetsDetailGraph)';
+    return 'AppParamState(keepHolidayList: $keepHolidayList, keepWalkModelMap: $keepWalkModelMap, keepMoneyMap: $keepMoneyMap, keepLifetimeMap: $keepLifetimeMap, keepLifetimeItemList: $keepLifetimeItemList, keepGeolocMap: $keepGeolocMap, keepTempleMap: $keepTempleMap, keepTransportationMap: $keepTransportationMap, keepMoneySpendMap: $keepMoneySpendMap, keepWorkTimeMap: $keepWorkTimeMap, keepWorkTimeDateMap: $keepWorkTimeDateMap, keepWeatherMap: $keepWeatherMap, keepMoneySpendItemMap: $keepMoneySpendItemMap, keepSalaryMap: $keepSalaryMap, keepGoldMap: $keepGoldMap, keepStockMap: $keepStockMap, keepToushiShintakuMap: $keepToushiShintakuMap, keepCreditSummaryMap: $keepCreditSummaryMap, keepFundRelationMap: $keepFundRelationMap, keepStockTickerMap: $keepStockTickerMap, keepToushiShintakuRelationalMap: $keepToushiShintakuRelationalMap, keepTimePlaceMap: $keepTimePlaceMap, keepAmazonPurchaseMap: $keepAmazonPurchaseMap, keepStampRallyMetroAllStationMap: $keepStampRallyMetroAllStationMap, keepTokyoMunicipalList: $keepTokyoMunicipalList, keepTokyoMunicipalMap: $keepTokyoMunicipalMap, keepWorkHistoryModelMap: $keepWorkHistoryModelMap, keepTrainMap: $keepTrainMap, keepFortuneMap: $keepFortuneMap, keepStationList: $keepStationList, keepTempleDateTimeBadgeMap: $keepTempleDateTimeBadgeMap, keepTempleDateTimeNameMap: $keepTempleDateTimeNameMap, keepAllDateLifetimeSummaryMap: $keepAllDateLifetimeSummaryMap, keepStampRallyMetro20AnniversaryMap: $keepStampRallyMetro20AnniversaryMap, keepStampRallyMetroPokepokeMap: $keepStampRallyMetroPokepokeMap, keepCreditSummaryTotalMap: $keepCreditSummaryTotalMap, keepAllPolygonsList: $keepAllPolygonsList, keepMoneySumList: $keepMoneySumList, keepNenkinKikinDataList: $keepNenkinKikinDataList, keepInsuranceDataList: $keepInsuranceDataList, keepNearestTempleNameGeolocModelMap: $keepNearestTempleNameGeolocModelMap, keepTarotMap: $keepTarotMap, keepTarotHistoryMap: $keepTarotHistoryMap, homeTabYearMonth: $homeTabYearMonth, firstEntries: $firstEntries, secondEntries: $secondEntries, overlayPosition: $overlayPosition, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, selectedYearMonth: $selectedYearMonth, monthlyGeolocMapSelectedDateList: $monthlyGeolocMapSelectedDateList, selectedGraphYear: $selectedGraphYear, selectedTemple: $selectedTemple, selectedTempleDirection: $selectedTempleDirection, isMonthlySpendSummaryMinusJogai: $isMonthlySpendSummaryMinusJogai, yearlyAllSpendSelectedYear: $yearlyAllSpendSelectedYear, yearlyAllSpendSelectedPrice: $yearlyAllSpendSelectedPrice, selectedToushiGraphYear: $selectedToushiGraphYear, selectedGeolocTime: $selectedGeolocTime, weeklyHistoryHeaderHeight: $weeklyHistoryHeaderHeight, weeklyHistorySelectedDate: $weeklyHistorySelectedDate, selectedCrossCalendarYear: $selectedCrossCalendarYear, gutterWidth: $gutterWidth, isDisplayMunicipalNameOnLifetimeGeolocMap: $isDisplayMunicipalNameOnLifetimeGeolocMap, selectedWorkHistoryModel: $selectedWorkHistoryModel, bottomNavigationSelectedIndex: $bottomNavigationSelectedIndex, selectedStampRallyMapPolylineIndex: $selectedStampRallyMapPolylineIndex, selectedGeolocPointTime: $selectedGeolocPointTime, routePolylinePartsGeolocList: $routePolylinePartsGeolocList, isDisplayGhostGeolocPolyline: $isDisplayGhostGeolocPolyline, selectedGhostPolylineDate: $selectedGhostPolylineDate, selectedMoneySpendPickupListIndexList: $selectedMoneySpendPickupListIndexList, selectedMoneySpendPickupListSum: $selectedMoneySpendPickupListSum, selectedMoneySpendPickupItemTextList: $selectedMoneySpendPickupItemTextList, selectedSameDay: $selectedSameDay, isShowAssetsDetailGraph: $isShowAssetsDetailGraph)';
   }
 
   @override
@@ -1905,6 +1956,8 @@ class _$AppParamStateImpl implements _AppParamState {
             const DeepCollectionEquality().equals(other._keepNenkinKikinDataList, _keepNenkinKikinDataList) &&
             const DeepCollectionEquality().equals(other._keepInsuranceDataList, _keepInsuranceDataList) &&
             const DeepCollectionEquality().equals(other._keepNearestTempleNameGeolocModelMap, _keepNearestTempleNameGeolocModelMap) &&
+            const DeepCollectionEquality().equals(other._keepTarotMap, _keepTarotMap) &&
+            const DeepCollectionEquality().equals(other._keepTarotHistoryMap, _keepTarotHistoryMap) &&
             (identical(other.homeTabYearMonth, homeTabYearMonth) || other.homeTabYearMonth == homeTabYearMonth) &&
             const DeepCollectionEquality().equals(other._firstEntries, _firstEntries) &&
             const DeepCollectionEquality().equals(other._secondEntries, _secondEntries) &&
@@ -1986,6 +2039,8 @@ class _$AppParamStateImpl implements _AppParamState {
         const DeepCollectionEquality().hash(_keepInsuranceDataList),
         const DeepCollectionEquality()
             .hash(_keepNearestTempleNameGeolocModelMap),
+        const DeepCollectionEquality().hash(_keepTarotMap),
+        const DeepCollectionEquality().hash(_keepTarotHistoryMap),
         homeTabYearMonth,
         const DeepCollectionEquality().hash(_firstEntries),
         const DeepCollectionEquality().hash(_secondEntries),
@@ -2075,6 +2130,8 @@ abstract class _AppParamState implements AppParamState {
       final List<Map<String, String>> keepNenkinKikinDataList,
       final List<Map<String, String>> keepInsuranceDataList,
       final Map<String, GeolocModel> keepNearestTempleNameGeolocModelMap,
+      final Map<String, TarotModel> keepTarotMap,
+      final Map<String, TarotHistoryModel> keepTarotHistoryMap,
       final String homeTabYearMonth,
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
@@ -2193,6 +2250,10 @@ abstract class _AppParamState implements AppParamState {
   List<Map<String, String>> get keepInsuranceDataList;
   @override
   Map<String, GeolocModel> get keepNearestTempleNameGeolocModelMap;
+  @override
+  Map<String, TarotModel> get keepTarotMap;
+  @override
+  Map<String, TarotHistoryModel> get keepTarotHistoryMap;
   @override
 
   ///

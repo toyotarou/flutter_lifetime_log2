@@ -9,6 +9,8 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/salary_model.dart';
+import '../../models/tarot_history_model.dart';
+import '../../models/tarot_model.dart';
 import '../../models/temple_model.dart';
 import '../../utility/functions.dart';
 import '../../utility/utility.dart';
@@ -266,6 +268,30 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     String boundingBoxArea = '';
     if (geolocModelList != null) {
       boundingBoxArea = utility.getBoundingBoxArea(points: geolocModelList);
+    }
+
+    TarotHistoryModel? tarotHistory;
+    int qt = -1;
+    String imageUrl = '';
+
+    Icon? marubatsu;
+
+    TarotModel? tarot;
+
+    if (appParamState.keepTarotHistoryMap[date] != null) {
+      tarotHistory = appParamState.keepTarotHistoryMap[date];
+
+      qt = (tarotHistory!.reverse == '0') ? 0 : 2;
+      imageUrl = 'http://toyohide.work/BrainLog/tarotcards/${tarotHistory.image}.jpg';
+
+      tarot = appParamState.keepTarotMap[tarotHistory.image];
+
+      if (tarot != null) {
+        final int feel = (tarotHistory.reverse == '0') ? tarot.feelJ : tarot.feelR;
+        marubatsu = (feel == 9)
+            ? Icon(Icons.circle_outlined, color: Colors.greenAccent.withOpacity(0.4))
+            : Icon(Icons.close, color: Colors.pinkAccent.withOpacity(0.8));
+      }
     }
 
     return AutoScrollTag(
@@ -759,73 +785,132 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                       ],
 
                       //====================================================// hour // e
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              //====================================================// leo fortune // s
+                              SizedBox(
+                                width: 40,
+                                child: (appParamState.keepFortuneMap[date] != null)
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          LifetimeDialog(
+                                            context: context,
+                                            widget: FortuneDisplayAlert(date: date),
+                                          );
+                                        },
+                                        child: Stack(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.only(right: 10),
+                                              child: Opacity(
+                                                opacity: 0.4,
+                                                child: CircleAvatar(
+                                                  radius: 15,
+                                                  backgroundColor: Colors.orangeAccent.withValues(alpha: 0.4),
+                                                  child: Image.asset(
+                                                    'assets/images/leo_mark.png',
+                                                    width: 15,
+                                                    height: 15,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
 
-                      //====================================================// leo fortune // s
-                      if (appParamState.keepFortuneMap[date] != null) ...<Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: () {
-                                LifetimeDialog(
-                                  context: context,
-                                  widget: FortuneDisplayAlert(date: date),
-                                );
-                              },
-                              child: Stack(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 10),
-                                    child: Opacity(
-                                      opacity: 0.4,
-                                      child: CircleAvatar(
-                                        radius: 15,
-                                        backgroundColor: Colors.orangeAccent.withValues(alpha: 0.4),
-                                        child: Image.asset('assets/images/leo_mark.png', width: 15, height: 15),
-                                      ),
-                                    ),
-                                  ),
+                                            Positioned(
+                                              top: 0,
+                                              right: 0,
+                                              child: Container(
+                                                width: 18,
+                                                height: 18,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.white.withValues(alpha: 0.2),
+                                                ),
 
-                                  Positioned(
-                                    top: 0,
-                                    right: 0,
-                                    child: Container(
-                                      width: 18,
-                                      height: 18,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white.withValues(alpha: 0.2),
-                                      ),
+                                                child: Center(
+                                                  child: Text(
+                                                    appParamState.keepFortuneMap[date]!.rank,
+                                                    style: const TextStyle(
+                                                      fontSize: 10,
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
 
-                                      child: Center(
-                                        child: Text(
-                                          appParamState.keepFortuneMap[date]!.rank,
-                                          style: const TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                            const Positioned(
+                                              bottom: 0,
+                                              right: 0,
+
+                                              child: Text('tomorrow', style: TextStyle(fontSize: 8)),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  const Positioned(
-                                    bottom: 0,
-                                    right: 0,
-
-                                    child: Text('tomorrow', style: TextStyle(fontSize: 8)),
-                                  ),
-                                ],
+                                      )
+                                    : null,
                               ),
-                            ),
 
-                            const SizedBox.shrink(),
-                          ],
-                        ),
-                      ],
+                              //====================================================// leo fortune // e
+                              const SizedBox(width: 20),
 
-                      //====================================================// leo fortune // e
+                              //====================================================// tarot // s
+                              SizedBox(
+                                width: 40,
+
+                                child: (appParamState.keepTarotHistoryMap[date] != null)
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          print(tarot);
+                                          print(tarotHistory);
+                                        },
+
+                                        child: Stack(
+                                          children: <Widget>[
+                                            Row(
+                                              children: <Widget>[
+                                                SizedBox(
+                                                  width: 25,
+                                                  child: Opacity(
+                                                    opacity: 0.5,
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.only(top: 10),
+                                                      child: Builder(
+                                                        builder: (BuildContext context) {
+                                                          return RotatedBox(
+                                                            quarterTurns: qt,
+                                                            child: Image.network(imageUrl, width: 40),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+
+                                                const SizedBox(width: 15),
+                                              ],
+                                            ),
+
+                                            if (marubatsu != null) ...<Widget>[
+                                              Positioned(right: 0, bottom: 0, child: marubatsu),
+                                            ],
+                                          ],
+                                        ),
+                                      )
+                                    : null,
+                              ),
+
+                              //====================================================// tarot // e
+                            ],
+                          ),
+
+                          const SizedBox.shrink(),
+                        ],
+                      ),
                     ],
                   ),
                 ),

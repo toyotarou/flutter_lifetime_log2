@@ -36,6 +36,8 @@ enum APIPath {
   getWorkTruth,
   getWorkContract,
   getAllMoneySum,
+  tarothistory,
+  getAllTarot,
 }
 
 extension APIPathExtension on APIPath {
@@ -139,6 +141,10 @@ extension APIPathExtension on APIPath {
         return 'getWorkContract';
       case APIPath.getAllMoneySum:
         return 'getAllMoneySum';
+      case APIPath.tarothistory:
+        return 'tarothistory';
+      case APIPath.getAllTarot:
+        return 'getAllTarot';
     }
   }
 }

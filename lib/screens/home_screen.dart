@@ -21,6 +21,8 @@ import '../models/municipal_model.dart';
 import '../models/salary_model.dart';
 import '../models/stamp_rally_model.dart';
 import '../models/stock_model.dart';
+import '../models/tarot_history_model.dart';
+import '../models/tarot_model.dart';
 import '../models/temple_model.dart';
 import '../models/time_place_model.dart';
 import '../models/toushi_shintaku_model.dart';
@@ -103,6 +105,8 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.workHistoryModelMap,
     required this.moneySumList,
     required this.fortuneMap,
+    required this.tarotMap,
+    required this.tarotHistoryMap,
   });
 
   final List<String> holidayList;
@@ -138,6 +142,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, WorkHistoryModel> workHistoryModelMap;
   final List<ScrollLineChartModel> moneySumList;
   final Map<String, FortuneModel> fortuneMap;
+  final Map<String, TarotModel> tarotMap;
+  final Map<String, TarotHistoryModel> tarotHistoryMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -224,6 +230,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepMoneySumList(list: widget.moneySumList);
       appParamNotifier.setKeepTrainMap(map: widget.trainMap);
       appParamNotifier.setKeepFortuneMap(map: widget.fortuneMap);
+      appParamNotifier.setKeepTarotMap(map: widget.tarotMap);
+      appParamNotifier.setKeepTarotHistoryMap(map: widget.tarotHistoryMap);
     } catch (e) {
       debugPrint('setKeep error: $e');
     }

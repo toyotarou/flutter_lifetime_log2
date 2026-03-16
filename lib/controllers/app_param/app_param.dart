@@ -17,6 +17,8 @@ import '../../models/municipal_model.dart';
 import '../../models/salary_model.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../models/stock_model.dart';
+import '../../models/tarot_history_model.dart';
+import '../../models/tarot_model.dart';
 import '../../models/temple_model.dart';
 import '../../models/time_place_model.dart';
 import '../../models/toushi_shintaku_model.dart';
@@ -87,6 +89,10 @@ class AppParamState with _$AppParamState {
     @Default(<Map<String, String>>[]) List<Map<String, String>> keepInsuranceDataList,
 
     @Default(<String, GeolocModel>{}) Map<String, GeolocModel> keepNearestTempleNameGeolocModelMap,
+
+    @Default(<String, TarotModel>{}) Map<String, TarotModel> keepTarotMap,
+
+    @Default(<String, TarotHistoryModel>{}) Map<String, TarotHistoryModel> keepTarotHistoryMap,
 
     ///
     @Default('') String homeTabYearMonth,
@@ -320,6 +326,13 @@ class AppParam extends _$AppParam {
 
   ///
   void setKeepFortuneMap({required Map<String, FortuneModel> map}) => state = state.copyWith(keepFortuneMap: map);
+
+  ///
+  void setKeepTarotMap({required Map<String, TarotModel> map}) => state = state.copyWith(keepTarotMap: map);
+
+  ///
+  void setKeepTarotHistoryMap({required Map<String, TarotHistoryModel> map}) =>
+      state = state.copyWith(keepTarotHistoryMap: map);
 
   //===================================================
 

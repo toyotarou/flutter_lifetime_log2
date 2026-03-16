@@ -84,6 +84,8 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     workHistoryNotifier.getAllWorkHistoryData();
     moneySumNotifier.getAllMoneySumData();
     fortuneNotifier.getAllFortuneData();
+    tarotNotifier.getAllTarotData();
+    tarothistoryNotifier.getAllTarotHistoryData();
   }
 
   ///
@@ -147,6 +149,8 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           workHistoryModelMap: workHistoryState.workHistoryModelMap,
           moneySumList: moneySumState.moneySumList,
           fortuneMap: fortuneState.fortuneMap,
+          tarotMap: tarotState.tarotMap,
+          tarotHistoryMap: tarothistoryState.tarotHistoryMap,
         ),
       ),
     );
