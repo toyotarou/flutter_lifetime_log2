@@ -697,9 +697,11 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                               child: Text(
                                                 (appParamState.keepWalkModelMap[date] != null)
                                                     ? (appParamState.keepWalkModelMap[date]!.spend == '0')
-                                                          ? '0 円'
+                                                          ? '0'
                                                           : appParamState.keepWalkModelMap[date]!.spend
-                                                    : '${sumDiff.toString().toCurrency()} 円',
+                                                                .replaceAll('円', '')
+                                                                .trim()
+                                                    : sumDiff.toString().toCurrency(),
                                               ),
                                             ),
                                           ],
@@ -725,7 +727,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                               padding: const EdgeInsets.all(5),
                                               child: Text(
                                                 (appParamState.keepMoneyMap[date] != null)
-                                                    ? '${appParamState.keepMoneyMap[date]!.sum.toCurrency()} 円'
+                                                    ? appParamState.keepMoneyMap[date]!.sum.toCurrency()
                                                     : '',
                                               ),
                                             ),
