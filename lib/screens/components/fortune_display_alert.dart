@@ -81,17 +81,17 @@ class _FortuneDisplayAlertState extends ConsumerState<FortuneDisplayAlert> with 
             const SizedBox(height: 10),
             Divider(color: Colors.white.withOpacity(0.4), indent: 20, endIndent: 20),
             const SizedBox(height: 10),
-            const Row(
-              children: <Widget>[
-                Text('人間関係運', style: TextStyle(color: Colors.yellowAccent)),
-                SizedBox.shrink(),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(fortune.relationship),
-            const SizedBox(height: 10),
-            Divider(color: Colors.white.withOpacity(0.4), indent: 20, endIndent: 20),
-            const SizedBox(height: 10),
+            // const Row(
+            //   children: <Widget>[
+            //     Text('人間関係運', style: TextStyle(color: Colors.yellowAccent)),
+            //     SizedBox.shrink(),
+            //   ],
+            // ),
+            // const SizedBox(height: 10),
+            // Text(fortune.relationship),
+            // const SizedBox(height: 10),
+            // Divider(color: Colors.white.withOpacity(0.4), indent: 20, endIndent: 20),
+            // const SizedBox(height: 10),
             const Row(
               children: <Widget>[
                 Text('仕事運', style: TextStyle(color: Colors.yellowAccent)),

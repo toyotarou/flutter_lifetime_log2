@@ -45,14 +45,20 @@ class Fortune extends _$Fortune {
 
           list.add(val);
 
-          map[DateTime.parse('${val.year}-${val.month}-${val.day}').add(const Duration(days: -1)).yyyymmdd] = val;
+          final DateTime dataDate = DateTime.parse('${val.year}-${val.month}-${val.day}');
+          final DateTime borderDate = DateTime(2026, 4, 9);
+          final String mapKey = dataDate.isBefore(borderDate)
+              ? dataDate.add(const Duration(days: -1)).yyyymmdd
+              : dataDate.yyyymmdd;
+
+          map[mapKey] = val;
         }
       });
 
       return state.copyWith(fortuneList: list, fortuneMap: map);
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
-      rethrow; // これにより呼び出し元でキャッチできる
+      rethrow;
     }
   }
 

@@ -845,10 +845,19 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                               ),
                                             ),
 
-                                            const Positioned(
+                                            Positioned(
                                               bottom: 0,
                                               right: 0,
-                                              child: Text('tomorrow', style: TextStyle(fontSize: 8)),
+                                              child: Builder(
+                                                builder: (BuildContext context) {
+                                                  final DateTime borderDate = DateTime(2026, 4, 9);
+                                                  final DateTime parsedDate = DateTime(_year, _month, day);
+                                                  final String label = parsedDate.isBefore(borderDate)
+                                                      ? 'tomorrow'
+                                                      : 'today';
+                                                  return Text(label, style: const TextStyle(fontSize: 8));
+                                                },
+                                              ),
                                             ),
                                           ],
                                         ),
