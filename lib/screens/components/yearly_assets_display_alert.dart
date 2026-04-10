@@ -17,6 +17,7 @@ import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'month_end_assets_display_alert.dart';
 import 'yearly_assets_graph_alert.dart';
+import 'yearly_assets_line_chart_alert.dart';
 
 class YearlyAssetsDisplayAlert extends ConsumerStatefulWidget {
   const YearlyAssetsDisplayAlert({super.key, required this.date, required this.lastYearFinalAssets});
@@ -79,48 +80,71 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Stack(
                 children: <Widget>[
-                  Text('$year 年 資産推移'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Padding(padding: const EdgeInsets.all(8.0), child: Text('$year 年 資産推移')),
+                      const SizedBox.shrink(),
+                    ],
+                  ),
 
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      IconButton(
-                        tooltip: '折れ線グラフ',
-                        icon: const Icon(Icons.graphic_eq),
-                        onPressed: () {
-                          LifetimeDialog(
-                            context: context,
-                            widget: YearlyAssetsGraphAlert(
-                              year: year,
-                              totals: yearlyDayAssetsList.map((YearDayAssetsModel e) => e.total).toList(),
-                              lastYearFinalAssets: widget.lastYearFinalAssets,
-                            ),
-                          );
-                        },
-                      ),
+                      const SizedBox(),
 
-                      const SizedBox(width: 10),
-
-                      Column(
+                      Row(
                         children: <Widget>[
-                          const SizedBox(height: 10),
-
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 20),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.3),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Text('前年末', style: TextStyle(fontSize: 10)),
+                          IconButton(
+                            tooltip: '折れ線グラフ',
+                            icon: const Icon(Icons.stacked_line_chart),
+                            onPressed: () {
+                              LifetimeDialog(
+                                context: context,
+                                widget: YearlyAssetsLineChartAlert(year: year),
+                              );
+                            },
                           ),
 
-                          const SizedBox(height: 5),
+                          IconButton(
+                            tooltip: '折れ線グラフ',
+                            icon: const Icon(Icons.graphic_eq),
+                            onPressed: () {
+                              LifetimeDialog(
+                                context: context,
+                                widget: YearlyAssetsGraphAlert(
+                                  year: year,
+                                  totals: yearlyDayAssetsList.map((YearDayAssetsModel e) => e.total).toList(),
+                                  lastYearFinalAssets: widget.lastYearFinalAssets,
+                                ),
+                              );
+                            },
+                          ),
 
-                          Text(
-                            widget.lastYearFinalAssets.toString().toCurrency(),
-                            style: const TextStyle(fontSize: 10),
+                          const SizedBox(width: 10),
+
+                          Column(
+                            children: <Widget>[
+                              const SizedBox(height: 10),
+
+                              Container(
+                                padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 20),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.3),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Text('前年末', style: TextStyle(fontSize: 10)),
+                              ),
+
+                              const SizedBox(height: 5),
+
+                              Text(
+                                widget.lastYearFinalAssets.toString().toCurrency(),
+                                style: const TextStyle(fontSize: 10),
+                              ),
+                            ],
                           ),
                         ],
                       ),
