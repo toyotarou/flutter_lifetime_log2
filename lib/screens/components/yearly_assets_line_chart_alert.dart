@@ -40,6 +40,8 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
 
   late int _selectedYear;
 
+  bool _taxAdjusted = false;
+
   List<String> _dateList = <String>[];
 
   @override
@@ -79,7 +81,31 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
                         LineChart(graphData3),
                         LineChart(graphData2),
                         LineChart(graphData),
-                        Positioned(top: 8, left: 8, child: _yearSelectorWidget()),
+                        Positioned(
+                          top: 8,
+                          left: 8,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              _yearSelectorWidget(),
+
+                              Row(
+                                children: <Widget>[
+                                  Checkbox(
+                                    value: _taxAdjusted,
+                                    onChanged: (bool? v) => setState(() => _taxAdjusted = v ?? false),
+                                    activeColor: Colors.orangeAccent,
+                                  ),
+
+                                  const Text(
+                                    '税引後予想（金/株/信託:80% 保険/年金:70%）',
+                                    style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     );
                   },
@@ -250,7 +276,8 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
             prevGoldValue = val.replaceAll(',', '').replaceAll('円', '').trim().toInt();
           }
         }
-        _goldFlspots.add(FlSpot(idx.toDouble(), prevGoldValue.toDouble()));
+        // monthly/yearly_assets_display と合わせて常時 × 0.8 を適用（toInt で切り捨て統一）
+        _goldFlspots.add(FlSpot(idx.toDouble(), (prevGoldValue * 0.8).toInt().toDouble()));
       }
     }
 
@@ -266,10 +293,18 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
 
       final int nenkinKikinPassedMonths =
           AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: d) + 32;
-      final int nenkinKikinSum = nenkinKikinPassedMonths * (26625 * 0.7).toInt();
+      final int nenkinKikinSum = (nenkinKikinPassedMonths * 26625 * 0.7).toInt();
 
       _insuranceFlspots.add(FlSpot(idx.toDouble(), insuranceSum.toDouble()));
       _nenkinFlspots.add(FlSpot(idx.toDouble(), nenkinKikinSum.toDouble()));
+    }
+
+    if (_taxAdjusted) {
+      // 株・投資信託: 譲渡所得税 20.315% → 手取り約80%（yearly_assets_display_alert と同率）
+      // 金: 基本表示で既に × 0.8 適用済みのため追加調整なし
+      // 保険・年金保険: 計算式内に既に × 0.7 が含まれているため追加調整なし
+      _shintakuFlspots = _shintakuFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
+      _stockFlspots = _stockFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
     }
 
     if (list.isNotEmpty) {
@@ -285,6 +320,8 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
             tooltipRoundedRadius: 2,
+            fitInsideHorizontally: true,
+            fitInsideVertically: true,
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
               // 全線の値を収集
               String date = '';
