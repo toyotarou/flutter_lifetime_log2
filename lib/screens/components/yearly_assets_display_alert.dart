@@ -535,11 +535,11 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
 
       final int insurancePassedMonths =
           AssetsCalc.countPaidUpTo(data: appParamState.keepInsuranceDataList, date: d) + 102;
-      final int insuranceSum = insurancePassedMonths * (55880 * 0.7).toInt();
+      final int insuranceSum = (insurancePassedMonths * 55880 * 0.7).toInt();
 
       final int nenkinKikinPassedMonths =
           AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: d) + 32;
-      final int nenkinKikinSum = nenkinKikinPassedMonths * (26625 * 0.7).toInt();
+      final int nenkinKikinSum = (nenkinKikinPassedMonths * 26625 * 0.7).toInt();
 
       final int gold80 = (lastGoldSum * assetRate).toInt();
       final int stock80 = (lastStockSum * assetRate).toInt();

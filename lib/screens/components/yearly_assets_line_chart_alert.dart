@@ -276,7 +276,6 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
             prevGoldValue = val.replaceAll(',', '').replaceAll('円', '').trim().toInt();
           }
         }
-        // monthly/yearly_assets_display と合わせて常時 × 0.8 を適用（toInt で切り捨て統一）
         _goldFlspots.add(FlSpot(idx.toDouble(), (prevGoldValue * 0.8).toInt().toDouble()));
       }
     }
@@ -289,7 +288,7 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
 
       final int insurancePassedMonths =
           AssetsCalc.countPaidUpTo(data: appParamState.keepInsuranceDataList, date: d) + 102;
-      final int insuranceSum = insurancePassedMonths * (55880 * 0.7).toInt();
+      final int insuranceSum = (insurancePassedMonths * 55880 * 0.7).toInt();
 
       final int nenkinKikinPassedMonths =
           AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: d) + 32;
@@ -300,9 +299,6 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
     }
 
     if (_taxAdjusted) {
-      // 株・投資信託: 譲渡所得税 20.315% → 手取り約80%（yearly_assets_display_alert と同率）
-      // 金: 基本表示で既に × 0.8 適用済みのため追加調整なし
-      // 保険・年金保険: 計算式内に既に × 0.7 が含まれているため追加調整なし
       _shintakuFlspots = _shintakuFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
       _stockFlspots = _stockFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
     }
@@ -358,8 +354,12 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
                 return LineTooltipItem(
                   '$date\n',
                   const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.left,
+                  textAlign: TextAlign.right,
                   children: <TextSpan>[
+                    const TextSpan(
+                      text: '──────────\n',
+                      style: TextStyle(color: Colors.grey),
+                    ),
                     TextSpan(
                       text: '${moneyVal.toString().toCurrency()}\n',
                       style: const TextStyle(color: Colors.white),
@@ -383,6 +383,10 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
                     TextSpan(
                       text: '${nenkinVal.toString().toCurrency()}\n',
                       style: const TextStyle(color: Colors.orangeAccent),
+                    ),
+                    const TextSpan(
+                      text: '──────────\n',
+                      style: TextStyle(color: Colors.grey),
                     ),
                     TextSpan(
                       text: total.toString().toCurrency(),
