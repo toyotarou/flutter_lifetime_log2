@@ -1,0 +1,80 @@
+
+
+基本的なデータは
+/Users/toyodahideyuki/Desktop/HIDEYUKI/flutter/flutter_lifetime_log2/lib/controllers/app_param/app_param.dart
+のstateに入っています。
+
+それぞれ
+
+
+money
+@Default(<ScrollLineChartModel>[]) List<ScrollLineChartModel> keepMoneySumList,
+start: 2014-06-01
+
+モデルは
+/Users/toyodahideyuki/Desktop/HIDEYUKI/flutter/flutter_lifetime_log2/lib/models/common/scroll_line_chart_model.dart
+
+グラフには
+final int sum;
+を表示
+
+
+
+shintaku
+@Default(<String, List<ToushiShintakuModel>>{}) Map<String, List<ToushiShintakuModel>> keepToushiShintakuMap,
+start: 2022-01-01
+
+モデルは
+/Users/toyodahideyuki/Desktop/HIDEYUKI/flutter/flutter_lifetime_log2/lib/models/toushi_shintaku_model.dart
+
+  グラフには
+final String jikaHyoukagaku;
+を表示（カンマ、円という文字、に注意）
+
+
+stock
+@Default(<String, List<StockModel>>{}) Map<String, List<StockModel>> keepStockMap,
+start: 2022-01-01
+
+モデルは
+/Users/toyodahideyuki/Desktop/HIDEYUKI/flutter/flutter_lifetime_log2/lib/models/stock_model.dart
+
+グラフには
+final String jikaHyoukagaku;
+を表示（カンマ、円という文字、に注意）
+
+
+
+
+gold
+@Default(<String, GoldModel>{}) Map<String, GoldModel> keepGoldMap,
+
+モデルは
+/Users/toyodahideyuki/Desktop/HIDEYUKI/flutter/flutter_lifetime_log2/lib/models/gold_model.dart
+
+グラフには
+dynamic goldValue;
+を表示
+
+
+
+
+insurance
+2023-01-01で102回払いずみですので、
+102ヶ月前から55880円ずつ払っているグラフになります。
+
+
+
+
+
+nenkin
+2023-01-01で32回払いずみですので、
+32ヶ月前から26625円ずつ払っているグラフになります。
+
+
+
+
+
+
+
+

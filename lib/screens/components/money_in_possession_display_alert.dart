@@ -13,6 +13,7 @@ import '../../models/money_model.dart';
 import '../../utility/functions.dart';
 import '../parts/lifetime_dialog.dart';
 import '../parts/scroll_line_chart.dart';
+import 'lifetime_assets_line_chart_alert.dart';
 import 'money_in_possession_graph_alert.dart';
 
 class MoneyInPossessionDisplayAlert extends ConsumerStatefulWidget {
@@ -98,6 +99,14 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
                     const Text('money in possession'),
                     Row(
                       children: <Widget>[
+                        GestureDetector(
+                          onTap: () => LifetimeDialog(context: context, widget: const LifetimeAssetsLineChartAlert()),
+
+                          child: const Icon(Icons.favorite),
+                        ),
+
+                        const SizedBox(width: 20),
+
                         GestureDetector(
                           onTap: () {
                             final List<int> sumList = <int>[];
