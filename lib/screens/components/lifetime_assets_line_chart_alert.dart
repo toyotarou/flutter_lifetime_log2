@@ -31,6 +31,11 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
   int graphMax = 0;
   List<String> _dateList = <String>[];
 
+  final TransformationController _transformationController = TransformationController();
+  bool _zoomMode = false;
+  bool _showPointLabels = false;
+  Map<int, int> _millionCrossings = <int, int>{};
+
   // insurance: 2023-01-01時点で102回払いずみ → 102ヶ月前 = 2014-07スタート
   static final DateTime _insuranceStart = DateTime(2014, 7);
 
@@ -39,6 +44,33 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
 
   static final DateTime _shintakuStart = DateTime(2022);
   static final DateTime _stockStart = DateTime(2022);
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+    _transformationController.addListener(_onTransformChanged);
+  }
+
+  ///
+  void _onTransformChanged() {
+    if (!_zoomMode) {
+      return;
+    }
+    final double scale = _transformationController.value.getMaxScaleOnAxis();
+    final bool shouldShow = scale >= 3.0;
+    if (shouldShow != _showPointLabels) {
+      setState(() => _showPointLabels = shouldShow);
+    }
+  }
+
+  ///
+  @override
+  void dispose() {
+    _transformationController.removeListener(_onTransformChanged);
+    _transformationController.dispose();
+    super.dispose();
+  }
 
   ///
   @override
@@ -55,13 +87,49 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
             children: <Widget>[
               Container(width: context.screenSize.width),
 
-              const Text('Lifetime Assets Evolution'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  const Text('Lifetime Assets Evolution'),
+                  Row(
+                    children: <Widget>[
+                      if (_zoomMode)
+                        IconButton(
+                          onPressed: () => setState(() {
+                            _transformationController.value = Matrix4.identity();
+                          }),
+                          icon: const Icon(Icons.lock_reset),
+                        ),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _zoomMode = !_zoomMode;
+                            if (!_zoomMode) {
+                              _transformationController.value = Matrix4.identity();
+                            }
+                          });
+                        },
+                        icon: Icon(Icons.expand, color: _zoomMode ? Colors.yellowAccent : Colors.white),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
 
               Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
               Expanded(
                 child: _flspots.isEmpty
                     ? const Center(child: Text('No data'))
+                    : _zoomMode
+                    ? InteractiveViewer(
+                        transformationController: _transformationController,
+                        minScale: 1.0,
+                        maxScale: 10.0,
+                        child: AbsorbPointer(
+                          child: Stack(children: <Widget>[LineChart(graphData2), LineChart(graphData)]),
+                        ),
+                      )
                     : Stack(children: <Widget>[LineChart(graphData2), LineChart(graphData)]),
               ),
 
@@ -240,6 +308,40 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
       }
     }
 
+    // 合計額で初めて各百万円を超えたインデックスを検出（過去最高を更新した時のみ）
+    _millionCrossings = <int, int>{};
+    final Map<int, double> shintakuByIdx = <int, double>{for (final FlSpot s in _shintakuFlspots) s.x.toInt(): s.y};
+    final Map<int, double> stockByIdx = <int, double>{for (final FlSpot s in _stockFlspots) s.x.toInt(): s.y};
+    final Map<int, double> goldByIdx = <int, double>{for (final FlSpot s in _goldFlspots) s.x.toInt(): s.y};
+    final Map<int, double> insuranceByIdx = <int, double>{for (final FlSpot s in _insuranceFlspots) s.x.toInt(): s.y};
+    final Map<int, double> nenkinByIdx = <int, double>{for (final FlSpot s in _nenkinFlspots) s.x.toInt(): s.y};
+
+    int maxMillionSeen = _flspots.isEmpty
+        ? 0
+        : (_flspots[0].y +
+                      (shintakuByIdx[0] ?? 0) +
+                      (stockByIdx[0] ?? 0) +
+                      (goldByIdx[0] ?? 0) +
+                      (insuranceByIdx[0] ?? 0) +
+                      (nenkinByIdx[0] ?? 0))
+                  .floor() ~/
+              1000000;
+    for (int i = 1; i < _flspots.length; i++) {
+      final int curr =
+          (_flspots[i].y +
+                  (shintakuByIdx[i] ?? 0) +
+                  (stockByIdx[i] ?? 0) +
+                  (goldByIdx[i] ?? 0) +
+                  (insuranceByIdx[i] ?? 0) +
+                  (nenkinByIdx[i] ?? 0))
+              .floor() ~/
+          1000000;
+      if (curr > maxMillionSeen) {
+        _millionCrossings[i] = curr;
+        maxMillionSeen = curr;
+      }
+    }
+
     // graphMax を実データから算出
     final List<double> allVals = <double>[
       ..._flspots.map((FlSpot s) => s.y),
@@ -388,7 +490,24 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
         titlesData: const FlTitlesData(show: false),
         borderData: FlBorderData(show: false),
         lineBarsData: <LineChartBarData>[
-          LineChartBarData(spots: _flspots, color: Colors.white, dotData: const FlDotData(show: false), barWidth: 1),
+          LineChartBarData(
+            spots: _flspots,
+            color: Colors.white,
+            barWidth: 1,
+            dotData: FlDotData(
+              getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int index) {
+                if (!_showPointLabels || !_millionCrossings.containsKey(index)) {
+                  return FlDotCirclePainter(radius: 0, color: Colors.transparent, strokeColor: Colors.transparent);
+                }
+                final String date = index < _dateList.length ? _dateList[index] : '';
+                return _MilestoneDotPainter(
+                  millionLevel: _millionCrossings[index]!,
+                  date: date,
+                  totalSpots: _flspots.length,
+                );
+              },
+            ),
+          ),
           LineChartBarData(
             spots: _shintakuFlspots,
             color: Colors.yellowAccent,
@@ -470,4 +589,69 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
       );
     }
   }
+}
+
+///
+class _MilestoneDotPainter extends FlDotPainter {
+  _MilestoneDotPainter({required this.millionLevel, required this.date, required this.totalSpots});
+
+  final int millionLevel;
+  final String date;
+  final int totalSpots;
+
+  String get _milestoneText => '$millionLevel百万円';
+
+  @override
+  Color get mainColor => const Color(0xFF1B5E20);
+
+  @override
+  List<Object?> get props => <Object?>[millionLevel, date, totalSpots];
+
+  @override
+  void draw(Canvas canvas, FlSpot spot, Offset center) {
+    const double padding = 0.5;
+    const double cornerRadius = 1.2;
+
+    final TextPainter tp = TextPainter(
+      text: TextSpan(
+        children: <TextSpan>[
+          TextSpan(
+            text: '$date\n',
+            style: const TextStyle(color: Colors.white, fontSize: 1.6),
+          ),
+          TextSpan(
+            text: _milestoneText,
+            style: const TextStyle(color: Colors.white, fontSize: 1.6, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    final double w = tp.width + padding * 2;
+    final double h = tp.height + padding * 2;
+
+    // 右端に近い場合はバッジを左寄せにして見切れを防ぐ
+    final bool nearRightEdge = totalSpots > 0 && spot.x / totalSpots > 0.75;
+    final double badgeCenterX = nearRightEdge ? center.dx - w / 2 : center.dx;
+
+    final Rect rect = Rect.fromCenter(center: Offset(badgeCenterX, center.dy - h / 2 - 3), width: w, height: h);
+    final RRect rRect = RRect.fromRectAndRadius(rect, const Radius.circular(cornerRadius));
+
+    canvas.drawRRect(rRect, Paint()..color = const Color(0xFF1B5E20).withOpacity(0.9));
+    tp.paint(canvas, Offset(rect.left + padding, rect.top + padding));
+
+    canvas.drawCircle(center, 1.2, Paint()..color = const Color(0xFF1B5E20));
+  }
+
+  @override
+  Size getSize(FlSpot spot) => const Size(28, 16);
+
+  @override
+  bool hitTest(FlSpot spot, Offset touched, Offset center, double extraThreshold) =>
+      (touched - center).distance <= 3 + extraThreshold;
+
+  @override
+  FlDotPainter lerp(FlDotPainter a, FlDotPainter b, double t) => this;
 }
