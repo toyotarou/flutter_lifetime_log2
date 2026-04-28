@@ -129,24 +129,7 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
 
   ///
   void _setChartData() {
-    // 2014-06から今月まで月次の日付リストを生成
-    _dateList = <String>[];
-    DateTime cursor = DateTime(2014, 6);
-    final DateTime endDate = DateTime(DateTime.now().year, DateTime.now().month);
-    while (!cursor.isAfter(endDate)) {
-      _dateList.add('${cursor.year}-${cursor.month.toString().padLeft(2, '0')}-01');
-      cursor = DateTime(cursor.year, cursor.month + 1);
-    }
-
-    // keepMoneySumList → 年月キーで集約
-    final Map<String, int> moneyMap = <String, int>{};
-    for (final ScrollLineChartModel m in appParamState.keepMoneySumList) {
-      if (m.date.length >= 7) {
-        moneyMap[m.date.substring(0, 7)] = m.sum;
-      }
-    }
-
-    // keepToushiShintakuMap → 年月キーで最新値を集約
+    // keepToushiShintakuMap → 年月キーで集約
     final Map<String, int> shintakuMap = <String, int>{};
     appParamState.keepToushiShintakuMap.forEach((String date, List<ToushiShintakuModel> list) {
       if (date.length < 7) {
@@ -198,6 +181,7 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
       }
     });
 
+    _dateList = <String>[];
     _flspots = <FlSpot>[];
     _shintakuFlspots = <FlSpot>[];
     _stockFlspots = <FlSpot>[];
@@ -205,21 +189,19 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
     _insuranceFlspots = <FlSpot>[];
     _nenkinFlspots = <FlSpot>[];
 
-    int prevMoney = 0;
     int prevShintaku = 0;
     int prevStock = 0;
     int prevGold = 0;
 
-    for (int idx = 0; idx < _dateList.length; idx++) {
-      final String date = _dateList[idx];
+    // keepMoneySumList を頭から順番にそのまま使う
+    for (int idx = 0; idx < appParamState.keepMoneySumList.length; idx++) {
+      final ScrollLineChartModel m = appParamState.keepMoneySumList[idx];
+      final String date = m.date;
       final String ym = date.substring(0, 7);
       final DateTime d = DateTime.parse(date);
 
-      // money: carry-forward（2014-06スタートなので常に追加）
-      if (moneyMap.containsKey(ym)) {
-        prevMoney = moneyMap[ym]!;
-      }
-      _flspots.add(FlSpot(idx.toDouble(), prevMoney.toDouble()));
+      _dateList.add(date);
+      _flspots.add(FlSpot(idx.toDouble(), m.sum.toDouble()));
 
       // shintaku: 開始月以降のみ spot を追加（それ以前は spot なし → 0線が出ない）
       if (!d.isBefore(_shintakuStart)) {
@@ -397,7 +379,7 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
               return const FlLine(color: Colors.transparent, strokeWidth: 1);
             }
             if (_dateList[idx].substring(5, 7) == '01') {
-              return FlLine(color: const Color(0xFFFBB6CE).withOpacity(0.3), strokeWidth: 3);
+              return FlLine(color: const Color(0xFFFBB6CE).withOpacity(0.05), strokeWidth: 1);
             }
             return const FlLine(color: Colors.transparent, strokeWidth: 1);
           },
