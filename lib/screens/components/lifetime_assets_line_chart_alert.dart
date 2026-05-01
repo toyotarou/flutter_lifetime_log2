@@ -34,6 +34,7 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
   final TransformationController _transformationController = TransformationController();
   bool _zoomMode = false;
   bool _showPointLabels = false;
+  double _currentScale = 1.0;
   Map<int, int> _millionCrossings = <int, int>{};
 
   // insurance: 2023-01-01時点で102回払いずみ → 102ヶ月前 = 2014-07スタート
@@ -59,8 +60,11 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
     }
     final double scale = _transformationController.value.getMaxScaleOnAxis();
     final bool shouldShow = scale >= 3.0;
-    if (shouldShow != _showPointLabels) {
-      setState(() => _showPointLabels = shouldShow);
+    if (shouldShow != _showPointLabels || scale != _currentScale) {
+      setState(() {
+        _showPointLabels = shouldShow;
+        _currentScale = scale;
+      });
     }
   }
 
@@ -401,11 +405,11 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
 
               for (final LineBarSpot s in touchedSpots) {
                 final int x = s.x.toInt();
-                if (x >= 0 && x < _dateList.length) {
-                  date = _dateList[x];
-                }
                 switch (s.barIndex) {
                   case 0:
+                    if (x >= 0 && x < _dateList.length) {
+                      date = _dateList[x];
+                    }
                     moneyVal = s.y.round();
                   case 1:
                     shintakuVal = s.y.round();
@@ -493,7 +497,7 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
           LineChartBarData(
             spots: _flspots,
             color: Colors.white,
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
             dotData: FlDotData(
               getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int index) {
                 if (!_showPointLabels || !_millionCrossings.containsKey(index)) {
@@ -512,31 +516,31 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
             spots: _shintakuFlspots,
             color: Colors.yellowAccent,
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
           LineChartBarData(
             spots: _stockFlspots,
             color: Colors.greenAccent,
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
           LineChartBarData(
             spots: _goldFlspots,
             color: Colors.lightBlueAccent,
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
           LineChartBarData(
             spots: _insuranceFlspots,
             color: const Color(0xFFEA80FC),
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
           LineChartBarData(
             spots: _nenkinFlspots,
             color: Colors.orangeAccent,
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
         ],
       );
