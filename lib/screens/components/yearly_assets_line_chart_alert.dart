@@ -44,10 +44,19 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
 
   List<String> _dateList = <String>[];
 
+  final TransformationController _transformationController = TransformationController();
+  bool _zoomMode = false;
+
   @override
   void initState() {
     super.initState();
     _selectedYear = widget.year;
+  }
+
+  @override
+  void dispose() {
+    _transformationController.dispose();
+    super.dispose();
   }
 
   ///
@@ -65,7 +74,34 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
             children: <Widget>[
               Container(width: context.screenSize.width),
 
-              const Text('Evolution of Assets'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  const Text('Evolution of Assets'),
+                  Row(
+                    children: <Widget>[
+                      if (_zoomMode)
+                        IconButton(
+                          onPressed: () => setState(() {
+                            _transformationController.value = Matrix4.identity();
+                          }),
+                          icon: const Icon(Icons.lock_reset),
+                        ),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _zoomMode = !_zoomMode;
+                            if (!_zoomMode) {
+                              _transformationController.value = Matrix4.identity();
+                            }
+                          });
+                        },
+                        icon: Icon(Icons.expand, color: _zoomMode ? Colors.yellowAccent : Colors.white),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
 
               Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
@@ -76,11 +112,22 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
                       return const Center(child: Text('No data'));
                     }
 
+                    final Widget charts = _zoomMode
+                        ? InteractiveViewer(
+                            transformationController: _transformationController,
+                            minScale: 1.0,
+                            maxScale: 10.0,
+                            child: AbsorbPointer(
+                              child: Stack(
+                                children: <Widget>[LineChart(graphData3), LineChart(graphData2), LineChart(graphData)],
+                              ),
+                            ),
+                          )
+                        : Stack(children: <Widget>[LineChart(graphData3), LineChart(graphData2), LineChart(graphData)]);
+
                     return Stack(
                       children: <Widget>[
-                        LineChart(graphData3),
-                        LineChart(graphData2),
-                        LineChart(graphData),
+                        charts,
                         Positioned(
                           top: 8,
                           left: 8,
@@ -240,7 +287,9 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
             return acc + m.jikaHyoukagaku.replaceAll(',', '').replaceAll('円', '').trim().toInt();
           });
         }
-        _shintakuFlspots.add(FlSpot(idx.toDouble(), prevShintakuSum.toDouble()));
+        if (prevShintakuSum > 0) {
+          _shintakuFlspots.add(FlSpot(idx.toDouble(), prevShintakuSum.toDouble()));
+        }
       }
     }
 
@@ -259,7 +308,9 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
             return acc + m.jikaHyoukagaku.replaceAll(',', '').replaceAll('円', '').trim().toInt();
           });
         }
-        _stockFlspots.add(FlSpot(idx.toDouble(), prevStockSum.toDouble()));
+        if (prevStockSum > 0) {
+          _stockFlspots.add(FlSpot(idx.toDouble(), prevStockSum.toDouble()));
+        }
       }
     }
 
@@ -276,7 +327,9 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
             prevGoldValue = val.replaceAll(',', '').replaceAll('円', '').trim().toInt();
           }
         }
-        _goldFlspots.add(FlSpot(idx.toDouble(), (prevGoldValue * 0.8).toInt().toDouble()));
+        if (prevGoldValue > 0) {
+          _goldFlspots.add(FlSpot(idx.toDouble(), (prevGoldValue * 0.8).toInt().toDouble()));
+        }
       }
     }
 
@@ -304,13 +357,14 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
     }
 
     if (list.isNotEmpty) {
+      graphMin = 0;
       graphMax = 15000000;
 
       graphData = LineChartData(
         minX: 0,
         maxX: _flspots.length.toDouble() - 1,
 
-        minY: 0,
+        minY: graphMin.toDouble(),
         maxY: graphMax.toDouble(),
 
         lineTouchData: LineTouchData(
@@ -319,7 +373,6 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
             fitInsideHorizontally: true,
             fitInsideVertically: true,
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
-              // 全線の値を収集
               String date = '';
               int moneyVal = 0, shintakuVal = 0, stockVal = 0, goldVal = 0, insuranceVal = 0, nenkinVal = 0;
 
@@ -460,7 +513,7 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
         minX: 0,
         maxX: _flspots.length.toDouble() - 1,
 
-        minY: 0,
+        minY: graphMin.toDouble(),
         maxY: graphMax.toDouble(),
 
         borderData: FlBorderData(show: false),
@@ -513,7 +566,7 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
       graphData3 = LineChartData(
         minX: 0,
         maxX: _flspots.length.toDouble() - 1,
-        minY: 0,
+        minY: graphMin.toDouble(),
         maxY: graphMax.toDouble(),
         borderData: FlBorderData(show: false),
         lineTouchData: const LineTouchData(enabled: false),
