@@ -6,7 +6,7 @@ part of 'fortune.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fortuneHash() => r'44acbf807117c234f500e55c50436e92cc911668';
+String _$fortuneHash() => r'14d02746e4bb45da5cbc6f4d2b7d138eab22c826';
 
 /// See also [Fortune].
 @ProviderFor(Fortune)

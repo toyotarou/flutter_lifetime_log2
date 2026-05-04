@@ -43,6 +43,7 @@ import 'components/monthly_geoloc_map_display_alert.dart';
 import 'components/monthly_lifetime_display_alert.dart';
 import 'components/monthly_money_spend_display_alert.dart';
 import 'components/monthly_weather_display_alert.dart';
+import 'components/ohakamairi_data_display_alert.dart';
 import 'components/salary_list_alert.dart';
 import 'components/spend_each_year_display_alert.dart';
 import 'components/stamp_rally_list_alert.dart';
@@ -61,6 +62,7 @@ const List<IconData> bottomNavigationMenuIcons = <IconData>[
   Icons.map,
   Icons.work,
   FontAwesomeIcons.umbrella,
+  FontAwesomeIcons.wind,
 ];
 
 class TabInfo {
@@ -433,6 +435,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
         appParamNotifier.setKeepStampRallyMetroPokepokeMap(map: stampRallyMetroPokepokeMap);
         appParamNotifier.setKeepCreditSummaryTotalMap(map: creditSummaryTotalMap);
         appParamNotifier.setKeepAllPolygonsList(list: allPolygonsList);
+
+        final Map<String, List<MoneySpendModel>> ohakamairiDataMap = <String, List<MoneySpendModel>>{};
+        widget.moneySpendMap.forEach((String key, List<MoneySpendModel> value) {
+          final List<MoneySpendModel> filtered = value.where((MoneySpendModel e) => e.item == 'お線香代').toList();
+          if (filtered.isNotEmpty) {
+            ohakamairiDataMap[key] = filtered;
+          }
+        });
+        appParamNotifier.setKeepOhakamairiDataMap(map: ohakamairiDataMap);
       }
     } catch (e) {
       debugPrint('sync derived data error: $e');
@@ -753,6 +764,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             return LifetimeDialog(
               context: context,
               widget: MonthlyWeatherDisplayAlert(yearmonth: yearmonth),
+            );
+          }
+
+        case 7:
+          if (appParamState.keepOhakamairiDataMap.isEmpty) {
+            // ignore: always_specify_types
+            Future.delayed(Duration.zero, () {
+              if (mounted) {
+                error_dialog(
+                  context: context,
+                  title: '表示できません。',
+                  content: 'appParamState.keepOhakamairiDataMapが作成されていません。',
+                );
+              }
+            });
+          } else {
+            final String yearmonth = appParamState.homeTabYearMonth;
+            if (yearmonth.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return LifetimeDialog(
+              context: context,
+              widget: OhakamairiDataDisplayAlert(yearmonth: yearmonth),
             );
           }
       }
@@ -1148,12 +1183,10 @@ class _ScrollableBottomDialogMenu extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 decoration: BoxDecoration(color: selected ? Colors.yellow.withValues(alpha: 0.2) : Colors.transparent),
                 padding: const EdgeInsets.only(top: 8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Icon(bottomNavigationMenuIcons[index], color: Colors.white.withValues(alpha: 0.3)),
-                  ],
-                ),
+
+                child: (index == 7)
+                    ? Opacity(opacity: 0.5, child: Image.asset('assets/images/toyoda_kamon.png', width: 25, height: 25))
+                    : Icon(bottomNavigationMenuIcons[index], color: Colors.white.withValues(alpha: 0.3)),
               ),
             );
           },

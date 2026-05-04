@@ -43,6 +43,7 @@ class AppParamState with _$AppParamState {
     @Default(<String, List<GeolocModel>>{}) Map<String, List<GeolocModel>> keepGeolocMap,
     @Default(<String, TempleModel>{}) Map<String, TempleModel> keepTempleMap,
     @Default(<String, TransportationModel>{}) Map<String, TransportationModel> keepTransportationMap,
+
     @Default(<String, List<MoneySpendModel>>{}) Map<String, List<MoneySpendModel>> keepMoneySpendMap,
     @Default(<String, WorkTimeModel>{}) Map<String, WorkTimeModel> keepWorkTimeMap,
     @Default(<String, Map<String, String>>{}) Map<String, Map<String, String>> keepWorkTimeDateMap,
@@ -93,6 +94,8 @@ class AppParamState with _$AppParamState {
     @Default(<String, TarotModel>{}) Map<String, TarotModel> keepTarotMap,
 
     @Default(<String, TarotHistoryModel>{}) Map<String, TarotHistoryModel> keepTarotHistoryMap,
+
+    @Default(<String, List<MoneySpendModel>>{}) Map<String, List<MoneySpendModel>> keepOhakamairiDataMap,
 
     ///
     @Default('') String homeTabYearMonth,
@@ -333,6 +336,10 @@ class AppParam extends _$AppParam {
   ///
   void setKeepTarotHistoryMap({required Map<String, TarotHistoryModel> map}) =>
       state = state.copyWith(keepTarotHistoryMap: map);
+
+  ///
+  void setKeepOhakamairiDataMap({required Map<String, List<MoneySpendModel>> map}) =>
+      state = state.copyWith(keepOhakamairiDataMap: map);
 
   //===================================================
 
