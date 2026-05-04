@@ -333,19 +333,6 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                   ),
                 ],
 
-                /// 天気
-                if (parsedDate.isBeforeOrSameDate(now)) ...<Widget>[
-                  Positioned(
-                    bottom: 10,
-                    left: 10,
-                    child: DefaultTextStyle(
-                      style: TextStyle(color: Colors.grey.withValues(alpha: 0.3)),
-                      // ?. 演算子で null-safe アクセス
-                      child: Text(appParamState.keepWeatherMap[date]?.weather ?? ''),
-                    ),
-                  ),
-                ],
-
                 /// 収入
                 if (appParamState.keepSalaryMap[date] != null) ...<Widget>[
                   Positioned(
@@ -916,6 +903,89 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               ),
 
                               //====================================================// tarot // e
+
+                              //====================================================// weather // s
+                              if (parsedDate.isBeforeOrSameDate(now) &&
+                                  appParamState.keepWeatherMap[date] != null) ...<Widget>[
+                                const SizedBox(width: 10),
+
+                                Column(
+                                  children: <Widget>[
+                                    Builder(
+                                      builder: (_) {
+                                        final String w = appParamState.keepWeatherMap[date]!.weather;
+
+                                        const Map<String, String> kanjiToKey = <String, String>{
+                                          '晴': 'sunny',
+                                          '曇': 'cloudy',
+                                          '雨': 'rain',
+                                          '雪': 'snow',
+                                        };
+
+                                        final List<MapEntry<int, String>> found = <MapEntry<int, String>>[];
+                                        for (final MapEntry<String, String> e in kanjiToKey.entries) {
+                                          final int idx = w.indexOf(e.key);
+                                          if (idx >= 0) {
+                                            found.add(MapEntry<int, String>(idx, e.value));
+                                          }
+                                        }
+                                        found.sort(
+                                          (MapEntry<int, String> a, MapEntry<int, String> b) => a.key.compareTo(b.key),
+                                        );
+
+                                        final String mainKey = found.isNotEmpty ? found[0].value : '';
+                                        final String subKey = found.length > 1 ? found[1].value : '';
+
+                                        if (mainKey.isEmpty) {
+                                          return const SizedBox.shrink();
+                                        }
+
+                                        return Padding(
+                                          padding: const EdgeInsets.only(top: 10),
+                                          child: SizedBox(
+                                            width: 40,
+                                            height: 40,
+                                            child: Stack(
+                                              clipBehavior: Clip.none,
+                                              children: <Widget>[
+                                                Opacity(
+                                                  opacity: 0.3,
+                                                  child: Image.asset(
+                                                    'assets/images/weather/$mainKey.png',
+                                                    width: 36,
+                                                    height: 36,
+                                                  ),
+                                                ),
+
+                                                if (subKey.isNotEmpty)
+                                                  Positioned(
+                                                    bottom: -4,
+                                                    right: -4,
+                                                    child: Opacity(
+                                                      opacity: 0.3,
+                                                      child: Image.asset(
+                                                        'assets/images/weather/$subKey.png',
+                                                        width: 18,
+                                                        height: 18,
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+
+                                    Text(
+                                      appParamState.keepWeatherMap[date]?.weather ?? '',
+                                      style: TextStyle(color: Colors.grey.withValues(alpha: 0.8)),
+                                    ),
+                                  ],
+                                ),
+                              ],
+
+                              //====================================================// weather // e
                             ],
                           ),
 
