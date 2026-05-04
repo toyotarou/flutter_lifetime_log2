@@ -42,6 +42,7 @@ import 'components/monthly_assets_display_alert.dart';
 import 'components/monthly_geoloc_map_display_alert.dart';
 import 'components/monthly_lifetime_display_alert.dart';
 import 'components/monthly_money_spend_display_alert.dart';
+import 'components/monthly_weather_display_alert.dart';
 import 'components/salary_list_alert.dart';
 import 'components/spend_each_year_display_alert.dart';
 import 'components/stamp_rally_list_alert.dart';
@@ -59,6 +60,7 @@ const List<IconData> bottomNavigationMenuIcons = <IconData>[
   Icons.list,
   Icons.map,
   Icons.work,
+  FontAwesomeIcons.umbrella,
 ];
 
 class TabInfo {
@@ -731,6 +733,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             return LifetimeDialog(
               context: context,
               widget: WorkInfoMonthlyDisplayAlert(yearmonth: yearmonth),
+            );
+          }
+
+        case 6:
+          if (appParamState.keepWeatherMap.isEmpty) {
+            // ignore: always_specify_types
+            Future.delayed(Duration.zero, () {
+              if (mounted) {
+                error_dialog(context: context, title: '表示できません。', content: 'appParamState.keepWeatherMapが作成されていません。');
+              }
+            });
+          } else {
+            final String yearmonth = appParamState.homeTabYearMonth;
+            if (yearmonth.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return LifetimeDialog(
+              context: context,
+              widget: MonthlyWeatherDisplayAlert(yearmonth: yearmonth),
             );
           }
       }
