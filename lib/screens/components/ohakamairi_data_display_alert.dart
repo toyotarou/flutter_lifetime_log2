@@ -174,9 +174,26 @@ class _OhakamairiDataDisplayAlertState extends ConsumerState<OhakamairiDataDispl
     final String dayStr = date.day.toString().padLeft(2, '0');
     final String monthStr = date.month.toString().padLeft(2, '0');
 
+    final String dateKey =
+        '${date.year.toString().padLeft(4, '0')}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+    final bool isHoliday = appParamState.keepHolidayList.contains(dateKey);
+
+    Color? bgColor;
+    if (isToday) {
+      bgColor = Colors.white.withValues(alpha: 0.08);
+    } else if (isHoliday) {
+      bgColor = Colors.green.withValues(alpha: 0.15);
+    } else if (col == 0) {
+      bgColor = Colors.red.withValues(alpha: 0.15);
+    } else if (col == 6) {
+      bgColor = Colors.blue.withValues(alpha: 0.15);
+    }
+
     return Container(
       decoration: BoxDecoration(
-        color: isToday ? Colors.white.withValues(alpha: 0.08) : null,
+        color: bgColor,
         border: const Border(
           right: BorderSide(color: _borderColor),
           bottom: BorderSide(color: _borderColor),

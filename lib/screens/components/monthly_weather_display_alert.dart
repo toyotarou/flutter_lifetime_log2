@@ -195,9 +195,21 @@ class _MonthlyWeatherDisplayAlertState extends ConsumerState<MonthlyWeatherDispl
       }
     }
 
+    final bool isHoliday = appParamState.keepHolidayList.contains(date);
+
+    Color? bgColor;
+    if (isHoliday) {
+      bgColor = Colors.green.withValues(alpha: 0.15);
+    } else if (col == 0) {
+      bgColor = Colors.red.withValues(alpha: 0.15);
+    } else if (col == 6) {
+      bgColor = Colors.blue.withValues(alpha: 0.15);
+    }
+
     return Container(
-      decoration: const BoxDecoration(
-        border: Border(
+      decoration: BoxDecoration(
+        color: bgColor,
+        border: const Border(
           right: BorderSide(color: _borderColor),
           bottom: BorderSide(color: _borderColor),
         ),

@@ -986,6 +986,19 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               ],
 
                               //====================================================// weather // e
+                              if (appParamState.keepOhakamairiDataMap.containsKey(date)) ...<Widget>[
+                                const SizedBox(width: 25),
+                                Column(
+                                  children: <Widget>[
+                                    const SizedBox(height: 5),
+
+                                    Opacity(
+                                      opacity: 0.5,
+                                      child: Image.asset('assets/images/toyoda_kamon.png', width: 30, height: 30),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ],
                           ),
 
