@@ -49,6 +49,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
   final TransformationController transformationController = TransformationController();
 
   bool zoomMode = false;
+  double _currentScale = 1.0;
 
   ///
   @override
@@ -56,12 +57,26 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
     super.initState();
 
     fortyEightColor = utility.getFortyEightColor();
+    transformationController.addListener(_onTransformChanged);
   }
 
   @override
   void dispose() {
     transformationController.dispose();
     super.dispose();
+  }
+
+  ///
+  void _onTransformChanged() {
+    if (!zoomMode) {
+      return;
+    }
+    final double scale = transformationController.value.getMaxScaleOnAxis();
+    if (scale != _currentScale) {
+      setState(() {
+        _currentScale = scale;
+      });
+    }
   }
 
   ///
@@ -485,7 +500,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           for (int i = 0; i < flspotsList.length; i++)
             LineChartBarData(
               spots: flspotsList[i],
-              barWidth: 1,
+              barWidth: 1.0 / _currentScale,
               isStrokeCapRound: true,
               color: _colorAt(i),
               dotData: const FlDotData(show: false),

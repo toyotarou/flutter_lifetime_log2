@@ -55,6 +55,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
 
   bool zoomMode = false;
   bool _showPointLabels = false;
+  double _currentScale = 1.0;
 
   late final DateTime _asOf;
 
@@ -83,9 +84,10 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
     final double scale = transformationController.value.getMaxScaleOnAxis();
     final bool shouldShow = scale >= 5.0;
 
-    if (shouldShow != _showPointLabels) {
+    if (shouldShow != _showPointLabels || scale != _currentScale) {
       setState(() {
         _showPointLabels = shouldShow;
+        _currentScale = scale;
       });
     }
   }
@@ -463,7 +465,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
         LineChartBarData(
           spots: _flspots,
           color: Colors.greenAccent,
-          barWidth: 1,
+          barWidth: 1.0 / _currentScale,
           dotData: FlDotData(
             getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int index) {
               final bool showLabel = _showPointLabels;

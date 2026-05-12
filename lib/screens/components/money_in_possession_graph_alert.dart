@@ -34,6 +34,34 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
   final TransformationController transformationController = TransformationController();
 
   bool zoomMode = false;
+  double _currentScale = 1.0;
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+    transformationController.addListener(_onTransformChanged);
+  }
+
+  ///
+  @override
+  void dispose() {
+    transformationController.dispose();
+    super.dispose();
+  }
+
+  ///
+  void _onTransformChanged() {
+    if (!zoomMode) {
+      return;
+    }
+    final double scale = transformationController.value.getMaxScaleOnAxis();
+    if (scale != _currentScale) {
+      setState(() {
+        _currentScale = scale;
+      });
+    }
+  }
 
   ///
   @override
@@ -303,7 +331,7 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
             spots: _flspots,
             color: Colors.greenAccent,
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
         ],
       );
@@ -399,13 +427,13 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
             spots: angleFlspotsA,
             color: Colors.white,
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
           LineChartBarData(
             spots: angleFlspotsB,
             color: Colors.white,
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
         ],
       );

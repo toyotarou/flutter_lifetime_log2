@@ -46,17 +46,32 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
 
   final TransformationController _transformationController = TransformationController();
   bool _zoomMode = false;
+  double _currentScale = 1.0;
 
   @override
   void initState() {
     super.initState();
     _selectedYear = widget.year;
+    _transformationController.addListener(_onTransformChanged);
   }
 
   @override
   void dispose() {
     _transformationController.dispose();
     super.dispose();
+  }
+
+  ///
+  void _onTransformChanged() {
+    if (!_zoomMode) {
+      return;
+    }
+    final double scale = _transformationController.value.getMaxScaleOnAxis();
+    if (scale != _currentScale) {
+      setState(() {
+        _currentScale = scale;
+      });
+    }
   }
 
   ///
@@ -475,36 +490,41 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
         borderData: FlBorderData(show: false),
 
         lineBarsData: <LineChartBarData>[
-          LineChartBarData(spots: _flspots, color: Colors.white, dotData: const FlDotData(show: false), barWidth: 1),
+          LineChartBarData(
+            spots: _flspots,
+            color: Colors.white,
+            dotData: const FlDotData(show: false),
+            barWidth: 1.0 / _currentScale,
+          ),
           LineChartBarData(
             spots: _shintakuFlspots,
             color: Colors.yellowAccent,
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
           LineChartBarData(
             spots: _stockFlspots,
             color: Colors.greenAccent,
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
           LineChartBarData(
             spots: _goldFlspots,
             color: Colors.lightBlueAccent,
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
           LineChartBarData(
             spots: _insuranceFlspots,
             color: const Color(0xFFEA80FC),
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
           LineChartBarData(
             spots: _nenkinFlspots,
             color: Colors.orangeAccent,
             dotData: const FlDotData(show: false),
-            barWidth: 1,
+            barWidth: 1.0 / _currentScale,
           ),
         ],
       );

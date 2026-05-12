@@ -35,6 +35,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
   final TransformationController transformationController = TransformationController();
   bool zoomMode = false;
   bool _showPointLabels = false;
+  double _currentScale = 1.0;
 
   int? _todayIndex;
 
@@ -97,9 +98,10 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
     final double scale = transformationController.value.getMaxScaleOnAxis();
     final bool shouldShow = scale >= 5.0;
 
-    if (shouldShow != _showPointLabels) {
+    if (shouldShow != _showPointLabels || scale != _currentScale) {
       setState(() {
         _showPointLabels = shouldShow;
+        _currentScale = scale;
       });
     }
   }
@@ -284,7 +286,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
         LineChartBarData(
           spots: spots,
           color: Colors.greenAccent,
-          barWidth: 1,
+          barWidth: 1.0 / _currentScale,
           dotData: FlDotData(
             show: showPointLabels,
             getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int index) {
