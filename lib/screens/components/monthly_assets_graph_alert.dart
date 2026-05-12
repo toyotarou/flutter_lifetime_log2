@@ -162,6 +162,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                               onPressed: () => setState(() {
                                 transformationController.value = Matrix4.identity();
                                 _showPointLabels = false;
+                                _currentScale = 1.0;
                               }),
                               icon: const Icon(Icons.lock_reset),
                             ),
@@ -173,6 +174,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                                 if (!zoomMode) {
                                   transformationController.value = Matrix4.identity();
                                   _showPointLabels = false;
+                                  _currentScale = 1.0;
                                 }
                               });
                             },

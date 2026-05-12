@@ -87,13 +87,22 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
                     children: <Widget>[
                       if (zoomMode) ...<Widget>[
                         IconButton(
-                          onPressed: () => transformationController.value = Matrix4.identity(),
+                          onPressed: () => setState(() {
+                            transformationController.value = Matrix4.identity();
+                            _currentScale = 1.0;
+                          }),
                           icon: const Icon(Icons.lock_reset),
                         ),
                       ],
 
                       IconButton(
-                        onPressed: () => zoomMode = !zoomMode,
+                        onPressed: () => setState(() {
+                          zoomMode = !zoomMode;
+                          if (!zoomMode) {
+                            transformationController.value = Matrix4.identity();
+                            _currentScale = 1.0;
+                          }
+                        }),
                         icon: Icon(Icons.expand, color: zoomMode ? Colors.yellowAccent : Colors.white),
                       ),
                     ],

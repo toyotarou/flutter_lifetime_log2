@@ -99,6 +99,7 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
                         IconButton(
                           onPressed: () => setState(() {
                             _transformationController.value = Matrix4.identity();
+                            _currentScale = 1.0;
                           }),
                           icon: const Icon(Icons.lock_reset),
                         ),
@@ -108,6 +109,7 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
                             _zoomMode = !_zoomMode;
                             if (!_zoomMode) {
                               _transformationController.value = Matrix4.identity();
+                              _currentScale = 1.0;
                             }
                           });
                         },
