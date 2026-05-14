@@ -414,55 +414,104 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     }
 
     GoldModel? beforeGold;
+    DateTime? beforeGoldDate;
     GoldModel? lastGold;
+    DateTime? lastGoldDate;
+
+    final DateTime lastCutoff = monthEndDate.isBefore(DateTime.now()) ? monthEndDate : DateTime.now();
+
     appParamState.keepGoldMap.forEach((String key, GoldModel value) {
       final DateTime? parsedKeyDate = _parseDateSafe(key);
-      if (parsedKeyDate == null) {
+      if (parsedKeyDate == null || value.goldValue == '-') {
         return;
       }
 
-      if (parsedKeyDate.isBefore(beforeDate) && value.goldValue != '-') {
-        beforeGold = value;
+      if (!parsedKeyDate.isAfter(beforeDate)) {
+        if (beforeGoldDate == null || parsedKeyDate.isAfter(beforeGoldDate!)) {
+          beforeGoldDate = parsedKeyDate;
+          beforeGold = value;
+        }
       }
 
-      if (parsedKeyDate.isBefore(monthEndDate.add(const Duration(days: 1))) && value.goldValue != '-') {
-        lastGold = value;
+      if (!parsedKeyDate.isAfter(lastCutoff)) {
+        if (lastGoldDate == null || parsedKeyDate.isAfter(lastGoldDate!)) {
+          lastGoldDate = parsedKeyDate;
+          lastGold = value;
+        }
       }
     });
 
     List<StockModel> beforeStockList = <StockModel>[];
+    DateTime? beforeStockDate;
     List<StockModel> lastStockList = <StockModel>[];
+    DateTime? lastStockDate;
+
     appParamState.keepStockMap.forEach((String key, List<StockModel> value) {
       final DateTime? parsedKeyDate = _parseDateSafe(key);
       if (parsedKeyDate == null) {
         return;
       }
 
-      if (parsedKeyDate.isBefore(beforeDate)) {
-        beforeStockList = value;
+      if (!parsedKeyDate.isAfter(beforeDate)) {
+        if (beforeStockDate == null || parsedKeyDate.isAfter(beforeStockDate!)) {
+          beforeStockDate = parsedKeyDate;
+          beforeStockList = value;
+        }
       }
 
-      if (parsedKeyDate.isBefore(monthEndDate.add(const Duration(days: 1)))) {
-        lastStockList = value;
+      if (!parsedKeyDate.isAfter(lastCutoff)) {
+        if (lastStockDate == null || parsedKeyDate.isAfter(lastStockDate!)) {
+          lastStockDate = parsedKeyDate;
+          lastStockList = value;
+        }
       }
     });
 
+    int beforeStockCost = 0;
+    for (final StockModel element in beforeStockList) {
+      beforeStockCost += (element.hoyuuSuuryou * _toDoubleSafe(element.heikinShutokuKagaku)).toInt();
+    }
+
+    int lastStockCost = 0;
+    for (final StockModel element in lastStockList) {
+      lastStockCost += (element.hoyuuSuuryou * _toDoubleSafe(element.heikinShutokuKagaku)).toInt();
+    }
+
     List<ToushiShintakuModel> beforeToushiList = <ToushiShintakuModel>[];
+    DateTime? beforeToushiDate;
     List<ToushiShintakuModel> lastToushiList = <ToushiShintakuModel>[];
+    DateTime? lastToushiDate;
+
     appParamState.keepToushiShintakuMap.forEach((String key, List<ToushiShintakuModel> value) {
       final DateTime? parsedKeyDate = _parseDateSafe(key);
       if (parsedKeyDate == null) {
         return;
       }
 
-      if (parsedKeyDate.isBefore(beforeDate)) {
-        beforeToushiList = value;
+      if (!parsedKeyDate.isAfter(beforeDate)) {
+        if (beforeToushiDate == null || parsedKeyDate.isAfter(beforeToushiDate!)) {
+          beforeToushiDate = parsedKeyDate;
+          beforeToushiList = value;
+        }
       }
 
-      if (parsedKeyDate.isBefore(monthEndDate.add(const Duration(days: 1)))) {
-        lastToushiList = value;
+      if (!parsedKeyDate.isAfter(lastCutoff)) {
+        if (lastToushiDate == null || parsedKeyDate.isAfter(lastToushiDate!)) {
+          lastToushiDate = parsedKeyDate;
+          lastToushiList = value;
+        }
       }
     });
+
+    int beforeToushiCost = 0;
+    for (final ToushiShintakuModel element in beforeToushiList) {
+      beforeToushiCost += _toIntSafe(element.shutokuSougaku);
+    }
+
+    int lastToushiCost = 0;
+    for (final ToushiShintakuModel element in lastToushiList) {
+      lastToushiCost += _toIntSafe(element.shutokuSougaku);
+    }
 
     if (beforeGold == null ||
         lastGold == null ||
@@ -473,82 +522,34 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       return const SizedBox.shrink();
     }
 
-    //==================================================================//
-
     final int beforeGoldCost = _toIntSafe(beforeGold!.payPrice.toString());
     final int lastGoldCost = _toIntSafe(lastGold!.payPrice.toString());
-
     final int beforeGoldDiff = _toIntSafe(beforeGold!.goldValue.toString()) - beforeGoldCost;
-
     final int lastGoldDiff = _toIntSafe(lastGold!.goldValue.toString()) - lastGoldCost;
-
-    //==================================================================//
-
-    final List<int> beforeStockCostList = <int>[];
-    final List<int> lastStockCostList = <int>[];
 
     int beforeStockDiff = 0;
     for (final StockModel element in beforeStockList) {
       final int cost = (element.hoyuuSuuryou * _toDoubleSafe(element.heikinShutokuKagaku)).toInt();
-
-      beforeStockCostList.add(cost);
-
-      final int price = _toIntSafe(element.jikaHyoukagaku);
-      beforeStockDiff += price - cost;
+      beforeStockDiff += _toIntSafe(element.jikaHyoukagaku) - cost;
     }
 
     int lastStockDiff = 0;
     for (final StockModel element in lastStockList) {
       final int cost = (element.hoyuuSuuryou * _toDoubleSafe(element.heikinShutokuKagaku)).toInt();
-
-      lastStockCostList.add(cost);
-
-      final int price = _toIntSafe(element.jikaHyoukagaku);
-      lastStockDiff += price - cost;
+      lastStockDiff += _toIntSafe(element.jikaHyoukagaku) - cost;
     }
-
-    final int beforeStockCost = beforeStockCostList.fold<int>(
-      0,
-      (int previousValue, int element) => previousValue + element,
-    );
-    final int lastStockCost = lastStockCostList.fold<int>(
-      0,
-      (int previousValue, int element) => previousValue + element,
-    );
-
-    //==================================================================//
-
-    final List<int> beforeToushiCostList = <int>[];
-    final List<int> lastToushiCostList = <int>[];
 
     int beforeToushiDiff = 0;
     for (final ToushiShintakuModel element in beforeToushiList) {
       final int cost = _toIntSafe(element.shutokuSougaku);
-
-      beforeToushiCostList.add(cost);
-
       beforeToushiDiff += _toIntSafe(element.jikaHyoukagaku) - cost;
     }
 
     int lastToushiDiff = 0;
     for (final ToushiShintakuModel element in lastToushiList) {
       final int cost = _toIntSafe(element.shutokuSougaku);
-
-      lastToushiCostList.add(cost);
-
       lastToushiDiff += _toIntSafe(element.jikaHyoukagaku) - cost;
     }
-
-    final int beforeToushiCost = beforeToushiCostList.fold<int>(
-      0,
-      (int previousValue, int element) => previousValue + element,
-    );
-    final int lastToushiCost = lastToushiCostList.fold<int>(
-      0,
-      (int previousValue, int element) => previousValue + element,
-    );
-
-    //==================================================================//
 
     int beforeMoneySum = 0;
     final MoneyModel? beforeMoneyModel = appParamState.keepMoneyMap[beforeDate.yyyymmdd];
@@ -557,28 +558,26 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     }
 
     int lastMoneySum = 0;
-    DateTime? latest;
+    DateTime? latestMoneyDate;
     for (final MapEntry<String, MoneyModel> e in appParamState.keepMoneyMap.entries) {
       final DateTime? d = _parseDateSafe(e.key);
       if (d == null) {
         continue;
       }
-
-      if (d.isAfter(monthEndDate)) {
+      if (d.isAfter(lastCutoff)) {
         continue;
       }
-
-      if (latest == null || d.isAfter(latest)) {
-        latest = d;
+      if (latestMoneyDate == null || d.isAfter(latestMoneyDate)) {
+        latestMoneyDate = d;
         lastMoneySum = _toIntSafe(e.value.sum);
       }
     }
 
     final List<int> bs = <int>[
       beforeMoneySum,
-      beforeGoldDiff, // diff
-      beforeStockDiff, // diff
-      beforeToushiDiff, // diff
+      beforeGoldDiff,
+      beforeStockDiff,
+      beforeToushiDiff,
       (beforeAssets[_kInsurance] ?? 0),
       (beforeAssets[_kNenkinKikin] ?? 0),
     ];
@@ -587,9 +586,9 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
     final List<int> ls = <int>[
       lastMoneySum,
-      lastGoldDiff, // diff
-      lastStockDiff, // diff
-      lastToushiDiff, // diff
+      lastGoldDiff,
+      lastStockDiff,
+      lastToushiDiff,
       (lastAssets[_kInsurance] ?? 0),
       (lastAssets[_kNenkinKikin] ?? 0),
     ];
