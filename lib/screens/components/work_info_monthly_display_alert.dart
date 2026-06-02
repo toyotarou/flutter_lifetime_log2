@@ -47,11 +47,11 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
       '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}',
     );
 
-    final String startYearMonth = appParamState.keepWorkHistoryModelMap.keys.reduce(
-      (String a, String b) => a.compareTo(b) < 0 ? a : b,
-    );
-
-    final int yearRange = DateTime.now().year - startYearMonth.split('-')[0].toInt() + 1;
+    final bool hasHistoryData = appParamState.keepWorkHistoryModelMap.isNotEmpty;
+    final String startYearMonth = hasHistoryData
+        ? appParamState.keepWorkHistoryModelMap.keys.reduce((String a, String b) => a.compareTo(b) < 0 ? a : b)
+        : '';
+    final int yearRange = hasHistoryData ? DateTime.now().year - startYearMonth.split('-')[0].toInt() + 1 : 1;
 
     return DefaultTextStyle(
       style: const TextStyle(fontSize: 12),
