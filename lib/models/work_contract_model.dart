@@ -1,5 +1,4 @@
 class WorkContractModel {
-
   WorkContractModel({
     required this.year,
     required this.month,
@@ -11,11 +10,11 @@ class WorkContractModel {
   /// JSON → モデル
   factory WorkContractModel.fromJson(Map<String, dynamic> json) {
     return WorkContractModel(
-      year: json['year'] as String,
-      month: json['month'] as String,
-      name: json['name'] as String,
-      place: json['place'] as String,
-      flag: json['flag'] as String,
+      year: (json['year'] as String?) ?? '',
+      month: (json['month'] as String?) ?? '',
+      name: (json['name'] as String?) ?? '',
+      place: (json['place'] as String?) ?? '',
+      flag: (json['flag'] as String?) ?? '',
     );
   }
   final String year;

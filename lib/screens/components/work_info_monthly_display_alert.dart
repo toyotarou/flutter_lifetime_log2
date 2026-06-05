@@ -47,12 +47,6 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
       '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}',
     );
 
-    final bool hasHistoryData = appParamState.keepWorkHistoryModelMap.isNotEmpty;
-    final String startYearMonth = hasHistoryData
-        ? appParamState.keepWorkHistoryModelMap.keys.reduce((String a, String b) => a.compareTo(b) < 0 ? a : b)
-        : '';
-    final int yearRange = hasHistoryData ? DateTime.now().year - startYearMonth.split('-')[0].toInt() + 1 : 1;
-
     return DefaultTextStyle(
       style: const TextStyle(fontSize: 12),
       child: Column(
@@ -80,15 +74,25 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
                       if (hasData) ...<Widget>[
                         GestureDetector(
                           onTap: () {
+                            final Map<String, WorkHistoryModel> historyMap = appParamState.keepWorkHistoryModelMap;
+
+                            final List<YearlyHistoryEvent> events = _buildYearlyHistoryEventsFromHistory();
+
+                            final String startYm = historyMap.isNotEmpty
+                                ? historyMap.keys.reduce((String a, String b) => a.compareTo(b) < 0 ? a : b)
+                                : '';
+                            final int tapStartYear = startYm.split('-')[0].toInt();
+                            final int tapYearRange = historyMap.isNotEmpty ? DateTime.now().year - tapStartYear + 1 : 1;
+
                             appParamNotifier.setSelectedWorkHistoryModel();
 
                             LifetimeDialog(
                               context: context,
                               widget: WorkInfoYearlyDisplayAlert(
-                                startYear: startYearMonth.split('-')[0].toInt(),
-                                years: yearRange,
+                                startYear: tapStartYear,
+                                years: tapYearRange,
                                 initialScrollYear: genDate.year,
-                                workInfoList: _buildYearlyHistoryEventsFromHistory(),
+                                workInfoList: events,
                               ),
                             );
                           },

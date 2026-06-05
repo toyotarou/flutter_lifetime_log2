@@ -27,7 +27,9 @@ class HttpClient {
   }) async {
     final Uri uri = Uri.http(Environment.apiEndPoint, '${Environment.apiBasePath}/${path.value}', queryParameters);
 
-    final Response response = await _client.post(uri, headers: await _headers, body: json.encode(body));
+    final Response response = await _client
+        .post(uri, headers: await _headers, body: json.encode(body))
+        .timeout(const Duration(seconds: 15));
 
     final String bodyString = utf8.decode(response.bodyBytes);
 

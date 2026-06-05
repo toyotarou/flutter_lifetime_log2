@@ -10,11 +10,11 @@ class WorkTruthModel {
   /// JSON → モデル
   factory WorkTruthModel.fromJson(Map<String, dynamic> json) {
     return WorkTruthModel(
-      year: json['year'] as String,
-      month: json['month'] as String,
-      name: json['name'] as String,
+      year: (json['year'] as String?) ?? '',
+      month: (json['month'] as String?) ?? '',
+      name: (json['name'] as String?) ?? '',
       contractId: json['contract_id'] as int?,
-      place: json['place'] as String,
+      place: (json['place'] as String?) ?? '',
     );
   }
 
