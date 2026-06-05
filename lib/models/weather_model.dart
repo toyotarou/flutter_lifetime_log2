@@ -3,7 +3,7 @@ class WeatherModel {
 
   /// JSON → Model
   factory WeatherModel.fromJson(Map<String, dynamic> json) =>
-      WeatherModel(date: json['date'] as String, weather: json['weather'] as String);
+      WeatherModel(date: (json['date'] as String?) ?? '', weather: (json['weather'] as String?) ?? '');
 
   final String date;
   final String weather;

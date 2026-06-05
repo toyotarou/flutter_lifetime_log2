@@ -11,12 +11,12 @@ class TimePlaceModel {
   /// JSON → モデル
   factory TimePlaceModel.fromJson(Map<String, dynamic> json) {
     return TimePlaceModel(
-      year: json['year'] as String,
-      month: json['month'] as String,
-      day: json['day'] as String,
-      time: json['time'] as String,
-      place: json['place'] as String,
-      price: json['price'] as int,
+      year: (json['year'] as String?) ?? '',
+      month: (json['month'] as String?) ?? '',
+      day: (json['day'] as String?) ?? '',
+      time: (json['time'] as String?) ?? '',
+      place: (json['place'] as String?) ?? '',
+      price: (json['price'] as int?) ?? 0,
     );
   }
 

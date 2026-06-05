@@ -16,17 +16,15 @@ class StockModel {
   /// JSON → Model
   factory StockModel.fromJson(Map<String, dynamic> json) {
     return StockModel(
-      id: json['id'] as int,
-      year: json['year'] as String,
-      month: json['month'] as String,
-      day: json['day'] as String,
-      ticker: json['ticker'] as String,
-
-      name: (json['name'] != null) ? json['name'].toString() : '',
+      id: (json['id'] as int?) ?? 0,
+      year: (json['year'] as String?) ?? '',
+      month: (json['month'] as String?) ?? '',
+      day: (json['day'] as String?) ?? '',
+      ticker: (json['ticker'] as String?) ?? '',
+      name: (json['name'] as String?) ?? '',
       hoyuuSuuryou: (json['hoyuu_suuryou'] != null) ? json['hoyuu_suuryou'].toString().toInt() : 0,
-      heikinShutokuKagaku: (json['heikin_shutoku_kagaku'] != null) ? json['heikin_shutoku_kagaku'].toString() : '',
-
-      jikaHyoukagaku: json['jika_hyoukagaku'] as String,
+      heikinShutokuKagaku: (json['heikin_shutoku_kagaku'] as String?) ?? '',
+      jikaHyoukagaku: (json['jika_hyoukagaku'] as String?) ?? '',
     );
   }
 

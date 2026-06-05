@@ -120,11 +120,11 @@ class BusStopModel {
   });
 
   factory BusStopModel.fromJson(Map<String, dynamic> json) => BusStopModel(
-    id: json['id'] as int,
-    name: json['name'] as String,
-    address: json['address'] as String,
-    latitude: json['latitude'] as String,
-    longitude: json['longitude'] as String,
+    id: (json['id'] as int?) ?? 0,
+    name: (json['name'] as String?) ?? '',
+    address: (json['address'] as String?) ?? '',
+    latitude: (json['latitude'] as String?) ?? '',
+    longitude: (json['longitude'] as String?) ?? '',
   );
 
   final int id;
@@ -147,8 +147,11 @@ class BusStopModel {
 class DupSpotModel {
   DupSpotModel({required this.id, required this.name, required this.area});
 
-  factory DupSpotModel.fromJson(Map<String, dynamic> json) =>
-      DupSpotModel(id: json['id'] as int, name: json['name'] as String, area: json['area'] as String);
+  factory DupSpotModel.fromJson(Map<String, dynamic> json) => DupSpotModel(
+    id: (json['id'] as int?) ?? 0,
+    name: (json['name'] as String?) ?? '',
+    area: (json['area'] as String?) ?? '',
+  );
 
   final int id;
   final String name;
@@ -163,7 +166,10 @@ class TrainModel {
   TrainModel({required this.trainNumber, required this.trainName});
 
   factory TrainModel.fromJson(Map<String, dynamic> json) {
-    return TrainModel(trainNumber: json['train_number'] as String, trainName: json['train_name'] as String);
+    return TrainModel(
+      trainNumber: (json['train_number'] as String?) ?? '',
+      trainName: (json['train_name'] as String?) ?? '',
+    );
   }
 
   final String trainNumber;

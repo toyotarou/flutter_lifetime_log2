@@ -13,14 +13,14 @@ class CreditSummaryModel {
   /// JSON → モデル変換
   factory CreditSummaryModel.fromJson(Map<String, dynamic> json) {
     return CreditSummaryModel(
-      id: json['id'] as int,
-      year: json['year'] as String,
-      month: json['month'] as String,
-      useDate: json['use_date'] as String,
-      item: json['item'] as String,
-      detail: json['detail'] as String,
-      price: json['price'] as int,
-      subscription: json['subscription'] as int,
+      id: (json['id'] as int?) ?? 0,
+      year: (json['year'] as String?) ?? '',
+      month: (json['month'] as String?) ?? '',
+      useDate: (json['use_date'] as String?) ?? '',
+      item: (json['item'] as String?) ?? '',
+      detail: (json['detail'] as String?) ?? '',
+      price: (json['price'] as int?) ?? 0,
+      subscription: (json['subscription'] as int?) ?? 0,
     );
   }
 

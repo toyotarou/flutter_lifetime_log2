@@ -11,12 +11,12 @@ class InvestNameModel {
   /// JSON → モデル
   factory InvestNameModel.fromJson(Map<String, dynamic> json) {
     return InvestNameModel(
-      id: json['id'] as int,
-      kind: json['kind'] as String,
-      frame: json['frame'] as String,
-      name: json['name'] as String,
-      dealNumber: json['deal_number'] as int,
-      relationalId: json['relational_id'] as int,
+      id: (json['id'] as int?) ?? 0,
+      kind: (json['kind'] as String?) ?? '',
+      frame: (json['frame'] as String?) ?? '',
+      name: (json['name'] as String?) ?? '',
+      dealNumber: (json['deal_number'] as int?) ?? 0,
+      relationalId: (json['relational_id'] as int?) ?? 0,
     );
   }
 
@@ -54,11 +54,11 @@ class InvestRecordModel {
   /// JSON → モデル
   factory InvestRecordModel.fromJson(Map<String, dynamic> json) {
     return InvestRecordModel(
-      id: json['id'] as int,
-      date: json['date'] as String,
-      relationalId: json['relational_id'] as int,
-      cost: json['cost'] as int,
-      price: json['price'] as int,
+      id: (json['id'] as int?) ?? 0,
+      date: (json['date'] as String?) ?? '',
+      relationalId: (json['relational_id'] as int?) ?? 0,
+      cost: (json['cost'] as int?) ?? 0,
+      price: (json['price'] as int?) ?? 0,
     );
   }
 

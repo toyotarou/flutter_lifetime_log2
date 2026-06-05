@@ -5,8 +5,8 @@ class FundModel {
     final List<FundRecordModel> list = json['record'] as List<FundRecordModel>;
 
     return FundModel(
-      name: json['name'] as String,
-      relationalId: json['relational_id'] as String,
+      name: (json['name'] as String?) ?? '',
+      relationalId: (json['relational_id'] as String?) ?? '',
 
       record: list.map((FundRecordModel e) => FundRecordModel.fromJson(e as Map<String, dynamic>)).toList(),
     );
@@ -36,11 +36,11 @@ class FundRecordModel {
 
   factory FundRecordModel.fromJson(Map<String, dynamic> json) {
     return FundRecordModel(
-      date: json['date'] as String,
-      basePrice: json['base_price'] as String,
-      compareFront: json['compare_front'] as String,
-      yearlyReturn: json['yearly_return'] as String,
-      flag: json['flag'] as String,
+      date: (json['date'] as String?) ?? '',
+      basePrice: (json['base_price'] as String?) ?? '',
+      compareFront: (json['compare_front'] as String?) ?? '',
+      yearlyReturn: (json['yearly_return'] as String?) ?? '',
+      flag: (json['flag'] as String?) ?? '',
     );
   }
 

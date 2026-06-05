@@ -16,13 +16,13 @@ class ToushiShintakuModel {
   /// JSON → Model
   factory ToushiShintakuModel.fromJson(Map<String, dynamic> json) {
     return ToushiShintakuModel(
-      id: json['id'] as int,
-      year: json['year'] as String,
-      month: json['month'] as String,
-      day: json['day'] as String,
-      name: json['name'] as String,
-      shutokuSougaku: json['shutoku_sougaku'] as String,
-      jikaHyoukagaku: json['jika_hyoukagaku'] as String,
+      id: (json['id'] as int?) ?? 0,
+      year: (json['year'] as String?) ?? '',
+      month: (json['month'] as String?) ?? '',
+      day: (json['day'] as String?) ?? '',
+      name: (json['name'] as String?) ?? '',
+      shutokuSougaku: (json['shutoku_sougaku'] as String?) ?? '',
+      jikaHyoukagaku: (json['jika_hyoukagaku'] as String?) ?? '',
       relationalId: (json['relational_id'] != null && json['relational_id'] != '')
           ? json['relational_id'].toString().toInt()
           : 0,

@@ -3,7 +3,7 @@ class ScrollLineChartModel {
 
   /// JSON → モデル
   factory ScrollLineChartModel.fromJson(Map<String, dynamic> json) {
-    return ScrollLineChartModel(date: json['date'] as String, sum: json['sum'] as int);
+    return ScrollLineChartModel(date: (json['date'] as String?) ?? '', sum: (json['sum'] as int?) ?? 0);
   }
 
   final String date;

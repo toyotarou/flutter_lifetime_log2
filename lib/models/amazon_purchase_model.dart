@@ -10,11 +10,11 @@ class AmazonPurchaseModel {
   /// JSON → モデル
   factory AmazonPurchaseModel.fromJson(Map<String, dynamic> json) {
     return AmazonPurchaseModel(
-      year: json['year'] as String,
-      month: json['month'] as String,
-      day: json['day'] as String,
-      price: json['price'] as int,
-      item: json['item'] as String,
+      year: (json['year'] as String?) ?? '',
+      month: (json['month'] as String?) ?? '',
+      day: (json['day'] as String?) ?? '',
+      price: (json['price'] as int?) ?? 0,
+      item: (json['item'] as String?) ?? '',
     );
   }
 

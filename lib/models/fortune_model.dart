@@ -13,14 +13,14 @@ class FortuneModel {
   /// JSON → モデル
   factory FortuneModel.fromJson(Map<String, dynamic> json) {
     return FortuneModel(
-      year: json['year'] as String,
-      month: json['month'] as String,
-      day: json['day'] as String,
-      rank: json['rank'] as String,
-      love: json['love'] as String,
-      money: json['money'] as String,
-      relationship: json['relationship'] as String,
-      work: json['work'] as String,
+      year: (json['year'] as String?) ?? '',
+      month: (json['month'] as String?) ?? '',
+      day: (json['day'] as String?) ?? '',
+      rank: (json['rank'] as String?) ?? '',
+      love: (json['love'] as String?) ?? '',
+      money: (json['money'] as String?) ?? '',
+      relationship: (json['relationship'] as String?) ?? '',
+      work: (json['work'] as String?) ?? '',
     );
   }
 

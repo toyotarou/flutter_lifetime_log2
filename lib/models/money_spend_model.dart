@@ -29,16 +29,16 @@ class DailySpendModel {
   /// JSON → Model
   factory DailySpendModel.fromJson(Map<String, dynamic> json) {
     return DailySpendModel(
-      id: json['id'] as int,
-      year: json['year'] as String,
-      month: json['month'] as String,
-      day: json['day'] as String,
-      ymd: json['ymd'] as String,
-      price: json['price'] as int,
-      koumoku: json['koumoku'] as String,
-      flag: json['flag'] as String,
-      createdAt: json['created_at'] as String,
-      updatedAt: json['updated_at'] as String,
+      id: (json['id'] as int?) ?? 0,
+      year: (json['year'] as String?) ?? '',
+      month: (json['month'] as String?) ?? '',
+      day: (json['day'] as String?) ?? '',
+      ymd: (json['ymd'] as String?) ?? '',
+      price: (json['price'] as int?) ?? 0,
+      koumoku: (json['koumoku'] as String?) ?? '',
+      flag: (json['flag'] as String?) ?? '',
+      createdAt: (json['created_at'] as String?) ?? '',
+      updatedAt: (json['updated_at'] as String?) ?? '',
     );
   }
 
@@ -90,16 +90,16 @@ class CreditModel {
   /// JSON → Model
   factory CreditModel.fromJson(Map<String, dynamic> json) {
     return CreditModel(
-      id: json['id'] as int,
-      year: json['year'] as String,
-      month: json['month'] as String,
-      day: json['day'] as String,
-      ymd: (json['ymd'] != null) ? json['ymd'].toString() : '',
-      item: json['item'] as String,
-      price: json['price'] as String,
-      bank: (json['bank'] != null) ? json['bank'].toString() : '',
-      createdAt: (json['created_at'] != null) ? json['created_at'].toString() : '',
-      updatedAt: (json['updated_at'] != null) ? json['updated_at'].toString() : '',
+      id: (json['id'] as int?) ?? 0,
+      year: (json['year'] as String?) ?? '',
+      month: (json['month'] as String?) ?? '',
+      day: (json['day'] as String?) ?? '',
+      ymd: (json['ymd'] as String?) ?? '',
+      item: (json['item'] as String?) ?? '',
+      price: (json['price'] as String?) ?? '',
+      bank: (json['bank'] as String?) ?? '',
+      createdAt: (json['created_at'] as String?) ?? '',
+      updatedAt: (json['updated_at'] as String?) ?? '',
     );
   }
 
@@ -139,8 +139,8 @@ class MoneySpendItemModel {
   /// JSON → Model
   factory MoneySpendItemModel.fromJson(Map<String, dynamic> json) {
     return MoneySpendItemModel(
-      id: json['id'] as int,
-      name: json['name'] as String,
+      id: (json['id'] as int?) ?? 0,
+      name: (json['name'] as String?) ?? '',
       orderNo: json['order_no'].toString().toInt(),
     );
   }
