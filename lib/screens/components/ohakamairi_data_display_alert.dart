@@ -52,6 +52,7 @@ class _OhakamairiDataDisplayAlertState extends ConsumerState<OhakamairiDataDispl
 
     final int totalDays = endDate.difference(_startDate).inDays + 1;
     final int totalWeeks = ((totalDays + 6) ~/ 7) + 1;
+    final List<String> sortedMatchDates = dataMap.keys.toList()..sort();
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -141,9 +142,10 @@ class _OhakamairiDataDisplayAlertState extends ConsumerState<OhakamairiDataDispl
                               '${cellDate.day.toString().padLeft(2, '0')}';
 
                           final bool hasData = dataMap.containsKey(dateKey);
+                          final int matchIndex = hasData ? sortedMatchDates.indexOf(dateKey) + 1 : 0;
 
                           return Expanded(
-                            child: _buildDayCell(date: cellDate, col: col, hasData: hasData),
+                            child: _buildDayCell(date: cellDate, col: col, hasData: hasData, matchIndex: matchIndex),
                           );
                         }),
                       ),
@@ -158,7 +160,7 @@ class _OhakamairiDataDisplayAlertState extends ConsumerState<OhakamairiDataDispl
     );
   }
 
-  Widget _buildDayCell({required DateTime date, required int col, required bool hasData}) {
+  Widget _buildDayCell({required DateTime date, required int col, required bool hasData, int matchIndex = 0}) {
     Color dayNumColor = const Color(0xFFDDDDDD);
     if (col == 0) {
       dayNumColor = _sunColor;
@@ -230,7 +232,30 @@ class _OhakamairiDataDisplayAlertState extends ConsumerState<OhakamairiDataDispl
           if (hasData)
             Padding(
               padding: const EdgeInsets.only(top: 14),
-              child: Center(child: Image.asset('assets/images/toyoda_kamon.png', width: 25, height: 25)),
+              child: Stack(
+                children: <Widget>[
+                  Center(child: Image.asset('assets/images/toyoda_kamon.png', width: 25, height: 25)),
+
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '$matchIndex',
+                          style: const TextStyle(fontSize: 9, color: Colors.yellowAccent, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
         ],
       ),
