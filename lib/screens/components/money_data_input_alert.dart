@@ -421,10 +421,14 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
       'pay_f': money?.payF,
     };
 
-    await moneyInputNotifier.insertMoney(uploadData: uploadData).then((value) {
-      if (mounted) {
-        context.findAncestorStateOfType<AppRootState>()?.restartApp();
-      }
-    });
+    await moneyInputNotifier.insertMoney(uploadData: uploadData);
+
+    if (mounted) {
+      await moneyNotifier.getAllMoneyData();
+    }
+
+    if (mounted) {
+      context.findAncestorStateOfType<AppRootState>()?.restartApp();
+    }
   }
 }

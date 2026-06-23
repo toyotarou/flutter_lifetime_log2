@@ -24,6 +24,7 @@ import '../parts/icon_toolchip_display_overlay.dart';
 import '../parts/lifetime_dialog.dart';
 import '../parts/lifetime_log_overlay.dart';
 import 'lifetime_geoloc_ghost_temple_info_alert.dart';
+import 'lifetime_geoloc_nearly_station_display_alert.dart';
 import 'route_info_display_alert.dart';
 import 'temple_list_display_alert.dart';
 import 'time_place_display_alert.dart';
@@ -321,6 +322,30 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           _buildTopInfoPanel(),
           if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
           if (appParamState.selectedGeolocTime.isNotEmpty) ...<Widget>[_buildBottomAddressPanel()],
+
+          if (appParamState.keepTransportationMap[widget.date] != null) ...<Widget>[
+            Positioned(
+              right: 5,
+              bottom: 120,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+
+                child: GestureDetector(
+                  onTap: () {
+                    LifetimeDialog(
+                      context: context,
+                      widget: LifetimeGeolocNearlyStationDisplayAlert(date: widget.date),
+                    );
+                  },
+                  child: const Icon(Icons.train),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
