@@ -447,6 +447,17 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   const SizedBox(height: 10),
                   displayTempleNameList(),
                 ],
+
+
+
+
+
+
+
+
+                ///VVV
+
+
                 Row(
                   children: <Widget>[
                     if (appParamState.keepTransportationMap[widget.date] case final TransportationModel dateTransport
@@ -471,6 +482,15 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                     ],
                   ],
                 ),
+
+
+
+
+
+
+
+
+
                 if (appParamState.selectedGeolocPointTime.isNotEmpty) ...<Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -11,6 +11,7 @@ import '../../controllers/app_param/app_param.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
+import '../../models/transportation_model.dart';
 import '../../utility/functions.dart';
 import '../../utility/tile_provider.dart';
 import '../../utility/utility.dart';
@@ -39,6 +40,8 @@ class _LifetimeGeolocNearlyStationDisplayAlertState extends ConsumerState<Lifeti
 
   bool _cacheBuilt = false;
   String _cacheKey = '';
+  List<StationModel> _visibleStations = <StationModel>[];
+  bool _showStations = true;
 
   // 親のoverlayを復活させるために保存しておく
   OverlayState? _savedOverlayState;
@@ -52,10 +55,14 @@ class _LifetimeGeolocNearlyStationDisplayAlertState extends ConsumerState<Lifeti
   void initState() {
     super.initState();
 
-    _appParamSub = ref.listenManual<AppParamState>(appParamProvider, (_, __) {
-      if (mounted) {
-        setState(() {});
+    _appParamSub = ref.listenManual<AppParamState>(appParamProvider, (AppParamState? prev, AppParamState next) {
+      if (!mounted) {
+        return;
       }
+      if (prev?.keepStationList != next.keepStationList || prev?.keepGeolocMap != next.keepGeolocMap) {
+        _updateVisibleStations();
+      }
+      setState(() {});
     });
 
     fortyEightColor = utility.getFortyEightColor();
@@ -74,6 +81,7 @@ class _LifetimeGeolocNearlyStationDisplayAlertState extends ConsumerState<Lifeti
       _mapReadySubscription = mapController.mapEventStream.take(1).listen((_) {
         if (mounted) {
           _fitBounds();
+          _updateVisibleStations();
         }
       });
     });
@@ -163,6 +171,7 @@ class _LifetimeGeolocNearlyStationDisplayAlertState extends ConsumerState<Lifeti
         .toList();
 
     final LatLngBounds bounds = LatLngBounds.fromPoints(points);
+    mapController.rotate(0);
     mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(40)));
   }
 
@@ -222,6 +231,84 @@ class _LifetimeGeolocNearlyStationDisplayAlertState extends ConsumerState<Lifeti
   }
 
   ///
+  void _updateVisibleStations() {
+    final List<GeolocModel> geolocList = _sortedGeolocList;
+    if (geolocList.isEmpty || appParamState.keepStationList.isEmpty) {
+      if (mounted) {
+        setState(() {
+          _visibleStations = <StationModel>[];
+        });
+      }
+      return;
+    }
+
+    const Distance distCalc = Distance();
+    const double thresholdMeters = 500;
+
+    final List<LatLng> geolocPoints = geolocList
+        .map((GeolocModel g) => LatLng(g.latitude.toDouble(), g.longitude.toDouble()))
+        .toList();
+
+    final Set<String> seenNames = <String>{};
+    final List<StationModel> filtered = appParamState.keepStationList.where((StationModel station) {
+      final double? lat = double.tryParse(station.lat);
+      final double? lng = double.tryParse(station.lng);
+      if (lat == null || lng == null) {
+        return false;
+      }
+      if (!seenNames.add(station.stationName)) {
+        return false;
+      }
+      final LatLng stationPoint = LatLng(lat, lng);
+      return geolocPoints.any((LatLng g) => distCalc.as(LengthUnit.Meter, stationPoint, g) <= thresholdMeters);
+    }).toList();
+
+    if (mounted) {
+      setState(() {
+        _visibleStations = filtered;
+      });
+    }
+  }
+
+  ///
+  // ignore: always_specify_types
+  List<Polyline> _makeRoutePolylines() {
+    final TransportationModel? transport = appParamState.keepTransportationMap[widget.date];
+    if (transport == null || transport.spotDataModelListMap.isEmpty) {
+      // ignore: always_specify_types
+      return <Polyline>[];
+    }
+    // ignore: always_specify_types
+    final List<Polyline> polylines = <Polyline>[];
+    for (int i = 0; i < transport.spotDataModelListMap.length; i++) {
+      final List<SpotDataModel>? spots = transport.spotDataModelListMap[i];
+      if (spots == null || spots.isEmpty) {
+        continue;
+      }
+      final List<LatLng> points = <LatLng>[];
+      for (final SpotDataModel spot in spots) {
+        final double? lat = double.tryParse(spot.lat);
+        final double? lng = double.tryParse(spot.lng);
+        if (lat != null && lng != null) {
+          points.add(LatLng(lat, lng));
+        }
+      }
+      if (points.length < 2) {
+        continue;
+      }
+      polylines.add(
+        // ignore: always_specify_types
+        Polyline(
+          points: points,
+          color: transport.oufuku ? fortyEightColor[0] : fortyEightColor[i % 48],
+          strokeWidth: 5,
+        ),
+      );
+    }
+    return polylines;
+  }
+
+  ///
   double _bearingDegrees({required LatLng from, required LatLng to}) {
     final double fromLatRad = from.latitude * pi / 180.0;
     final double fromLonRad = from.longitude * pi / 180.0;
@@ -243,48 +330,146 @@ class _LifetimeGeolocNearlyStationDisplayAlertState extends ConsumerState<Lifeti
     final List<GeolocModel> list = _sortedGeolocList;
     final GeolocModel? first = list.isNotEmpty ? list[0] : null;
 
+    // ignore: always_specify_types
+    final List<Polyline> routePolylines = _makeRoutePolylines();
+
     return Scaffold(
-      body: FlutterMap(
-        mapController: mapController,
-        options: MapOptions(
-          initialCenter: first != null
-              ? LatLng(first.latitude.toDouble(), first.longitude.toDouble())
-              : const LatLng(zenpukujiLat, zenpukujiLng),
-          initialZoom: 12,
-          onPositionChanged: (MapCamera position, bool hasGesture) {
-            if (!hasGesture) {
-              return;
-            }
-            _zoomDebounce?.cancel();
-            _zoomDebounce = Timer(const Duration(milliseconds: 80), () {
-              if (!mounted) {
-                return;
-              }
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!mounted) {
+      body: Stack(
+        children: <Widget>[
+          FlutterMap(
+            mapController: mapController,
+            options: MapOptions(
+              initialCenter: first != null
+                  ? LatLng(first.latitude.toDouble(), first.longitude.toDouble())
+                  : const LatLng(zenpukujiLat, zenpukujiLng),
+              initialZoom: 12,
+              onPositionChanged: (MapCamera camera, bool hasGesture) {
+                if (!hasGesture) {
                   return;
                 }
-                appParamNotifier.setCurrentZoom(zoom: position.zoom);
-              });
-            });
-          },
-        ),
-        children: <Widget>[
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.jp/{z}/{x}/{y}.png',
-            tileProvider: CachedTileProvider(),
-            userAgentPackageName: 'com.example.app',
-          ),
-          if (appParamState.keepAllPolygonsList.isNotEmpty) ...<Widget>[
-            // ignore: always_specify_types
-            PolygonLayer(
-              polygons: makeAreaPolygons(
-                allPolygonsList: appParamState.keepAllPolygonsList,
-                fortyEightColor: fortyEightColor,
-              ),
+                _zoomDebounce?.cancel();
+                _zoomDebounce = Timer(const Duration(milliseconds: 80), () {
+                  if (!mounted) {
+                    return;
+                  }
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (!mounted) {
+                      return;
+                    }
+                    appParamNotifier.setCurrentZoom(zoom: camera.zoom);
+                  });
+                });
+              },
             ),
-          ],
-          MarkerLayer(markers: markerList),
+            children: <Widget>[
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.jp/{z}/{x}/{y}.png',
+                tileProvider: CachedTileProvider(),
+                userAgentPackageName: 'com.example.app',
+              ),
+              if (appParamState.keepAllPolygonsList.isNotEmpty) ...<Widget>[
+                // ignore: always_specify_types
+                PolygonLayer(
+                  polygons: makeAreaPolygons(
+                    allPolygonsList: appParamState.keepAllPolygonsList,
+                    fortyEightColor: fortyEightColor,
+                  ),
+                ),
+              ],
+              MarkerLayer(markers: markerList),
+              if (routePolylines.isNotEmpty) ...<Widget>[
+                // ignore: always_specify_types
+                PolylineLayer(polylines: routePolylines),
+              ],
+              if (_showStations && _visibleStations.isNotEmpty)
+                MarkerLayer(
+                  markers: _visibleStations.map((StationModel station) {
+                    final double lat = double.parse(station.lat);
+                    final double lng = double.parse(station.lng);
+                    return Marker(
+                      point: LatLng(lat, lng),
+                      width: 60,
+                      height: 40,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          const Icon(Icons.train, color: Colors.red, size: 16),
+                          Text(
+                            station.stationName,
+                            style: const TextStyle(fontSize: 8, color: Colors.red, fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+            ],
+          ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () => setState(() {
+                    _showStations = !_showStations;
+                  }),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: const <BoxShadow>[
+                        BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(Icons.train, size: 14, color: _showStations ? Colors.red : Colors.grey),
+                        const SizedBox(width: 4),
+                        Text(
+                          _showStations ? '駅:ON' : '駅:OFF',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: _showStations ? Colors.red : Colors.grey,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                GestureDetector(
+                  onTap: _fitBounds,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: const <BoxShadow>[
+                        BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
+                      ],
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(Icons.fit_screen, size: 14, color: Colors.blueGrey),
+                        SizedBox(width: 4),
+                        Text(
+                          '範囲リセット',
+                          style: TextStyle(fontSize: 12, color: Colors.blueGrey, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
