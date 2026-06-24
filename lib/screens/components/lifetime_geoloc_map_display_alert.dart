@@ -326,7 +326,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           if (appParamState.keepTransportationMap[widget.date] != null) ...<Widget>[
             Positioned(
               right: 5,
-              bottom: 120,
+              bottom: 60,
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -448,16 +448,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                   displayTempleNameList(),
                 ],
 
-
-
-
-
-
-
-
-                ///VVV
-
-
                 Row(
                   children: <Widget>[
                     if (appParamState.keepTransportationMap[widget.date] case final TransportationModel dateTransport
@@ -482,14 +472,6 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                     ],
                   ],
                 ),
-
-
-
-
-
-
-
-
 
                 if (appParamState.selectedGeolocPointTime.isNotEmpty) ...<Widget>[
                   Row(
