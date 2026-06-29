@@ -539,7 +539,10 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
 
       final int nenkinKikinPassedMonths =
           AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: d) + 32;
-      final int nenkinKikinSum = (nenkinKikinPassedMonths * 26625 * 0.7).toInt();
+      // 2026-06-15に国民年金基金解約のため、同日以降は0
+      final int nenkinKikinSum = d.isBefore(DateTime(2026, 6, 15))
+          ? (nenkinKikinPassedMonths * 26625 * 0.7).toInt()
+          : 0;
 
       final int gold80 = (lastGoldSum * assetRate).toInt();
       final int stock80 = (lastStockSum * assetRate).toInt();

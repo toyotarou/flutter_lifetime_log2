@@ -43,6 +43,9 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
   // nenkin: 2023-01-01時点で32回払いずみ → 32ヶ月前 = 2020-05スタート
   static final DateTime _nenkinStart = DateTime(2020, 5);
 
+  // nenkin: 2026-06-15に国民年金基金解約
+  static final DateTime _nenkinEnd = DateTime(2026, 6, 15);
+
   static final DateTime _shintakuStart = DateTime(2022);
   static final DateTime _stockStart = DateTime(2022);
 
@@ -307,10 +310,14 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
         _insuranceFlspots.add(FlSpot(idx.toDouble(), (insuranceMonths * 55880).toDouble()));
       }
 
-      // nenkin: 開始月以降のみ spot を追加（支払い累計額）
+      // nenkin: 開始月以降のみ spot を追加（支払い累計額）、2026-06-15以降は解約済みで0
       if (!d.isBefore(_nenkinStart)) {
-        final int nenkinMonths = (d.year - _nenkinStart.year) * 12 + (d.month - _nenkinStart.month);
-        _nenkinFlspots.add(FlSpot(idx.toDouble(), (nenkinMonths * 26625).toDouble()));
+        if (!d.isBefore(_nenkinEnd)) {
+          _nenkinFlspots.add(FlSpot(idx.toDouble(), 0));
+        } else {
+          final int nenkinMonths = (d.year - _nenkinStart.year) * 12 + (d.month - _nenkinStart.month);
+          _nenkinFlspots.add(FlSpot(idx.toDouble(), (nenkinMonths * 26625).toDouble()));
+        }
       }
     }
 

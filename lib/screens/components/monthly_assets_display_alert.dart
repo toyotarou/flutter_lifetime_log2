@@ -1045,7 +1045,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
       final int nenkinKikinPassedMonths =
           AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: date) + 32;
-      final int nenkinKikinSum = (nenkinKikinPassedMonths * 26625 * adjustNum).toInt();
+      // 2026-06-15に国民年金基金解約のため、同日以降は0
+      final int nenkinKikinSum = date.isBefore(DateTime(2026, 6, 15))
+          ? (nenkinKikinPassedMonths * 26625 * adjustNum).toInt()
+          : 0;
 
       monthlyAssetsMap[key] = <String, int>{
         _kGold: (lastGoldSum * adjustNum2).toInt(),
@@ -1074,7 +1077,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
     final int nenkinKikinPassedMonths =
         AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: date) + 32;
-    final int nenkinKikinSum = (nenkinKikinPassedMonths * 26625 * 0.7).toInt();
+    // 2026-06-15に国民年金基金解約のため、同日以降は0
+    final int nenkinKikinSum = date.isBefore(DateTime(2026, 6, 15))
+        ? (nenkinKikinPassedMonths * 26625 * 0.7).toInt()
+        : 0;
 
     const double assetRate = 0.8;
 
