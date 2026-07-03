@@ -469,11 +469,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
           if (ym.isNotEmpty) {
             appParamNotifier.setHomeTabYearMonth(yearmonth: ym);
+            _fetchGeolocAround(ym);
           }
         }
       }
     } catch (e) {
       debugPrint('_onTabChanged error: $e');
+    }
+  }
+
+  /// 指定月 + 前後1ヶ月のgeoloc を取得（取得済みの月はスキップされる）
+  void _fetchGeolocAround(String yearmonth) {
+    try {
+      final List<String> parts = yearmonth.split('-');
+      if (parts.length < 2) {
+        return;
+      }
+
+      final int year = int.tryParse(parts[0]) ?? 0;
+      final int month = int.tryParse(parts[1]) ?? 0;
+      if (year == 0 || month == 0) {
+        return;
+      }
+
+      String ym(int y, int m) => '${y.toString().padLeft(4, '0')}-${m.toString().padLeft(2, '0')}';
+
+      final int prevMonth = month == 1 ? 12 : month - 1;
+      final int prevYear = month == 1 ? year - 1 : year;
+      final int nextMonth = month == 12 ? 1 : month + 1;
+      final int nextYear = month == 12 ? year + 1 : year;
+
+      geolocNotifier.getGeolocDataByYearmonth(yearmonth);
+      geolocNotifier.getGeolocDataByYearmonth(ym(prevYear, prevMonth));
+      geolocNotifier.getGeolocDataByYearmonth(ym(nextYear, nextMonth));
+    } catch (e) {
+      debugPrint('_fetchGeolocAround error: $e');
     }
   }
 
@@ -530,7 +560,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               if (_tabs.isNotEmpty) {
                 final int index = _tabController!.index;
                 if (index >= 0 && index < _tabs.length) {
-                  appParamNotifier.setHomeTabYearMonth(yearmonth: _tabs[index].label);
+                  final String ym = _tabs[index].label;
+                  // build() 中のプロバイダー変更は禁止なので、フレーム後に遅延実行
+                  Future<void>(() {
+                    if (mounted) {
+                      appParamNotifier.setHomeTabYearMonth(yearmonth: ym);
+                      _fetchGeolocAround(ym);
+                    }
+                  });
                 }
               }
             }

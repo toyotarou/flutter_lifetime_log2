@@ -983,6 +983,11 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                   onTap: () {
                     appParamNotifier.setWeeklyHistorySelectedDate(date: date);
 
+                    // 日曜〜土曜の1週間分のgeoloc を取得（月またぎ対応、取得済みならスキップ）
+                    final String fromDate = date;
+                    final String toDate = DateTime.parse(date).add(const Duration(days: 6)).yyyymmdd;
+                    geolocNotifier.getGeolocDataByDateRange(fromDate, toDate);
+
                     bool isNeedGeolocMapDisplayHeight = false;
                     bool isNeedStationStampDisplayHeight = false;
 

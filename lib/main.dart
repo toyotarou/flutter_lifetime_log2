@@ -62,7 +62,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     walkNotifier.getAllWalkData();
     moneyNotifier.getAllMoneyData();
     lifetimeItemNotifier.getAllLifetimeItemData();
-    geolocNotifier.getAllGeolocData();
+    // geoloc はタブ切り替え時に月単位で取得するため、ここでは呼ばない
     templeNotifier.getAllTempleData();
     transportationNotifier.getAllTransportationData();
     moneySpendNotifier.getAllMoneySpendData();

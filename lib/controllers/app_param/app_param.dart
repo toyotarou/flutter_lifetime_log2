@@ -199,6 +199,11 @@ class AppParam extends _$AppParam {
   ///
   void setKeepGeolocMap({required Map<String, List<GeolocModel>> map}) => state = state.copyWith(keepGeolocMap: map);
 
+  /// 月単位取得分を既存データに直接マージ（既存の月データを消さない）
+  void mergeKeepGeolocMap({required Map<String, List<GeolocModel>> map}) {
+    state = state.copyWith(keepGeolocMap: Map<String, List<GeolocModel>>.from(state.keepGeolocMap)..addAll(map));
+  }
+
   ///
   void setKeepTempleMap({required Map<String, TempleModel> map}) => state = state.copyWith(keepTempleMap: map);
 
