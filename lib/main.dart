@@ -81,7 +81,6 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     stampRallyMetro20AnniversaryNotifier.getAllMetroStamp20AnniversaryData();
     stampRallyMetroPokepokeNotifier.getAllStampRallyMetroPokepokeData();
     tokyoMunicipalNotifier.getAllTokyoMunicipalData();
-    workHistoryNotifier.getAllWorkHistoryData();
     moneySumNotifier.getAllMoneySumData();
     fortuneNotifier.getAllFortuneData();
     tarotNotifier.getAllTarotData();
@@ -146,7 +145,6 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           stampRallyMetroAllStationMap: stampRallyMetroAllStationState.dateStationStampMap,
           stampRallyMetro20AnniversaryMap: stampRallyMetro20AnniversaryState.dateStationStampMap,
           stampRallyMetroPokepokeMap: stampRallyMetroPokepokeState.dateStationStampMap,
-          workHistoryModelMap: workHistoryState.workHistoryModelMap,
           moneySumList: moneySumState.moneySumList,
           fortuneMap: fortuneState.fortuneMap,
           tarotMap: tarotState.tarotMap,

@@ -8,7 +8,6 @@ import '../extensions/extensions.dart';
 import '../main.dart';
 import '../models/amazon_purchase_model.dart';
 import '../models/common/scroll_line_chart_model.dart';
-import '../models/common/work_history_model.dart';
 import '../models/credit_summary_model.dart';
 import '../models/fortune_model.dart';
 import '../models/fund_model.dart';
@@ -106,7 +105,6 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.stampRallyMetro20AnniversaryMap,
     required this.stampRallyMetroPokepokeMap,
     required this.tokyoMunicipalList,
-    required this.workHistoryModelMap,
     required this.moneySumList,
     required this.fortuneMap,
     required this.tarotMap,
@@ -143,7 +141,6 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, List<StampRallyModel>> stampRallyMetroPokepokeMap;
   final List<MunicipalModel> tokyoMunicipalList;
   final Map<String, MunicipalModel> tokyoMunicipalMap;
-  final Map<String, WorkHistoryModel> workHistoryModelMap;
   final List<ScrollLineChartModel> moneySumList;
   final Map<String, FortuneModel> fortuneMap;
   final Map<String, TarotModel> tarotMap;
@@ -230,7 +227,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepStampRallyMetroAllStationMap(map: widget.stampRallyMetroAllStationMap);
       appParamNotifier.setKeepTokyoMunicipalList(list: widget.tokyoMunicipalList);
       appParamNotifier.setKeepTokyoMunicipalMap(map: widget.tokyoMunicipalMap);
-      appParamNotifier.setKeepWorkHistoryModelMap(map: widget.workHistoryModelMap);
       appParamNotifier.setKeepMoneySumList(list: widget.moneySumList);
       appParamNotifier.setKeepTrainMap(map: widget.trainMap);
       appParamNotifier.setKeepFortuneMap(map: widget.fortuneMap);
