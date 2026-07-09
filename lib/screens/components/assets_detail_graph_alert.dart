@@ -15,6 +15,7 @@ import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import '../parts/scroll_line_chart.dart';
+import 'assets_detail_bar_chart_alert.dart';
 import 'assets_detail_list_alert.dart';
 import 'assets_detail_percent_display_alert.dart';
 
@@ -105,6 +106,17 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
                     Row(
                       children: <Widget>[
+                        if (widget.title == 'toushiShintaku') ...[
+                          GestureDetector(
+                            onTap: () {
+                              LifetimeDialog(context: context, widget: AssetsDetailBarChartAlert());
+                            },
+                            child: const Icon(Icons.bar_chart),
+                          ),
+
+                          const SizedBox(width: 20),
+                        ],
+
                         GestureDetector(
                           onTap: () {
                             appParamNotifier.setIsShowAssetsDetailGraph(flag: !appParamState.isShowAssetsDetailGraph);

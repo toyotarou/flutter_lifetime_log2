@@ -1368,29 +1368,25 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
               leading,
               const SizedBox(width: 10),
               if (<String>[_kStock, _kToushi, _kGold].contains(title))
-                TextButton(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    foregroundColor: Colors.white,
-                  ),
-                  onPressed: () {
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
                     appParamNotifier.setSelectedToushiGraphYear(year: '');
-
                     appParamNotifier.setIsShowAssetsDetailGraph(flag: true);
-
                     LifetimeDialog(
                       context: context,
                       widget: AssetsDetailGraphAlert(date: date, title: title),
                     );
                   },
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      color: isBeforeDate ? Colors.white : Colors.white.withValues(alpha: 0.3),
-                      fontSize: 12,
-                      decoration: TextDecoration.underline,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        color: isBeforeDate ? Colors.white : Colors.white.withValues(alpha: 0.3),
+                        fontSize: 12,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
                 )
