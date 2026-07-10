@@ -109,9 +109,6 @@ class _CostLinePainter extends CustomPainter {
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke
       ..isAntiAlias = true;
-    final Paint dotPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
 
     final List<Offset> points = <Offset>[];
     for (int i = 0; i < sortedDates.length; i++) {
@@ -135,8 +132,14 @@ class _CostLinePainter extends CustomPainter {
       canvas.drawPath(path, linePaint);
     }
 
-    for (final Offset p in points) {
-      canvas.drawCircle(p, 5, dotPaint);
+    for (int i = 0; i < points.length; i++) {
+      final int idx = i < sortedDates.length ? i : 0;
+      final int prevCost = idx > 0 ? (dataMap[sortedDates[idx - 1]]?.cost ?? 0) : 0;
+      final int thisCost = dataMap[sortedDates[idx]]?.cost ?? 0;
+      final Paint dp = Paint()
+        ..color = (idx > 0 && thisCost > prevCost) ? Colors.green[500]! : Colors.white
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(points[i], 5, dp);
     }
 
     canvas.restore();
@@ -427,6 +430,10 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                         if (data == null) {
                                           return null;
                                         }
+                                        final int prevCost = groupIndex > 0
+                                            ? (dailyDataMap[sortedDates[groupIndex - 1]]?.cost ?? data.cost)
+                                            : data.cost;
+                                        final int costDiff = data.cost - prevCost;
                                         return BarTooltipItem(
                                           _formatMan(data.price),
                                           const TextStyle(
@@ -453,6 +460,14 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
+                                            TextSpan(
+                                              text: '\n${_formatMan(costDiff)}',
+                                              style: TextStyle(
+                                                color: costDiff == 0 ? Colors.transparent : Colors.greenAccent,
+                                                fontSize: 9,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                           ],
                                         );
                                       },
@@ -474,21 +489,17 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                       final String year = parts[0];
                                       final String month = parts.length > 1 ? parts[1] : '';
                                       final String day = parts.length > 2 ? parts[2] : '';
-                                      final bool isFirstOfMonth =
-                                          index == 0 ||
-                                          sortedDates[index - 1].split('-').take(2).join('-') !=
-                                              parts.take(2).join('-');
                                       return SideTitleWidget(
                                         axisSide: AxisSide.bottom,
                                         space: 4,
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: <Widget>[
-                                            Text(day, style: const TextStyle(fontSize: 9, color: Colors.white)),
-                                            if (isFirstOfMonth)
-                                              Text(month, style: const TextStyle(fontSize: 8, color: Colors.white)),
-                                            if (isFirstOfMonth)
-                                              Text(year, style: const TextStyle(fontSize: 7, color: Colors.white)),
+                                            Text(
+                                              '$month-$day',
+                                              style: const TextStyle(fontSize: 10, color: Colors.white),
+                                            ),
+                                            Text(year, style: const TextStyle(fontSize: 10, color: Colors.white)),
                                           ],
                                         ),
                                       );
