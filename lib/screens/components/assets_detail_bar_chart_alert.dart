@@ -34,15 +34,17 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
   final ScrollController _scrollController = ScrollController();
   Timer? _autoScrollTimer;
   bool _autoScrollToRight = true;
-  List<String> _sortedDates = [];
+  List<String> _sortedDates = <String>[];
   String _currentVisibleYM = '';
 
+  ///
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
   }
 
+  ///
   @override
   void dispose() {
     _autoScrollTimer?.cancel();
@@ -50,8 +52,11 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
     super.dispose();
   }
 
+  ///
   void _onScroll() {
-    if (_sortedDates.isEmpty) return;
+    if (_sortedDates.isEmpty) {
+      return;
+    }
     final int index = _currentVisibleIndex();
     final List<String> parts = _sortedDates[index].split('-');
     final String ym = '${parts[0]}年${parts[1]}月';
@@ -60,6 +65,7 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
     }
   }
 
+  ///
   void _toggleAutoScroll({required bool toRight}) {
     if (_autoScrollTimer != null && _autoScrollToRight == toRight) {
       _autoScrollTimer!.cancel();
@@ -100,23 +106,32 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
     setState(() {});
   }
 
+  ///
   int _currentVisibleIndex() {
-    if (!_scrollController.hasClients || _sortedDates.isEmpty) return 0;
+    if (!_scrollController.hasClients || _sortedDates.isEmpty) {
+      return 0;
+    }
     const double leftAxis = 72.0;
     const double barW = 36.0;
     return ((_scrollController.offset - leftAxis) / barW).floor().clamp(0, _sortedDates.length - 1);
   }
 
+  ///
   void _jumpToMonth(int targetIndex) {
-    if (!_scrollController.hasClients) return;
+    if (!_scrollController.hasClients) {
+      return;
+    }
     const double leftAxis = 72.0;
     const double barW = 36.0;
     final double targetOffset = (leftAxis + targetIndex * barW).clamp(0.0, _scrollController.position.maxScrollExtent);
     _scrollController.animateTo(targetOffset, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
   }
 
+  ///
   void _jumpToNextMonth() {
-    if (_sortedDates.isEmpty) return;
+    if (_sortedDates.isEmpty) {
+      return;
+    }
     final int currentIndex = _currentVisibleIndex();
     final String currentYM = _sortedDates[currentIndex].split('-').take(2).join('-');
     bool passed = false;
@@ -131,8 +146,11 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
     }
   }
 
+  ///
   void _jumpToPrevMonth() {
-    if (_sortedDates.isEmpty) return;
+    if (_sortedDates.isEmpty) {
+      return;
+    }
     final int currentIndex = _currentVisibleIndex();
     final String currentYM = _sortedDates[currentIndex].split('-').take(2).join('-');
     String? prevYM;
@@ -143,7 +161,9 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
         break;
       }
     }
-    if (prevYM == null) return;
+    if (prevYM == null) {
+      return;
+    }
     for (int i = 0; i < _sortedDates.length; i++) {
       if (_sortedDates[i].split('-').take(2).join('-') == prevYM) {
         _jumpToMonth(i);
@@ -152,11 +172,58 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
     }
   }
 
+  ///
+  void _jumpToPrevYear() {
+    if (_sortedDates.isEmpty) {
+      return;
+    }
+    final int currentIndex = _currentVisibleIndex();
+    final String currentYear = _sortedDates[currentIndex].split('-')[0];
+    String? prevYear;
+    for (int i = currentIndex - 1; i >= 0; i--) {
+      final String year = _sortedDates[i].split('-')[0];
+      if (year != currentYear) {
+        prevYear = year;
+        break;
+      }
+    }
+    if (prevYear == null) {
+      return;
+    }
+    for (int i = 0; i < _sortedDates.length; i++) {
+      if (_sortedDates[i].split('-')[0] == prevYear) {
+        _jumpToMonth(i);
+        return;
+      }
+    }
+  }
+
+  ///
+  void _jumpToNextYear() {
+    if (_sortedDates.isEmpty) {
+      return;
+    }
+    final int currentIndex = _currentVisibleIndex();
+    final String currentYear = _sortedDates[currentIndex].split('-')[0];
+    bool passed = false;
+    for (int i = 0; i < _sortedDates.length; i++) {
+      final String year = _sortedDates[i].split('-')[0];
+      if (year == currentYear) {
+        passed = true;
+      } else if (passed) {
+        _jumpToMonth(i);
+        return;
+      }
+    }
+  }
+
+  ///
   String _formatMan(int amount) {
     final int man = (amount / 10000).round();
     return '$man万';
   }
 
+  ///
   @override
   Widget build(BuildContext context) {
     final Map<String, _MonthData> dailyDataMap = _buildDailyDataMap();
@@ -177,7 +244,7 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
       );
     }
 
-    final int maxValue = dailyDataMap.values.map((e) => e.price).reduce(max);
+    final int maxValue = dailyDataMap.values.map((_MonthData e) => e.price).reduce(max);
     final double chartMaxY = maxValue > 0 ? (maxValue * 1.35).ceilToDouble() : 1;
     const double barWidth = 36.0;
 
@@ -197,7 +264,7 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                     const SizedBox(width: 16),
                     _legendChip(color: _costColor, label: 'コスト'),
                     const SizedBox(width: 8),
-                    _legendChip(color: _gainColor, label: 'ゲイン'),
+                    _legendChip(color: _gainColor, label: '儲け'),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -222,10 +289,14 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                   tooltipMargin: 6,
                                   getTooltipItem:
                                       (BarChartGroupData group, int groupIndex, BarChartRodData rod, int rodIndex) {
-                                        if (groupIndex < 0 || groupIndex >= sortedDates.length) return null;
+                                        if (groupIndex < 0 || groupIndex >= sortedDates.length) {
+                                          return null;
+                                        }
                                         final String key = sortedDates[groupIndex];
                                         final _MonthData? data = dailyDataMap[key];
-                                        if (data == null) return null;
+                                        if (data == null) {
+                                          return null;
+                                        }
                                         return BarTooltipItem(
                                           _formatMan(data.price),
                                           const TextStyle(
@@ -237,17 +308,17 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                           textAlign: TextAlign.right,
                                           children: <TextSpan>[
                                             TextSpan(
-                                              text: '\n${_formatMan(data.cost)}',
+                                              text: '\n${_formatMan(data.gain)}',
                                               style: const TextStyle(
-                                                color: _costColor,
+                                                color: _gainColor,
                                                 fontSize: 9,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                             TextSpan(
-                                              text: '\n${_formatMan(data.gain)}',
+                                              text: '\n${_formatMan(data.cost)}',
                                               style: const TextStyle(
-                                                color: _gainColor,
+                                                color: _costColor,
                                                 fontSize: 9,
                                                 fontWeight: FontWeight.bold,
                                               ),
@@ -266,7 +337,9 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                     reservedSize: 40,
                                     getTitlesWidget: (double value, TitleMeta meta) {
                                       final int index = value.toInt();
-                                      if (index < 0 || index >= sortedDates.length) return const SizedBox();
+                                      if (index < 0 || index >= sortedDates.length) {
+                                        return const SizedBox();
+                                      }
                                       final List<String> parts = sortedDates[index].split('-');
                                       final String year = parts[0];
                                       final String month = parts.length > 1 ? parts[1] : '';
@@ -297,7 +370,9 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                     showTitles: true,
                                     reservedSize: 72,
                                     getTitlesWidget: (double value, TitleMeta meta) {
-                                      if (value == 0 || value == meta.max) return const SizedBox();
+                                      if (value == 0 || value == meta.max) {
+                                        return const SizedBox();
+                                      }
                                       return SideTitleWidget(
                                         axisSide: AxisSide.left,
                                         space: 4,
@@ -375,60 +450,73 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        _scrollBtn(
-                          label: '←',
-                          active: _autoScrollTimer != null && !_autoScrollToRight,
-                          onTap: () => _toggleAutoScroll(toRight: false),
-                        ),
-                        _scrollBtn(label: '←月', active: false, onTap: _jumpToPrevMonth),
+                        _pillBtn(label: '←月', onTap: _jumpToPrevMonth),
+                        const SizedBox(width: 6),
+                        _pillBtn(label: '←年', onTap: _jumpToPrevYear),
                       ],
                     ),
                     Row(
                       children: <Widget>[
-                        _scrollBtn(label: '月→', active: false, onTap: _jumpToNextMonth),
-                        _scrollBtn(
-                          label: '→',
-                          active: _autoScrollTimer != null && _autoScrollToRight,
-                          onTap: () => _toggleAutoScroll(toRight: true),
-                        ),
+                        _pillBtn(label: '年→', onTap: _jumpToNextYear),
+                        const SizedBox(width: 6),
+                        _pillBtn(label: '月→', onTap: _jumpToNextMonth),
                       ],
                     ),
                   ],
                 ),
+                const SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    _scrollBtn(
-                      label: '|←',
-                      active: false,
-                      onTap: () {
-                        if (_scrollController.hasClients) {
-                          _autoScrollTimer?.cancel();
-                          _autoScrollTimer = null;
-                          _scrollController.animateTo(
-                            0,
-                            duration: const Duration(milliseconds: 400),
-                            curve: Curves.easeOut,
-                          );
-                          setState(() {});
-                        }
-                      },
+                    Row(
+                      children: <Widget>[
+                        _pillBtn(
+                          label: '|←',
+                          onTap: () {
+                            if (_scrollController.hasClients) {
+                              _autoScrollTimer?.cancel();
+                              _autoScrollTimer = null;
+                              _scrollController.animateTo(
+                                0,
+                                duration: const Duration(milliseconds: 400),
+                                curve: Curves.easeOut,
+                              );
+                              setState(() {});
+                            }
+                          },
+                        ),
+                        const SizedBox(width: 6),
+                        _pillBtn(
+                          label: '←',
+                          active: _autoScrollTimer != null && !_autoScrollToRight,
+                          onTap: () => _toggleAutoScroll(toRight: false),
+                        ),
+                      ],
                     ),
-                    _scrollBtn(
-                      label: '→|',
-                      active: false,
-                      onTap: () {
-                        if (_scrollController.hasClients) {
-                          _autoScrollTimer?.cancel();
-                          _autoScrollTimer = null;
-                          _scrollController.animateTo(
-                            _scrollController.position.maxScrollExtent,
-                            duration: const Duration(milliseconds: 400),
-                            curve: Curves.easeOut,
-                          );
-                          setState(() {});
-                        }
-                      },
+                    Row(
+                      children: <Widget>[
+                        _pillBtn(
+                          label: '→',
+                          active: _autoScrollTimer != null && _autoScrollToRight,
+                          onTap: () => _toggleAutoScroll(toRight: true),
+                        ),
+                        const SizedBox(width: 6),
+                        _pillBtn(
+                          label: '→|',
+                          onTap: () {
+                            if (_scrollController.hasClients) {
+                              _autoScrollTimer?.cancel();
+                              _autoScrollTimer = null;
+                              _scrollController.animateTo(
+                                _scrollController.position.maxScrollExtent,
+                                duration: const Duration(milliseconds: 400),
+                                curve: Curves.easeOut,
+                              );
+                              setState(() {});
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -440,31 +528,38 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
     );
   }
 
-  Widget _scrollBtn({required String label, required bool active, required VoidCallback onTap}) {
+  ///
+  Widget _pillBtn({required String label, required VoidCallback onTap, bool active = false}) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+        decoration: BoxDecoration(
+          border: Border.all(color: active ? Colors.orange : Colors.white38),
+          borderRadius: BorderRadius.circular(20),
+        ),
         child: Text(
           label,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: active ? Colors.orange : Colors.white54),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: active ? Colors.orange : Colors.white70),
         ),
       ),
     );
   }
 
+  ///
   Widget _legendChip({required Color color, required String label}) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Container(width: 10, height: 10, color: color),
         const SizedBox(width: 4),
-        Text(label, style: const TextStyle(fontSize: 11, color: Colors.white70)),
+        Text(label, style: TextStyle(fontSize: 11, color: color)),
       ],
     );
   }
 
+  ///
   Map<String, _MonthData> _buildDailyDataMap() {
     final Map<String, _MonthData> result = <String, _MonthData>{};
     appParamState.keepToushiShintakuMap.forEach((String key, List<ToushiShintakuModel> valueList) {
@@ -473,8 +568,12 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
       for (final ToushiShintakuModel model in valueList) {
         final int? price = int.tryParse(model.jikaHyoukagaku.replaceAll(',', '').replaceAll('円', '').trim());
         final int? cost = int.tryParse(model.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim());
-        if (price != null) totalPrice += price;
-        if (cost != null) totalCost += cost;
+        if (price != null) {
+          totalPrice += price;
+        }
+        if (cost != null) {
+          totalCost += cost;
+        }
       }
       if (totalPrice > 0) {
         result[key] = _MonthData(price: totalPrice, cost: totalCost);

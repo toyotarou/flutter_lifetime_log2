@@ -39,10 +39,14 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
     _baseMonth = DateTime.parse('${widget.yearmonth}-01');
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       if (appParamState.keepWorkHistoryModelMap.isEmpty) {
         await workHistoryNotifier.getAllWorkHistoryData();
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
         appParamNotifier.setKeepWorkHistoryModelMap(map: workHistoryState.workHistoryModelMap);
       }
     });

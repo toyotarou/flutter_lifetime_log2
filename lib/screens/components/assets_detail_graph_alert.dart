@@ -106,11 +106,9 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
                     Row(
                       children: <Widget>[
-                        if (widget.title == 'toushiShintaku') ...[
+                        if (widget.title == 'toushiShintaku') ...<Widget>[
                           GestureDetector(
-                            onTap: () {
-                              LifetimeDialog(context: context, widget: AssetsDetailBarChartAlert());
-                            },
+                            onTap: () => LifetimeDialog(context: context, widget: const AssetsDetailBarChartAlert()),
                             child: const Icon(Icons.bar_chart),
                           ),
 
