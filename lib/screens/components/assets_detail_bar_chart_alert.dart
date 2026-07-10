@@ -18,6 +18,136 @@ class _MonthData {
   int get gain => price - cost;
 }
 
+class _GainLinePainter extends CustomPainter {
+  _GainLinePainter({required this.sortedDates, required this.dataMap, required this.maxY, required this.scrollOffset});
+
+  final List<String> sortedDates;
+  final Map<String, _MonthData> dataMap;
+  final double maxY;
+  final double scrollOffset;
+
+  static const double _leftAxis = 72.0;
+  static const double _barWidth = 36.0;
+  static const double _bottomReserved = 40.0;
+
+  ///
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (sortedDates.isEmpty || maxY <= 0) {
+      return;
+    }
+
+    final double chartAreaHeight = size.height - _bottomReserved;
+
+    final Paint linePaint = Paint()
+      ..color = const Color(0xFFFBB6CE)
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..isAntiAlias = true;
+    final Paint dotPaint = Paint()
+      ..color = const Color(0xFFFBB6CE)
+      ..style = PaintingStyle.fill;
+
+    final List<Offset> points = <Offset>[];
+    for (int i = 0; i < sortedDates.length; i++) {
+      final _MonthData? data = dataMap[sortedDates[i]];
+      if (data == null) {
+        continue;
+      }
+      final double x = _leftAxis + i * _barWidth + _barWidth - scrollOffset;
+      final double y = chartAreaHeight * (1 - data.price / maxY);
+      points.add(Offset(x, y));
+    }
+
+    canvas.save();
+    canvas.clipRect(Rect.fromLTWH(_leftAxis, 0, size.width - _leftAxis, size.height));
+
+    if (points.length > 1) {
+      final Path path = Path()..moveTo(points[0].dx, points[0].dy);
+      for (int i = 1; i < points.length; i++) {
+        path.lineTo(points[i].dx, points[i].dy);
+      }
+      canvas.drawPath(path, linePaint);
+    }
+
+    for (final Offset p in points) {
+      canvas.drawCircle(p, 5, dotPaint);
+    }
+
+    canvas.restore();
+  }
+
+  ///
+  @override
+  bool shouldRepaint(_GainLinePainter oldDelegate) =>
+      oldDelegate.scrollOffset != scrollOffset || oldDelegate.maxY != maxY;
+}
+
+class _CostLinePainter extends CustomPainter {
+  _CostLinePainter({required this.sortedDates, required this.dataMap, required this.maxY, required this.scrollOffset});
+
+  final List<String> sortedDates;
+  final Map<String, _MonthData> dataMap;
+  final double maxY;
+  final double scrollOffset;
+
+  static const double _leftAxis = 72.0;
+  static const double _barWidth = 36.0;
+  static const double _bottomReserved = 40.0;
+
+  ///
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (sortedDates.isEmpty || maxY <= 0) {
+      return;
+    }
+
+    final double chartAreaHeight = size.height - _bottomReserved;
+
+    final Paint linePaint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..isAntiAlias = true;
+    final Paint dotPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    final List<Offset> points = <Offset>[];
+    for (int i = 0; i < sortedDates.length; i++) {
+      final _MonthData? data = dataMap[sortedDates[i]];
+      if (data == null) {
+        continue;
+      }
+      final double x = _leftAxis + i * _barWidth + _barWidth - scrollOffset;
+      final double y = chartAreaHeight * (1 - data.cost / maxY);
+      points.add(Offset(x, y));
+    }
+
+    canvas.save();
+    canvas.clipRect(Rect.fromLTWH(_leftAxis, 0, size.width - _leftAxis, size.height));
+
+    if (points.length > 1) {
+      final Path path = Path()..moveTo(points[0].dx, points[0].dy);
+      for (int i = 1; i < points.length; i++) {
+        path.lineTo(points[i].dx, points[i].dy);
+      }
+      canvas.drawPath(path, linePaint);
+    }
+
+    for (final Offset p in points) {
+      canvas.drawCircle(p, 5, dotPaint);
+    }
+
+    canvas.restore();
+  }
+
+  ///
+  @override
+  bool shouldRepaint(_CostLinePainter oldDelegate) =>
+      oldDelegate.scrollOffset != scrollOffset || oldDelegate.maxY != maxY;
+}
+
 class AssetsDetailBarChartAlert extends ConsumerStatefulWidget {
   const AssetsDetailBarChartAlert({super.key});
 
@@ -414,6 +544,40 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                 );
                               }),
                             ),
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: AnimatedBuilder(
+                            animation: _scrollController,
+                            builder: (BuildContext context, Widget? child) {
+                              return CustomPaint(
+                                painter: _GainLinePainter(
+                                  sortedDates: sortedDates,
+                                  dataMap: dailyDataMap,
+                                  maxY: chartMaxY,
+                                  scrollOffset: _scrollController.hasClients ? _scrollController.offset : 0,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: AnimatedBuilder(
+                            animation: _scrollController,
+                            builder: (BuildContext context, Widget? child) {
+                              return CustomPaint(
+                                painter: _CostLinePainter(
+                                  sortedDates: sortedDates,
+                                  dataMap: dailyDataMap,
+                                  maxY: chartMaxY,
+                                  scrollOffset: _scrollController.hasClients ? _scrollController.offset : 0,
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),
