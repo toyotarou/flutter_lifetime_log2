@@ -532,7 +532,7 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                   barRods: <BarChartRodData>[
                                     BarChartRodData(
                                       toY: priceY,
-                                      width: barWidth,
+                                      width: barWidth - 2,
                                       color: Colors.transparent,
                                       borderRadius: BorderRadius.zero,
                                       rodStackItems: <BarChartRodStackItem>[
