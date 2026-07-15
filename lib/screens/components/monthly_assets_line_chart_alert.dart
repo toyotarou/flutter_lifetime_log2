@@ -32,8 +32,8 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
   String _selectedBaseMonth = '2023-01';
   late FixedExtentScrollController _monthWheelController;
 
-  // 太線（新しい月）と細線（古い月）の末端値比較
-  bool? _moneyUp, _shintakuUp, _stockUp, _goldUp, _insuranceUp, _nenkinUp;
+  // 太線（新しい月）と細線（古い月）の末端値比較: 1=上, 0=同値, -1=下, null=比較不可
+  int? _moneyUp, _shintakuUp, _stockUp, _goldUp, _insuranceUp, _nenkinUp;
 
   static const String _startMonth = '2023-01';
 
@@ -83,7 +83,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
     super.dispose();
   }
 
-  bool get _canGoBackward => _displayedMonths.length > 1;
+  bool get _canGoBackward => _displayedMonths[0].compareTo(_startMonth) > 0;
 
   static const int _graphMin = 0;
   static const int _graphMax = 15000000;
@@ -318,9 +318,14 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
       return;
     }
     setState(() {
-      if (_displayedMonths[0].compareTo(_startMonth) <= 0) {
+      if (_displayedMonths.length == 1) {
+        // 単月 → 前月を追加して2枚比較表示（→ と対称）
+        _displayedMonths = <String>[_addMonths(_displayedMonths[0], -1), _displayedMonths[0]];
+      } else if (_displayedMonths[0].compareTo(_startMonth) <= 0) {
+        // 2枚表示で基準が開始月 → 単月に戻る
         _displayedMonths = <String>[_displayedMonths[0]];
       } else {
+        // 2枚表示 → 1ヶ月スライドバック
         _displayedMonths = <String>[_addMonths(_displayedMonths[0], -1), _displayedMonths[0]];
       }
       _selectedBaseMonth = _displayedMonths[0];
@@ -482,32 +487,32 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
         final double? ti = finalInsurance.isEmpty ? null : finalInsurance.last.y;
         final double? tn = finalNenkin.isEmpty ? null : finalNenkin.last.y;
         if (tm != null && thinMoneyLast != null) {
-          _moneyUp = tm > thinMoneyLast;
+          _moneyUp = tm > thinMoneyLast ? 1 : (tm < thinMoneyLast ? -1 : 0);
         }
         if (ts != null && thinShintakuLast != null) {
-          _shintakuUp = ts > thinShintakuLast;
+          _shintakuUp = ts > thinShintakuLast ? 1 : (ts < thinShintakuLast ? -1 : 0);
         }
         if (tst != null && thinStockLast != null) {
-          _stockUp = tst > thinStockLast;
+          _stockUp = tst > thinStockLast ? 1 : (tst < thinStockLast ? -1 : 0);
         }
         if (tg != null && thinGoldLast != null) {
-          _goldUp = tg > thinGoldLast;
+          _goldUp = tg > thinGoldLast ? 1 : (tg < thinGoldLast ? -1 : 0);
         }
         if (ti != null && thinInsuranceLast != null) {
-          _insuranceUp = ti > thinInsuranceLast;
+          _insuranceUp = ti > thinInsuranceLast ? 1 : (ti < thinInsuranceLast ? -1 : 0);
         }
         if (tn != null && thinNenkinLast != null) {
-          _nenkinUp = tn > thinNenkinLast;
+          _nenkinUp = tn > thinNenkinLast ? 1 : (tn < thinNenkinLast ? -1 : 0);
         }
       }
 
       // クロージャが後から null になる問題を防ぐためローカル変数に固定
-      final bool moneyUp = _moneyUp ?? true;
-      final bool shintakuUp = _shintakuUp ?? true;
-      final bool stockUp = _stockUp ?? true;
-      final bool goldUp = _goldUp ?? true;
-      final bool insuranceUp = _insuranceUp ?? true;
-      final bool nenkinUp = _nenkinUp ?? true;
+      final int moneyUp = _moneyUp ?? 1;
+      final int shintakuUp = _shintakuUp ?? 1;
+      final int stockUp = _stockUp ?? 1;
+      final int goldUp = _goldUp ?? 1;
+      final int insuranceUp = _insuranceUp ?? 1;
+      final int nenkinUp = _nenkinUp ?? 1;
 
       // barIndex: monthIdx*6 + (0=money,1=shintaku,2=stock,3=gold,4=insurance,5=nenkin)
       allBars
@@ -519,7 +524,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                 ? FlDotData(
                     checkToShowDot: (FlSpot spot, LineChartBarData barData) => spot.x == barData.spots.last.x,
                     getDotPainter: (FlSpot spot, double xPercentage, LineChartBarData bar, int index) =>
-                        _ArrowDotPainter(color: _colorMoney, isUp: moneyUp),
+                        _ArrowDotPainter(color: _colorMoney, direction: moneyUp),
                   )
                 : const FlDotData(show: false),
             barWidth: barW,
@@ -533,7 +538,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                 ? FlDotData(
                     checkToShowDot: (FlSpot spot, LineChartBarData barData) => spot.x == barData.spots.last.x,
                     getDotPainter: (FlSpot spot, double xPercentage, LineChartBarData bar, int index) =>
-                        _ArrowDotPainter(color: _colorShintaku, isUp: shintakuUp),
+                        _ArrowDotPainter(color: _colorShintaku, direction: shintakuUp),
                   )
                 : const FlDotData(show: false),
             barWidth: barW,
@@ -547,7 +552,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                 ? FlDotData(
                     checkToShowDot: (FlSpot spot, LineChartBarData barData) => spot.x == barData.spots.last.x,
                     getDotPainter: (FlSpot spot, double xPercentage, LineChartBarData bar, int index) =>
-                        _ArrowDotPainter(color: _colorStock, isUp: stockUp),
+                        _ArrowDotPainter(color: _colorStock, direction: stockUp),
                   )
                 : const FlDotData(show: false),
             barWidth: barW,
@@ -561,7 +566,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                 ? FlDotData(
                     checkToShowDot: (FlSpot spot, LineChartBarData barData) => spot.x == barData.spots.last.x,
                     getDotPainter: (FlSpot spot, double xPercentage, LineChartBarData bar, int index) =>
-                        _ArrowDotPainter(color: _colorGold, isUp: goldUp),
+                        _ArrowDotPainter(color: _colorGold, direction: goldUp),
                   )
                 : const FlDotData(show: false),
             barWidth: barW,
@@ -575,7 +580,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                 ? FlDotData(
                     checkToShowDot: (FlSpot spot, LineChartBarData barData) => spot.x == barData.spots.last.x,
                     getDotPainter: (FlSpot spot, double xPercentage, LineChartBarData bar, int index) =>
-                        _ArrowDotPainter(color: _colorInsurance, isUp: insuranceUp),
+                        _ArrowDotPainter(color: _colorInsurance, direction: insuranceUp),
                   )
                 : const FlDotData(show: false),
             barWidth: barW,
@@ -589,7 +594,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                 ? FlDotData(
                     checkToShowDot: (FlSpot spot, LineChartBarData barData) => spot.x == barData.spots.last.x,
                     getDotPainter: (FlSpot spot, double xPercentage, LineChartBarData bar, int index) =>
-                        _ArrowDotPainter(color: _colorNenkin, isUp: nenkinUp),
+                        _ArrowDotPainter(color: _colorNenkin, direction: nenkinUp),
                   )
                 : const FlDotData(show: false),
             barWidth: barW,
@@ -766,23 +771,39 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
 }
 
 class _ArrowDotPainter extends FlDotPainter {
-  const _ArrowDotPainter({required this.color, required this.isUp});
+  const _ArrowDotPainter({required this.color, required this.direction});
 
   final Color color;
-  final bool isUp;
+  final int direction; // 1=上, 0=同値, -1=下
 
   @override
   void draw(Canvas canvas, FlSpot spot, Offset offsetInCanvas) {
-    final IconData icon = isUp ? Icons.arrow_upward : Icons.arrow_downward;
-    final TextPainter tp = TextPainter(
-      text: TextSpan(
-        text: String.fromCharCode(icon.codePoint),
-        style: TextStyle(color: color, fontSize: 40, fontFamily: icon.fontFamily, package: icon.fontPackage, height: 1),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    final Offset pos = offsetInCanvas + Offset(-tp.width / 2, isUp ? -(tp.height + 4) : 4);
-    tp.paint(canvas, pos);
+    if (direction == 0) {
+      final TextPainter tp = TextPainter(
+        text: TextSpan(
+          text: '=',
+          style: TextStyle(color: color, fontSize: 36, fontWeight: FontWeight.bold, height: 1),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      tp.paint(canvas, offsetInCanvas + Offset(-tp.width / 2, -tp.height / 2));
+    } else {
+      final IconData icon = direction > 0 ? Icons.arrow_upward : Icons.arrow_downward;
+      final TextPainter tp = TextPainter(
+        text: TextSpan(
+          text: String.fromCharCode(icon.codePoint),
+          style: TextStyle(
+            color: color,
+            fontSize: 40,
+            fontFamily: icon.fontFamily,
+            package: icon.fontPackage,
+            height: 1,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      tp.paint(canvas, offsetInCanvas + Offset(-tp.width / 2, direction > 0 ? -(tp.height + 4) : 4));
+    }
   }
 
   @override
@@ -795,5 +816,5 @@ class _ArrowDotPainter extends FlDotPainter {
   FlDotPainter lerp(FlDotPainter a, FlDotPainter b, double t) => b;
 
   @override
-  List<Object?> get props => <Object?>[color, isUp];
+  List<Object?> get props => <Object?>[color, direction];
 }
