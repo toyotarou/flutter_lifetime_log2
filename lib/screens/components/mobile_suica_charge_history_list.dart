@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../models/credit_summary_model.dart';
+import '../../utility/functions.dart';
 
 class MobileSuicaChargeHistoryList extends ConsumerStatefulWidget {
   const MobileSuicaChargeHistoryList({super.key});
@@ -13,6 +14,15 @@ class MobileSuicaChargeHistoryList extends ConsumerStatefulWidget {
 
 class _MobileSuicaChargeHistoryListState extends ConsumerState<MobileSuicaChargeHistoryList>
     with ControllersMixin<MobileSuicaChargeHistoryList> {
+  late final DateTime _pageOpenTime;
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+    _pageOpenTime = DateTime.now();
+  }
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -49,15 +59,19 @@ class _MobileSuicaChargeHistoryListState extends ConsumerState<MobileSuicaCharge
       for (final CreditSummaryModel element in value) {
         if (element.detail == 'モバイルスイカ') {
           list.add(
-            Container(
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-              ),
-              padding: const EdgeInsets.all(5),
+            DayFlipCard(
+              dayIndex: list.length,
+              pageOpenTime: _pageOpenTime,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                ),
+                padding: const EdgeInsets.all(5),
 
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[Text(key), Text(element.price.toString())],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[Text(key), Text(element.price.toString())],
+                ),
               ),
             ),
           );

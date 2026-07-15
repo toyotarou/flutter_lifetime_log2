@@ -41,7 +41,6 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
   bool todayToushiShintakuRelationalIdBlankExists = false;
 
   final AutoScrollController autoScrollController = AutoScrollController();
-  final List<Widget> walkDataList = <Widget>[];
 
   static const double _moveAmount = 18;
   static const int _tickMs = 16;
@@ -278,7 +277,7 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
 
   ///
   Widget displayWalkDataList({required DateTime genDate}) {
-    walkDataList.clear();
+    final List<Widget> slideList = <Widget>[];
     final DateTime listBuildTime = DateTime.now();
 
     final int endDay = DateTime(genDate.year, genDate.month + 1, 0).day;
@@ -299,7 +298,7 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
 
       final String youbi = DateTime.parse(date).youbiStr;
 
-      walkDataList.add(
+      slideList.add(
         DayFlipCard(
           dayIndex: day - 1,
           pageOpenTime: listBuildTime,
@@ -497,8 +496,8 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
       slivers: <Widget>[
         SliverList(
           delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) => walkDataList[index],
-            childCount: walkDataList.length,
+            (BuildContext context, int index) => slideList[index],
+            childCount: slideList.length,
           ),
         ),
       ],

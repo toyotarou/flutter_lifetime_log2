@@ -5,6 +5,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/credit_summary_model.dart';
 import '../../models/money_spend_model.dart';
+import '../../utility/functions.dart';
 import '../parts/lifetime_dialog.dart';
 import 'credit_calendar_display_alert.dart';
 import 'monthly_credit_summary_alert.dart';
@@ -22,6 +23,15 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
     with ControllersMixin<MonthlyCreditDisplayAlert> {
   int monthlyCreditSum = 0;
   int monthlySpendCreditSum = 0;
+
+  late final DateTime _pageOpenTime;
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+    _pageOpenTime = DateTime.now();
+  }
 
   ///
   @override
@@ -119,43 +129,47 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
       final Color listColor = (element.price >= 10000) ? Colors.orangeAccent : Colors.white;
 
       list.add(
-        Container(
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-          ),
-          padding: const EdgeInsets.all(5),
+        DayFlipCard(
+          dayIndex: list.length,
+          pageOpenTime: _pageOpenTime,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+            ),
+            padding: const EdgeInsets.all(5),
 
-          child: DefaultTextStyle(
-            style: TextStyle(color: listColor, fontSize: 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(width: 70, child: Text(element.useDate)),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(element.detail),
+            child: DefaultTextStyle(
+              style: TextStyle(color: listColor, fontSize: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(width: 70, child: Text(element.useDate)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(element.detail),
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            element.item,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              element.item,
 
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
 
-                            style: const TextStyle(fontSize: 10, color: Colors.grey),
-                          ),
+                              style: const TextStyle(fontSize: 10, color: Colors.grey),
+                            ),
 
-                          Text(element.price.toString().toCurrency()),
-                        ],
-                      ),
-                    ],
+                            Text(element.price.toString().toCurrency()),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

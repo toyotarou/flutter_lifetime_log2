@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 
 class BankPriceListAlert extends ConsumerStatefulWidget {
@@ -19,11 +20,13 @@ class _BankPriceListAlertState extends ConsumerState<BankPriceListAlert> with Co
 
   Map<String, String> bankNameMap = <String, String>{};
 
+  late final DateTime _pageOpenTime;
+
   ///
   @override
   void initState() {
     super.initState();
-
+    _pageOpenTime = DateTime.now();
     bankNameMap = utility.getBankName();
   }
 
@@ -79,14 +82,18 @@ class _BankPriceListAlertState extends ConsumerState<BankPriceListAlert> with Co
 
         if (keepPrice != entry.value) {
           list.add(
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[Text(entry.key), Text(entry.value.toString().toCurrency())],
+            DayFlipCard(
+              dayIndex: list.length,
+              pageOpenTime: _pageOpenTime,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[Text(entry.key), Text(entry.value.toString().toCurrency())],
+                ),
               ),
             ),
           );

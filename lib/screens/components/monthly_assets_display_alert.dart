@@ -55,7 +55,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   bool todayToushiShintakuRelationalIdBlankExists = false;
 
   final AutoScrollController autoScrollController = AutoScrollController();
-  final List<Widget> monthlyAssetsList = <Widget>[];
 
   static const double _moveAmount = 18;
   static const int _tickMs = 16;
@@ -288,9 +287,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                           GestureDetector(
                             behavior: HitTestBehavior.opaque,
                             onTapDown: (_) {
-                              if (monthlyAssetsList.isEmpty) {
-                                return;
-                              }
                               if (!autoScrollController.hasClients) {
                                 return;
                               }
@@ -309,9 +305,6 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                           GestureDetector(
                             behavior: HitTestBehavior.opaque,
                             onTapDown: (_) {
-                              if (monthlyAssetsList.isEmpty) {
-                                return;
-                              }
                               if (!autoScrollController.hasClients) {
                                 return;
                               }
@@ -927,7 +920,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
   ///
   Widget displayMonthlyAssetsList({required DateTime genDate}) {
-    monthlyAssetsList.clear();
+    final List<Widget> slideList = <Widget>[];
 
     // このスライドのリストが構築された時刻。DayFlipCard の stagger 計算の基点として使う。
     // onSlideChanged より先にここが呼ばれるため、ローカル変数で取るのが正しい。
@@ -978,10 +971,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       beforeData[_kMoney] = moneyBeforeValue;
 
       if (dateStr == DateTime.now().yyyymmdd) {
-        monthlyAssetsList.add(const DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3));
+        slideList.add(const DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3));
       }
 
-      monthlyAssetsList.add(
+      slideList.add(
         DayFlipCard(
           dayIndex: day - 1,
           pageOpenTime: listBuildTime,
@@ -1011,11 +1004,11 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       slivers: <Widget>[
         SliverList(
           delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-            if (index < 0 || index >= monthlyAssetsList.length) {
+            if (index < 0 || index >= slideList.length) {
               return const SizedBox.shrink();
             }
-            return monthlyAssetsList[index];
-          }, childCount: monthlyAssetsList.length),
+            return slideList[index];
+          }, childCount: slideList.length),
         ),
       ],
     );

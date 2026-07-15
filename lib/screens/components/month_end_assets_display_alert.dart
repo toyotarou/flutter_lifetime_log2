@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../extensions/extensions.dart';
 import '../../models/common/year_day_assets_model.dart';
+import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 
 class MonthEndAssetsDisplayAlert extends ConsumerStatefulWidget {
@@ -27,6 +28,15 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
   Utility utility = Utility();
 
   int yearlyTotal = 0;
+
+  late final DateTime _pageOpenTime;
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+    _pageOpenTime = DateTime.now();
+  }
 
   ///
   @override
@@ -105,41 +115,45 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
             : widget.monthEndAssetsList[i].total - widget.monthEndAssetsList[i - 1].total;
 
         list.add(
-          Container(
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-            ),
-            padding: const EdgeInsets.all(5),
-            child: DefaultTextStyle(
-              style: const TextStyle(fontSize: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text('${element.date.split('-')[0]}-${element.date.split('-')[1]}'),
-                  Row(
-                    children: <Widget>[
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Text(element.total.toString().toCurrency()),
+          DayFlipCard(
+            dayIndex: list.length,
+            pageOpenTime: _pageOpenTime,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+              ),
+              padding: const EdgeInsets.all(5),
+              child: DefaultTextStyle(
+                style: const TextStyle(fontSize: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text('${element.date.split('-')[0]}-${element.date.split('-')[1]}'),
+                    Row(
+                      children: <Widget>[
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Text(element.total.toString().toCurrency()),
 
-                          Text(diff.toString().toCurrency()),
-                        ],
-                      ),
-
-                      const SizedBox(width: 20),
-
-                      SizedBox(
-                        width: 30,
-                        child: utility.dispUpDownMark(
-                          before: (i == 0) ? widget.lastYearFinalAssets : widget.monthEndAssetsList[i - 1].total,
-                          after: widget.monthEndAssetsList[i].total,
-                          size: 18,
+                            Text(diff.toString().toCurrency()),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+
+                        const SizedBox(width: 20),
+
+                        SizedBox(
+                          width: 30,
+                          child: utility.dispUpDownMark(
+                            before: (i == 0) ? widget.lastYearFinalAssets : widget.monthEndAssetsList[i - 1].total,
+                            after: widget.monthEndAssetsList[i].total,
+                            size: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

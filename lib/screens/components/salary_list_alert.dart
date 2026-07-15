@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/salary_model.dart';
+import '../../utility/functions.dart';
 
 class SalaryListAlert extends ConsumerStatefulWidget {
   const SalaryListAlert({super.key});
@@ -13,6 +14,15 @@ class SalaryListAlert extends ConsumerStatefulWidget {
 }
 
 class _SalaryListAlertState extends ConsumerState<SalaryListAlert> with ControllersMixin<SalaryListAlert> {
+  late final DateTime _pageOpenTime;
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+    _pageOpenTime = DateTime.now();
+  }
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -81,24 +91,28 @@ class _SalaryListAlertState extends ConsumerState<SalaryListAlert> with Controll
 
         for (final SalaryModel element in value) {
           list.add(
-            DefaultTextStyle(
-              style: const TextStyle(fontSize: 12),
+            DayFlipCard(
+              dayIndex: list.length,
+              pageOpenTime: _pageOpenTime,
+              child: DefaultTextStyle(
+                style: const TextStyle(fontSize: 12),
 
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                ),
-                padding: const EdgeInsets.all(5),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                  ),
+                  padding: const EdgeInsets.all(5),
 
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[Text(element.yearmonth), Text(element.company)],
-                    ),
-                    Text(element.salary.toString().toCurrency()),
-                  ],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[Text(element.yearmonth), Text(element.company)],
+                      ),
+                      Text(element.salary.toString().toCurrency()),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/credit_summary_model.dart';
+import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../parts/lifetime_dialog.dart';
 import 'monthly_credit_bar_chart_alert.dart';
@@ -24,6 +25,15 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
   int listSum = 0;
 
   Utility utility = Utility();
+
+  late final DateTime _pageOpenTime;
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+    _pageOpenTime = DateTime.now();
+  }
 
   ///
   @override
@@ -99,16 +109,20 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
           final Color listColor = (sum >= 30000) ? Colors.orangeAccent : Colors.white;
 
           list.add(
-            Container(
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-              ),
-              padding: const EdgeInsets.all(5),
-              child: DefaultTextStyle(
-                style: TextStyle(fontSize: 12, color: listColor),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(key), Text(sum.toString().toCurrency())],
+            DayFlipCard(
+              dayIndex: list.length,
+              pageOpenTime: _pageOpenTime,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                ),
+                padding: const EdgeInsets.all(5),
+                child: DefaultTextStyle(
+                  style: TextStyle(fontSize: 12, color: listColor),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[Text(key), Text(sum.toString().toCurrency())],
+                  ),
                 ),
               ),
             ),
