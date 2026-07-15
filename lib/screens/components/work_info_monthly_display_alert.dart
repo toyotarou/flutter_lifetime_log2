@@ -54,11 +54,11 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
         return;
       }
       if (appParamState.keepWorkHistoryModelMap.isEmpty) {
-        await workHistoryNotifier.getAllWorkHistoryData();
+        final Map<String, WorkHistoryModel> fetchedMap = await workHistoryNotifier.getAllWorkHistoryData();
         if (!mounted) {
           return;
         }
-        appParamNotifier.setKeepWorkHistoryModelMap(map: workHistoryState.workHistoryModelMap);
+        appParamNotifier.setKeepWorkHistoryModelMap(map: fetchedMap);
       }
     });
   }
@@ -287,45 +287,45 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
             index: dayNum,
             controller: autoScrollController,
             child: Container(
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-          ),
-          padding: const EdgeInsets.all(5),
-          child: Row(
-            children: <Widget>[
-              Expanded(child: Text(element.day)),
-              Expanded(
-                child: Container(alignment: Alignment.center, child: Text(element.start)),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
               ),
-              Expanded(
-                child: Container(alignment: Alignment.center, child: Text(element.end)),
-              ),
-              Expanded(
-                child: Container(
-                  alignment: Alignment.topRight,
-                  child: Builder(
-                    builder: (_) {
-                      final Duration duration = calculateWorkDuration(
-                        date: date,
-                        start: element.start,
-                        end: element.end,
-                      );
-
-                      if (duration == Duration.zero) {
-                        return const Text('-');
-                      }
-
-                      final int hours = duration.inHours;
-                      final int minutes = duration.inMinutes.remainder(60);
-
-                      return Text('$hours時間$minutes分');
-                    },
+              padding: const EdgeInsets.all(5),
+              child: Row(
+                children: <Widget>[
+                  Expanded(child: Text(element.day)),
+                  Expanded(
+                    child: Container(alignment: Alignment.center, child: Text(element.start)),
                   ),
-                ),
+                  Expanded(
+                    child: Container(alignment: Alignment.center, child: Text(element.end)),
+                  ),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.topRight,
+                      child: Builder(
+                        builder: (_) {
+                          final Duration duration = calculateWorkDuration(
+                            date: date,
+                            start: element.start,
+                            end: element.end,
+                          );
+
+                          if (duration == Duration.zero) {
+                            return const Text('-');
+                          }
+
+                          final int hours = duration.inHours;
+                          final int minutes = duration.inMinutes.remainder(60);
+
+                          return Text('$hours時間$minutes分');
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
           ),
         ),
       );

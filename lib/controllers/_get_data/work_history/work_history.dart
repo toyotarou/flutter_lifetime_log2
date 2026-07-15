@@ -53,6 +53,12 @@ class WorkHistory extends _$WorkHistory {
         }
       });
 
+      workContractList.sort((WorkContractModel a, WorkContractModel b) {
+        final String aKey = '${a.year}-${a.month.padLeft(2, '0')}';
+        final String bKey = '${b.year}-${b.month.padLeft(2, '0')}';
+        return aKey.compareTo(bKey);
+      });
+
       final WorkContractModel first = workContractList.first;
 
       final int diffDays = DateTime.now().difference(DateTime(first.year.toInt(), first.month.toInt())).inDays;
@@ -109,12 +115,16 @@ class WorkHistory extends _$WorkHistory {
   }
 
   ///
-  Future<void> getAllWorkHistoryData() async {
+  Future<Map<String, WorkHistoryModel>> getAllWorkHistoryData() async {
     try {
       final WorkHistoryState newState = await fetchAllWorkHistoryData();
 
       state = newState;
-    } catch (_) {}
+
+      return newState.workHistoryModelMap;
+    } catch (_) {
+      return <String, WorkHistoryModel>{};
+    }
   }
 
   //============================================== api
