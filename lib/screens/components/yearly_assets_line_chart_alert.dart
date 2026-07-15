@@ -4,11 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/common/monthly_assets_data.dart';
 import '../../models/gold_model.dart';
 import '../../models/money_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../../utility/assets_calc.dart';
+import '../parts/lifetime_dialog.dart';
+import 'monthly_assets_line_chart_alert.dart';
 
 class YearlyAssetsLineChartAlert extends ConsumerStatefulWidget {
   const YearlyAssetsLineChartAlert({super.key, required this.year});
@@ -43,6 +46,8 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
   bool _taxAdjusted = false;
 
   List<String> _dateList = <String>[];
+
+  Map<String, MonthlyAssetsData> monthlyChartData = <String, MonthlyAssetsData>{};
 
   final TransformationController _transformationController = TransformationController();
   bool _zoomMode = false;
@@ -95,7 +100,7 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
                   const Text('Evolution of Assets'),
                   Row(
                     children: <Widget>[
-                      if (_zoomMode)
+                      if (_zoomMode) ...<Widget>[
                         IconButton(
                           onPressed: () => setState(() {
                             _transformationController.value = Matrix4.identity();
@@ -103,6 +108,8 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
                           }),
                           icon: const Icon(Icons.lock_reset),
                         ),
+                      ],
+
                       IconButton(
                         onPressed: () {
                           setState(() {
@@ -114,6 +121,16 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
                           });
                         },
                         icon: Icon(Icons.expand, color: _zoomMode ? Colors.yellowAccent : Colors.white),
+                      ),
+
+                      IconButton(
+                        onPressed: () {
+                          LifetimeDialog(
+                            context: context,
+                            widget: MonthlyAssetsLineChartAlert(monthlyChartData: monthlyChartData, taxAdjusted: _taxAdjusted),
+                          );
+                        },
+                        icon: const Icon(Icons.calendar_month, color: Colors.greenAccent),
                       ),
                     ],
                   ),
@@ -376,6 +393,8 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
       _stockFlspots = _stockFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
     }
 
+    _buildMonthlyMap();
+
     if (list.isNotEmpty) {
       graphMin = 0;
       graphMax = 15000000;
@@ -599,6 +618,50 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
         titlesData: const FlTitlesData(show: false),
         rangeAnnotations: RangeAnnotations(verticalRangeAnnotations: _buildYearHighlight()),
         lineBarsData: <LineChartBarData>[],
+      );
+    }
+  }
+
+  ///
+  void _buildMonthlyMap() {
+    monthlyChartData = <String, MonthlyAssetsData>{};
+    if (_dateList.isEmpty) {
+      return;
+    }
+
+    // FlSpots → index lookup
+    final Map<int, int> moneyByIdx = <int, int>{for (final FlSpot s in _flspots) s.x.toInt(): s.y.toInt()};
+    // shintaku/stock は _taxAdjusted 適用済み
+    final Map<int, int> shintakuByIdx = <int, int>{for (final FlSpot s in _shintakuFlspots) s.x.toInt(): s.y.toInt()};
+    final Map<int, int> stockByIdx = <int, int>{for (final FlSpot s in _stockFlspots) s.x.toInt(): s.y.toInt()};
+    // gold は常に *0.8 済み → 生値を復元して条件適用
+    final Map<int, int> goldRawByIdx = <int, int>{
+      for (final FlSpot s in _goldFlspots) s.x.toInt(): (s.y / 0.8).round(),
+    };
+    // insurance/nenkin は常に *0.7 済み → 生値を復元して条件適用
+    final Map<int, int> insuranceRawByIdx = <int, int>{
+      for (final FlSpot s in _insuranceFlspots) s.x.toInt(): (s.y / 0.7).round(),
+    };
+    final Map<int, int> nenkinRawByIdx = <int, int>{
+      for (final FlSpot s in _nenkinFlspots) s.x.toInt(): (s.y / 0.7).round(),
+    };
+
+    for (int idx = 0; idx < _dateList.length; idx++) {
+      final List<String> parts = _dateList[idx].split('-');
+      final String monthKey = '${parts[0]}-${parts[1]}-01';
+
+      final int rawGold = goldRawByIdx[idx] ?? 0;
+      final int rawInsurance = insuranceRawByIdx[idx] ?? 0;
+      final int rawNenkin = nenkinRawByIdx[idx] ?? 0;
+
+      // 各月の最終日のデータで上書き
+      monthlyChartData[monthKey] = MonthlyAssetsData(
+        money: moneyByIdx[idx] ?? 0,
+        shintaku: shintakuByIdx[idx] ?? 0,
+        stock: stockByIdx[idx] ?? 0,
+        gold: _taxAdjusted ? (rawGold * 0.8).toInt() : rawGold,
+        insurance: _taxAdjusted ? (rawInsurance * 0.7).toInt() : rawInsurance,
+        nenkin: _taxAdjusted ? (rawNenkin * 0.7).toInt() : rawNenkin,
       );
     }
   }
