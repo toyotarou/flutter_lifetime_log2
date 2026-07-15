@@ -32,13 +32,18 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
   String _selectedBaseMonth = '2023-01';
   late FixedExtentScrollController _monthWheelController;
 
+  // 太線（新しい月）と細線（古い月）の末端値比較
+  bool? _moneyUp, _shintakuUp, _stockUp, _goldUp, _insuranceUp, _nenkinUp;
+
   static const String _startMonth = '2023-01';
 
+  ///
   String get _currentYearMonth {
     final DateTime now = DateTime.now();
     return '${now.year}-${now.month.toString().padLeft(2, '0')}';
   }
 
+  ///
   String _addMonths(String ym, int delta) {
     final List<String> parts = ym.split('-');
     int year = int.parse(parts[0]);
@@ -54,6 +59,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
     return '$year-${month.toString().padLeft(2, '0')}';
   }
 
+  ///
   bool get _canGoForward {
     final String checkTop = _displayedMonths.length == 1
         ? _addMonths(_displayedMonths[0], 1)
@@ -61,6 +67,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
     return checkTop.compareTo(_currentYearMonth) <= 0;
   }
 
+  ///
   @override
   void initState() {
     super.initState();
@@ -69,6 +76,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
     _monthWheelController = FixedExtentScrollController(initialItem: idx >= 0 ? idx : months.length - 1);
   }
 
+  ///
   @override
   void dispose() {
     _monthWheelController.dispose();
@@ -80,6 +88,14 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
   static const int _graphMin = 0;
   static const int _graphMax = 15000000;
 
+  static const Color _colorMoney = Colors.white;
+  static const Color _colorShintaku = Colors.yellowAccent;
+  static const Color _colorStock = Colors.greenAccent;
+  static const Color _colorGold = Colors.lightBlueAccent;
+  static const Color _colorInsurance = Color(0xFFEA80FC);
+  static const Color _colorNenkin = Colors.orangeAccent;
+
+  ///
   @override
   Widget build(BuildContext context) {
     _setChartData();
@@ -105,14 +121,34 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
 
                   Row(
                     children: <Widget>[
-                      GestureDetector(
-                        onTap: _canGoBackward ? _goBackward : null,
-                        child: Icon(Icons.arrow_back, color: _canGoBackward ? Colors.white : Colors.grey),
+                      Material(
+                        color: Colors.white.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(24),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(24),
+                          splashColor: Colors.white54,
+                          highlightColor: Colors.white24,
+                          onTap: _canGoBackward ? _goBackward : null,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Icon(Icons.arrow_back, color: _canGoBackward ? Colors.white : Colors.grey),
+                          ),
+                        ),
                       ),
-                      const SizedBox(width: 40),
-                      GestureDetector(
-                        onTap: _canGoForward ? _goForward : null,
-                        child: Icon(Icons.arrow_forward, color: _canGoForward ? Colors.white : Colors.grey),
+                      const SizedBox(width: 8),
+                      Material(
+                        color: Colors.white.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(24),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(24),
+                          splashColor: Colors.white54,
+                          highlightColor: Colors.white24,
+                          onTap: _canGoForward ? _goForward : null,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Icon(Icons.arrow_forward, color: _canGoForward ? Colors.white : Colors.grey),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -167,17 +203,18 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                       ],
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _displayedMonths = <String>[_selectedBaseMonth];
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(color: Colors.blueGrey[700], borderRadius: BorderRadius.circular(6)),
-                      child: const Text('変更', style: TextStyle(fontSize: 12)),
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    height: 40,
+                    child: FilledButton(
+                      onPressed: () => setState(() => _displayedMonths = <String>[_selectedBaseMonth]),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.blueGrey[600],
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
+                      child: const Text('変更'),
                     ),
                   ),
                 ],
@@ -205,7 +242,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                   children: <TextSpan>[
                     TextSpan(
                       text: 'money',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: _colorMoney),
                     ),
                     TextSpan(
                       text: ' / ',
@@ -213,7 +250,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                     ),
                     TextSpan(
                       text: 'shintaku',
-                      style: TextStyle(color: Colors.yellowAccent),
+                      style: TextStyle(color: _colorShintaku),
                     ),
                     TextSpan(
                       text: ' / ',
@@ -221,7 +258,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                     ),
                     TextSpan(
                       text: 'stock',
-                      style: TextStyle(color: Colors.greenAccent),
+                      style: TextStyle(color: _colorStock),
                     ),
                     TextSpan(
                       text: ' / ',
@@ -229,7 +266,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                     ),
                     TextSpan(
                       text: 'gold',
-                      style: TextStyle(color: Colors.lightBlueAccent),
+                      style: TextStyle(color: _colorGold),
                     ),
                     TextSpan(
                       text: ' / ',
@@ -237,7 +274,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                     ),
                     TextSpan(
                       text: 'insurance',
-                      style: TextStyle(color: Color(0xFFEA80FC)),
+                      style: TextStyle(color: _colorInsurance),
                     ),
                     TextSpan(
                       text: ' / ',
@@ -245,7 +282,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                     ),
                     TextSpan(
                       text: 'nenkin',
-                      style: TextStyle(color: Colors.orangeAccent),
+                      style: TextStyle(color: _colorNenkin),
                     ),
                   ],
                 ),
@@ -266,13 +303,13 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
     }
     setState(() {
       if (_displayedMonths.length == 1) {
-        // 単月 → 2枚: 現在の月 + 翌月
         _displayedMonths = <String>[_displayedMonths[0], _addMonths(_displayedMonths[0], 1)];
       } else {
-        // 2枚 → 1ヶ月スライド
         _displayedMonths = <String>[_displayedMonths[1], _addMonths(_displayedMonths[1], 1)];
       }
+      _selectedBaseMonth = _displayedMonths[0];
     });
+    _animateWheelTo(_displayedMonths[0]);
   }
 
   ///
@@ -282,15 +319,24 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
     }
     setState(() {
       if (_displayedMonths[0].compareTo(_startMonth) <= 0) {
-        // base が開始月 → 単月に戻る
         _displayedMonths = <String>[_displayedMonths[0]];
       } else {
-        // 1ヶ月スライドバック
         _displayedMonths = <String>[_addMonths(_displayedMonths[0], -1), _displayedMonths[0]];
       }
+      _selectedBaseMonth = _displayedMonths[0];
     });
+    _animateWheelTo(_displayedMonths[0]);
   }
 
+  ///
+  void _animateWheelTo(String ym) {
+    final int idx = _buildMonthList().indexOf(ym);
+    if (idx >= 0) {
+      _monthWheelController.animateToItem(idx, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+    }
+  }
+
+  ///
   List<String> _buildMonthList() {
     final List<String> list = <String>[];
     String m = _startMonth;
@@ -304,6 +350,15 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
   ///
   void _setChartData() {
     _hasData = false;
+    _moneyUp = null;
+    _shintakuUp = null;
+    _stockUp = null;
+    _goldUp = null;
+    _insuranceUp = null;
+    _nenkinUp = null;
+
+    double? thinMoneyLast, thinShintakuLast, thinStockLast, thinGoldLast, thinInsuranceLast, thinNenkinLast;
+
     final List<LineChartBarData> allBars = <LineChartBarData>[];
 
     for (int monthIdx = 0; monthIdx < _displayedMonths.length; monthIdx++) {
@@ -411,53 +466,132 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
         finalNenkin = nenkinSpots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.70).toInt().toDouble())).toList();
       }
 
+      // 先月末との比較（細線→太線の順で処理されるので thin の値を先に保存）
+      if (!isThick) {
+        thinMoneyLast = moneySpots.isEmpty ? null : moneySpots.last.y;
+        thinShintakuLast = finalShintaku.isEmpty ? null : finalShintaku.last.y;
+        thinStockLast = finalStock.isEmpty ? null : finalStock.last.y;
+        thinGoldLast = finalGold.isEmpty ? null : finalGold.last.y;
+        thinInsuranceLast = finalInsurance.isEmpty ? null : finalInsurance.last.y;
+        thinNenkinLast = finalNenkin.isEmpty ? null : finalNenkin.last.y;
+      } else {
+        final double? tm = moneySpots.isEmpty ? null : moneySpots.last.y;
+        final double? ts = finalShintaku.isEmpty ? null : finalShintaku.last.y;
+        final double? tst = finalStock.isEmpty ? null : finalStock.last.y;
+        final double? tg = finalGold.isEmpty ? null : finalGold.last.y;
+        final double? ti = finalInsurance.isEmpty ? null : finalInsurance.last.y;
+        final double? tn = finalNenkin.isEmpty ? null : finalNenkin.last.y;
+        if (tm != null && thinMoneyLast != null) {
+          _moneyUp = tm > thinMoneyLast;
+        }
+        if (ts != null && thinShintakuLast != null) {
+          _shintakuUp = ts > thinShintakuLast;
+        }
+        if (tst != null && thinStockLast != null) {
+          _stockUp = tst > thinStockLast;
+        }
+        if (tg != null && thinGoldLast != null) {
+          _goldUp = tg > thinGoldLast;
+        }
+        if (ti != null && thinInsuranceLast != null) {
+          _insuranceUp = ti > thinInsuranceLast;
+        }
+        if (tn != null && thinNenkinLast != null) {
+          _nenkinUp = tn > thinNenkinLast;
+        }
+      }
+
+      // クロージャが後から null になる問題を防ぐためローカル変数に固定
+      final bool moneyUp = _moneyUp ?? true;
+      final bool shintakuUp = _shintakuUp ?? true;
+      final bool stockUp = _stockUp ?? true;
+      final bool goldUp = _goldUp ?? true;
+      final bool insuranceUp = _insuranceUp ?? true;
+      final bool nenkinUp = _nenkinUp ?? true;
+
       // barIndex: monthIdx*6 + (0=money,1=shintaku,2=stock,3=gold,4=insurance,5=nenkin)
       allBars
         ..add(
           LineChartBarData(
             spots: moneySpots,
-            color: isThick ? Colors.white.withValues(alpha: 0.6) : Colors.white,
-            dotData: const FlDotData(show: false),
+            color: isThick ? _colorMoney.withValues(alpha: 0.6) : _colorMoney,
+            dotData: isThick && _moneyUp != null
+                ? FlDotData(
+                    checkToShowDot: (FlSpot spot, LineChartBarData barData) => spot.x == barData.spots.last.x,
+                    getDotPainter: (FlSpot spot, double xPercentage, LineChartBarData bar, int index) =>
+                        _ArrowDotPainter(color: _colorMoney, isUp: moneyUp),
+                  )
+                : const FlDotData(show: false),
             barWidth: barW,
           ),
         )
         ..add(
           LineChartBarData(
             spots: finalShintaku,
-            color: isThick ? Colors.yellowAccent.withValues(alpha: 0.6) : Colors.yellowAccent,
-            dotData: const FlDotData(show: false),
+            color: isThick ? _colorShintaku.withValues(alpha: 0.6) : _colorShintaku,
+            dotData: isThick && _shintakuUp != null
+                ? FlDotData(
+                    checkToShowDot: (FlSpot spot, LineChartBarData barData) => spot.x == barData.spots.last.x,
+                    getDotPainter: (FlSpot spot, double xPercentage, LineChartBarData bar, int index) =>
+                        _ArrowDotPainter(color: _colorShintaku, isUp: shintakuUp),
+                  )
+                : const FlDotData(show: false),
             barWidth: barW,
           ),
         )
         ..add(
           LineChartBarData(
             spots: finalStock,
-            color: isThick ? Colors.greenAccent.withValues(alpha: 0.6) : Colors.greenAccent,
-            dotData: const FlDotData(show: false),
+            color: isThick ? _colorStock.withValues(alpha: 0.6) : _colorStock,
+            dotData: isThick && _stockUp != null
+                ? FlDotData(
+                    checkToShowDot: (FlSpot spot, LineChartBarData barData) => spot.x == barData.spots.last.x,
+                    getDotPainter: (FlSpot spot, double xPercentage, LineChartBarData bar, int index) =>
+                        _ArrowDotPainter(color: _colorStock, isUp: stockUp),
+                  )
+                : const FlDotData(show: false),
             barWidth: barW,
           ),
         )
         ..add(
           LineChartBarData(
             spots: finalGold,
-            color: isThick ? Colors.lightBlueAccent.withValues(alpha: 0.6) : Colors.lightBlueAccent,
-            dotData: const FlDotData(show: false),
+            color: isThick ? _colorGold.withValues(alpha: 0.6) : _colorGold,
+            dotData: isThick && _goldUp != null
+                ? FlDotData(
+                    checkToShowDot: (FlSpot spot, LineChartBarData barData) => spot.x == barData.spots.last.x,
+                    getDotPainter: (FlSpot spot, double xPercentage, LineChartBarData bar, int index) =>
+                        _ArrowDotPainter(color: _colorGold, isUp: goldUp),
+                  )
+                : const FlDotData(show: false),
             barWidth: barW,
           ),
         )
         ..add(
           LineChartBarData(
             spots: finalInsurance,
-            color: isThick ? const Color(0xFFEA80FC).withValues(alpha: 0.6) : const Color(0xFFEA80FC),
-            dotData: const FlDotData(show: false),
+            color: isThick ? _colorInsurance.withValues(alpha: 0.6) : _colorInsurance,
+            dotData: isThick && _insuranceUp != null
+                ? FlDotData(
+                    checkToShowDot: (FlSpot spot, LineChartBarData barData) => spot.x == barData.spots.last.x,
+                    getDotPainter: (FlSpot spot, double xPercentage, LineChartBarData bar, int index) =>
+                        _ArrowDotPainter(color: _colorInsurance, isUp: insuranceUp),
+                  )
+                : const FlDotData(show: false),
             barWidth: barW,
           ),
         )
         ..add(
           LineChartBarData(
             spots: finalNenkin,
-            color: isThick ? Colors.orangeAccent.withValues(alpha: 0.6) : Colors.orangeAccent,
-            dotData: const FlDotData(show: false),
+            color: isThick ? _colorNenkin.withValues(alpha: 0.6) : _colorNenkin,
+            dotData: isThick && _nenkinUp != null
+                ? FlDotData(
+                    checkToShowDot: (FlSpot spot, LineChartBarData barData) => spot.x == barData.spots.last.x,
+                    getDotPainter: (FlSpot spot, double xPercentage, LineChartBarData bar, int index) =>
+                        _ArrowDotPainter(color: _colorNenkin, isUp: nenkinUp),
+                  )
+                : const FlDotData(show: false),
             barWidth: barW,
           ),
         );
@@ -529,27 +663,27 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
                   ),
                   TextSpan(
                     text: '${moneyVal.toString().toCurrency()}\n',
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: _colorMoney),
                   ),
                   TextSpan(
                     text: '${shintakuVal.toString().toCurrency()}\n',
-                    style: const TextStyle(color: Colors.yellowAccent),
+                    style: const TextStyle(color: _colorShintaku),
                   ),
                   TextSpan(
                     text: '${goldVal.toString().toCurrency()}\n',
-                    style: const TextStyle(color: Colors.lightBlueAccent),
+                    style: const TextStyle(color: _colorGold),
                   ),
                   TextSpan(
                     text: '${stockVal.toString().toCurrency()}\n',
-                    style: const TextStyle(color: Colors.greenAccent),
+                    style: const TextStyle(color: _colorStock),
                   ),
                   TextSpan(
                     text: '${insuranceVal.toString().toCurrency()}\n',
-                    style: const TextStyle(color: Color(0xFFEA80FC)),
+                    style: const TextStyle(color: _colorInsurance),
                   ),
                   TextSpan(
                     text: '${nenkinVal.toString().toCurrency()}\n',
-                    style: const TextStyle(color: Colors.orangeAccent),
+                    style: const TextStyle(color: _colorNenkin),
                   ),
                   const TextSpan(
                     text: '──────────\n',
@@ -629,4 +763,37 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
       lineBarsData: <LineChartBarData>[],
     );
   }
+}
+
+class _ArrowDotPainter extends FlDotPainter {
+  const _ArrowDotPainter({required this.color, required this.isUp});
+
+  final Color color;
+  final bool isUp;
+
+  @override
+  void draw(Canvas canvas, FlSpot spot, Offset offsetInCanvas) {
+    final IconData icon = isUp ? Icons.arrow_upward : Icons.arrow_downward;
+    final TextPainter tp = TextPainter(
+      text: TextSpan(
+        text: String.fromCharCode(icon.codePoint),
+        style: TextStyle(color: color, fontSize: 40, fontFamily: icon.fontFamily, package: icon.fontPackage, height: 1),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    final Offset pos = offsetInCanvas + Offset(-tp.width / 2, isUp ? -(tp.height + 4) : 4);
+    tp.paint(canvas, pos);
+  }
+
+  @override
+  Size getSize(FlSpot spot) => const Size(44, 52);
+
+  @override
+  Color get mainColor => color;
+
+  @override
+  FlDotPainter lerp(FlDotPainter a, FlDotPainter b, double t) => b;
+
+  @override
+  List<Object?> get props => <Object?>[color, isUp];
 }
