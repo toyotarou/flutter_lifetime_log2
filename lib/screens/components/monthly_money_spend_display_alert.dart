@@ -63,6 +63,27 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   void initState() {
     super.initState();
     _baseMonth = _parseYearMonth(widget.yearmonth);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final DateTime genDate = monthForIndex(index: _initialIndex, baseMonth: _baseMonth);
+      final DateTime now = DateTime.now();
+      if (genDate.year == now.year && genDate.month == now.month) {
+        _scheduleScrollToToday();
+      }
+    });
+  }
+
+  ///
+  void _scheduleScrollToToday() {
+    // ignore: always_specify_types
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (!mounted) {
+        return;
+      }
+      if (autoScrollController.hasClients) {
+        autoScrollController.scrollToIndex(DateTime.now().day - 1, preferPosition: AutoScrollPosition.begin);
+      }
+    });
   }
 
   ///
@@ -102,7 +123,14 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
             itemCount: _itemCount,
             initialPage: _initialIndex,
             slideTransform: const CubeTransform(),
-            onSlideChanged: (int index) => setState(() => currentIndex = index),
+            onSlideChanged: (int index) {
+              setState(() => currentIndex = index);
+              final DateTime genDate = monthForIndex(index: index, baseMonth: _baseMonth);
+              final DateTime now = DateTime.now();
+              if (genDate.year == now.year && genDate.month == now.month) {
+                _scheduleScrollToToday();
+              }
+            },
             slideBuilder: (int index) => makeMonthlyMoneySpendSlide(index),
           ),
         ],
@@ -377,6 +405,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   ///
   MonthlyMoneySpendListResult buildMonthlyMoneySpendList({required DateTime genDate}) {
     final List<Widget> monthlyMoneySpendList = <Widget>[];
+    final DateTime listBuildTime = DateTime.now();
 
     final Map<String, int> creditRecordMap = <String, int>{};
 
@@ -416,132 +445,137 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
       }
 
       monthlyMoneySpendList.add(
-        AutoScrollTag(
-          // ignore: always_specify_types
-          key: ValueKey(i),
-          index: i - 1,
-          controller: autoScrollController,
-          child: Stack(
-            children: <Widget>[
-              if (appParamState.keepAmazonPurchaseMap[date] != null) ...<Widget>[
-                Positioned(
-                  right: 30,
-                  bottom: 5,
-                  child: Icon(FontAwesomeIcons.amazon, color: Colors.white.withValues(alpha: 0.4)),
-                ),
-              ],
-              if (date == DateTime.now().yyyymmdd) ...<Widget>[
-                const Positioned(
-                  left: 3,
-                  bottom: 3,
-                  child: Text('TODAY', style: TextStyle(fontSize: 10, color: Colors.orangeAccent)),
-                ),
-              ],
-              Container(
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
-                ),
-                padding: const EdgeInsets.all(5),
-                child: DefaultTextStyle(
-                  style: const TextStyle(fontSize: 12),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          if (inputDisplay)
-                            GestureDetector(
-                              onTap: () => LifetimeDialog(
-                                context: context,
-                                widget: SpendDateInputAlert(date: date, data: appParamState.keepMoneySpendMap[date]),
-                              ),
-                              child: Icon(
-                                Icons.input,
-                                color: (diff != 0)
-                                    ? Colors.greenAccent.withValues(alpha: 0.4)
-                                    : Colors.white.withValues(alpha: 0.4),
-                              ),
-                            )
-                          else
-                            const Icon(Icons.square_outlined, color: Colors.transparent),
-
-                          if (dateObj.isBefore(today)) ...<Widget>[
-                            const SizedBox(height: 10),
-                            GestureDetector(
-                              onTap: () {
-                                LifetimeDialog(
-                                  context: context,
-                                  widget: displayThisMonthSpendTotal(date: date),
-
-                                  paddingTop: context.screenSize.height * 0.1,
-                                  paddingBottom: context.screenSize.height * 0.4,
-                                  paddingRight: context.screenSize.width * 0.2,
-                                  paddingLeft: context.screenSize.width * 0.2,
-
-                                  clearBarrierColor: true,
-                                );
-
-                                //appParamState.keepMoneySpendMap
-                              },
-                              child: CircleAvatar(
-                                radius: 15,
-                                backgroundColor: Colors.black.withValues(alpha: 0.3),
-                                child: const Icon(Icons.check, size: 10),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-
-                      const SizedBox(width: 20),
-
-                      Expanded(
-                        child: Column(
+        DayFlipCard(
+          dayIndex: i - 1,
+          pageOpenTime: listBuildTime,
+          initialDelayMs: 600,
+          child: AutoScrollTag(
+            // ignore: always_specify_types
+            key: ValueKey(i),
+            index: i - 1,
+            controller: autoScrollController,
+            child: Stack(
+              children: <Widget>[
+                if (appParamState.keepAmazonPurchaseMap[date] != null) ...<Widget>[
+                  Positioned(
+                    right: 30,
+                    bottom: 5,
+                    child: Icon(FontAwesomeIcons.amazon, color: Colors.white.withValues(alpha: 0.4)),
+                  ),
+                ],
+                if (date == DateTime.now().yyyymmdd) ...<Widget>[
+                  const Positioned(
+                    left: 3,
+                    bottom: 3,
+                    child: Text('TODAY', style: TextStyle(fontSize: 10, color: Colors.orangeAccent)),
+                  ),
+                ],
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
+                  ),
+                  padding: const EdgeInsets.all(5),
+                  child: DefaultTextStyle(
+                    style: const TextStyle(fontSize: 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Column(
                           children: <Widget>[
-                            Container(
-                              decoration: BoxDecoration(color: headColor),
-                              padding: const EdgeInsets.symmetric(vertical: 2),
-                              margin: const EdgeInsets.symmetric(vertical: 2),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      Text(i.toString().padLeft(2, '0')),
-                                      const SizedBox(width: 5),
-                                      Text(youbi),
-                                    ],
-                                  ),
-                                  Text(spend.toString().toCurrency()),
-                                ],
-                              ),
-                            ),
-                            if (appParamState.keepMoneySpendMap[date] != null) ...<Widget>[
-                              displayDateMoneySpendList(date: date, creditRecordMap: creditRecordMap),
-                            ],
-                            const SizedBox(height: 5),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                const SizedBox.shrink(),
-                                Text(
-                                  diff.toString().toCurrency(),
-                                  style: TextStyle(
-                                    color: (diff != 0)
-                                        ? Colors.yellowAccent.withValues(alpha: 0.5)
-                                        : Colors.pinkAccent.withValues(alpha: 0.5),
-                                  ),
+                            if (inputDisplay)
+                              GestureDetector(
+                                onTap: () => LifetimeDialog(
+                                  context: context,
+                                  widget: SpendDateInputAlert(date: date, data: appParamState.keepMoneySpendMap[date]),
                                 ),
-                              ],
-                            ),
+                                child: Icon(
+                                  Icons.input,
+                                  color: (diff != 0)
+                                      ? Colors.greenAccent.withValues(alpha: 0.4)
+                                      : Colors.white.withValues(alpha: 0.4),
+                                ),
+                              )
+                            else
+                              const Icon(Icons.square_outlined, color: Colors.transparent),
+
+                            if (dateObj.isBefore(today)) ...<Widget>[
+                              const SizedBox(height: 10),
+                              GestureDetector(
+                                onTap: () {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: displayThisMonthSpendTotal(date: date),
+
+                                    paddingTop: context.screenSize.height * 0.1,
+                                    paddingBottom: context.screenSize.height * 0.4,
+                                    paddingRight: context.screenSize.width * 0.2,
+                                    paddingLeft: context.screenSize.width * 0.2,
+
+                                    clearBarrierColor: true,
+                                  );
+
+                                  //appParamState.keepMoneySpendMap
+                                },
+                                child: CircleAvatar(
+                                  radius: 15,
+                                  backgroundColor: Colors.black.withValues(alpha: 0.3),
+                                  child: const Icon(Icons.check, size: 10),
+                                ),
+                              ),
+                            ],
                           ],
                         ),
-                      ),
-                    ],
+
+                        const SizedBox(width: 20),
+
+                        Expanded(
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                decoration: BoxDecoration(color: headColor),
+                                padding: const EdgeInsets.symmetric(vertical: 2),
+                                margin: const EdgeInsets.symmetric(vertical: 2),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        Text(i.toString().padLeft(2, '0')),
+                                        const SizedBox(width: 5),
+                                        Text(youbi),
+                                      ],
+                                    ),
+                                    Text(spend.toString().toCurrency()),
+                                  ],
+                                ),
+                              ),
+                              if (appParamState.keepMoneySpendMap[date] != null) ...<Widget>[
+                                displayDateMoneySpendList(date: date, creditRecordMap: creditRecordMap),
+                              ],
+                              const SizedBox(height: 5),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  const SizedBox.shrink(),
+                                  Text(
+                                    diff.toString().toCurrency(),
+                                    style: TextStyle(
+                                      color: (diff != 0)
+                                          ? Colors.yellowAccent.withValues(alpha: 0.5)
+                                          : Colors.pinkAccent.withValues(alpha: 0.5),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );

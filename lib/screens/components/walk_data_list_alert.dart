@@ -66,6 +66,27 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
     super.initState();
 
     _baseMonth = DateTime.parse('${widget.yearmonth}-01');
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final DateTime genDate = monthForIndex(index: _initialIndex, baseMonth: _baseMonth);
+      final DateTime now = DateTime.now();
+      if (genDate.year == now.year && genDate.month == now.month) {
+        _scheduleScrollToToday();
+      }
+    });
+  }
+
+  ///
+  void _scheduleScrollToToday() {
+    // ignore: always_specify_types
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (!mounted) {
+        return;
+      }
+      if (autoScrollController.hasClients) {
+        autoScrollController.scrollToIndex(DateTime.now().day, preferPosition: AutoScrollPosition.begin);
+      }
+    });
   }
 
   ///
@@ -87,7 +108,14 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
             itemCount: _itemCount,
             initialPage: _initialIndex,
             slideTransform: const CubeTransform(),
-            onSlideChanged: (int index) => setState(() => currentIndex = index),
+            onSlideChanged: (int index) {
+              setState(() => currentIndex = index);
+              final DateTime genDate = monthForIndex(index: index, baseMonth: _baseMonth);
+              final DateTime now = DateTime.now();
+              if (genDate.year == now.year && genDate.month == now.month) {
+                _scheduleScrollToToday();
+              }
+            },
             slideBuilder: (int index) => makeMonthlyWalkDataSlide(index),
           ),
         ],
@@ -251,6 +279,7 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
   ///
   Widget displayWalkDataList({required DateTime genDate}) {
     walkDataList.clear();
+    final DateTime listBuildTime = DateTime.now();
 
     final int endDay = DateTime(genDate.year, genDate.month + 1, 0).day;
 
@@ -271,12 +300,16 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
       final String youbi = DateTime.parse(date).youbiStr;
 
       walkDataList.add(
-        AutoScrollTag(
-          // ignore: always_specify_types
-          key: ValueKey(day),
-          index: day,
-          controller: autoScrollController,
-          child: Stack(
+        DayFlipCard(
+          dayIndex: day - 1,
+          pageOpenTime: listBuildTime,
+          initialDelayMs: 600,
+          child: AutoScrollTag(
+            // ignore: always_specify_types
+            key: ValueKey(day),
+            index: day,
+            controller: autoScrollController,
+            child: Stack(
             children: <Widget>[
               if (geolocModelList != null &&
                   geolocModelList.isNotEmpty &&
@@ -454,6 +487,7 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
               ),
             ],
           ),
+        ),
         ),
       );
     }

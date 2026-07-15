@@ -47,6 +47,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   late final int _year;
   late final int _month;
   late final String _safeYearMonth;
+  late final DateTime _pageOpenTime;
 
   ///
   @override
@@ -61,6 +62,11 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     _month = rawMonth.clamp(1, 12);
 
     _safeYearMonth = '${_year.toString().padLeft(4, '0')}-${_month.toString().padLeft(2, '0')}';
+    _pageOpenTime = now;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToTodayIfCurrentMonth();
+    });
   }
 
   ///
@@ -199,6 +205,23 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   }
 
   ///
+  void _scrollToTodayIfCurrentMonth() {
+    final DateTime now = DateTime.now();
+    if (_year != now.year || _month != now.month) {
+      return;
+    }
+
+    final int todayIndex = now.day - 1;
+
+    // ignore: always_specify_types
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (mounted && autoScrollController.hasClients) {
+        autoScrollController.scrollToIndex(todayIndex, preferPosition: AutoScrollPosition.begin);
+      }
+    });
+  }
+
+  ///
   void _scrollBy(double delta) {
     if (!autoScrollController.hasClients) {
       return;
@@ -215,7 +238,14 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     // 月の最終日を一度だけ計算
     final int lastDay = DateTime(_year, _month + 1, 0).day;
 
-    final List<Widget> list = <Widget>[for (int i = 1; i <= lastDay; i++) _buildDayCard(day: i)];
+    final List<Widget> list = <Widget>[
+      for (int i = 1; i <= lastDay; i++)
+        DayFlipCard(
+          dayIndex: i - 1,
+          pageOpenTime: _pageOpenTime,
+          child: _buildDayCard(day: i),
+        ),
+    ];
 
     return CustomScrollView(
       controller: autoScrollController,

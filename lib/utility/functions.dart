@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -382,4 +382,84 @@ DateTime monthForIndex({required int index, required DateTime baseMonth}) {
 DateTime addMonths(DateTime base, int deltaMonths) {
   // Using DateTime constructor for safer month arithmetic
   return DateTime(base.year, base.month + deltaMonths);
+}
+
+/////////////////////
+
+const int flipCardDurationMs = 300;
+const int flipCardDelayMs = 40;
+
+/// 上端を軸に手前へ倒れてくる（パタパタ）入場アニメーション付きカードラッパー。
+/// [dayIndex] は 0 始まりのインデックス（day - 1）。
+/// [pageOpenTime] はページまたはスライドが開いた時刻で、残り遅延の計算に使う。
+/// [initialDelayMs] はスタガー開始前の追加待機時間。カルーセルなど遷移アニメーションが
+/// 先に走る場合に設定し、遷移完了後にパタパタが見えるようにする。
+class DayFlipCard extends StatefulWidget {
+  const DayFlipCard({
+    super.key,
+    required this.dayIndex,
+    required this.pageOpenTime,
+    this.initialDelayMs = 0,
+    required this.child,
+  });
+
+  final int dayIndex;
+  final DateTime pageOpenTime;
+  final int initialDelayMs;
+  final Widget child;
+
+  @override
+  State<DayFlipCard> createState() => _DayFlipCardState();
+}
+
+class _DayFlipCardState extends State<DayFlipCard> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: flipCardDurationMs),
+      vsync: this,
+    );
+    _animation = Tween<double>(
+      begin: -pi / 2,
+      end: 0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    final int targetDelay = widget.initialDelayMs + widget.dayIndex * flipCardDelayMs;
+    final int elapsed = DateTime.now().difference(widget.pageOpenTime).inMilliseconds;
+    final int remaining = (targetDelay - elapsed).clamp(0, targetDelay);
+
+    // ignore: always_specify_types
+    Future.delayed(Duration(milliseconds: remaining), () {
+      if (mounted) {
+        _controller.forward();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (BuildContext context, Widget? child) {
+        return Transform(
+          alignment: Alignment.topCenter,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.001)
+            ..rotateX(_animation.value),
+          child: child,
+        );
+      },
+      child: widget.child,
+    );
+  }
 }

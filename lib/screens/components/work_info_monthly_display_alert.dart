@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
@@ -31,12 +32,22 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
 
   Utility utility = Utility();
 
+  final AutoScrollController autoScrollController = AutoScrollController();
+
   ///
   @override
   void initState() {
     super.initState();
 
     _baseMonth = DateTime.parse('${widget.yearmonth}-01');
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final DateTime genDate = monthForIndex(index: _initialIndex, baseMonth: _baseMonth);
+      final DateTime now = DateTime.now();
+      if (genDate.year == now.year && genDate.month == now.month) {
+        _scheduleScrollToToday();
+      }
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) {
@@ -48,6 +59,26 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
           return;
         }
         appParamNotifier.setKeepWorkHistoryModelMap(map: workHistoryState.workHistoryModelMap);
+      }
+    });
+  }
+
+  ///
+  @override
+  void dispose() {
+    autoScrollController.dispose();
+    super.dispose();
+  }
+
+  ///
+  void _scheduleScrollToToday() {
+    // ignore: always_specify_types
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (!mounted) {
+        return;
+      }
+      if (autoScrollController.hasClients) {
+        autoScrollController.scrollToIndex(DateTime.now().day, preferPosition: AutoScrollPosition.begin);
       }
     });
   }
@@ -219,7 +250,14 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
             itemCount: _itemCount,
             initialPage: _initialIndex,
             slideTransform: const CubeTransform(),
-            onSlideChanged: (int index) => setState(() => currentIndex = index),
+            onSlideChanged: (int index) {
+              setState(() => currentIndex = index);
+              final DateTime genDate = monthForIndex(index: index, baseMonth: _baseMonth);
+              final DateTime now = DateTime.now();
+              if (genDate.year == now.year && genDate.month == now.month) {
+                _scheduleScrollToToday();
+              }
+            },
             slideBuilder: (int index) => makeMonthlyWorktimeSlide(index),
           ),
         ],
@@ -229,14 +267,26 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
 
   ///
   Widget displayMonthlyWorkTimeList({required String yearmonth}) {
+    final DateTime listBuildTime = DateTime.now();
     final List<Widget> list = <Widget>[];
+    int dayIndex = 0;
 
     appParamState.keepWorkTimeMap[yearmonth]?.data.forEach((WorkTimeDataModel element) {
       final List<String> exDay = element.day.split('(');
       final String date = '$yearmonth-${exDay[0]}';
 
+      final int dayNum = int.tryParse(exDay[0]) ?? dayIndex;
       list.add(
-        Container(
+        DayFlipCard(
+          dayIndex: dayIndex++,
+          pageOpenTime: listBuildTime,
+          initialDelayMs: 600,
+          child: AutoScrollTag(
+            // ignore: always_specify_types
+            key: ValueKey(dayNum),
+            index: dayNum,
+            controller: autoScrollController,
+            child: Container(
           decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
           ),
@@ -276,10 +326,13 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
             ],
           ),
         ),
+          ),
+        ),
       );
     });
 
     return CustomScrollView(
+      controller: autoScrollController,
       slivers: <Widget>[
         SliverList(
           delegate: SliverChildBuilderDelegate(

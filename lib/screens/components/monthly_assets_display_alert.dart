@@ -67,6 +67,27 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   void initState() {
     super.initState();
     _baseMonth = _parseYearMonth(widget.yearmonth);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final DateTime genDate = monthForIndex(index: _initialIndex, baseMonth: _baseMonth);
+      final DateTime now = DateTime.now();
+      if (genDate.year == now.year && genDate.month == now.month) {
+        _scheduleScrollToToday();
+      }
+    });
+  }
+
+  ///
+  void _scheduleScrollToToday() {
+    // ignore: always_specify_types
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (!mounted) {
+        return;
+      }
+      if (autoScrollController.hasClients) {
+        autoScrollController.scrollToIndex(DateTime.now().day, preferPosition: AutoScrollPosition.begin);
+      }
+    });
   }
 
   ///
@@ -105,7 +126,14 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
             itemCount: _itemCount,
             initialPage: _initialIndex,
             slideTransform: const CubeTransform(),
-            onSlideChanged: (int index) => setState(() => currentIndex = index),
+            onSlideChanged: (int index) {
+              setState(() => currentIndex = index);
+              final DateTime genDate = monthForIndex(index: index, baseMonth: _baseMonth);
+              final DateTime now = DateTime.now();
+              if (genDate.year == now.year && genDate.month == now.month) {
+                _scheduleScrollToToday();
+              }
+            },
             slideBuilder: (int index) => makeMonthlyAssetsDisplaySlide(index),
           ),
         ],
@@ -901,6 +929,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   Widget displayMonthlyAssetsList({required DateTime genDate}) {
     monthlyAssetsList.clear();
 
+    // このスライドのリストが構築された時刻。DayFlipCard の stagger 計算の基点として使う。
+    // onSlideChanged より先にここが呼ばれるため、ローカル変数で取るのが正しい。
+    final DateTime listBuildTime = DateTime.now();
+
     final Map<String, Map<String, int>> monthlyAssetsMap = _buildMonthlyAssetsMap(
       genDate: genDate,
       adjustNum: 0.7,
@@ -950,20 +982,25 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
       }
 
       monthlyAssetsList.add(
-        AutoScrollTag(
-          // ignore: always_specify_types
-          key: ValueKey(day),
-          index: day,
-          controller: autoScrollController,
-          child: _buildDayItem(
-            day: day,
-            date: dateStr,
-            youbi: youbi,
-            isBeforeDate: isBeforeDate,
-            total: total,
-            totalBefore: totalBefore,
-            beforeData: beforeData,
-            monthlyAssets: monthlyAssets,
+        DayFlipCard(
+          dayIndex: day - 1,
+          pageOpenTime: listBuildTime,
+          initialDelayMs: 600,
+          child: AutoScrollTag(
+            // ignore: always_specify_types
+            key: ValueKey(day),
+            index: day,
+            controller: autoScrollController,
+            child: _buildDayItem(
+              day: day,
+              date: dateStr,
+              youbi: youbi,
+              isBeforeDate: isBeforeDate,
+              total: total,
+              totalBefore: totalBefore,
+              beforeData: beforeData,
+              monthlyAssets: monthlyAssets,
+            ),
           ),
         ),
       );
