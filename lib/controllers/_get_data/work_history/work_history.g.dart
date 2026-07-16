@@ -6,7 +6,7 @@ part of 'work_history.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$workHistoryHash() => r'0da5095fac88a0d892aad1152a8aa5c7b87e4c24';
+String _$workHistoryHash() => r'5288280727bf3d92541d402a88d0ed2d5d0eddc5';
 
 /// See also [WorkHistory].
 @ProviderFor(WorkHistory)

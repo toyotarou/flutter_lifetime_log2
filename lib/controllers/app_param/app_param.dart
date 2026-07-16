@@ -164,6 +164,8 @@ class AppParamState with _$AppParamState {
     @Default('') String selectedSameDay,
 
     @Default(false) bool isShowAssetsDetailGraph,
+
+    @Default(true) bool isShowBarChartMidashi,
   }) = _AppParamState;
 }
 
@@ -507,4 +509,7 @@ class AppParam extends _$AppParam {
 
   ///
   void setIsShowAssetsDetailGraph({required bool flag}) => state = state.copyWith(isShowAssetsDetailGraph: flag);
+
+  ///
+  void setIsShowBarChartMidashi({required bool flag}) => state = state.copyWith(isShowBarChartMidashi: flag);
 }

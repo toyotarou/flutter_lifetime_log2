@@ -105,7 +105,7 @@ class __$$GeolocStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$GeolocStateImpl implements _GeolocState {
+class _$GeolocStateImpl with DiagnosticableTreeMixin implements _GeolocState {
   const _$GeolocStateImpl(
       {final List<GeolocModel> geolocList = const <GeolocModel>[],
       final Map<String, List<GeolocModel>> geolocMap =
@@ -132,8 +132,17 @@ class _$GeolocStateImpl implements _GeolocState {
   }
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'GeolocState(geolocList: $geolocList, geolocMap: $geolocMap)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'GeolocState'))
+      ..add(DiagnosticsProperty('geolocList', geolocList))
+      ..add(DiagnosticsProperty('geolocMap', geolocMap));
   }
 
   @override

@@ -380,6 +380,7 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
     final int maxValue = dailyDataMap.values.map((_MonthData e) => e.price).reduce(max);
     final double chartMaxY = maxValue > 0 ? (maxValue * 1.35).ceilToDouble() : 1;
     const double barWidth = 36.0;
+    final double effectiveBarWidth = appParamState.isShowBarChartMidashi ? barWidth : 1.0;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -408,7 +409,7 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                         controller: _scrollController,
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                          width: max(context.screenSize.width - 80, sortedDates.length * barWidth + 92),
+                          width: max(context.screenSize.width - 80, sortedDates.length * effectiveBarWidth + 92),
                           child: BarChart(
                             BarChartData(
                               maxY: chartMaxY,
@@ -420,92 +421,96 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                   getTooltipColor: (_) => Colors.transparent,
                                   tooltipPadding: EdgeInsets.zero,
                                   tooltipMargin: 6,
-                                  getTooltipItem:
-                                      (BarChartGroupData group, int groupIndex, BarChartRodData rod, int rodIndex) {
-                                        if (groupIndex < 0 || groupIndex >= sortedDates.length) {
-                                          return null;
+                                  getTooltipItem: (appParamState.isShowBarChartMidashi)
+                                      ? (BarChartGroupData group, int groupIndex, BarChartRodData rod, int rodIndex) {
+                                          if (groupIndex < 0 || groupIndex >= sortedDates.length) {
+                                            return null;
+                                          }
+                                          final String key = sortedDates[groupIndex];
+                                          final _MonthData? data = dailyDataMap[key];
+                                          if (data == null) {
+                                            return null;
+                                          }
+                                          final int prevCost = groupIndex > 0
+                                              ? (dailyDataMap[sortedDates[groupIndex - 1]]?.cost ?? data.cost)
+                                              : data.cost;
+                                          final int costDiff = data.cost - prevCost;
+                                          return BarTooltipItem(
+                                            _formatMan(data.price),
+                                            const TextStyle(
+                                              color: _totalLabelColor,
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.bold,
+                                              height: 1.6,
+                                            ),
+                                            textAlign: TextAlign.right,
+                                            children: <TextSpan>[
+                                              TextSpan(
+                                                text: '\n${_formatMan(data.gain)}',
+                                                style: const TextStyle(
+                                                  color: _gainColor,
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: '\n${_formatMan(data.cost)}',
+                                                style: const TextStyle(
+                                                  color: _costColor,
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: '\n${_formatMan(costDiff)}',
+                                                style: TextStyle(
+                                                  color: costDiff == 0 ? Colors.transparent : Colors.greenAccent,
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          );
                                         }
-                                        final String key = sortedDates[groupIndex];
-                                        final _MonthData? data = dailyDataMap[key];
-                                        if (data == null) {
-                                          return null;
-                                        }
-                                        final int prevCost = groupIndex > 0
-                                            ? (dailyDataMap[sortedDates[groupIndex - 1]]?.cost ?? data.cost)
-                                            : data.cost;
-                                        final int costDiff = data.cost - prevCost;
-                                        return BarTooltipItem(
-                                          _formatMan(data.price),
-                                          const TextStyle(
-                                            color: _totalLabelColor,
-                                            fontSize: 9,
-                                            fontWeight: FontWeight.bold,
-                                            height: 1.6,
-                                          ),
-                                          textAlign: TextAlign.right,
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                              text: '\n${_formatMan(data.gain)}',
-                                              style: const TextStyle(
-                                                color: _gainColor,
-                                                fontSize: 9,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text: '\n${_formatMan(data.cost)}',
-                                              style: const TextStyle(
-                                                color: _costColor,
-                                                fontSize: 9,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text: '\n${_formatMan(costDiff)}',
-                                              style: TextStyle(
-                                                color: costDiff == 0 ? Colors.transparent : Colors.greenAccent,
-                                                fontSize: 9,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      },
+                                      : null,
                                 ),
                               ),
                               titlesData: FlTitlesData(
                                 topTitles: const AxisTitles(),
                                 rightTitles: const AxisTitles(),
-                                bottomTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    reservedSize: 40,
-                                    getTitlesWidget: (double value, TitleMeta meta) {
-                                      final int index = value.toInt();
-                                      if (index < 0 || index >= sortedDates.length) {
-                                        return const SizedBox();
-                                      }
-                                      final List<String> parts = sortedDates[index].split('-');
-                                      final String year = parts[0];
-                                      final String month = parts.length > 1 ? parts[1] : '';
-                                      final String day = parts.length > 2 ? parts[2] : '';
-                                      return SideTitleWidget(
-                                        axisSide: AxisSide.bottom,
-                                        space: 4,
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: <Widget>[
-                                            Text(
-                                              '$month-$day',
-                                              style: const TextStyle(fontSize: 10, color: Colors.white),
-                                            ),
-                                            Text(year, style: const TextStyle(fontSize: 10, color: Colors.white)),
-                                          ],
+                                bottomTitles: (appParamState.isShowBarChartMidashi)
+                                    ? AxisTitles(
+                                        sideTitles: SideTitles(
+                                          showTitles: true,
+                                          reservedSize: 40,
+                                          getTitlesWidget: (double value, TitleMeta meta) {
+                                            final int index = value.toInt();
+                                            if (index < 0 || index >= sortedDates.length) {
+                                              return const SizedBox();
+                                            }
+                                            final List<String> parts = sortedDates[index].split('-');
+                                            final String year = parts[0];
+                                            final String month = parts.length > 1 ? parts[1] : '';
+                                            final String day = parts.length > 2 ? parts[2] : '';
+                                            return SideTitleWidget(
+                                              axisSide: AxisSide.bottom,
+                                              space: 4,
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  Text(
+                                                    '$month-$day',
+                                                    style: const TextStyle(fontSize: 10, color: Colors.white),
+                                                  ),
+                                                  Text(year, style: const TextStyle(fontSize: 10, color: Colors.white)),
+                                                ],
+                                              ),
+                                            );
+                                          },
                                         ),
-                                      );
-                                    },
-                                  ),
-                                ),
+                                      )
+                                    : const AxisTitles(),
+
                                 leftTitles: AxisTitles(
                                   sideTitles: SideTitles(
                                     showTitles: true,
@@ -543,7 +548,7 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                   barRods: <BarChartRodData>[
                                     BarChartRodData(
                                       toY: priceY,
-                                      width: barWidth - 2,
+                                      width: (appParamState.isShowBarChartMidashi) ? barWidth - 2 : 1,
                                       color: Colors.transparent,
                                       borderRadius: BorderRadius.zero,
                                       rodStackItems: <BarChartRodStackItem>[
@@ -558,62 +563,77 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                           ),
                         ),
                       ),
-                      Positioned.fill(
-                        child: IgnorePointer(
-                          child: AnimatedBuilder(
-                            animation: _scrollController,
-                            builder: (BuildContext context, Widget? child) {
-                              return CustomPaint(
-                                painter: _GainLinePainter(
-                                  sortedDates: sortedDates,
-                                  dataMap: dailyDataMap,
-                                  maxY: chartMaxY,
-                                  scrollOffset: _scrollController.hasClients ? _scrollController.offset : 0,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      Positioned.fill(
-                        child: IgnorePointer(
-                          child: AnimatedBuilder(
-                            animation: _scrollController,
-                            builder: (BuildContext context, Widget? child) {
-                              return CustomPaint(
-                                painter: _CostLinePainter(
-                                  sortedDates: sortedDates,
-                                  dataMap: dailyDataMap,
-                                  maxY: chartMaxY,
-                                  scrollOffset: _scrollController.hasClients ? _scrollController.offset : 0,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 8,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: _currentVisibleYM.isEmpty
-                              ? const SizedBox.shrink()
-                              : Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.55),
-                                    borderRadius: BorderRadius.circular(6),
+
+                      if (appParamState.isShowBarChartMidashi) ...<Widget>[
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: AnimatedBuilder(
+                              animation: _scrollController,
+                              builder: (BuildContext context, Widget? child) {
+                                return CustomPaint(
+                                  painter: _GainLinePainter(
+                                    sortedDates: sortedDates,
+                                    dataMap: dailyDataMap,
+                                    maxY: chartMaxY,
+                                    scrollOffset: _scrollController.hasClients ? _scrollController.offset : 0,
                                   ),
-                                  child: Text(
-                                    _currentVisibleYM,
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: AnimatedBuilder(
+                              animation: _scrollController,
+                              builder: (BuildContext context, Widget? child) {
+                                return CustomPaint(
+                                  painter: _CostLinePainter(
+                                    sortedDates: sortedDates,
+                                    dataMap: dailyDataMap,
+                                    maxY: chartMaxY,
+                                    scrollOffset: _scrollController.hasClients ? _scrollController.offset : 0,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+
+                        Positioned(
+                          top: 8,
+                          left: 0,
+                          right: 0,
+                          child: Center(
+                            child: _currentVisibleYM.isEmpty
+                                ? const SizedBox.shrink()
+                                : Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.55),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      _currentVisibleYM,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
-                                ),
+                          ),
+                        ),
+                      ],
+
+                      Positioned(
+                        right: 0,
+                        child: Switch(
+                          value: appParamState.isShowBarChartMidashi,
+                          onChanged: (bool value) {
+                            appParamNotifier.setIsShowBarChartMidashi(flag: value);
+                          },
                         ),
                       ),
                     ],
