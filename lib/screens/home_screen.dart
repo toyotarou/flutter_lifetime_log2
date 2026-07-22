@@ -24,6 +24,7 @@ import '../models/tarot_history_model.dart';
 import '../models/tarot_model.dart';
 import '../models/temple_model.dart';
 import '../models/time_place_model.dart';
+import '../models/toushi_shintaku_history_model.dart';
 import '../models/toushi_shintaku_model.dart';
 import '../models/transportation_model.dart';
 import '../models/walk_model.dart';
@@ -109,6 +110,8 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.fortuneMap,
     required this.tarotMap,
     required this.tarotHistoryMap,
+    required this.toushiShintakuHistoryMap,
+    required this.toushiShintakuHistoryCostDateMap,
   });
 
   final List<String> holidayList;
@@ -145,6 +148,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   final Map<String, FortuneModel> fortuneMap;
   final Map<String, TarotModel> tarotMap;
   final Map<String, TarotHistoryModel> tarotHistoryMap;
+  final Map<String, List<ToushiShintakuHistoryModel>> toushiShintakuHistoryMap;
+  final Map<String, List<ToushiShintakuHistoryModel>> toushiShintakuHistoryCostDateMap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -232,6 +237,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       appParamNotifier.setKeepFortuneMap(map: widget.fortuneMap);
       appParamNotifier.setKeepTarotMap(map: widget.tarotMap);
       appParamNotifier.setKeepTarotHistoryMap(map: widget.tarotHistoryMap);
+      appParamNotifier.setKeepToushiShintakuHistoryMap(map: widget.toushiShintakuHistoryMap);
+      appParamNotifier.setKeepToushiShintakuHistoryCostDateMap(map: widget.toushiShintakuHistoryCostDateMap);
     } catch (e) {
       debugPrint('setKeep error: $e');
     }

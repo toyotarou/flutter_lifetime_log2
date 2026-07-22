@@ -21,6 +21,7 @@ import '../../models/tarot_history_model.dart';
 import '../../models/tarot_model.dart';
 import '../../models/temple_model.dart';
 import '../../models/time_place_model.dart';
+import '../../models/toushi_shintaku_history_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../../models/transportation_model.dart';
 import '../../models/walk_model.dart';
@@ -65,6 +66,12 @@ class AppParamState with _$AppParamState {
     @Default(<String, WorkHistoryModel>{}) Map<String, WorkHistoryModel> keepWorkHistoryModelMap,
     @Default(<String, String>{}) Map<String, String> keepTrainMap,
     @Default(<String, FortuneModel>{}) Map<String, FortuneModel> keepFortuneMap,
+
+    @Default(<String, List<ToushiShintakuHistoryModel>>{})
+    Map<String, List<ToushiShintakuHistoryModel>> keepToushiShintakuHistoryMap,
+
+    @Default(<String, List<ToushiShintakuHistoryModel>>{})
+    Map<String, List<ToushiShintakuHistoryModel>> keepToushiShintakuHistoryCostDateMap,
 
     ///
     @Default(<StationModel>[]) List<StationModel> keepStationList,
@@ -347,6 +354,14 @@ class AppParam extends _$AppParam {
   ///
   void setKeepOhakamairiDataMap({required Map<String, List<MoneySpendModel>> map}) =>
       state = state.copyWith(keepOhakamairiDataMap: map);
+
+  ///
+  void setKeepToushiShintakuHistoryMap({required Map<String, List<ToushiShintakuHistoryModel>> map}) =>
+      state = state.copyWith(keepToushiShintakuHistoryMap: map);
+
+  ///
+  void setKeepToushiShintakuHistoryCostDateMap({required Map<String, List<ToushiShintakuHistoryModel>> map}) =>
+      state = state.copyWith(keepToushiShintakuHistoryCostDateMap: map);
 
   //===================================================
 

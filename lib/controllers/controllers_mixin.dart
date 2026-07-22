@@ -25,6 +25,7 @@ import '_get_data/temple/temple.dart';
 import '_get_data/time_place/time_place.dart';
 import '_get_data/tokyo_municipal/tokyo_municipal.dart';
 import '_get_data/toushi_shintaku/toushi_shintaku.dart';
+import '_get_data/toushi_shintaku_history/toushi_shintaku_history.dart';
 import '_get_data/transportation/transportation.dart';
 import '_get_data/walk/walk.dart';
 import '_get_data/weather/weather.dart';
@@ -266,6 +267,14 @@ mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   TarotState get tarotState => ref.watch(tarotProvider);
 
   Tarot get tarotNotifier => ref.read(tarotProvider.notifier);
+
+  //==========================================//
+
+  ToushiShintakuHistoryState get toushiShintakuHistoryState => ref.watch(toushiShintakuHistoryProvider);
+
+  ToushiShintakuHistory get toushiShintakuHistoryNotifier => ref.read(toushiShintakuHistoryProvider.notifier);
+
+  //==========================================//
 
   //==========================================//
   Directions get directionsNotifier => ref.read(directionsProvider.notifier);

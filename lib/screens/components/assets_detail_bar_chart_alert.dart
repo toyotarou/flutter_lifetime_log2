@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/toushi_shintaku_model.dart';
+import '../parts/lifetime_dialog.dart';
+import 'assets_cost_detail_display_alert.dart';
 
 class _MonthData {
   _MonthData({required this.price, required this.cost});
@@ -84,20 +86,45 @@ class _GainLinePainter extends CustomPainter {
 }
 
 class _CostLinePainter extends CustomPainter {
-  _CostLinePainter({required this.sortedDates, required this.dataMap, required this.maxY, required this.scrollOffset});
+  _CostLinePainter({
+    required this.sortedDates,
+    required this.dataMap,
+    required this.maxY,
+    required this.scrollOffset,
+    required this.currentYM,
+    this.onGreenDotTap,
+  });
 
   final List<String> sortedDates;
   final Map<String, _MonthData> dataMap;
   final double maxY;
   final double scrollOffset;
+  final String currentYM;
+  final void Function(int index)? onGreenDotTap;
 
   static const double _leftAxis = 72.0;
   static const double _barWidth = 36.0;
   static const double _bottomReserved = 40.0;
 
+  final List<({Offset offset, int index})> _greenDots = <({Offset offset, int index})>[];
+
+  List<({Offset offset, int index})> get greenDots => _greenDots;
+
+  @override
+  bool hitTest(Offset position) {
+    for (final ({Offset offset, int index}) dot in _greenDots) {
+      if ((position - dot.offset).distance <= 20) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   ///
   @override
   void paint(Canvas canvas, Size size) {
+    _greenDots.clear();
+
     if (sortedDates.isEmpty || maxY <= 0) {
       return;
     }
@@ -136,10 +163,28 @@ class _CostLinePainter extends CustomPainter {
       final int idx = i < sortedDates.length ? i : 0;
       final int prevCost = idx > 0 ? (dataMap[sortedDates[idx - 1]]?.cost ?? 0) : 0;
       final int thisCost = dataMap[sortedDates[idx]]?.cost ?? 0;
+
+      final bool isCurrentMonth = sortedDates[idx].startsWith(currentYM);
+      final bool isGreen = !isCurrentMonth && idx > 0 && thisCost > prevCost;
+
+      Color dotColor;
+      if (isCurrentMonth) {
+        dotColor = Colors.red;
+      } else if (isGreen) {
+        dotColor = Colors.green[500]!;
+      } else {
+        dotColor = Colors.white;
+      }
+
       final Paint dp = Paint()
-        ..color = (idx > 0 && thisCost > prevCost) ? Colors.green[500]! : Colors.white
+        ..color = dotColor
         ..style = PaintingStyle.fill;
-      canvas.drawCircle(points[i], 5, dp);
+
+      if (isGreen) {
+        _greenDots.add((offset: points[i], index: idx));
+      }
+
+      canvas.drawCircle(points[i], isGreen ? 10 : 5, dp);
     }
 
     canvas.restore();
@@ -148,7 +193,7 @@ class _CostLinePainter extends CustomPainter {
   ///
   @override
   bool shouldRepaint(_CostLinePainter oldDelegate) =>
-      oldDelegate.scrollOffset != scrollOffset || oldDelegate.maxY != maxY;
+      oldDelegate.scrollOffset != scrollOffset || oldDelegate.maxY != maxY || oldDelegate.currentYM != currentYM;
 }
 
 class AssetsDetailBarChartAlert extends ConsumerStatefulWidget {
@@ -492,17 +537,36 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                             final String year = parts[0];
                                             final String month = parts.length > 1 ? parts[1] : '';
                                             final String day = parts.length > 2 ? parts[2] : '';
+
                                             return SideTitleWidget(
                                               axisSide: AxisSide.bottom,
                                               space: 4,
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
+                                              child: Stack(
                                                 children: <Widget>[
-                                                  Text(
-                                                    '$month-$day',
-                                                    style: const TextStyle(fontSize: 10, color: Colors.white),
+                                                  Positioned(
+                                                    bottom: 0,
+                                                    child: Text(
+                                                      DateTime.parse('$year-$month-$day').youbiStr.substring(0, 3),
+                                                      style: const TextStyle(fontSize: 10, color: Colors.greenAccent),
+                                                    ),
                                                   ),
-                                                  Text(year, style: const TextStyle(fontSize: 10, color: Colors.white)),
+
+                                                  SizedBox(
+                                                    height: 40,
+                                                    child: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: <Widget>[
+                                                        Text(
+                                                          '$month-$day',
+                                                          style: const TextStyle(fontSize: 10, color: Colors.white),
+                                                        ),
+                                                        Text(
+                                                          year,
+                                                          style: const TextStyle(fontSize: 10, color: Colors.white),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
                                             );
@@ -584,20 +648,37 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                         ),
 
                         Positioned.fill(
-                          child: IgnorePointer(
-                            child: AnimatedBuilder(
-                              animation: _scrollController,
-                              builder: (BuildContext context, Widget? child) {
-                                return CustomPaint(
-                                  painter: _CostLinePainter(
-                                    sortedDates: sortedDates,
-                                    dataMap: dailyDataMap,
-                                    maxY: chartMaxY,
-                                    scrollOffset: _scrollController.hasClients ? _scrollController.offset : 0,
-                                  ),
-                                );
-                              },
-                            ),
+                          child: AnimatedBuilder(
+                            animation: _scrollController,
+                            builder: (BuildContext context, Widget? child) {
+                              late _CostLinePainter costPainter;
+                              final DateTime now = DateTime.now();
+                              final String currentYM = '${now.year}-${now.month.toString().padLeft(2, '0')}';
+                              costPainter = _CostLinePainter(
+                                sortedDates: sortedDates,
+                                dataMap: dailyDataMap,
+                                maxY: chartMaxY,
+                                scrollOffset: _scrollController.hasClients ? _scrollController.offset : 0,
+                                currentYM: currentYM,
+                                onGreenDotTap: (int index) {
+                                  LifetimeDialog(
+                                    context: context,
+                                    widget: AssetsCostDetailDisplayAlert(costChangeDate: sortedDates[index]),
+                                  );
+                                },
+                              );
+                              return GestureDetector(
+                                onTapUp: (TapUpDetails details) {
+                                  for (final ({Offset offset, int index}) dot in costPainter.greenDots) {
+                                    if ((details.localPosition - dot.offset).distance <= 20) {
+                                      costPainter.onGreenDotTap?.call(dot.index);
+                                      break;
+                                    }
+                                  }
+                                },
+                                child: CustomPaint(painter: costPainter),
+                              );
+                            },
                           ),
                         ),
 

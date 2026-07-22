@@ -85,6 +85,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
     fortuneNotifier.getAllFortuneData();
     tarotNotifier.getAllTarotData();
     tarothistoryNotifier.getAllTarotHistoryData();
+    toushiShintakuHistoryNotifier.getAllToushiShintakuHistoryData();
   }
 
   ///
@@ -149,6 +150,8 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
           fortuneMap: fortuneState.fortuneMap,
           tarotMap: tarotState.tarotMap,
           tarotHistoryMap: tarothistoryState.tarotHistoryMap,
+          toushiShintakuHistoryMap: toushiShintakuHistoryState.toushiShintakuHistoryMap,
+          toushiShintakuHistoryCostDateMap: toushiShintakuHistoryState.toushiShintakuHistoryCostDateMap,
         ),
       ),
     );

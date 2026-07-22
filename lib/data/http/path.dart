@@ -38,6 +38,7 @@ enum APIPath {
   getAllMoneySum,
   tarothistory,
   getAllTarot,
+  getToushiShintakuDealHistory,
 }
 
 extension APIPathExtension on APIPath {
@@ -145,6 +146,8 @@ extension APIPathExtension on APIPath {
         return 'tarothistory';
       case APIPath.getAllTarot:
         return 'getAllTarot';
+      case APIPath.getToushiShintakuDealHistory:
+        return 'getToushiShintakuDealHistory';
     }
   }
 }
