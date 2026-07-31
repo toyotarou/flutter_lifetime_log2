@@ -427,6 +427,20 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
     const double barWidth = 36.0;
     final double effectiveBarWidth = appParamState.isShowBarChartMidashi ? barWidth : 1.0;
 
+    final Map<String, int> monthlyCostIncrease = <String, int>{};
+    final Map<String, String> monthLastDate = <String, String>{};
+    for (int i = 0; i < sortedDates.length; i++) {
+      final String d = sortedDates[i];
+      final String ym = d.split('-').take(2).join('-');
+      final int prevCost = i > 0 ? (dailyDataMap[sortedDates[i - 1]]?.cost ?? 0) : 0;
+      final int thisCost = dailyDataMap[d]?.cost ?? 0;
+      final int diff = thisCost - prevCost;
+      if (diff > 0) {
+        monthlyCostIncrease[ym] = (monthlyCostIncrease[ym] ?? 0) + diff;
+      }
+      monthLastDate[ym] = d;
+    }
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -510,6 +524,23 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                                 text: '\n${_formatMan(costDiff)}',
                                                 style: TextStyle(
                                                   color: costDiff == 0 ? Colors.transparent : Colors.greenAccent,
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+
+                                              TextSpan(
+                                                text: monthLastDate[key.split('-').take(2).join('-')] == key
+                                                    ? '\n${_formatMan(monthlyCostIncrease[key.split('-').take(2).join('-')] ?? 0)}'
+                                                    : '\n',
+                                                style: TextStyle(
+                                                  color:
+                                                      monthLastDate[key.split('-').take(2).join('-')] == key &&
+                                                          (monthlyCostIncrease[key.split('-').take(2).join('-')] ??
+                                                                  0) !=
+                                                              0
+                                                      ? Colors.lightBlueAccent
+                                                      : Colors.transparent,
                                                   fontSize: 9,
                                                   fontWeight: FontWeight.bold,
                                                 ),
