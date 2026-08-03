@@ -5,9 +5,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../controllers/_get_data/money/money.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
-import '../../main.dart';
 import '../../models/money_model.dart';
 import '../parts/lifetime_log_overlay.dart';
 
@@ -423,12 +423,18 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
 
     await moneyInputNotifier.insertMoney(uploadData: uploadData);
 
-    if (mounted) {
-      await moneyNotifier.getAllMoneyData();
+    if (!mounted) {
+      return;
     }
 
-    if (mounted) {
-      context.findAncestorStateOfType<AppRootState>()?.restartApp();
+    await moneyNotifier.getAllMoneyData();
+
+    if (!mounted) {
+      return;
     }
+
+    appParamNotifier.setKeepMoneyMap(map: ref.read(moneyProvider).moneyMap);
+
+    Navigator.of(context).pop();
   }
 }
