@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class WeeklyHistoryBadgeModel {
   const WeeklyHistoryBadgeModel({
@@ -11,7 +12,7 @@ class WeeklyHistoryBadgeModel {
 
   final int dayIndex;
   final int minutesOfDay;
-  final IconData icon;
+  final FaIconData icon;
   final Color color;
   final String? tooltip;
 }

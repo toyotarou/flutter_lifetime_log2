@@ -54,6 +54,11 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
   void initState() {
     super.initState();
     year = widget.date.split('-')[0].toInt();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        yearlyDayAssetsList = makeYearlyDayAssetsList();
+      }
+    });
   }
 
   ///
@@ -69,10 +74,6 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
   ///
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      yearlyDayAssetsList = makeYearlyDayAssetsList();
-    });
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -342,6 +343,8 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       holiday: appParamState.keepHolidayList,
     );
 
+    final List<String> exTotal = item.total.toString().toCurrency().split(',');
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
       decoration: BoxDecoration(
@@ -353,6 +356,11 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            SizedBox(
+              width: 30,
+              child: Text(exTotal[0], style: const TextStyle(fontSize: 14, color: Colors.greenAccent)),
+            ),
+
             Container(
               width: 80,
               decoration: BoxDecoration(color: youbiColor),

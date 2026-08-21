@@ -579,7 +579,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                         appParamNotifier.setSelectedGeolocTime(time: '');
                         setDefaultBoundsMap();
                       },
-                      child: const Icon(FontAwesomeIcons.expand),
+                      child: const FaIcon(FontAwesomeIcons.expand),
                     ),
                   ),
                   if (appParamState.keepTempleMap[widget.date] != null) ...<Widget>[
@@ -607,7 +607,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                             clearBarrierColor: true,
                           );
                         },
-                        child: const Icon(FontAwesomeIcons.toriiGate),
+                        child: const FaIcon(FontAwesomeIcons.toriiGate),
                       ),
                     ),
                     if (widget.templeGeolocNearlyDateList.isNotEmpty) ...<Widget>[
@@ -1238,7 +1238,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 children: <Widget>[
                   Container(
                     padding: const EdgeInsets.only(bottom: 5, right: 5),
-                    child: const Icon(FontAwesomeIcons.toriiGate, color: Color(0xFFFBB6CE)),
+                    child: const FaIcon(FontAwesomeIcons.toriiGate, color: Color(0xFFFBB6CE)),
                   ),
                   Positioned(
                     bottom: 0,
@@ -1375,7 +1375,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
                 stampRallyModel: element,
               );
             },
-            child: Icon(FontAwesomeIcons.stamp, size: 20, color: colorOf(element)),
+            child: FaIcon(FontAwesomeIcons.stamp, size: 20, color: colorOf(element)),
           ),
         ),
       );

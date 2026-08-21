@@ -191,7 +191,7 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
                       children: displayTemples[i.toString().padLeft(2, '0')]!.map((String e) {
                         return const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 3),
-                          child: Icon(FontAwesomeIcons.toriiGate, size: 10, color: Color(0xFFFBB6CE)),
+                          child: FaIcon(FontAwesomeIcons.toriiGate, size: 10, color: Color(0xFFFBB6CE)),
                         );
                       }).toList(),
                     ),

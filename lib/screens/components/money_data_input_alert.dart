@@ -5,7 +5,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../controllers/_get_data/money/money.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_model.dart';
@@ -421,20 +420,13 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
       'pay_f': money?.payF,
     };
 
+    // DB保存＋データリフレッシュはNotifier内で完結する（mounted不要）
     await moneyInputNotifier.insertMoney(uploadData: uploadData);
 
+    // contextを使うのはここだけなので、mounted チェックは1箇所でOK
     if (!mounted) {
       return;
     }
-
-    await moneyNotifier.getAllMoneyData();
-
-    if (!mounted) {
-      return;
-    }
-
-    appParamNotifier.setKeepMoneyMap(map: ref.read(moneyProvider).moneyMap);
-
     Navigator.of(context).pop();
   }
 }

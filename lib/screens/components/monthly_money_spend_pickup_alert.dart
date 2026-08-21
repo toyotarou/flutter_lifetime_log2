@@ -603,7 +603,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
                                       ),
                                     );
                                   },
-                                  child: Icon(FontAwesomeIcons.amazon, color: Colors.white.withValues(alpha: 0.7)),
+                                  child: FaIcon(FontAwesomeIcons.amazon, color: Colors.white.withValues(alpha: 0.7)),
                                 ),
                         ),
                       ],

@@ -462,7 +462,7 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                                 ],
                                 if (appParamState.keepTempleMap[date] != null) ...<Widget>[
                                   const SizedBox(height: 10),
-                                  Icon(
+                                  FaIcon(
                                     FontAwesomeIcons.toriiGate,
                                     size: 20,
                                     color: Colors.white.withValues(alpha: 0.3),
@@ -473,7 +473,7 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                                     appParamState.keepStampRallyMetro20AnniversaryMap[date] != null ||
                                     appParamState.keepStampRallyMetroPokepokeMap[date] != null) ...<Widget>[
                                   const SizedBox(height: 10),
-                                  Icon(FontAwesomeIcons.stamp, size: 20, color: Colors.white.withValues(alpha: 0.3)),
+                                  FaIcon(FontAwesomeIcons.stamp, size: 20, color: Colors.white.withValues(alpha: 0.3)),
                                 ],
                               ],
                             ),

@@ -442,7 +442,7 @@ class Utility {
     } else if (before > after) {
       return Icon(Icons.arrow_downward, color: Colors.redAccent, size: size);
     } else {
-      return Icon(FontAwesomeIcons.equals, color: Colors.blueAccent, size: size);
+      return FaIcon(FontAwesomeIcons.equals, color: Colors.blueAccent, size: size);
     }
   }
 }

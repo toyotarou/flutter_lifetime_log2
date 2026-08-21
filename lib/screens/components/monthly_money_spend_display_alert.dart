@@ -460,7 +460,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                   Positioned(
                     right: 30,
                     bottom: 5,
-                    child: Icon(FontAwesomeIcons.amazon, color: Colors.white.withValues(alpha: 0.4)),
+                    child: FaIcon(FontAwesomeIcons.amazon, color: Colors.white.withValues(alpha: 0.4)),
                   ),
                 ],
                 if (date == DateTime.now().yyyymmdd) ...<Widget>[

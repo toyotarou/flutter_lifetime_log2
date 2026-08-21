@@ -186,7 +186,7 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                             ),
                             child: GestureDetector(
                               onTap: () => setDefaultBoundsMap(),
-                              child: const Icon(FontAwesomeIcons.expand),
+                              child: const FaIcon(FontAwesomeIcons.expand),
                             ),
                           ),
                         ],

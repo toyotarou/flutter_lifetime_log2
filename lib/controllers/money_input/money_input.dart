@@ -1,8 +1,3 @@
-// import 'package:flutter/material.dart';
-//
-//
-//
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -10,6 +5,8 @@ import '../../data/http/client.dart';
 import '../../data/http/path.dart';
 import '../../models/money_model.dart';
 import '../../utility/utility.dart';
+import '../_get_data/money/money.dart';
+import '../app_param/app_param.dart';
 
 part 'money_input.freezed.dart';
 
@@ -21,17 +18,6 @@ class MoneyInputState with _$MoneyInputState {
     @Default(<MoneyModel>[]) List<MoneyModel> moneyList,
     @Default(<String, MoneyModel>{}) Map<String, MoneyModel> moneyMap,
 
-    // ///
-    // List<OverlayEntry>? firstEntries,
-    // List<OverlayEntry>? secondEntries,
-    //
-    // Offset? overlayPosition,
-    //
-    //
-    //
-    //
-    //
-    //
     @Default(-1) int pos,
     @Default(<String>[]) List<String> inputValueList,
 
@@ -53,22 +39,6 @@ class MoneyInput extends _$MoneyInput {
 
     return MoneyInputState(inputValueList: list);
   }
-
-  // ///
-  // void setFirstOverlayParams({required List<OverlayEntry>? firstEntries}) =>
-  //     state = state.copyWith(firstEntries: firstEntries);
-  //
-  // ///
-  // void setSecondOverlayParams({required List<OverlayEntry>? secondEntries}) =>
-  //     state = state.copyWith(secondEntries: secondEntries);
-  //
-  // ///
-  // void updateOverlayPosition(Offset newPos) => state = state.copyWith(overlayPosition: newPos);
-  //
-  //
-  //
-  //
-  //
 
   ///
   void setPos({required int pos}) => state = state.copyWith(pos: pos);
@@ -97,5 +67,10 @@ class MoneyInput extends _$MoneyInput {
     await client.post(path: APIPath.moneyinsert, body: uploadData).then((value) {}).catchError((error, _) {
       utility.showError('予期せぬエラーが発生しました');
     });
+
+    // 保存後のリフレッシュをNotifier内で行う。
+    // ウィジェットのライフサイクルに依存しないため、ウィジェットがunmountされても確実に実行される。
+    await ref.read(moneyProvider.notifier).getAllMoneyData();
+    ref.read(appParamProvider.notifier).setKeepMoneyMap(map: ref.read(moneyProvider).moneyMap);
   }
 }

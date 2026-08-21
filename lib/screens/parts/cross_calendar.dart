@@ -745,7 +745,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     final List<Widget> displayIcons = <Widget>[];
 
     if (appParamState.keepTempleMap[date] != null) {
-      displayIcons.add(Icon(FontAwesomeIcons.toriiGate, size: 20, color: Colors.white.withValues(alpha: 0.3)));
+      displayIcons.add(FaIcon(FontAwesomeIcons.toriiGate, size: 20, color: Colors.white.withValues(alpha: 0.3)));
     }
 
     if (appParamState.keepTransportationMap[date] != null) {
@@ -755,7 +755,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     if (appParamState.keepStampRallyMetroAllStationMap[date] != null ||
         appParamState.keepStampRallyMetro20AnniversaryMap[date] != null ||
         appParamState.keepStampRallyMetroPokepokeMap[date] != null) {
-      displayIcons.add(Icon(FontAwesomeIcons.stamp, size: 15, color: Colors.white.withValues(alpha: 0.3)));
+      displayIcons.add(FaIcon(FontAwesomeIcons.stamp, size: 15, color: Colors.white.withValues(alpha: 0.3)));
     }
 
     displayIcons.add(const Icon(Icons.square_outlined, size: 20, color: Colors.transparent));

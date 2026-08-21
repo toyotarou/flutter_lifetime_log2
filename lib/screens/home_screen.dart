@@ -54,7 +54,7 @@ import 'parts/error_dialog.dart';
 import 'parts/lifetime_dialog.dart';
 
 ///
-const List<IconData> bottomNavigationMenuIcons = <IconData>[
+const List<dynamic> bottomNavigationMenuIcons = <dynamic>[
   FontAwesomeIcons.sun,
   Icons.money,
   FontAwesomeIcons.squareFontAwesomeStroke,
@@ -958,7 +958,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 },
                 child: const Row(
                   children: <Widget>[
-                    Icon(FontAwesomeIcons.coins),
+                    FaIcon(FontAwesomeIcons.coins),
                     SizedBox(width: 20),
                     Expanded(child: Text('money count list')),
                   ],
@@ -1056,7 +1056,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 },
                 child: const Row(
                   children: <Widget>[
-                    Icon(FontAwesomeIcons.amazon),
+                    FaIcon(FontAwesomeIcons.amazon),
                     SizedBox(width: 20),
                     Expanded(child: Text('amazon purchase list')),
                   ],
@@ -1082,7 +1082,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 },
                 child: const Row(
                   children: <Widget>[
-                    Icon(FontAwesomeIcons.stamp),
+                    FaIcon(FontAwesomeIcons.stamp),
                     SizedBox(width: 20),
                     Expanded(child: Text('stamp rally metro all station')),
                   ],
@@ -1104,7 +1104,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 },
                 child: const Row(
                   children: <Widget>[
-                    Icon(FontAwesomeIcons.stamp),
+                    FaIcon(FontAwesomeIcons.stamp),
                     SizedBox(width: 20),
                     Expanded(child: Text('stamp rally metro 20 anniversary')),
                   ],
@@ -1126,7 +1126,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 },
                 child: const Row(
                   children: <Widget>[
-                    Icon(FontAwesomeIcons.stamp),
+                    FaIcon(FontAwesomeIcons.stamp),
                     SizedBox(width: 20),
                     Expanded(child: Text('stamp rally metro pokepoke')),
                   ],
@@ -1226,7 +1226,9 @@ class _ScrollableBottomDialogMenu extends StatelessWidget {
 
                 child: (index == 7)
                     ? Opacity(opacity: 0.5, child: Image.asset('assets/images/toyoda_kamon.png', width: 25, height: 25))
-                    : Icon(bottomNavigationMenuIcons[index], color: Colors.white.withValues(alpha: 0.3)),
+                    : (bottomNavigationMenuIcons[index] is FaIconData)
+                        ? FaIcon(bottomNavigationMenuIcons[index] as FaIconData, color: Colors.white.withValues(alpha: 0.3))
+                        : Icon(bottomNavigationMenuIcons[index] as IconData, color: Colors.white.withValues(alpha: 0.3)),
               ),
             );
           },

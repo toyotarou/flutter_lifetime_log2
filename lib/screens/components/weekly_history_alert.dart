@@ -322,7 +322,7 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
 
                 alignment: Alignment.center,
 
-                child: Icon(widget.badges[i].icon, size: 14, color: widget.badges[i].color),
+                child: FaIcon(widget.badges[i].icon, size: 14, color: widget.badges[i].color),
               ),
             ),
           ),
@@ -603,7 +603,7 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
                               }
 
                               return GestureDetector(
-                                child: Icon(
+                                child: FaIcon(
                                   FontAwesomeIcons.stamp,
                                   size: 15,
                                   color: Colors.white.withValues(alpha: 0.4),

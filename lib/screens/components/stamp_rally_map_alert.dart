@@ -537,7 +537,7 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
                 height: 30,
                 child: Stack(
                   children: <Widget>[
-                    Icon(FontAwesomeIcons.stamp, color: iconColor),
+                    FaIcon(FontAwesomeIcons.stamp, color: iconColor),
 
                     if (i == appParamState.selectedStampRallyMapPolylineIndex) ...<Widget>[
                       Positioned(

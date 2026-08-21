@@ -406,7 +406,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         const SizedBox(width: 10),
                         Column(
                           children: <Widget>[
-                            Icon(FontAwesomeIcons.toriiGate, size: 20, color: Colors.white.withValues(alpha: 0.3)),
+                            FaIcon(FontAwesomeIcons.toriiGate, size: 20, color: Colors.white.withValues(alpha: 0.3)),
                             const SizedBox(height: 10),
                             Text(
                               appParamState.keepTempleMap[date]!.templeDataList.length.toString(),
