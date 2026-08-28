@@ -1280,6 +1280,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                     price: money,
                     buttonDisp: false,
                     beforeData: beforeData,
+                    total: total,
                   ),
                   priceDisplayParts(
                     date: date,
@@ -1288,6 +1289,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                     price: stock,
                     buttonDisp: true,
                     beforeData: beforeData,
+                    total: total,
                   ),
                   priceDisplayParts(
                     date: date,
@@ -1296,6 +1298,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                     price: toushiShintaku,
                     buttonDisp: true,
                     beforeData: beforeData,
+                    total: total,
                   ),
                   priceDisplayParts(
                     date: date,
@@ -1304,6 +1307,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                     price: gold,
                     buttonDisp: false,
                     beforeData: beforeData,
+                    total: total,
                   ),
                   priceDisplayParts(
                     date: date,
@@ -1312,6 +1316,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                     price: insurance,
                     buttonDisp: false,
                     beforeData: beforeData,
+                    total: total,
                   ),
                   priceDisplayParts(
                     date: date,
@@ -1320,6 +1325,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                     price: nenkinKikin,
                     buttonDisp: false,
                     beforeData: beforeData,
+                    total: total,
                   ),
                 ],
               ),
@@ -1341,6 +1347,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     required String price,
     required bool buttonDisp,
     Map<String, int>? beforeData,
+    int total = 0,
   }) {
     final List<String> exTitle = title.split('(');
     final String baseTitle = exTitle[0].trim();
@@ -1386,80 +1393,108 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
     final int currentPrice = price.isNotEmpty ? _toIntSafe(price) : 0;
 
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              leading,
-              const SizedBox(width: 10),
-              if (<String>[_kStock, _kToushi, _kGold].contains(title))
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    appParamNotifier.setSelectedToushiGraphYear(year: '');
-                    appParamNotifier.setIsShowAssetsDetailGraph(flag: true);
-                    LifetimeDialog(
-                      context: context,
-                      widget: AssetsDetailGraphAlert(date: date, title: title),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        color: isBeforeDate ? Colors.white : Colors.white.withValues(alpha: 0.3),
-                        fontSize: 12,
-                        decoration: TextDecoration.underline,
-                      ),
+    return Stack(
+      children: <Widget>[
+        Positioned(
+          right: 0,
+          left: 0,
+          child: Container(
+            width: double.infinity,
+            alignment: Alignment.center,
+
+            child: (isBeforeDate && price != '' && total > 0)
+                ? DefaultTextStyle(
+                    style: const TextStyle(fontSize: 20, color: Colors.white24),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 110,
+                          child: Text((currentPrice / total * 100).toStringAsFixed(2), textAlign: TextAlign.right),
+                        ),
+                        const Text(' %'),
+                      ],
                     ),
-                  ),
-                )
-              else
-                Text(title),
-            ],
+                  )
+                : const SizedBox.shrink(),
           ),
-          if (isBeforeDate && price != '') ...<Widget>[
-            Row(
-              children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  leading,
+                  const SizedBox(width: 10),
+                  if (<String>[_kStock, _kToushi, _kGold].contains(title))
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        appParamNotifier.setSelectedToushiGraphYear(year: '');
+                        appParamNotifier.setIsShowAssetsDetailGraph(flag: true);
+                        LifetimeDialog(
+                          context: context,
+                          widget: AssetsDetailGraphAlert(date: date, title: title),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            color: isBeforeDate ? Colors.white : Colors.white.withValues(alpha: 0.3),
+                            fontSize: 12,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    Text(title),
+                ],
+              ),
+              if (isBeforeDate && price != '') ...<Widget>[
+                Row(
                   children: <Widget>[
-                    Text(price.toCurrency()),
-                    const SizedBox(height: 2),
-                    if (beforeData != null) ...<Widget>[
-                      Row(
-                        children: <Widget>[
-                          if ((beforeValue - currentPrice) < 0) ...<Widget>[
-                            const Text('+', style: TextStyle(color: Colors.yellowAccent)),
-                          ],
-                          Text(
-                            ((beforeValue - currentPrice) * -1).toString().toCurrency(),
-                            style: const TextStyle(fontSize: 10, color: Colors.yellowAccent),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text(price.toCurrency()),
+                        const SizedBox(height: 2),
+                        if (beforeData != null) ...<Widget>[
+                          Row(
+                            children: <Widget>[
+                              if ((beforeValue - currentPrice) < 0) ...<Widget>[
+                                const Text('+', style: TextStyle(color: Colors.yellowAccent)),
+                              ],
+                              Text(
+                                ((beforeValue - currentPrice) * -1).toString().toCurrency(),
+                                style: const TextStyle(fontSize: 10, color: Colors.yellowAccent),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
+                      ],
+                    ),
+                    if (beforeData != null) ...<Widget>[
+                      const SizedBox(width: 5),
+                      utility.dispUpDownMark(before: beforeValue, after: currentPrice, size: 12),
                     ],
                   ],
                 ),
-                if (beforeData != null) ...<Widget>[
-                  const SizedBox(width: 5),
-                  utility.dispUpDownMark(before: beforeValue, after: currentPrice, size: 12),
-                ],
               ],
-            ),
-          ],
-          if (!isBeforeDate || price == '') ...<Widget>[
-            if (!isBeforeDate) ...<Widget>[const SizedBox.shrink()],
-            if (price == '') ...<Widget>[const Text('-------------------------')],
-          ],
-        ],
-      ),
+              if (!isBeforeDate || price == '') ...<Widget>[
+                if (!isBeforeDate) ...<Widget>[const SizedBox.shrink()],
+                if (price == '') ...<Widget>[const Text('-------------------------')],
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 
