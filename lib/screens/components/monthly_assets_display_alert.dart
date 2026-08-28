@@ -18,6 +18,7 @@ import '../../utility/utility.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
 import 'assets_detail_graph_alert.dart';
+import 'monthly_assets_bar_chart_alert.dart';
 import 'monthly_assets_graph_alert.dart';
 import 'stock_data_input_alert.dart';
 import 'toushi_shintaku_data_update_alert.dart';
@@ -197,6 +198,13 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                               child: const Icon(Icons.pages),
                             ),
                             const SizedBox(width: 20),
+
+                            GestureDetector(
+                              onTap: () => LifetimeDialog(context: context, widget: const MonthlyAssetsBarChartAlert()),
+                              child: const Icon(Icons.bar_chart),
+                            ),
+                            const SizedBox(width: 20),
+
                             GestureDetector(
                               onTap: () {
                                 final DateTime lastYearEnd = DateTime(genDate.year, 1, 0);
