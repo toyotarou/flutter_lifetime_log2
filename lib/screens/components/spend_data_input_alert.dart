@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,6 +9,9 @@ import '../../main.dart';
 import '../../models/money_spend_model.dart';
 import '../../utility/utility.dart';
 import '../parts/error_dialog.dart';
+
+/// 入力欄の標準の行数
+const int _defaultSlotCount = 10;
 
 class SpendDateInputAlert extends ConsumerStatefulWidget {
   const SpendDateInputAlert({super.key, required this.date, this.data});
@@ -27,23 +32,29 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
 
   List<FocusNode> focusNodeList = <FocusNode>[];
 
+  bool _isLoading = false;
+
   ///
   @override
   void initState() {
     super.initState();
 
-    for (int i = 0; i < 10; i++) {
+    // 通常は 10 行。既存データが 10 件を超える日は、その件数分の行を用意する（以前は 11 件目で落ちていた）
+    final int slotCount = max(_defaultSlotCount, widget.data?.length ?? 0);
+
+    for (int i = 0; i < slotCount; i++) {
       priceTecs.add(TextEditingController(text: ''));
     }
 
     bankNameMap = utility.getBankName();
 
-    // ignore: always_specify_types
-    focusNodeList = List.generate(10, (int index) => FocusNode());
+    focusNodeList = List<FocusNode>.generate(slotCount, (int index) => FocusNode());
 
     if (widget.data != null) {
       // ignore: always_specify_types
       Future(() {
+        spendInputNotifier.ensureSlotCount(count: slotCount);
+
         for (int i = 0; i < widget.data!.length; i++) {
           spendInputNotifier.setInputKindList(
             pos: i,
@@ -59,44 +70,72 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
     }
   }
 
+  /// 表示・登録する行数（入力欄の数と、state 側のリストの長さの小さい方。範囲外アクセスを防ぐ）
+  int get _rowCount => <int>[
+    priceTecs.length,
+    spendInputState.inputItemList.length,
+    spendInputState.inputValueList.length,
+    spendInputState.inputKindList.length,
+  ].reduce(min);
+
+  ///
+  @override
+  void dispose() {
+    for (final TextEditingController tec in priceTecs) {
+      tec.dispose();
+    }
+
+    for (final FocusNode node in focusNodeList) {
+      node.dispose();
+    }
+
+    super.dispose();
+  }
+
   ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
 
-      body: SafeArea(
-        child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white),
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: DefaultTextStyle(
+              style: const TextStyle(color: Colors.white),
 
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: <Widget>[
-                    Text(widget.date),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(widget.date),
 
-                    ElevatedButton(
-                      onPressed: () {
-                        _inputSpendData();
-                      },
+                        ElevatedButton(
+                          onPressed: () {
+                            _inputSpendData();
+                          },
 
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
 
-                      child: const Text('input'),
+                          child: const Text('input'),
+                        ),
+                      ],
                     ),
+
+                    Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                    Expanded(child: _displayInputParts()),
                   ],
                 ),
-
-                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-                Expanded(child: _displayInputParts()),
-              ],
+              ),
             ),
           ),
-        ),
+
+          if (_isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+        ],
       ),
     );
   }
@@ -111,7 +150,7 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
       (String key, MoneySpendItemModel value) => dropDownItemName.add(value.name),
     );
 
-    for (int i = 0; i < priceTecs.length; i++) {
+    for (int i = 0; i < _rowCount; i++) {
       list.add(
         Container(
           padding: const EdgeInsets.symmetric(vertical: 5),
@@ -228,12 +267,17 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
 
   ///
   Future<void> _inputSpendData() async {
+    // 送信中の二重タップを無視する
+    if (_isLoading) {
+      return;
+    }
+
     bool errFlg = false;
 
     final List<Map<String, dynamic>> insertDataDaily = <Map<String, dynamic>>[];
     final List<Map<String, dynamic>> insertDataCredit = <Map<String, dynamic>>[];
 
-    for (int i = 0; i < priceTecs.length; i++) {
+    for (int i = 0; i < _rowCount; i++) {
       if (spendInputState.inputItemList[i] != '' &&
           spendInputState.inputValueList[i] != '' &&
           spendInputState.inputKindList[i] != '') {
@@ -272,11 +316,18 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
       return;
     }
 
-    // ignore: always_specify_types
-    spendInputNotifier.insertSpend(insertDataDaily: insertDataDaily, insertDataCredit: insertDataCredit).then((value) {
+    setState(() => _isLoading = true);
+
+    try {
+      await spendInputNotifier.insertSpend(insertDataDaily: insertDataDaily, insertDataCredit: insertDataCredit);
+
       if (mounted) {
         context.findAncestorStateOfType<AppRootState>()?.restartApp();
       }
-    });
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }

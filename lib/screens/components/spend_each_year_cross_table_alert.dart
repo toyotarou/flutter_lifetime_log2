@@ -20,10 +20,20 @@ class _MoneySpendCrossTableAlertState extends ConsumerState<MoneySpendCrossTable
   static const double leftItemWidth = 120.0;
   static const double colWidth = 90.0;
 
+  // 全支出データの年別集計は重いため、元データが変わった時のみ作り直す
+  Map<String, List<MoneySpendModel>>? _yearItemTotalSource;
+  Map<String, Map<String, int>> _yearItemTotalMap = <String, Map<String, int>>{};
+
   ///
   @override
   Widget build(BuildContext context) {
-    final Map<String, Map<String, int>> yearItemTotalMap = buildYearItemTotalMap(appParamState.keepMoneySpendMap);
+    final Map<String, List<MoneySpendModel>> keepMoneySpendMap = appParamState.keepMoneySpendMap;
+    if (_yearItemTotalSource != keepMoneySpendMap) {
+      _yearItemTotalSource = keepMoneySpendMap;
+      _yearItemTotalMap = buildYearItemTotalMap(keepMoneySpendMap);
+    }
+
+    final Map<String, Map<String, int>> yearItemTotalMap = _yearItemTotalMap;
     final List<String> years = collectYears(yearItemTotalMap);
 
     final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();

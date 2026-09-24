@@ -34,6 +34,11 @@ class _TemplePhotoListAlertState extends ConsumerState<TemplePhotoListAlert>
 
     // ignore: always_specify_types
     Future(() {
+      /// 修正: 非同期実行までに画面が閉じられていたら ref / setState を使わず終了する
+      if (!mounted) {
+        return;
+      }
+
       if (appParamState.selectedTemple != null) {
         final List<StationModel> roughFiltered = utility.filterByBoundingBox(
           stationList: appParamState.keepStationList,
@@ -42,13 +47,16 @@ class _TemplePhotoListAlertState extends ConsumerState<TemplePhotoListAlert>
           radiusKm: 3,
         );
 
+        /// 基準点は駅ごとに変わらないため1回だけ作る
+        final LatLng baseLatLng = LatLng(
+          appParamState.selectedTemple!.latitude.toDouble(),
+          appParamState.selectedTemple!.longitude.toDouble(),
+        );
+
         final List<MapEntry<StationModel, double>> list = roughFiltered
             .map((StationModel station) {
               final double d = utility.calculateDistance(
-                LatLng(
-                  appParamState.selectedTemple!.latitude.toDouble(),
-                  appParamState.selectedTemple!.longitude.toDouble(),
-                ),
+                baseLatLng,
                 LatLng(station.lat.toDouble(), station.lng.toDouble()),
               );
 

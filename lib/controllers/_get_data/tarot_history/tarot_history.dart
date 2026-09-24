@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
-import '../../../extensions/extensions.dart';
 import '../../../models/tarot_history_model.dart';
 import '../../../utility/utility.dart';
 
@@ -55,22 +54,20 @@ class TarotHistory extends _$TarotHistory {
 
       final Map<String, TarotHistoryModel> map = <String, TarotHistoryModel>{};
 
-      // ignore: always_specify_types
-      await client.post(path: APIPath.tarothistory).then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          final TarotHistoryModel val = TarotHistoryModel.fromJson(value['data'][i] as Map<String, dynamic>);
+      final dynamic value = await client.post(path: APIPath.tarothistory);
+      final List<dynamic> data = (value as Map<String, dynamic>)['data'] as List<dynamic>;
 
-          list.add(val);
+      for (final dynamic item in data) {
+        final TarotHistoryModel val = TarotHistoryModel.fromJson(item as Map<String, dynamic>);
 
-          map['${val.year}-${val.month}-${val.day}'] = val;
-        }
-      });
+        list.add(val);
+
+        map['${val.year}-${val.month}-${val.day}'] = val;
+      }
 
       return state.copyWith(tarotHistoryList: list, tarotHistoryMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（tarot_history）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

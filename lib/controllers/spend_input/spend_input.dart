@@ -43,6 +43,26 @@ class SpendInput extends _$SpendInput {
   ///
   void setPos({required int pos}) => state = state.copyWith(pos: pos);
 
+  /// 入力欄を count 個以上に広げる（既存の支出が 10 件を超える日を編集する場合に使う）
+  void ensureSlotCount({required int count}) {
+    if (state.inputItemList.length >= count &&
+        state.inputValueList.length >= count &&
+        state.inputKindList.length >= count) {
+      return;
+    }
+
+    List<String> grow(List<String> src, String fill) => <String>[
+      ...src,
+      for (int i = src.length; i < count; i++) fill,
+    ];
+
+    state = state.copyWith(
+      inputItemList: grow(state.inputItemList, ''),
+      inputValueList: grow(state.inputValueList, 0.toString()),
+      inputKindList: grow(state.inputKindList, ''),
+    );
+  }
+
   ///
   void setInputItemList({required int pos, required String item}) {
     final List<String> list = <String>[...state.inputItemList];
@@ -75,9 +95,10 @@ class SpendInput extends _$SpendInput {
     uploadData['insertDataDaily'] = insertDataDaily;
     uploadData['insertDataCredit'] = insertDataCredit;
 
-    // ignore: always_specify_types
-    await client.post(path: APIPath.insertSpend, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
-    });
+    try {
+      await client.post(path: APIPath.insertSpend, body: uploadData);
+    } catch (e) {
+      utility.showError('予期せぬエラーが発生しました（spend_input）', error: e);
+    }
   }
 }

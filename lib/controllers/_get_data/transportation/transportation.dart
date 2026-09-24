@@ -42,16 +42,24 @@ class Transportation extends _$Transportation {
 
       final Map<String, TransportationModel> map = <String, TransportationModel>{};
 
+      // 5つのAPIは互いに独立しているので並行して取得する（結果の処理順は従来どおり）
+      final List<dynamic> results = await Future.wait<dynamic>(<Future<dynamic>>[
+        client.post(path: APIPath.getBusStopAddress),
+        client.post(path: APIPath.getDupSpot),
+        client.post(path: APIPath.getTrain),
+        client.getByPath(path: 'http://49.212.175.205:3000/api/v1/station'),
+        client.post(path: APIPath.gettrainrecord),
+      ]);
+
       //---------------------------------------------------------------------------//
 
-      final dynamic value3 = await client.post(path: APIPath.getBusStopAddress);
+      final dynamic value3 = results[0];
 
       final Map<String, BusStopModel> busStopMap1 = <String, BusStopModel>{};
 
       // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value3['data'].length.toString().toInt(); i++) {
-        // ignore: avoid_dynamic_calls
-        final BusStopModel val = BusStopModel.fromJson(value3['data'][i] as Map<String, dynamic>);
+      for (final dynamic item in value3['data'] as List<dynamic>) {
+        final BusStopModel val = BusStopModel.fromJson(item as Map<String, dynamic>);
 
         busStopMap1[val.name] = val;
       }
@@ -60,14 +68,13 @@ class Transportation extends _$Transportation {
 
       //---------------------------------------------------------------------------//
 
-      final dynamic value4 = await client.post(path: APIPath.getDupSpot);
+      final dynamic value4 = results[1];
 
       final Map<String, Map<String, String>> dupMap1 = <String, Map<String, String>>{};
 
       // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value4['data'].length.toString().toInt(); i++) {
-        // ignore: avoid_dynamic_calls
-        final DupSpotModel val = DupSpotModel.fromJson(value4['data'][i] as Map<String, dynamic>);
+      for (final dynamic item in value4['data'] as List<dynamic>) {
+        final DupSpotModel val = DupSpotModel.fromJson(item as Map<String, dynamic>);
 
         dupMap1[val.name] = <String, String>{val.area: ''};
       }
@@ -76,14 +83,13 @@ class Transportation extends _$Transportation {
 
       //---------------------------------------------------------------------------//
 
-      final dynamic value5 = await client.post(path: APIPath.getTrain);
+      final dynamic value5 = results[2];
 
       final Map<String, String> trainMap = <String, String>{};
 
       // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value5['data'].length.toString().toInt(); i++) {
-        // ignore: avoid_dynamic_calls
-        final TrainModel val = TrainModel.fromJson(value5['data'][i] as Map<String, dynamic>);
+      for (final dynamic item in value5['data'] as List<dynamic>) {
+        final TrainModel val = TrainModel.fromJson(item as Map<String, dynamic>);
 
         trainMap[val.trainNumber] = val.trainName;
       }
@@ -94,14 +100,12 @@ class Transportation extends _$Transportation {
 
       final List<StationModel> stationList = <StationModel>[];
 
-      final dynamic value2 = await client.getByPath(path: 'http://49.212.175.205:3000/api/v1/station');
+      final dynamic value2 = results[3];
 
       final Map<String, StationModel> stationMap1 = <String, StationModel>{};
 
-      // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value2.length.toString().toInt(); i++) {
-        // ignore: avoid_dynamic_calls
-        final StationModel val = StationModel.fromJson(value2[i] as Map<String, dynamic>);
+      for (final dynamic item in value2 as List<dynamic>) {
+        final StationModel val = StationModel.fromJson(item as Map<String, dynamic>);
 
         val.trainName = trainMap[val.trainNumber];
 
@@ -120,12 +124,11 @@ class Transportation extends _$Transportation {
 
       //---------------------------------------------------------------------------//
 
-      final dynamic value = await client.post(path: APIPath.gettrainrecord);
+      final dynamic value = results[4];
 
       // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-        // ignore: avoid_dynamic_calls
-        final TrainBoardingModel val = TrainBoardingModel.fromJson(value['data'][i] as Map<String, dynamic>);
+      for (final dynamic item in value['data'] as List<dynamic>) {
+        final TrainBoardingModel val = TrainBoardingModel.fromJson(item as Map<String, dynamic>);
 
         final List<String> exStation = val.station.split('\n');
 
@@ -140,25 +143,26 @@ class Transportation extends _$Transportation {
 
           final List<SpotDataModel> spotDataModelList = <SpotDataModel>[];
 
-          for (int k = 0; k < exElement.length; k++) {
-            if (stationMap1[exElement[k].trim()] != null) {
+          for (final String element in exElement) {
+            final String spotName = element.trim();
+
+            final StationModel? station = stationMap1[spotName];
+
+            if (station != null) {
               spotDataModelList.add(
-                SpotDataModel(
-                  name: stationMap1[exElement[k].trim()]!.stationName,
-                  address: stationMap1[exElement[k].trim()]!.address,
-                  lat: stationMap1[exElement[k].trim()]!.lat,
-                  lng: stationMap1[exElement[k].trim()]!.lng,
-                ),
+                SpotDataModel(name: station.stationName, address: station.address, lat: station.lat, lng: station.lng),
               );
             }
 
-            if (busStopMap1[exElement[k].trim()] != null) {
+            final BusStopModel? busStop = busStopMap1[spotName];
+
+            if (busStop != null) {
               spotDataModelList.add(
                 SpotDataModel(
-                  name: busStopMap1[exElement[k].trim()]!.name,
-                  address: busStopMap1[exElement[k].trim()]!.address,
-                  lat: busStopMap1[exElement[k].trim()]!.latitude,
-                  lng: busStopMap1[exElement[k].trim()]!.longitude,
+                  name: busStop.name,
+                  address: busStop.address,
+                  lat: busStop.latitude,
+                  lng: busStop.longitude,
                 ),
               );
             }
@@ -167,9 +171,11 @@ class Transportation extends _$Transportation {
           spotDataModelListMap[j] = spotDataModelList;
         }
 
+        final String date = val.date.yyyymmdd;
+
         list.add(
           TransportationModel(
-            date: val.date.yyyymmdd,
+            date: date,
             // ignore: avoid_bool_literals_in_conditional_expressions
             oufuku: (val.oufuku == '1') ? true : false,
             spotDataModelListMap: spotDataModelListMap,
@@ -178,8 +184,8 @@ class Transportation extends _$Transportation {
           ),
         );
 
-        map[val.date.yyyymmdd] = TransportationModel(
-          date: val.date.yyyymmdd,
+        map[date] = TransportationModel(
+          date: date,
           // ignore: avoid_bool_literals_in_conditional_expressions
           oufuku: (val.oufuku == '1') ? true : false,
           spotDataModelListMap: spotDataModelListMap,
@@ -197,7 +203,7 @@ class Transportation extends _$Transportation {
         trainMap: trainMap,
       );
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（transportation）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

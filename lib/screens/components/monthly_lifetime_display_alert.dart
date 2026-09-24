@@ -28,6 +28,13 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
 
   ///
   @override
+  void dispose() {
+    autoScrollController.dispose();
+    super.dispose();
+  }
+
+  ///
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -84,7 +91,8 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
 
     int i = 0;
     appParamState.keepLifetimeMap.forEach((String key, LifetimeModel value) {
-      if ('${key.split('-')[0]}-${key.split('-')[1]}' == widget.yearmonth) {
+      final List<String> keyParts = key.split('-');
+      if ('${keyParts[0]}-${keyParts[1]}' == widget.yearmonth) {
         final List<String> dispValList = getLifetimeData(lifetimeModel: value);
 
         final String youbi = DateTime.parse(key).youbiStr;
@@ -124,7 +132,7 @@ class _MonthlyLifetimeDisplayAlertState extends ConsumerState<MonthlyLifetimeDis
 
                     child: Row(
                       children: <Widget>[
-                        Text(key.split('-')[2], style: const TextStyle(fontSize: 20)),
+                        Text(keyParts[2], style: const TextStyle(fontSize: 20)),
                         const SizedBox(width: 5),
                         Text(youbi),
                       ],

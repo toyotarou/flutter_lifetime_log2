@@ -138,24 +138,7 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
               children: <Widget>[
                 GestureDetector(
                   onTap: () {
-                    // ignore: always_specify_types
-                    for (final item in dataList) {
-                      if (widget.title == 'stock' && item is StockModel) {
-                        final String date = '${item.year}-${item.month}-${item.day}';
-                        final int cost = (item.hoyuuSuuryou * _safeParseDouble(item.heikinShutokuKagaku)).toInt();
-                        final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
-                        final int diff = price - cost;
-
-                        dateDiffMap[date] = diff;
-                      } else if (widget.title == 'toushiShintaku' && item is ToushiShintakuModel) {
-                        final String date = '${item.year}-${item.month}-${item.day}';
-                        final int cost = _safeParseDouble(item.shutokuSougaku).toInt();
-                        final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
-                        final int diff = price - cost;
-
-                        dateDiffMap[date] = diff;
-                      }
-                    }
+                    _fillDateDiffMap(dataList);
 
                     final Map<String, int> weeklyAverageMap = createWeeklyAverageMap(dataMap: dateDiffMap);
 
@@ -180,24 +163,7 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
 
                 IconButton(
                   onPressed: () {
-                    // ignore: always_specify_types
-                    for (final item in dataList) {
-                      if (widget.title == 'stock' && item is StockModel) {
-                        final String date = '${item.year}-${item.month}-${item.day}';
-                        final int cost = (item.hoyuuSuuryou * _safeParseDouble(item.heikinShutokuKagaku)).toInt();
-                        final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
-                        final int diff = price - cost;
-
-                        dateDiffMap[date] = diff;
-                      } else if (widget.title == 'toushiShintaku' && item is ToushiShintakuModel) {
-                        final String date = '${item.year}-${item.month}-${item.day}';
-                        final int cost = _safeParseDouble(item.shutokuSougaku).toInt();
-                        final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
-                        final int diff = price - cost;
-
-                        dateDiffMap[date] = diff;
-                      }
-                    }
+                    _fillDateDiffMap(dataList);
 
                     LifetimeDialog(
                       context: context,
@@ -288,6 +254,29 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
         ),
       ],
     );
+  }
+
+  ///
+  /// dataList から 日付 -> (時価 - 取得額) を dateDiffMap に書き込む
+  void _fillDateDiffMap(List<dynamic> dataList) {
+    // ignore: always_specify_types
+    for (final item in dataList) {
+      if (widget.title == 'stock' && item is StockModel) {
+        final String date = '${item.year}-${item.month}-${item.day}';
+        final int cost = (item.hoyuuSuuryou * _safeParseDouble(item.heikinShutokuKagaku)).toInt();
+        final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
+        final int diff = price - cost;
+
+        dateDiffMap[date] = diff;
+      } else if (widget.title == 'toushiShintaku' && item is ToushiShintakuModel) {
+        final String date = '${item.year}-${item.month}-${item.day}';
+        final int cost = _safeParseDouble(item.shutokuSougaku).toInt();
+        final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
+        final int diff = price - cost;
+
+        dateDiffMap[date] = diff;
+      }
+    }
   }
 
   ///

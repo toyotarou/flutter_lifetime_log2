@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
-import '../../../extensions/extensions.dart';
 import '../../../models/toushi_shintaku_model.dart';
 import '../../../utility/utility.dart';
 
@@ -39,24 +38,22 @@ class ToushiShintaku extends _$ToushiShintaku {
       final Map<String, List<ToushiShintakuModel>> map = <String, List<ToushiShintakuModel>>{};
       final Map<int, List<ToushiShintakuModel>> map2 = <int, List<ToushiShintakuModel>>{};
 
-      // ignore: always_specify_types
-      await client.post(path: APIPath.getAllToushiShintakuData).then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          final ToushiShintakuModel val = ToushiShintakuModel.fromJson(value['data'][i] as Map<String, dynamic>);
+      final dynamic value = await client.post(path: APIPath.getAllToushiShintakuData);
+      final List<dynamic> data = (value as Map<String, dynamic>)['data'] as List<dynamic>;
 
-          list.add(val);
+      for (final dynamic item in data) {
+        final ToushiShintakuModel val = ToushiShintakuModel.fromJson(item as Map<String, dynamic>);
 
-          (map['${val.year}-${val.month}-${val.day}'] ??= <ToushiShintakuModel>[]).add(val);
+        list.add(val);
 
-          (map2[val.relationalId] ??= <ToushiShintakuModel>[]).add(val);
-        }
-      });
+        (map['${val.year}-${val.month}-${val.day}'] ??= <ToushiShintakuModel>[]).add(val);
+
+        (map2[val.relationalId] ??= <ToushiShintakuModel>[]).add(val);
+      }
 
       return state.copyWith(toushiShintakuList: list, toushiShintakuMap: map, toushiShintakuRelationalMap: map2);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（toushi_shintaku）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

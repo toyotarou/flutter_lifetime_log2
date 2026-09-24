@@ -77,9 +77,9 @@ class _WorkInfoYearlyDisplayAlertState extends ConsumerState<WorkInfoYearlyDispl
   ///
   bool _isInvalidName(String s) {
     final String norm = s
-        .replaceAll(RegExp(r'[\u200B-\u200D\uFEFF]'), '')
-        .replaceAll(RegExp(r'[\uFE0E\uFE0F]'), '')
-        .replaceAll(RegExp(r'[\u3000\s]+'), '')
+        .replaceAll(_zeroWidthRegExp, '')
+        .replaceAll(_variationSelectorRegExp, '')
+        .replaceAll(_spaceRegExp, '')
         .trim();
 
     if (norm.isEmpty) {
@@ -172,7 +172,7 @@ class _WorkInfoYearlyDisplayAlertState extends ConsumerState<WorkInfoYearlyDispl
   ///
   @override
   Widget build(BuildContext context) {
-    final double screenH = MediaQuery.of(context).size.height;
+    final double screenH = MediaQuery.sizeOf(context).height;
     final double oneYearHeight = screenH / 10;
 
     return Scaffold(
@@ -613,6 +613,11 @@ class _BandCompactState extends ConsumerState<_BandCompact> with ControllersMixi
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+/// _isInvalidName で毎回生成しないよう使い回す
+final RegExp _zeroWidthRegExp = RegExp(r'[\u200B-\u200D\uFEFF]');
+final RegExp _variationSelectorRegExp = RegExp(r'[\uFE0E\uFE0F]');
+final RegExp _spaceRegExp = RegExp(r'[\u3000\s]+');
 
 String _abbr(String s, int n) {
   if (s.isEmpty || n <= 0) {

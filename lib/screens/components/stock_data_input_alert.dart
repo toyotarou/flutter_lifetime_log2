@@ -24,13 +24,30 @@ class _StockDataInputAlertState extends ConsumerState<StockDataInputAlert> with 
 
   List<FocusNode> focusNodeList = <FocusNode>[];
 
+  bool _isLoading = false;
+
   ///
   @override
   void initState() {
     super.initState();
 
+    // 使用するのは 3 つ（EPI / INFY / JMIA）のみ
     // ignore: always_specify_types
-    focusNodeList = List.generate(100, (int index) => FocusNode());
+    focusNodeList = List.generate(3, (int index) => FocusNode());
+  }
+
+  ///
+  @override
+  void dispose() {
+    tickerEPIEditingController.dispose();
+    tickerINFYEditingController.dispose();
+    tickerJMIAEditingController.dispose();
+
+    for (final FocusNode focusNode in focusNodeList) {
+      focusNode.dispose();
+    }
+
+    super.dispose();
   }
 
   ///
@@ -39,38 +56,44 @@ class _StockDataInputAlertState extends ConsumerState<StockDataInputAlert> with 
     return Scaffold(
       backgroundColor: Colors.transparent,
 
-      body: SafeArea(
-        child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white, fontSize: 12),
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: DefaultTextStyle(
+              style: const TextStyle(color: Colors.white, fontSize: 12),
 
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.date), const SizedBox.shrink()],
-                ),
-
-                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-                _displayInputParts(),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: <Widget>[
-                    const SizedBox.shrink(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[Text(widget.date), const SizedBox.shrink()],
+                    ),
 
-                    TextButton(
-                      onPressed: () => _inputStockData(),
-                      child: const Text('データを登録する', style: TextStyle(fontSize: 12)),
+                    Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                    _displayInputParts(),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const SizedBox.shrink(),
+
+                        TextButton(
+                          onPressed: () => _inputStockData(),
+                          child: const Text('データを登録する', style: TextStyle(fontSize: 12)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+
+          if (_isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+        ],
       ),
     );
   }
@@ -173,6 +196,11 @@ class _StockDataInputAlertState extends ConsumerState<StockDataInputAlert> with 
 
   ///
   Future<void> _inputStockData() async {
+    // 送信中の二重タップを無視する
+    if (_isLoading) {
+      return;
+    }
+
     bool errFlg = false;
 
     if (tickerEPIEditingController.text.trim() == '' ||
@@ -196,20 +224,25 @@ class _StockDataInputAlertState extends ConsumerState<StockDataInputAlert> with 
       return;
     }
 
-    await stockInputNotifier
-        .inputStockRecord(
-          date: widget.date,
-          data: <String, String>{
-            'EPI': tickerEPIEditingController.text.trim(),
-            'INFY': tickerINFYEditingController.text.trim(),
-            'JMIA': tickerJMIAEditingController.text.trim(),
-          },
-        )
-        // ignore: always_specify_types
-        .then((value) {
-          if (mounted) {
-            context.findAncestorStateOfType<AppRootState>()?.restartApp();
-          }
-        });
+    setState(() => _isLoading = true);
+
+    try {
+      await stockInputNotifier.inputStockRecord(
+        date: widget.date,
+        data: <String, String>{
+          'EPI': tickerEPIEditingController.text.trim(),
+          'INFY': tickerINFYEditingController.text.trim(),
+          'JMIA': tickerJMIAEditingController.text.trim(),
+        },
+      );
+
+      if (mounted) {
+        context.findAncestorStateOfType<AppRootState>()?.restartApp();
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }

@@ -63,10 +63,11 @@ class MoneyInput extends _$MoneyInput {
   Future<void> insertMoney({required Map<String, dynamic> uploadData}) async {
     final HttpClient client = ref.read(httpClientProvider);
 
-    // ignore: always_specify_types
-    await client.post(path: APIPath.moneyinsert, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
-    });
+    try {
+      await client.post(path: APIPath.moneyinsert, body: uploadData);
+    } catch (e) {
+      utility.showError('予期せぬエラーが発生しました（money_input）', error: e);
+    }
 
     // 保存後のリフレッシュをNotifier内で行う。
     // ウィジェットのライフサイクルに依存しないため、ウィジェットがunmountされても確実に実行される。

@@ -5,13 +5,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../controllers/app_param/app_param.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/fortune_model.dart';
 import '../../models/geoloc_model.dart';
+import '../../models/lifetime_model.dart';
+import '../../models/money_model.dart';
+import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
 import '../../models/tarot_history_model.dart';
 import '../../models/tarot_model.dart';
 import '../../models/temple_model.dart';
+import '../../models/time_place_model.dart';
+import '../../models/transportation_model.dart';
+import '../../models/walk_model.dart';
+import '../../models/weather_model.dart';
 import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../components/fortune_display_alert.dart';
@@ -49,6 +58,9 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   late final String _safeYearMonth;
   late final DateTime _pageOpenTime;
 
+  /// 日付ごとの面積表示文字列キャッシュ（geoloc リストが同一インスタンスなら再計算しない）
+  final Map<String, (List<GeolocModel>, String)> _boundingBoxAreaCache = <String, (List<GeolocModel>, String)>{};
+
   ///
   @override
   void initState() {
@@ -82,6 +94,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   ///
   @override
   Widget build(BuildContext context) {
+    // 日付カードで使う項目だけを購読する。
+    // appParamState 全体を watch すると、ダイアログ内の選択状態などが変わるたびに全タブの全カードが再構築されていた。
+    final _DayCardSource src = ref.watch(appParamProvider.select(_DayCardSource.fromState));
+
     return Scaffold(
       backgroundColor: Colors.transparent,
 
@@ -180,7 +196,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                 const SizedBox(height: 10),
 
-                Expanded(child: _displayMonthlyLifetimeList()),
+                Expanded(child: _displayMonthlyLifetimeList(src)),
               ],
             ),
           ),
@@ -234,27 +250,23 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   }
 
   ///
-  Widget _displayMonthlyLifetimeList() {
+  Widget _displayMonthlyLifetimeList(_DayCardSource src) {
     // 月の最終日を一度だけ計算
     final int lastDay = DateTime(_year, _month + 1, 0).day;
-
-    final List<Widget> list = <Widget>[
-      for (int i = 1; i <= lastDay; i++)
-        DayFlipCard(
-          dayIndex: i - 1,
-          pageOpenTime: _pageOpenTime,
-          child: _buildDayCard(day: i),
-        ),
-    ];
 
     return CustomScrollView(
       controller: autoScrollController,
 
       slivers: <Widget>[
         SliverList(
+          // 表示される日のカードだけを遅延生成する
           delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) => list[index],
-            childCount: list.length,
+            (BuildContext context, int index) => DayFlipCard(
+              dayIndex: index,
+              pageOpenTime: _pageOpenTime,
+              child: _buildDayCard(day: index + 1, src: src),
+            ),
+            childCount: lastDay,
           ),
         ),
       ],
@@ -262,7 +274,21 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   }
 
   ///
-  Widget _buildDayCard({required int day}) {
+  String _getBoundingBoxArea({required String date, required List<GeolocModel> geolocModelList}) {
+    final (List<GeolocModel>, String)? cached = _boundingBoxAreaCache[date];
+
+    if (cached != null && identical(cached.$1, geolocModelList)) {
+      return cached.$2;
+    }
+
+    final String area = utility.getBoundingBoxArea(points: geolocModelList);
+    _boundingBoxAreaCache[date] = (geolocModelList, area);
+
+    return area;
+  }
+
+  ///
+  Widget _buildDayCard({required int day, required _DayCardSource src}) {
     final DateTime parsedDate = DateTime(_year, _month, day);
     final String date = parsedDate.yyyymmdd;
     final String youbi = '$date 00:00:00'.toDateTime().youbiStr;
@@ -270,8 +296,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     // DateTime.now() は一度だけ取得
     final DateTime now = DateTime.now();
 
-    Color cardColor = (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(date))
-        ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
+    Color cardColor = (youbi == 'Saturday' || youbi == 'Sunday' || src.keepHolidayList.contains(date))
+        ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: src.keepHolidayList)
         : Colors.blueGrey.withValues(alpha: 0.2);
 
     double constrainedBoxHeight = context.screenSize.height / 4.5;
@@ -285,8 +311,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     final DateTime beforeDate = parsedDate.add(const Duration(days: -1));
 
     // ?. 演算子で null を安全に扱う
-    final String dateSum = appParamState.keepMoneyMap[date]?.sum ?? '';
-    final String beforeSum = appParamState.keepMoneyMap[beforeDate.yyyymmdd]?.sum ?? '';
+    final String dateSum = src.keepMoneyMap[date]?.sum ?? '';
+    final String beforeSum = src.keepMoneyMap[beforeDate.yyyymmdd]?.sum ?? '';
 
     int sumDiff = 0;
     if (beforeSum.isNotEmpty && dateSum.isNotEmpty) {
@@ -294,12 +320,18 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
     }
     //////////////////////////////////////////////////////////////////////
 
-    final List<GeolocModel>? geolocModelList = appParamState.keepGeolocMap[date];
+    final List<GeolocModel>? geolocModelList = src.keepGeolocMap[date];
 
     String boundingBoxArea = '';
     if (geolocModelList != null) {
-      boundingBoxArea = utility.getBoundingBoxArea(points: geolocModelList);
+      boundingBoxArea = _getBoundingBoxArea(date: date, geolocModelList: geolocModelList);
     }
+
+    // 24時間分の行動データ（セルごとに作り直さない）
+    final LifetimeModel? dateLifetime = src.keepLifetimeMap[date];
+    final List<String> lifetimeData = (dateLifetime != null)
+        ? getLifetimeData(lifetimeModel: dateLifetime)
+        : <String>[];
 
     TarotHistoryModel? tarotHistory;
     int qt = -1;
@@ -309,13 +341,13 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
     TarotModel? tarot;
 
-    if (appParamState.keepTarotHistoryMap[date] != null) {
-      tarotHistory = appParamState.keepTarotHistoryMap[date];
+    if (src.keepTarotHistoryMap[date] != null) {
+      tarotHistory = src.keepTarotHistoryMap[date];
 
       qt = (tarotHistory!.reverse == '0') ? 0 : 2;
       imageUrl = 'http://toyohide.work/BrainLog/tarotcards/${tarotHistory.image}.jpg';
 
-      tarot = appParamState.keepTarotMap[tarotHistory.image];
+      tarot = src.keepTarotMap[tarotHistory.image];
 
       if (tarot != null) {
         final int feel = (tarotHistory.reverse == '0') ? tarot.feelJ : tarot.feelR;
@@ -342,9 +374,9 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
             child: Stack(
               children: <Widget>[
                 /// 勤務時間
-                if (appParamState.keepWorkTimeDateMap[date] != null &&
-                    appParamState.keepWorkTimeDateMap[date]!['start'] != '' &&
-                    appParamState.keepWorkTimeDateMap[date]!['end'] != '') ...<Widget>[
+                if (src.keepWorkTimeDateMap[date] != null &&
+                    src.keepWorkTimeDateMap[date]!['start'] != '' &&
+                    src.keepWorkTimeDateMap[date]!['end'] != '') ...<Widget>[
                   Positioned(
                     bottom: 10,
                     right: 10,
@@ -354,9 +386,9 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                         children: <Widget>[
                           const Text('🔨'),
                           const SizedBox(width: 20),
-                          Text(appParamState.keepWorkTimeDateMap[date]!['start'] ?? ''),
+                          Text(src.keepWorkTimeDateMap[date]!['start'] ?? ''),
                           const Text(' - '),
-                          Text(appParamState.keepWorkTimeDateMap[date]!['end'] ?? ''),
+                          Text(src.keepWorkTimeDateMap[date]!['end'] ?? ''),
                         ],
                       ),
                     ),
@@ -364,7 +396,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                 ],
 
                 /// 収入
-                if (appParamState.keepSalaryMap[date] != null) ...<Widget>[
+                if (src.keepSalaryMap[date] != null) ...<Widget>[
                   Positioned(
                     bottom: 25,
                     right: 10,
@@ -381,7 +413,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
-                              children: appParamState.keepSalaryMap[date]!.map((SalaryModel e) {
+                              children: src.keepSalaryMap[date]!.map((SalaryModel e) {
                                 return Text(
                                   e.salary.toString().toCurrency(),
 
@@ -402,14 +434,14 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                   child: Column(
                     children: <Widget>[
                       //====================================================// temple // s
-                      if (appParamState.keepTempleMap[date] != null) ...<Widget>[
+                      if (src.keepTempleMap[date] != null) ...<Widget>[
                         const SizedBox(width: 10),
                         Column(
                           children: <Widget>[
                             FaIcon(FontAwesomeIcons.toriiGate, size: 20, color: Colors.white.withValues(alpha: 0.3)),
                             const SizedBox(height: 10),
                             Text(
-                              appParamState.keepTempleMap[date]!.templeDataList.length.toString(),
+                              src.keepTempleMap[date]!.templeDataList.length.toString(),
                               style: const TextStyle(fontSize: 8),
                             ),
                           ],
@@ -419,7 +451,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                       //====================================================// temple // e
 
                       //====================================================// train // s
-                      if (appParamState.keepTransportationMap[date] != null) ...<Widget>[
+                      if (src.keepTransportationMap[date] != null) ...<Widget>[
                         const SizedBox(width: 10),
                         Icon(Icons.train, size: 20, color: Colors.white.withValues(alpha: 0.3)),
                       ],
@@ -466,7 +498,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                       //====================================================// lifetime input // s
                                       GestureDetector(
                                         onTap: () {
-                                          if (appParamState.keepLifetimeItemList.isEmpty) {
+                                          if (ref.read(appParamProvider).keepLifetimeItemList.isEmpty) {
                                             // mounted チェックを追加して context を安全に使用
                                             if (mounted) {
                                               // ignore: always_specify_types
@@ -488,7 +520,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                             context: context,
                                             widget: LifetimeInputAlert(
                                               date: date,
-                                              dateLifetime: appParamState.keepLifetimeMap[date],
+                                              dateLifetime: src.keepLifetimeMap[date],
                                               isReloadHomeScreen: true,
                                             ),
                                           );
@@ -507,11 +539,11 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                             width: 45,
                                             height: 40,
                                             alignment: Alignment.topLeft,
-                                            child: (appParamState.keepGeolocMap[date] != null)
+                                            child: (src.keepGeolocMap[date] != null)
                                                 ? GestureDetector(
                                                     onTap: () => _onGeolocTap(
                                                       date: date,
-                                                      geolocModelList: appParamState.keepGeolocMap[date]!,
+                                                      geolocModelList: src.keepGeolocMap[date]!,
                                                     ),
 
                                                     child: Column(
@@ -525,7 +557,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                         ),
                                                         const SizedBox(height: 5),
                                                         Text(
-                                                          appParamState.keepGeolocMap[date]!.length.toString(),
+                                                          src.keepGeolocMap[date]!.length.toString(),
                                                           style: const TextStyle(fontSize: 8),
                                                         ),
                                                       ],
@@ -543,7 +575,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                 radius: 14,
 
                                                 child: Text(
-                                                  appParamState.keepTimePlaceMap[date]?.length.toString() ?? '',
+                                                  src.keepTimePlaceMap[date]?.length.toString() ?? '',
 
                                                   style: TextStyle(
                                                     color: Colors.white.withValues(alpha: 0.5),
@@ -568,7 +600,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                           Expanded(
                             child: Column(
                               children: <Widget>[
-                                if (appParamState.keepLifetimeMap[date] != null) ...<Widget>[
+                                if (src.keepLifetimeMap[date] != null) ...<Widget>[
                                   Stack(
                                     children: <Widget>[
                                       //====================================================// boundingBoxArea // s
@@ -627,7 +659,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                   padding: const EdgeInsets.all(5),
                                                   // ?. 演算子で null-safe アクセス
                                                   child: Text(
-                                                    appParamState.keepWalkModelMap[date]?.step
+                                                    src.keepWalkModelMap[date]?.step
                                                             .toString()
                                                             .toCurrency() ??
                                                         '',
@@ -657,7 +689,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                   ),
                                                   padding: const EdgeInsets.all(5),
                                                   child: Text(
-                                                    appParamState.keepWalkModelMap[date]?.distance
+                                                    src.keepWalkModelMap[date]?.distance
                                                             .toString()
                                                             .toCurrency() ??
                                                         '',
@@ -679,9 +711,9 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                   context: context,
                                                   widget: WalkDataInputAlert(
                                                     date: date,
-                                                    step: appParamState.keepWalkModelMap[date]?.step.toString() ?? '',
+                                                    step: src.keepWalkModelMap[date]?.step.toString() ?? '',
                                                     distance:
-                                                        appParamState.keepWalkModelMap[date]?.distance.toString() ?? '',
+                                                        src.keepWalkModelMap[date]?.distance.toString() ?? '',
                                                   ),
                                                 ),
                                                 child: Icon(Icons.input, color: Colors.white.withValues(alpha: 0.3)),
@@ -712,10 +744,10 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                               ),
                                               padding: const EdgeInsets.all(5),
                                               child: Text(
-                                                (appParamState.keepWalkModelMap[date] != null)
-                                                    ? (appParamState.keepWalkModelMap[date]!.spend == '0')
+                                                (src.keepWalkModelMap[date] != null)
+                                                    ? (src.keepWalkModelMap[date]!.spend == '0')
                                                           ? '0'
-                                                          : appParamState.keepWalkModelMap[date]!.spend
+                                                          : src.keepWalkModelMap[date]!.spend
                                                                 .replaceAll('円', '')
                                                                 .trim()
                                                     : sumDiff.toString().toCurrency(),
@@ -743,8 +775,8 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                               ),
                                               padding: const EdgeInsets.all(5),
                                               child: Text(
-                                                (appParamState.keepMoneyMap[date] != null)
-                                                    ? appParamState.keepMoneyMap[date]!.sum.toCurrency()
+                                                (src.keepMoneyMap[date] != null)
+                                                    ? src.keepMoneyMap[date]!.sum.toCurrency()
                                                     : '',
                                               ),
                                             ),
@@ -793,14 +825,14 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                       ),
 
                       //====================================================// hour // s
-                      if (appParamState.keepLifetimeMap[date] != null) ...<Widget>[
+                      if (src.keepLifetimeMap[date] != null) ...<Widget>[
                         const SizedBox(height: 10),
                         Row(
                           // ignore: always_specify_types
                           children: List.generate(
                             24,
                             (int index) => index,
-                          ).map((int e) => getLifetimeDisplayCell(date: date, num: e)).toList(),
+                          ).map((int e) => getLifetimeDisplayCell(dispValList: lifetimeData, num: e)).toList(),
                         ),
                       ],
 
@@ -813,7 +845,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               //====================================================// leo fortune // s
                               SizedBox(
                                 width: 40,
-                                child: (appParamState.keepFortuneMap[date] != null)
+                                child: (src.keepFortuneMap[date] != null)
                                     ? GestureDetector(
                                         onTap: () {
                                           LifetimeDialog(
@@ -851,7 +883,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                                 ),
                                                 child: Center(
                                                   child: Text(
-                                                    appParamState.keepFortuneMap[date]!.rank,
+                                                    src.keepFortuneMap[date]!.rank,
                                                     style: const TextStyle(
                                                       fontSize: 10,
                                                       color: Colors.white,
@@ -888,7 +920,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               //====================================================// tarot // s
                               SizedBox(
                                 width: 40,
-                                child: (appParamState.keepTarotHistoryMap[date] != null)
+                                child: (src.keepTarotHistoryMap[date] != null)
                                     ? GestureDetector(
                                         onTap: () {
                                           LifetimeDialog(
@@ -936,14 +968,14 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
                               //====================================================// weather // s
                               if (parsedDate.isBeforeOrSameDate(now) &&
-                                  appParamState.keepWeatherMap[date] != null) ...<Widget>[
+                                  src.keepWeatherMap[date] != null) ...<Widget>[
                                 const SizedBox(width: 10),
 
                                 Column(
                                   children: <Widget>[
                                     Builder(
                                       builder: (_) {
-                                        final String w = appParamState.keepWeatherMap[date]!.weather;
+                                        final String w = src.keepWeatherMap[date]!.weather;
 
                                         const Map<String, String> kanjiToKey = <String, String>{
                                           '晴': 'sunny',
@@ -1008,7 +1040,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                                     ),
 
                                     Text(
-                                      appParamState.keepWeatherMap[date]?.weather ?? '',
+                                      src.keepWeatherMap[date]?.weather ?? '',
                                       style: TextStyle(color: Colors.grey.withValues(alpha: 0.8)),
                                     ),
                                   ],
@@ -1016,7 +1048,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
                               ],
 
                               //====================================================// weather // e
-                              if (appParamState.keepOhakamairiDataMap.containsKey(date)) ...<Widget>[
+                              if (src.keepOhakamairiDataMap.containsKey(date)) ...<Widget>[
                                 const SizedBox(width: 25),
                                 Column(
                                   children: <Widget>[
@@ -1073,6 +1105,9 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
 
   /// geoloc タップ処理を抽出
   void _onGeolocTap({required String date, required List<GeolocModel> geolocModelList}) {
+    // コールバック内なので watch ではなく read で参照する
+    final AppParamState appParamState = ref.read(appParamProvider);
+
     try {
       appParamNotifier.setSelectedGeolocTime(time: '');
       appParamNotifier.setSelectedGeolocPointTime(time: '');
@@ -1125,11 +1160,7 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
   }
 
   ///
-  Widget getLifetimeDisplayCell({required String date, required int num}) {
-    final List<String> dispValList = (appParamState.keepLifetimeMap[date] != null)
-        ? getLifetimeData(lifetimeModel: appParamState.keepLifetimeMap[date]!)
-        : <String>[];
-
+  Widget getLifetimeDisplayCell({required List<String> dispValList, required int num}) {
     // 境界チェック: dispValList の要素数が不足していても IndexError を起こさない
     if (num >= dispValList.length) {
       return const SizedBox.shrink();
@@ -1153,4 +1184,101 @@ class _MonthlyLifetimeDisplayPageState extends ConsumerState<MonthlyLifetimeDisp
       ],
     );
   }
+}
+
+/// 日付カードの表示に使う appParamState の項目
+///
+/// select() で購読し、ここに含まれる Map / List のいずれかが差し替わった時だけ再構築する。
+/// freezed の getter が返す EqualUnmodifiableXxxView の == は「中身のインスタンスが同一か」で比較するため軽量。
+@immutable
+class _DayCardSource {
+  const _DayCardSource({
+    required this.keepHolidayList,
+    required this.keepMoneyMap,
+    required this.keepGeolocMap,
+    required this.keepTarotHistoryMap,
+    required this.keepTarotMap,
+    required this.keepWorkTimeDateMap,
+    required this.keepSalaryMap,
+    required this.keepTempleMap,
+    required this.keepTransportationMap,
+    required this.keepTimePlaceMap,
+    required this.keepLifetimeMap,
+    required this.keepWalkModelMap,
+    required this.keepFortuneMap,
+    required this.keepWeatherMap,
+    required this.keepOhakamairiDataMap,
+  });
+
+  factory _DayCardSource.fromState(AppParamState s) => _DayCardSource(
+    keepHolidayList: s.keepHolidayList,
+    keepMoneyMap: s.keepMoneyMap,
+    keepGeolocMap: s.keepGeolocMap,
+    keepTarotHistoryMap: s.keepTarotHistoryMap,
+    keepTarotMap: s.keepTarotMap,
+    keepWorkTimeDateMap: s.keepWorkTimeDateMap,
+    keepSalaryMap: s.keepSalaryMap,
+    keepTempleMap: s.keepTempleMap,
+    keepTransportationMap: s.keepTransportationMap,
+    keepTimePlaceMap: s.keepTimePlaceMap,
+    keepLifetimeMap: s.keepLifetimeMap,
+    keepWalkModelMap: s.keepWalkModelMap,
+    keepFortuneMap: s.keepFortuneMap,
+    keepWeatherMap: s.keepWeatherMap,
+    keepOhakamairiDataMap: s.keepOhakamairiDataMap,
+  );
+
+  final List<String> keepHolidayList;
+  final Map<String, MoneyModel> keepMoneyMap;
+  final Map<String, List<GeolocModel>> keepGeolocMap;
+  final Map<String, TarotHistoryModel> keepTarotHistoryMap;
+  final Map<String, TarotModel> keepTarotMap;
+  final Map<String, Map<String, String>> keepWorkTimeDateMap;
+  final Map<String, List<SalaryModel>> keepSalaryMap;
+  final Map<String, TempleModel> keepTempleMap;
+  final Map<String, TransportationModel> keepTransportationMap;
+  final Map<String, List<TimePlaceModel>> keepTimePlaceMap;
+  final Map<String, LifetimeModel> keepLifetimeMap;
+  final Map<String, WalkModel> keepWalkModelMap;
+  final Map<String, FortuneModel> keepFortuneMap;
+  final Map<String, WeatherModel> keepWeatherMap;
+  final Map<String, List<MoneySpendModel>> keepOhakamairiDataMap;
+
+  @override
+  bool operator ==(Object other) =>
+      other is _DayCardSource &&
+      other.keepHolidayList == keepHolidayList &&
+      other.keepMoneyMap == keepMoneyMap &&
+      other.keepGeolocMap == keepGeolocMap &&
+      other.keepTarotHistoryMap == keepTarotHistoryMap &&
+      other.keepTarotMap == keepTarotMap &&
+      other.keepWorkTimeDateMap == keepWorkTimeDateMap &&
+      other.keepSalaryMap == keepSalaryMap &&
+      other.keepTempleMap == keepTempleMap &&
+      other.keepTransportationMap == keepTransportationMap &&
+      other.keepTimePlaceMap == keepTimePlaceMap &&
+      other.keepLifetimeMap == keepLifetimeMap &&
+      other.keepWalkModelMap == keepWalkModelMap &&
+      other.keepFortuneMap == keepFortuneMap &&
+      other.keepWeatherMap == keepWeatherMap &&
+      other.keepOhakamairiDataMap == keepOhakamairiDataMap;
+
+  @override
+  int get hashCode => Object.hashAll(<Object>[
+    keepHolidayList,
+    keepMoneyMap,
+    keepGeolocMap,
+    keepTarotHistoryMap,
+    keepTarotMap,
+    keepWorkTimeDateMap,
+    keepSalaryMap,
+    keepTempleMap,
+    keepTransportationMap,
+    keepTimePlaceMap,
+    keepLifetimeMap,
+    keepWalkModelMap,
+    keepFortuneMap,
+    keepWeatherMap,
+    keepOhakamairiDataMap,
+  ]);
 }

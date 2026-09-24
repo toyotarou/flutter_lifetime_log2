@@ -25,6 +25,14 @@ class _SpendEachYearSummaryDisplayAlertState extends ConsumerState<SpendEachYear
 
   ///
   @override
+  void dispose() {
+    autoScrollController.dispose();
+
+    super.dispose();
+  }
+
+  ///
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -151,7 +159,8 @@ class _SpendEachYearSummaryDisplayAlertState extends ConsumerState<SpendEachYear
       }
     }
 
-    setState(() => summaryTotal = st);
+    // build 中に呼ばれるため setState は不要（下部の合計表示はこの後に評価される）
+    summaryTotal = st;
 
     return CustomScrollView(
       controller: autoScrollController,

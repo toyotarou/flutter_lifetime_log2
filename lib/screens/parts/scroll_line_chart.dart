@@ -365,6 +365,12 @@ class ScrollLineChartController extends ChangeNotifier {
   late final List<FlSpot> allSpots;
   late final int maxIndex;
 
+  /// x(丸め) -> y（同一xは後勝ち）。ドラッグ/オートスクロールの度に全件から作り直さないためのキャッシュ
+  late final Map<int, double> _lastYByX;
+
+  /// x(丸め) -> y（同一xは先勝ち）。_valueAtIndexWithFallback の完全一致検索用
+  late final Map<int, double> _firstYByX;
+
   late final List<DateTime> monthStarts;
 
   late final Map<int, int> yearDeltaMap;
@@ -399,6 +405,16 @@ class ScrollLineChartController extends ChangeNotifier {
     todayJst = DateTime(now.year, now.month, now.day);
 
     allSpots = _prepareSpots();
+
+    final Map<int, double> lastYByX = <int, double>{};
+    final Map<int, double> firstYByX = <int, double>{};
+    for (final FlSpot s in allSpots) {
+      final int x = s.x.round();
+      lastYByX[x] = s.y;
+      firstYByX.putIfAbsent(x, () => s.y);
+    }
+    _lastYByX = lastYByX;
+    _firstYByX = firstYByX;
 
     maxIndex = allSpots.isEmpty ? 0 : allSpots.last.x.floor();
     startIndex = 0;
@@ -767,7 +783,7 @@ class ScrollLineChartController extends ChangeNotifier {
     final double maxX0 = maxX;
 
     final List<FlSpot> visibleSpots = _extractVisibleSpots(
-      all: allSpots,
+      byX: _lastYByX,
       minX: minX0,
       maxX: maxX0,
       extendLastValue: true,
@@ -921,26 +937,30 @@ class ScrollLineChartController extends ChangeNotifier {
 
     final int x = dayIndex;
 
-    final int exact = allSpots.indexWhere((FlSpot s) => s.x.round() == x);
-    if (exact >= 0) {
-      return allSpots[exact].y;
+    final double? exact = _firstYByX[x];
+    if (exact != null) {
+      return exact;
     }
 
-    for (int i = allSpots.length - 1; i >= 0; i--) {
-      final int sx = allSpots[i].x.round();
-      if (sx <= x) {
-        return allSpots[i].y;
+    // allSpots は x 昇順のため、x 以下となる最後の要素を二分探索で求める
+    int lo = 0;
+    int hi = allSpots.length - 1;
+    int found = -1;
+    while (lo <= hi) {
+      final int mid = (lo + hi) >> 1;
+      if (allSpots[mid].x.round() <= x) {
+        found = mid;
+        lo = mid + 1;
+      } else {
+        hi = mid - 1;
       }
     }
-
-    for (int i = 0; i < allSpots.length; i++) {
-      final int sx = allSpots[i].x.round();
-      if (sx >= x) {
-        return allSpots[i].y;
-      }
+    if (found >= 0) {
+      return allSpots[found].y;
     }
 
-    return null;
+    // 全要素が x より大きい → 先頭が「x 以上となる最初の要素」
+    return allSpots.first.y;
   }
 
   ///
@@ -1142,18 +1162,13 @@ class ScrollLineChartController extends ChangeNotifier {
 
   ///
   static List<FlSpot> _extractVisibleSpots({
-    required List<FlSpot> all,
+    required Map<int, double> byX,
     required double minX,
     required double maxX,
     required bool extendLastValue,
   }) {
     final int minI = minX.floor();
     final int maxI = maxX.ceil();
-
-    final Map<int, double> byX = <int, double>{};
-    for (final FlSpot s in all) {
-      byX[s.x.round()] = s.y;
-    }
 
     final List<FlSpot> visible = <FlSpot>[];
     double? lastY;
@@ -1312,13 +1327,37 @@ class MonthBandLabelPainter extends CustomPainter {
   }
 
   ///
+  /// 修正: labels は build 毎に新しい List が作られるため `!=`（参照比較）では常に true になり、
+  /// 毎フレーム再描画していた。paint() が使う値（year / month / centerX / monthDelta / yearDelta）を中身で比較する。
   @override
   bool shouldRepaint(covariant MonthBandLabelPainter oldDelegate) {
-    return oldDelegate.labels != labels ||
+    return !_sameLabels(oldDelegate.labels, labels) ||
         oldDelegate.minX != minX ||
         oldDelegate.maxX != maxX ||
         oldDelegate.minY != minY ||
         oldDelegate.maxY != maxY;
+  }
+
+  ///
+  static bool _sameLabels(List<MonthBandLabel> a, List<MonthBandLabel> b) {
+    if (identical(a, b)) {
+      return true;
+    }
+    if (a.length != b.length) {
+      return false;
+    }
+    for (int i = 0; i < a.length; i++) {
+      final MonthBandLabel x = a[i];
+      final MonthBandLabel y = b[i];
+      if (x.year != y.year ||
+          x.month != y.month ||
+          x.centerX != y.centerX ||
+          x.monthDelta != y.monthDelta ||
+          x.yearDelta != y.yearDelta) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../utility/functions.dart';
 import '../parts/cross_calendar.dart';
@@ -15,8 +14,8 @@ class LifetimeSummaryAlert extends ConsumerStatefulWidget {
   ConsumerState<LifetimeSummaryAlert> createState() => _LifetimeSummaryAlertState();
 }
 
-class _LifetimeSummaryAlertState extends ConsumerState<LifetimeSummaryAlert>
-    with ControllersMixin<LifetimeSummaryAlert> {
+/// 修正: ControllersMixin を mix-in していたが一度も使っていなかったため外した
+class _LifetimeSummaryAlertState extends ConsumerState<LifetimeSummaryAlert> {
   ///
   @override
   Widget build(BuildContext context) {

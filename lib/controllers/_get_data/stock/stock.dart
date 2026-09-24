@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
-import '../../../extensions/extensions.dart';
 import '../../../models/stock_model.dart';
 import '../../../utility/utility.dart';
 
@@ -39,24 +38,22 @@ class Stock extends _$Stock {
       final Map<String, List<StockModel>> map = <String, List<StockModel>>{};
       final Map<String, List<StockModel>> map2 = <String, List<StockModel>>{};
 
-      // ignore: always_specify_types
-      await client.post(path: APIPath.getAllStockData).then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          final StockModel val = StockModel.fromJson(value['data'][i] as Map<String, dynamic>);
+      final dynamic value = await client.post(path: APIPath.getAllStockData);
+      final List<dynamic> data = (value as Map<String, dynamic>)['data'] as List<dynamic>;
 
-          list.add(val);
+      for (final dynamic item in data) {
+        final StockModel val = StockModel.fromJson(item as Map<String, dynamic>);
 
-          (map['${val.year}-${val.month}-${val.day}'] ??= <StockModel>[]).add(val);
+        list.add(val);
 
-          (map2[val.ticker] ??= <StockModel>[]).add(val);
-        }
-      });
+        (map['${val.year}-${val.month}-${val.day}'] ??= <StockModel>[]).add(val);
+
+        (map2[val.ticker] ??= <StockModel>[]).add(val);
+      }
 
       return state.copyWith(stockList: list, stockMap: map, stockTickerMap: map2);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（stock）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

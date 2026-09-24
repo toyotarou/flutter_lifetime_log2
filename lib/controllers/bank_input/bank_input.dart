@@ -68,10 +68,11 @@ class BankInput extends _$BankInput {
   Future<void> updateBankMoney({required Map<String, dynamic> uploadData}) async {
     final HttpClient client = ref.read(httpClientProvider);
 
-    // ignore: always_specify_types
-    await client.post(path: APIPath.updateBankMoney, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
-    });
+    try {
+      await client.post(path: APIPath.updateBankMoney, body: uploadData);
+    } catch (e) {
+      utility.showError('予期せぬエラーが発生しました（bank_input）', error: e);
+    }
   }
 
   ///

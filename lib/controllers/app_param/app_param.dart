@@ -190,6 +190,178 @@ class AppParam extends _$AppParam {
   }
 
   ///
+  /// HomeScreen から渡される元データを一括反映する。
+  /// 1項目ずつ setKeepXxx すると、その回数だけ appParamState を watch している全ウィジェットが再構築されるため、
+  /// 変化のあった項目だけをまとめて 1 回の state 更新で反映する（変化がなければ何もしない）。
+  void syncKeepSourceData({
+    required List<String> holidayList,
+    required Map<String, WalkModel> walkModelMap,
+    required Map<String, MoneyModel> moneyMap,
+    required Map<String, LifetimeModel> lifetimeMap,
+    required List<LifetimeItemModel> lifetimeItemList,
+    required Map<String, List<GeolocModel>> geolocMap,
+    required Map<String, TempleModel> templeMap,
+    required Map<String, TransportationModel> transportationMap,
+    required Map<String, List<MoneySpendModel>> moneySpendMap,
+    required Map<String, WorkTimeModel> workTimeMap,
+    required Map<String, Map<String, String>> workTimeDateMap,
+    required Map<String, WeatherModel> weatherMap,
+    required Map<String, MoneySpendItemModel> moneySpendItemMap,
+    required Map<String, List<SalaryModel>> salaryMap,
+    required Map<String, GoldModel> goldMap,
+    required Map<String, List<StockModel>> stockMap,
+    required Map<String, List<ToushiShintakuModel>> toushiShintakuMap,
+    required List<StationModel> stationList,
+    required Map<String, List<CreditSummaryModel>> creditSummaryMap,
+    required Map<int, List<FundModel>> fundRelationMap,
+    required Map<String, List<StockModel>> stockTickerMap,
+    required Map<int, List<ToushiShintakuModel>> toushiShintakuRelationalMap,
+    required Map<String, List<TimePlaceModel>> timePlaceMap,
+    required Map<String, List<AmazonPurchaseModel>> amazonPurchaseMap,
+    required Map<String, List<StampRallyModel>> stampRallyMetroAllStationMap,
+    required List<MunicipalModel> tokyoMunicipalList,
+    required Map<String, MunicipalModel> tokyoMunicipalMap,
+    required List<ScrollLineChartModel> moneySumList,
+    required Map<String, String> trainMap,
+    required Map<String, FortuneModel> fortuneMap,
+    required Map<String, TarotModel> tarotMap,
+    required Map<String, TarotHistoryModel> tarotHistoryMap,
+    required Map<String, List<ToushiShintakuHistoryModel>> toushiShintakuHistoryMap,
+    required Map<String, List<ToushiShintakuHistoryModel>> toushiShintakuHistoryCostDateMap,
+  }) {
+    final AppParamState s = state;
+
+    // freezed の Map / List の getter は呼ぶたびに EqualUnmodifiableXxxView で包み直すため identical() は使えない。
+    // その View の == は「中身のインスタンスが同一か」で比較する（要素の深い比較はしない）ので軽量。
+
+    // geoloc は月単位で mergeKeepGeolocMap により先行反映されているため、
+    // 元データ側（geolocState）の方が件数が少ない場合は上書きしない（取得済みデータを消さない）
+    final bool geolocChanged =
+        s.keepGeolocMap != geolocMap && geolocMap.length >= s.keepGeolocMap.length;
+
+    final bool changed =
+        s.keepHolidayList != holidayList ||
+        s.keepWalkModelMap != walkModelMap ||
+        s.keepMoneyMap != moneyMap ||
+        s.keepLifetimeMap != lifetimeMap ||
+        s.keepLifetimeItemList != lifetimeItemList ||
+        geolocChanged ||
+        s.keepTempleMap != templeMap ||
+        s.keepTransportationMap != transportationMap ||
+        s.keepMoneySpendMap != moneySpendMap ||
+        s.keepWorkTimeMap != workTimeMap ||
+        s.keepWorkTimeDateMap != workTimeDateMap ||
+        s.keepWeatherMap != weatherMap ||
+        s.keepMoneySpendItemMap != moneySpendItemMap ||
+        s.keepSalaryMap != salaryMap ||
+        s.keepGoldMap != goldMap ||
+        s.keepStockMap != stockMap ||
+        s.keepToushiShintakuMap != toushiShintakuMap ||
+        s.keepStationList != stationList ||
+        s.keepCreditSummaryMap != creditSummaryMap ||
+        s.keepFundRelationMap != fundRelationMap ||
+        s.keepStockTickerMap != stockTickerMap ||
+        s.keepToushiShintakuRelationalMap != toushiShintakuRelationalMap ||
+        s.keepTimePlaceMap != timePlaceMap ||
+        s.keepAmazonPurchaseMap != amazonPurchaseMap ||
+        s.keepStampRallyMetroAllStationMap != stampRallyMetroAllStationMap ||
+        s.keepTokyoMunicipalList != tokyoMunicipalList ||
+        s.keepTokyoMunicipalMap != tokyoMunicipalMap ||
+        s.keepMoneySumList != moneySumList ||
+        s.keepTrainMap != trainMap ||
+        s.keepFortuneMap != fortuneMap ||
+        s.keepTarotMap != tarotMap ||
+        s.keepTarotHistoryMap != tarotHistoryMap ||
+        s.keepToushiShintakuHistoryMap != toushiShintakuHistoryMap ||
+        s.keepToushiShintakuHistoryCostDateMap != toushiShintakuHistoryCostDateMap;
+
+    if (!changed) {
+      return;
+    }
+
+    state = s.copyWith(
+      keepHolidayList: holidayList,
+      keepWalkModelMap: walkModelMap,
+      keepMoneyMap: moneyMap,
+      keepLifetimeMap: lifetimeMap,
+      keepLifetimeItemList: lifetimeItemList,
+      keepGeolocMap: geolocChanged ? geolocMap : s.keepGeolocMap,
+      keepTempleMap: templeMap,
+      keepTransportationMap: transportationMap,
+      keepMoneySpendMap: moneySpendMap,
+      keepWorkTimeMap: workTimeMap,
+      keepWorkTimeDateMap: workTimeDateMap,
+      keepWeatherMap: weatherMap,
+      keepMoneySpendItemMap: moneySpendItemMap,
+      keepSalaryMap: salaryMap,
+      keepGoldMap: goldMap,
+      keepStockMap: stockMap,
+      keepToushiShintakuMap: toushiShintakuMap,
+      keepStationList: stationList,
+      keepCreditSummaryMap: creditSummaryMap,
+      keepFundRelationMap: fundRelationMap,
+      keepStockTickerMap: stockTickerMap,
+      keepToushiShintakuRelationalMap: toushiShintakuRelationalMap,
+      keepTimePlaceMap: timePlaceMap,
+      keepAmazonPurchaseMap: amazonPurchaseMap,
+      keepStampRallyMetroAllStationMap: stampRallyMetroAllStationMap,
+      keepTokyoMunicipalList: tokyoMunicipalList,
+      keepTokyoMunicipalMap: tokyoMunicipalMap,
+      keepMoneySumList: moneySumList,
+      keepTrainMap: trainMap,
+      keepFortuneMap: fortuneMap,
+      keepTarotMap: tarotMap,
+      keepTarotHistoryMap: tarotHistoryMap,
+      keepToushiShintakuHistoryMap: toushiShintakuHistoryMap,
+      keepToushiShintakuHistoryCostDateMap: toushiShintakuHistoryCostDateMap,
+    );
+  }
+
+  ///
+  /// HomeScreen で元データから算出した派生データを一括反映する。
+  /// null の項目は「再計算していない（変化なし）」として現在値を維持する。
+  void syncKeepDerivedData({
+    Map<String, List<String>>? templeDateTimeBadgeMap,
+    Map<String, String>? templeDateTimeNameMap,
+    Map<String, List<Map<String, dynamic>>>? allDateLifetimeSummaryMap,
+    Map<String, List<StampRallyModel>>? stampRallyMetro20AnniversaryMap,
+    Map<String, List<StampRallyModel>>? stampRallyMetroPokepokeMap,
+    Map<int, Map<String, int>>? creditSummaryTotalMap,
+    List<List<List<List<double>>>>? allPolygonsList,
+    Map<String, List<MoneySpendModel>>? ohakamairiDataMap,
+    List<Map<String, String>>? nenkinKikinDataList,
+    List<Map<String, String>>? insuranceDataList,
+  }) {
+    if (templeDateTimeBadgeMap == null &&
+        templeDateTimeNameMap == null &&
+        allDateLifetimeSummaryMap == null &&
+        stampRallyMetro20AnniversaryMap == null &&
+        stampRallyMetroPokepokeMap == null &&
+        creditSummaryTotalMap == null &&
+        allPolygonsList == null &&
+        ohakamairiDataMap == null &&
+        nenkinKikinDataList == null &&
+        insuranceDataList == null) {
+      return;
+    }
+
+    final AppParamState s = state;
+
+    state = s.copyWith(
+      keepTempleDateTimeBadgeMap: templeDateTimeBadgeMap ?? s.keepTempleDateTimeBadgeMap,
+      keepTempleDateTimeNameMap: templeDateTimeNameMap ?? s.keepTempleDateTimeNameMap,
+      keepAllDateLifetimeSummaryMap: allDateLifetimeSummaryMap ?? s.keepAllDateLifetimeSummaryMap,
+      keepStampRallyMetro20AnniversaryMap: stampRallyMetro20AnniversaryMap ?? s.keepStampRallyMetro20AnniversaryMap,
+      keepStampRallyMetroPokepokeMap: stampRallyMetroPokepokeMap ?? s.keepStampRallyMetroPokepokeMap,
+      keepCreditSummaryTotalMap: creditSummaryTotalMap ?? s.keepCreditSummaryTotalMap,
+      keepAllPolygonsList: allPolygonsList ?? s.keepAllPolygonsList,
+      keepOhakamairiDataMap: ohakamairiDataMap ?? s.keepOhakamairiDataMap,
+      keepNenkinKikinDataList: nenkinKikinDataList ?? s.keepNenkinKikinDataList,
+      keepInsuranceDataList: insuranceDataList ?? s.keepInsuranceDataList,
+    );
+  }
+
+  ///
   void setKeepHolidayList({required List<String> list}) => state = state.copyWith(keepHolidayList: list);
 
   ///
@@ -365,7 +537,12 @@ class AppParam extends _$AppParam {
 
   //===================================================
 
-  void setHomeTabYearMonth({required String yearmonth}) => state = state.copyWith(homeTabYearMonth: yearmonth);
+  void setHomeTabYearMonth({required String yearmonth}) {
+    if (state.homeTabYearMonth == yearmonth) {
+      return;
+    }
+    state = state.copyWith(homeTabYearMonth: yearmonth);
+  }
 
   //===================================================
 

@@ -51,18 +51,17 @@ class Geoloc extends _$Geoloc {
       // date パラメータは月の1日（例: "2026-07-01"）
       final String dateParam = '$yearmonth-01';
 
-      // ignore: always_specify_types
-      await client.getByPath(path: '$_geolocMonthlyUrl?date=$dateParam').then((value) {
-        // レスポンスは { "data": [...] } 形式
-        // ignore: avoid_dynamic_calls
-        final List<dynamic> list = value['data'] as List<dynamic>;
+      final dynamic value = await client.getByPath(path: '$_geolocMonthlyUrl?date=$dateParam');
 
-        for (int i = 0; i < list.length; i++) {
-          final GeolocModel val = GeolocModel.fromJson(list[i] as Map<String, dynamic>);
+      // レスポンスは { "data": [...] } 形式
+      // ignore: avoid_dynamic_calls
+      final List<dynamic> list = value['data'] as List<dynamic>;
 
-          (newEntries['${val.year}-${val.month}-${val.day}'] ??= <GeolocModel>[]).add(val);
-        }
-      });
+      for (final dynamic item in list) {
+        final GeolocModel val = GeolocModel.fromJson(item as Map<String, dynamic>);
+
+        (newEntries['${val.year}-${val.month}-${val.day}'] ??= <GeolocModel>[]).add(val);
+      }
 
       // geolocState にマージ
       final Map<String, List<GeolocModel>> merged = Map<String, List<GeolocModel>>.from(state.geolocMap)
@@ -87,32 +86,57 @@ class Geoloc extends _$Geoloc {
 
   final Set<String> _fetchedRanges = <String>{};
 
-  Future<void> getGeolocDataByDateRange(String from, String to) async {
+  /// 取得中の日付範囲 → その取得処理（同じ範囲を待つ呼び出し側に同じ Future を返す）
+  final Map<String, Future<void>> _loadingRangeRequests = <String, Future<void>>{};
+
+  /// 指定範囲を取得中かどうか（画面側で読み込み中表示を出すかの判定に使う）
+  bool isDateRangeLoading(String from, String to) => _loadingRangeRequests.containsKey('$from|$to');
+
+  /// 取得中ならその完了を待つ Future を、取得済みなら完了済みの Future を返す
+  Future<void> getGeolocDataByDateRange(String from, String to) {
     if (from.isEmpty || to.isEmpty) {
-      return;
+      return Future<void>.value();
     }
 
     final String rangeKey = '$from|$to';
+
+    final Future<void>? loading = _loadingRangeRequests[rangeKey];
+    if (loading != null) {
+      return loading;
+    }
+
     if (_fetchedRanges.contains(rangeKey)) {
-      return;
+      return Future<void>.value();
     }
     _fetchedRanges.add(rangeKey);
 
+    final Future<void> request = _fetchGeolocDataByDateRange(from: from, to: to, rangeKey: rangeKey)
+        .whenComplete(() {
+          // ブロック本体にする（`=> remove(...)` だと request 自身を返し、whenComplete がそれを待って永久に完了しない）
+          _loadingRangeRequests.remove(rangeKey);
+        });
+
+    _loadingRangeRequests[rangeKey] = request;
+
+    return request;
+  }
+
+  ///
+  Future<void> _fetchGeolocDataByDateRange({required String from, required String to, required String rangeKey}) async {
     final HttpClient client = ref.read(httpClientProvider);
 
     try {
       final Map<String, List<GeolocModel>> newEntries = <String, List<GeolocModel>>{};
 
-      // ignore: always_specify_types
-      await client.getByPath(path: '$_geolocDateRangeUrl?from=$from&to=$to').then((value) {
-        // ignore: avoid_dynamic_calls
-        final List<dynamic> list = value['data'] as List<dynamic>;
+      final dynamic value = await client.getByPath(path: '$_geolocDateRangeUrl?from=$from&to=$to');
 
-        for (int i = 0; i < list.length; i++) {
-          final GeolocModel val = GeolocModel.fromJson(list[i] as Map<String, dynamic>);
-          (newEntries['${val.year}-${val.month}-${val.day}'] ??= <GeolocModel>[]).add(val);
-        }
-      });
+      // ignore: avoid_dynamic_calls
+      final List<dynamic> list = value['data'] as List<dynamic>;
+
+      for (final dynamic item in list) {
+        final GeolocModel val = GeolocModel.fromJson(item as Map<String, dynamic>);
+        (newEntries['${val.year}-${val.month}-${val.day}'] ??= <GeolocModel>[]).add(val);
+      }
 
       final Map<String, List<GeolocModel>> merged = Map<String, List<GeolocModel>>.from(state.geolocMap)
         ..addAll(newEntries);

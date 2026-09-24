@@ -20,6 +20,8 @@ class LifetimeInputAlert extends ConsumerStatefulWidget {
 class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with ControllersMixin<LifetimeInputAlert> {
   final List<TextEditingController> tecs = <TextEditingController>[];
 
+  bool _isLoading = false;
+
   ///
   @override
   void initState() {
@@ -70,51 +72,67 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
 
   ///
   @override
+  void dispose() {
+    for (final TextEditingController element in tecs) {
+      element.dispose();
+    }
+
+    super.dispose();
+  }
+
+  ///
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
 
-      body: SafeArea(
-        child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white),
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: DefaultTextStyle(
+              style: const TextStyle(color: Colors.white),
 
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: <Widget>[
-                    Text(widget.date),
-
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                       children: <Widget>[
-                        _displayBetweenInputButton(),
+                        Text(widget.date),
 
-                        const SizedBox(width: 20),
+                        Row(
+                          children: <Widget>[
+                            _displayBetweenInputButton(),
 
-                        ElevatedButton(
-                          onPressed: () async => inputLifetimeData(),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-                          child: const Text('input'),
+                            const SizedBox(width: 20),
+
+                            ElevatedButton(
+                              onPressed: () async => inputLifetimeData(),
+                              style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                              child: const Text('input'),
+                            ),
+                          ],
                         ),
                       ],
                     ),
+
+                    Divider(thickness: 5, color: Colors.white.withValues(alpha: 0.4)),
+
+                    Expanded(child: lifetimeInputParts()),
+
+                    Divider(thickness: 2, color: Colors.white.withValues(alpha: 0.4)),
+
+                    displayLifetimeInputItemList(),
                   ],
                 ),
-
-                Divider(thickness: 5, color: Colors.white.withValues(alpha: 0.4)),
-
-                Expanded(child: lifetimeInputParts()),
-
-                Divider(thickness: 2, color: Colors.white.withValues(alpha: 0.4)),
-
-                displayLifetimeInputItemList(),
-              ],
+              ),
             ),
           ),
-        ),
+
+          if (_isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+        ],
       ),
     );
   }
@@ -259,6 +277,11 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
 
   ///
   Future<void> inputLifetimeData() async {
+    // 送信中の二重タップを無視する
+    if (_isLoading) {
+      return;
+    }
+
     final List<String> list = <String>[];
 
     for (final String element in lifetimeInputState.lifetimeStringList) {
@@ -273,13 +296,21 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
       return;
     }
 
-    // ignore: always_specify_types
-    await lifetimeInputNotifier.inputLifetime(date: widget.date).then((value) {
-      if (widget.isReloadHomeScreen) {
-        if (mounted) {
-          context.findAncestorStateOfType<AppRootState>()?.restartApp();
+    setState(() => _isLoading = true);
+
+    try {
+      // ignore: always_specify_types
+      await lifetimeInputNotifier.inputLifetime(date: widget.date).then((value) {
+        if (widget.isReloadHomeScreen) {
+          if (mounted) {
+            context.findAncestorStateOfType<AppRootState>()?.restartApp();
+          }
         }
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
-    });
+    }
   }
 }

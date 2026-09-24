@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../controllers/app_param/app_param.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/common/monthly_assets_data.dart';
@@ -52,6 +53,10 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
   final TransformationController _transformationController = TransformationController();
   bool _zoomMode = false;
   double _currentScale = 1.0;
+
+  // 系列データ再計算の判定用（前回計算時の入力）
+  AppParamState? _seriesSourceState;
+  bool? _seriesSourceTaxAdjusted;
 
   @override
   void initState() {
@@ -284,118 +289,16 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
 
   ///
   void _setChartData() {
-    _flspots = <FlSpot>[];
-    _dateList = <String>[];
-    final List<int> list = <int>[];
-
-    int i = 0;
-    appParamState.keepMoneyMap.forEach((String key, MoneyModel value) {
-      if (key.split('-')[0].toInt() < 2023) {
-        return;
-      }
-
-      _flspots.add(FlSpot(i.toDouble(), value.sum.toDouble()));
-      list.add(value.sum.toInt());
-      _dateList.add(value.date);
-
-      if (i == 0) {
-        startPrice = value.sum.toInt();
-      }
-      endPrice = value.sum.toInt();
-
-      i++;
-    });
-
-    // 投資信託: 2023-01-01〜今日まで日付ループ、土日祝は前日キャリーフォワード
-    _shintakuFlspots = <FlSpot>[];
-    if (_dateList.isNotEmpty) {
-      int prevShintakuSum = 0;
-      for (int idx = 0; idx < _dateList.length; idx++) {
-        final String date = _dateList[idx];
-        final List<ToushiShintakuModel>? dayList = appParamState.keepToushiShintakuMap[date];
-        if (dayList != null && dayList.isNotEmpty) {
-          prevShintakuSum = dayList.fold(0, (int acc, ToushiShintakuModel m) {
-            if (m.jikaHyoukagaku == '-') {
-              return acc;
-            }
-            return acc + m.jikaHyoukagaku.replaceAll(',', '').replaceAll('円', '').trim().toInt();
-          });
-        }
-        if (prevShintakuSum > 0) {
-          _shintakuFlspots.add(FlSpot(idx.toDouble(), prevShintakuSum.toDouble()));
-        }
-      }
+    /// 系列データの計算（全日付ループ）は重いため、データか税引後フラグが変わった時のみ行う
+    /// （ズーム操作による setState では再計算しない）
+    final AppParamState state = appParamState;
+    if (!identical(_seriesSourceState, state) || _seriesSourceTaxAdjusted != _taxAdjusted) {
+      _seriesSourceState = state;
+      _seriesSourceTaxAdjusted = _taxAdjusted;
+      _computeSeries(state);
     }
 
-    // 株: 同様に日付ループ、土日祝は前日キャリーフォワード
-    _stockFlspots = <FlSpot>[];
-    if (_dateList.isNotEmpty) {
-      int prevStockSum = 0;
-      for (int idx = 0; idx < _dateList.length; idx++) {
-        final String date = _dateList[idx];
-        final List<StockModel>? dayList = appParamState.keepStockMap[date];
-        if (dayList != null && dayList.isNotEmpty) {
-          prevStockSum = dayList.fold(0, (int acc, StockModel m) {
-            if (m.jikaHyoukagaku == '-') {
-              return acc;
-            }
-            return acc + m.jikaHyoukagaku.replaceAll(',', '').replaceAll('円', '').trim().toInt();
-          });
-        }
-        if (prevStockSum > 0) {
-          _stockFlspots.add(FlSpot(idx.toDouble(), prevStockSum.toDouble()));
-        }
-      }
-    }
-
-    // ゴールド: リストではなく Map<String, GoldModel>、土日祝は前日キャリーフォワード
-    _goldFlspots = <FlSpot>[];
-    if (_dateList.isNotEmpty) {
-      int prevGoldValue = 0;
-      for (int idx = 0; idx < _dateList.length; idx++) {
-        final String date = _dateList[idx];
-        final GoldModel? model = appParamState.keepGoldMap[date];
-        if (model != null) {
-          final String val = model.goldValue.toString();
-          if (val != '-' && val.isNotEmpty) {
-            prevGoldValue = val.replaceAll(',', '').replaceAll('円', '').trim().toInt();
-          }
-        }
-        if (prevGoldValue > 0) {
-          _goldFlspots.add(FlSpot(idx.toDouble(), (prevGoldValue * 0.8).toInt().toDouble()));
-        }
-      }
-    }
-
-    // 保険・年金基金: 日付ごとに countPaidUpTo で計算
-    _insuranceFlspots = <FlSpot>[];
-    _nenkinFlspots = <FlSpot>[];
-    for (int idx = 0; idx < _dateList.length; idx++) {
-      final DateTime d = DateTime.parse(_dateList[idx]);
-
-      final int insurancePassedMonths =
-          AssetsCalc.countPaidUpTo(data: appParamState.keepInsuranceDataList, date: d) + 102;
-      final int insuranceSum = (insurancePassedMonths * 55880 * 0.7).toInt();
-
-      final int nenkinKikinPassedMonths =
-          AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: d) + 32;
-      // 2026-06-15に国民年金基金解約のため、同日以降は0
-      final int nenkinKikinSum = d.isBefore(DateTime(2026, 6, 15))
-          ? (nenkinKikinPassedMonths * 26625 * 0.7).toInt()
-          : 0;
-
-      _insuranceFlspots.add(FlSpot(idx.toDouble(), insuranceSum.toDouble()));
-      _nenkinFlspots.add(FlSpot(idx.toDouble(), nenkinKikinSum.toDouble()));
-    }
-
-    if (_taxAdjusted) {
-      _shintakuFlspots = _shintakuFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
-      _stockFlspots = _stockFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
-    }
-
-    _buildMonthlyMap();
-
-    if (list.isNotEmpty) {
+    if (_flspots.isNotEmpty) {
       graphMin = 0;
       graphMax = 15000000;
 
@@ -620,6 +523,120 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
         lineBarsData: <LineChartBarData>[],
       );
     }
+  }
+
+  ///
+  void _computeSeries(AppParamState state) {
+    _flspots = <FlSpot>[];
+    _dateList = <String>[];
+
+    int i = 0;
+    state.keepMoneyMap.forEach((String key, MoneyModel value) {
+      if (key.split('-')[0].toInt() < 2023) {
+        return;
+      }
+
+      _flspots.add(FlSpot(i.toDouble(), value.sum.toDouble()));
+      _dateList.add(value.date);
+
+      if (i == 0) {
+        startPrice = value.sum.toInt();
+      }
+      endPrice = value.sum.toInt();
+
+      i++;
+    });
+
+    // 投資信託: 2023-01-01〜今日まで日付ループ、土日祝は前日キャリーフォワード
+    _shintakuFlspots = <FlSpot>[];
+    if (_dateList.isNotEmpty) {
+      int prevShintakuSum = 0;
+      for (int idx = 0; idx < _dateList.length; idx++) {
+        final String date = _dateList[idx];
+        final List<ToushiShintakuModel>? dayList = state.keepToushiShintakuMap[date];
+        if (dayList != null && dayList.isNotEmpty) {
+          prevShintakuSum = dayList.fold(0, (int acc, ToushiShintakuModel m) {
+            if (m.jikaHyoukagaku == '-') {
+              return acc;
+            }
+            return acc + m.jikaHyoukagaku.replaceAll(',', '').replaceAll('円', '').trim().toInt();
+          });
+        }
+        if (prevShintakuSum > 0) {
+          _shintakuFlspots.add(FlSpot(idx.toDouble(), prevShintakuSum.toDouble()));
+        }
+      }
+    }
+
+    // 株: 同様に日付ループ、土日祝は前日キャリーフォワード
+    _stockFlspots = <FlSpot>[];
+    if (_dateList.isNotEmpty) {
+      int prevStockSum = 0;
+      for (int idx = 0; idx < _dateList.length; idx++) {
+        final String date = _dateList[idx];
+        final List<StockModel>? dayList = state.keepStockMap[date];
+        if (dayList != null && dayList.isNotEmpty) {
+          prevStockSum = dayList.fold(0, (int acc, StockModel m) {
+            if (m.jikaHyoukagaku == '-') {
+              return acc;
+            }
+            return acc + m.jikaHyoukagaku.replaceAll(',', '').replaceAll('円', '').trim().toInt();
+          });
+        }
+        if (prevStockSum > 0) {
+          _stockFlspots.add(FlSpot(idx.toDouble(), prevStockSum.toDouble()));
+        }
+      }
+    }
+
+    // ゴールド: リストではなく Map<String, GoldModel>、土日祝は前日キャリーフォワード
+    _goldFlspots = <FlSpot>[];
+    if (_dateList.isNotEmpty) {
+      int prevGoldValue = 0;
+      for (int idx = 0; idx < _dateList.length; idx++) {
+        final String date = _dateList[idx];
+        final GoldModel? model = state.keepGoldMap[date];
+        if (model != null) {
+          final String val = model.goldValue.toString();
+          if (val != '-' && val.isNotEmpty) {
+            prevGoldValue = val.replaceAll(',', '').replaceAll('円', '').trim().toInt();
+          }
+        }
+        if (prevGoldValue > 0) {
+          _goldFlspots.add(FlSpot(idx.toDouble(), (prevGoldValue * 0.8).toInt().toDouble()));
+        }
+      }
+    }
+
+    // 保険・年金基金: 日付ごとに支払済み回数を計算（支払日リストのパースはループ外で 1 回だけ）
+    _insuranceFlspots = <FlSpot>[];
+    _nenkinFlspots = <FlSpot>[];
+    final List<DateTime> insurancePaidDates = AssetsCalc.parsePaidDates(state.keepInsuranceDataList);
+    final List<DateTime> nenkinKikinPaidDates = AssetsCalc.parsePaidDates(state.keepNenkinKikinDataList);
+    for (int idx = 0; idx < _dateList.length; idx++) {
+      final DateTime d = DateTime.parse(_dateList[idx]);
+
+      final int insurancePassedMonths =
+          AssetsCalc.countPaidDatesUpTo(paidDates: insurancePaidDates, date: d) + 102;
+      final int insuranceSum = (insurancePassedMonths * 55880 * 0.7).toInt();
+
+      final int nenkinKikinPassedMonths =
+          AssetsCalc.countPaidDatesUpTo(paidDates: nenkinKikinPaidDates, date: d) + 32;
+      // 2026-06-15に国民年金基金解約のため、同日以降は0
+      final int nenkinKikinSum = d.isBefore(DateTime(2026, 6, 15))
+          ? (nenkinKikinPassedMonths * 26625 * 0.7).toInt()
+          : 0;
+
+      _insuranceFlspots.add(FlSpot(idx.toDouble(), insuranceSum.toDouble()));
+      _nenkinFlspots.add(FlSpot(idx.toDouble(), nenkinKikinSum.toDouble()));
+    }
+
+    if (_taxAdjusted) {
+      _shintakuFlspots = _shintakuFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
+      _stockFlspots = _stockFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
+    }
+
+    _buildMonthlyMap();
   }
 
   ///

@@ -36,28 +36,27 @@ class Fortune extends _$Fortune {
       final List<FortuneModel> list = <FortuneModel>[];
       final Map<String, FortuneModel> map = <String, FortuneModel>{};
 
-      // ignore: always_specify_types
-      await client.getByPath(path: 'http://49.212.175.205:5001/fortunes').then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          final FortuneModel val = FortuneModel.fromJson(value['data'][i] as Map<String, dynamic>);
+      final dynamic value = await client.getByPath(path: 'http://49.212.175.205:5001/fortunes');
+      final List<dynamic> data = (value as Map<String, dynamic>)['data'] as List<dynamic>;
 
-          list.add(val);
+      final DateTime borderDate = DateTime(2026, 4, 9);
 
-          final DateTime dataDate = DateTime.parse('${val.year}-${val.month}-${val.day}');
-          final DateTime borderDate = DateTime(2026, 4, 9);
-          final String mapKey = dataDate.isBefore(borderDate)
-              ? dataDate.add(const Duration(days: -1)).yyyymmdd
-              : dataDate.yyyymmdd;
+      for (final dynamic item in data) {
+        final FortuneModel val = FortuneModel.fromJson(item as Map<String, dynamic>);
 
-          map[mapKey] = val;
-        }
-      });
+        list.add(val);
+
+        final DateTime dataDate = DateTime.parse('${val.year}-${val.month}-${val.day}');
+        final String mapKey = dataDate.isBefore(borderDate)
+            ? dataDate.add(const Duration(days: -1)).yyyymmdd
+            : dataDate.yyyymmdd;
+
+        map[mapKey] = val;
+      }
 
       return state.copyWith(fortuneList: list, fortuneMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（fortune）', error: e);
       rethrow;
     }
   }

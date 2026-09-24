@@ -37,29 +37,27 @@ class Salary extends _$Salary {
       final List<SalaryModel> list = <SalaryModel>[];
       final Map<String, List<SalaryModel>> map = <String, List<SalaryModel>>{};
 
-      // ignore: always_specify_types
-      await client.post(path: APIPath.getAllBenefit).then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          final List<String> exData = value['data'][i].toString().split('|');
+      final dynamic value = await client.post(path: APIPath.getAllBenefit);
+      final List<dynamic> data = (value as Map<String, dynamic>)['data'] as List<dynamic>;
 
-          final SalaryModel val = SalaryModel(
-            date: exData[0].trim(),
-            yearmonth: exData[1].trim(),
-            salary: exData[2].trim().toInt(),
-            company: exData[3].trim(),
-          );
+      for (final dynamic item in data) {
+        final List<String> exData = item.toString().split('|');
 
-          list.add(val);
+        final SalaryModel val = SalaryModel(
+          date: exData[0].trim(),
+          yearmonth: exData[1].trim(),
+          salary: exData[2].trim().toInt(),
+          company: exData[3].trim(),
+        );
 
-          (map[val.date] ??= <SalaryModel>[]).add(val);
-        }
-      });
+        list.add(val);
+
+        (map[val.date] ??= <SalaryModel>[]).add(val);
+      }
 
       return state.copyWith(salaryList: list, salaryMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（salary）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

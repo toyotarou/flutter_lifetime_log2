@@ -34,9 +34,10 @@ class StockInput extends _$StockInput {
     uploadData['date'] = date;
     uploadData['data'] = data;
 
-    // ignore: always_specify_types
-    await client.post(path: APIPath.insertDailyStockData, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
-    });
+    try {
+      await client.post(path: APIPath.insertDailyStockData, body: uploadData);
+    } catch (e) {
+      utility.showError('予期せぬエラーが発生しました（stock_input）', error: e);
+    }
   }
 }

@@ -11,7 +11,16 @@ mixin MonthlyGeolocMapDateListMixin on ConsumerState<MonthlyGeolocMapDateListWid
   ///
   Widget buildContent(BuildContext context) {
     final AppParam appParamNotifier = ref.read(appParamProvider.notifier);
-    final AppParamState appParamState = ref.watch(appParamProvider);
+
+    // 使う項目だけを select で購読する（地図移動のたびのズーム値更新などで再構築しないため）
+    final Map<String, List<GeolocModel>> keepGeolocMap = ref.watch(
+      appParamProvider.select((AppParamState s) => s.keepGeolocMap),
+    );
+    final String selectedYearMonth = ref.watch(appParamProvider.select((AppParamState s) => s.selectedYearMonth));
+    final List<String> keepHolidayList = ref.watch(appParamProvider.select((AppParamState s) => s.keepHolidayList));
+    final List<String> selectedDateList = ref.watch(
+      appParamProvider.select((AppParamState s) => s.monthlyGeolocMapSelectedDateList),
+    );
 
     final Utility utility = Utility();
 
@@ -30,36 +39,35 @@ mixin MonthlyGeolocMapDateListMixin on ConsumerState<MonthlyGeolocMapDateListWid
         ),
 
         SizedBox(
-          height: MediaQuery.of(context).size.width * 0.7,
+          height: MediaQuery.sizeOf(context).width * 0.7,
 
           child: Column(
             children: <Widget>[
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
-                    children: appParamState.keepGeolocMap.entries.map((MapEntry<String, List<GeolocModel>> e) {
-                      if ('${e.key.split('-')[0]}-${e.key.split('-')[1]}' == appParamState.selectedYearMonth) {
+                    children: keepGeolocMap.entries.map((MapEntry<String, List<GeolocModel>> e) {
+                      if ('${e.key.split('-')[0]}-${e.key.split('-')[1]}' == selectedYearMonth) {
                         final String youbi = DateTime.parse(e.key).youbiStr;
 
                         Color containerColor =
-                            (youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(e.key))
+                            (youbi == 'Saturday' || youbi == 'Sunday' || keepHolidayList.contains(e.key))
                             ? utility.getYoubiColor(
                                 date: e.key,
                                 youbiStr: youbi,
-                                holiday: appParamState.keepHolidayList,
+                                holiday: keepHolidayList,
                               )
                             : Colors.transparent;
 
-                        if (appParamState.monthlyGeolocMapSelectedDateList.contains(e.key)) {
+                        if (selectedDateList.contains(e.key)) {
                           containerColor = Colors.white.withValues(alpha: 0.2);
                         }
 
-                        Color textColor = (appParamState.monthlyGeolocMapSelectedDateList.contains(e.key))
+                        Color textColor = (selectedDateList.contains(e.key))
                             ? Colors.black
                             : Colors.white;
 
-                        if (appParamState.monthlyGeolocMapSelectedDateList.isNotEmpty &&
-                            appParamState.monthlyGeolocMapSelectedDateList.last == e.key) {
+                        if (selectedDateList.isNotEmpty && selectedDateList.last == e.key) {
                           textColor = Colors.yellowAccent;
                         }
 

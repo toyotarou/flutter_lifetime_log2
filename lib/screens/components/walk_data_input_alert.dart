@@ -25,6 +25,8 @@ class _WalkDataAlertState extends ConsumerState<WalkDataInputAlert> with Control
 
   List<FocusNode> focusNodeList = <FocusNode>[];
 
+  bool _isLoading = false;
+
   ///
   @override
   void initState() {
@@ -33,8 +35,22 @@ class _WalkDataAlertState extends ConsumerState<WalkDataInputAlert> with Control
     stepEditingController.text = widget.step;
     distanceEditingController.text = widget.distance;
 
+    // 使用するのは [0] と [1] のみ
     // ignore: always_specify_types
-    focusNodeList = List.generate(100, (int index) => FocusNode());
+    focusNodeList = List.generate(2, (int index) => FocusNode());
+  }
+
+  ///
+  @override
+  void dispose() {
+    stepEditingController.dispose();
+    distanceEditingController.dispose();
+
+    for (final FocusNode node in focusNodeList) {
+      node.dispose();
+    }
+
+    super.dispose();
   }
 
   ///
@@ -43,38 +59,44 @@ class _WalkDataAlertState extends ConsumerState<WalkDataInputAlert> with Control
     return Scaffold(
       backgroundColor: Colors.transparent,
 
-      body: SafeArea(
-        child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white),
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: DefaultTextStyle(
+              style: const TextStyle(color: Colors.white),
 
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Text(widget.date), const SizedBox.shrink()],
-                ),
-
-                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-                _displayInputParts(),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: <Widget>[
-                    const SizedBox.shrink(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[Text(widget.date), const SizedBox.shrink()],
+                    ),
 
-                    TextButton(
-                      onPressed: () => _inputWalkData(),
-                      child: const Text('データを登録する', style: TextStyle(fontSize: 12)),
+                    Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                    _displayInputParts(),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const SizedBox.shrink(),
+
+                        TextButton(
+                          onPressed: () => _inputWalkData(),
+                          child: const Text('データを登録する', style: TextStyle(fontSize: 12)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+
+          if (_isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+        ],
       ),
     );
   }
@@ -145,6 +167,11 @@ class _WalkDataAlertState extends ConsumerState<WalkDataInputAlert> with Control
 
   ///
   Future<void> _inputWalkData() async {
+    // 送信中の二重タップを無視する
+    if (_isLoading) {
+      return;
+    }
+
     bool errFlg = false;
 
     if (stepEditingController.text.trim() == '' || distanceEditingController.text.trim() == '') {
@@ -166,17 +193,22 @@ class _WalkDataAlertState extends ConsumerState<WalkDataInputAlert> with Control
       return;
     }
 
-    await walkInputNotifier
-        .inputWalkRecord(
-          date: widget.date,
-          steps: stepEditingController.text.trim(),
-          distance: distanceEditingController.text.trim(),
-        )
-        // ignore: always_specify_types
-        .then((value) {
-          if (mounted) {
-            context.findAncestorStateOfType<AppRootState>()?.restartApp();
-          }
-        });
+    setState(() => _isLoading = true);
+
+    try {
+      await walkInputNotifier.inputWalkRecord(
+        date: widget.date,
+        steps: stepEditingController.text.trim(),
+        distance: distanceEditingController.text.trim(),
+      );
+
+      if (mounted) {
+        context.findAncestorStateOfType<AppRootState>()?.restartApp();
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }

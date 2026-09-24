@@ -106,10 +106,12 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
   Widget displayMonthEndAssetsList() {
     final List<Widget> list = <Widget>[];
 
+    final int targetMonth = DateTime.parse(widget.date).month;
+
     int i = 0;
     int yt = 0;
     for (final YearDayAssetsModel element in widget.monthEndAssetsList) {
-      if (i < DateTime.parse(widget.date).month) {
+      if (i < targetMonth) {
         final int diff = (i == 0)
             ? widget.monthEndAssetsList[i].total - widget.lastYearFinalAssets
             : widget.monthEndAssetsList[i].total - widget.monthEndAssetsList[i - 1].total;
@@ -165,7 +167,8 @@ class _MonthEndAssetsDisplayAlertState extends ConsumerState<MonthEndAssetsDispl
       i++;
     }
 
-    setState(() => yearlyTotal = yt);
+    // build 中に呼ばれるため setState は不要（下部の合計表示はこの後に構築される）
+    yearlyTotal = yt;
 
     return CustomScrollView(
       slivers: <Widget>[

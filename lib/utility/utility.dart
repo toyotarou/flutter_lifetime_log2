@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,53 @@ import '../models/geoloc_model.dart';
 import '../models/temple_model.dart';
 import '../models/transportation_model.dart';
 
+/// build 中に頻繁に呼ばれるため、フォーマッタや定数テーブルは一度だけ生成して使い回す
+final NumberFormat _areaNumberFormat = NumberFormat('#,##0.0000');
+
+const Map<String, Color> _trainColorMap = <String, Color>{
+  '東京メトロ銀座線': Color(0xFFF19A38),
+  '東京メトロ丸ノ内線': Color(0xFFE24340),
+  '東京メトロ日比谷線': Color(0xFFB5B5AD),
+  '東京メトロ東西線': Color(0xFF4499BB),
+  '東京メトロ千代田線': Color(0xFF54B889),
+  '東京メトロ有楽町線': Color(0xFFBDA577),
+  '東京メトロ半蔵門線': Color(0xFF8B76D0),
+  '東京メトロ南北線': Color(0xFF4DA99B),
+  '東京メトロ副都心線': Color(0xFF93613A),
+};
+
+const List<String> _creditItemList = <String>[
+  '楽天キャッシュ',
+  '食費',
+  '交通費',
+  '交際費',
+  '支払い',
+  'お線香代',
+  '遊興費',
+  '教育費',
+  '設備費',
+  '投資',
+  'ジム会費',
+  'ふるさと納税',
+  '衣料費',
+  '雑費',
+  '美容費',
+  '医療費',
+  '水道光熱費',
+  '通信費',
+  '不明',
+];
+
+const Map<String, Map<String, String>> _stampNearestGeolocTimeAdjustMap = <String, Map<String, String>>{
+  'Metro20Anniversary': <String, String>{
+    '5896': '15:15:48', // 竹橋
+  },
+  'MetroPokepoke': <String, String>{
+    '5895': '12:25:08', // 九段下
+    '5894': '13:14:10', // 飯田橋
+  },
+};
+
 class Utility {
   /// 背景取得
   // ignore: always_specify_types
@@ -24,14 +72,35 @@ class Utility {
     );
   }
 
+  /// 直近に表示したエラー（複数の API が同時に失敗しても、どれが失敗したか全部分かるようにまとめて表示する）
+  static final List<String> _recentErrors = <String>[];
+
+  static Timer? _recentErrorsTimer;
+
   ///
-  void showError(String msg) {
-    final BuildContext? context = NavigationService.navigatorKey.currentContext;
-    if (context == null) {
+  void showError(String msg, {Object? error}) {
+    // 原因調査用にログにも出す（どの API で何が起きたか）
+    debugPrint('showError: $msg${error != null ? ' / $error' : ''}');
+
+    // MaterialApp.scaffoldMessengerKey 経由で表示する（以前は navigatorKey が未設定で一度も表示されていなかった）
+    final ScaffoldMessengerState? messenger = NavigationService.scaffoldMessengerKey.currentState;
+    if (messenger == null) {
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), duration: const Duration(seconds: 5)));
+
+    if (!_recentErrors.contains(msg)) {
+      _recentErrors.add(msg);
+    }
+
+    // 5 秒間に起きたエラーは 1 つのスナックバーにまとめて表示する
+    _recentErrorsTimer?.cancel();
+    _recentErrorsTimer = Timer(const Duration(seconds: 5), _recentErrors.clear);
+
+    messenger
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(_recentErrors.join('\n')), duration: const Duration(seconds: 5)));
   }
+
 
   ///
   Color getYoubiColor({required String date, required String youbiStr, required List<String> holiday}) {
@@ -153,48 +222,13 @@ class Utility {
 
   ///
   Color getTrainColor({required String trainName}) {
-    final Map<String, Color> trainColorMap = <String, Color>{
-      '東京メトロ銀座線': const Color(0xFFF19A38),
-      '東京メトロ丸ノ内線': const Color(0xFFE24340),
-      '東京メトロ日比谷線': const Color(0xFFB5B5AD),
-      '東京メトロ東西線': const Color(0xFF4499BB),
-      '東京メトロ千代田線': const Color(0xFF54B889),
-      '東京メトロ有楽町線': const Color(0xFFBDA577),
-      '東京メトロ半蔵門線': const Color(0xFF8B76D0),
-      '東京メトロ南北線': const Color(0xFF4DA99B),
-      '東京メトロ副都心線': const Color(0xFF93613A),
-    };
+    final Color? color = _trainColorMap[trainName];
 
-    return (trainColorMap[trainName] != null)
-        ? trainColorMap[trainName]!.withOpacity(0.6)
-        : Colors.black.withOpacity(0.3);
+    return (color != null) ? color.withOpacity(0.6) : Colors.black.withOpacity(0.3);
   }
 
-  List<String> getCreditItemList() {
-    const String str = '''
-    楽天キャッシュ
-    食費
-    交通費
-    交際費
-    支払い
-    お線香代
-    遊興費
-    教育費
-    設備費
-    投資
-    ジム会費
-    ふるさと納税
-    衣料費
-    雑費
-    美容費
-    医療費
-    水道光熱費
-    通信費
-    不明
-    ''';
-
-    return str.split('\n').map((String e) => e.trim()).where((String e) => e.isNotEmpty).toList();
-  }
+  /// 呼び出し側で add/remove されても定数が壊れないようコピーを返す
+  List<String> getCreditItemList() => List<String>.of(_creditItemList);
 
   /// 銀行名取得
   Map<String, String> getBankName() {
@@ -222,13 +256,29 @@ class Utility {
       return BoundingBoxInfoModel(minLat: 0, maxLat: 0, minLng: 0, maxLng: 0, areaKm2: 0);
     }
 
-    final List<double> lats = points.map((GeolocModel p) => double.tryParse(p.latitude) ?? 0).toList();
-    final List<double> lngs = points.map((GeolocModel p) => double.tryParse(p.longitude) ?? 0).toList();
+    // 1パスで最小・最大を求める（中間リストを作らない）
+    double maxLat = -double.infinity;
+    double minLat = double.infinity;
+    double maxLng = -double.infinity;
+    double minLng = double.infinity;
 
-    final double maxLat = lats.reduce((double a, double b) => a > b ? a : b);
-    final double minLat = lats.reduce((double a, double b) => a < b ? a : b);
-    final double maxLng = lngs.reduce((double a, double b) => a > b ? a : b);
-    final double minLng = lngs.reduce((double a, double b) => a < b ? a : b);
+    for (final GeolocModel p in points) {
+      final double lat = double.tryParse(p.latitude) ?? 0;
+      final double lng = double.tryParse(p.longitude) ?? 0;
+
+      if (lat > maxLat) {
+        maxLat = lat;
+      }
+      if (lat < minLat) {
+        minLat = lat;
+      }
+      if (lng > maxLng) {
+        maxLng = lng;
+      }
+      if (lng < minLng) {
+        minLng = lng;
+      }
+    }
 
     final LatLng southWest = LatLng(minLat, minLng);
     final LatLng northWest = LatLng(maxLat, minLng);
@@ -250,8 +300,7 @@ class Utility {
     }
 
     final BoundingBoxInfoModel info = getBoundingBoxInfo(points);
-    final NumberFormat numberFormat = NumberFormat('#,##0.0000');
-    return '${numberFormat.format(info.areaKm2)} km²';
+    return '${_areaNumberFormat.format(info.areaKm2)} km²';
   }
 
   ///
@@ -368,17 +417,7 @@ class Utility {
   }
 
   ///
-  Map<String, Map<String, String>> getStampNearestGeolocTimeAdjustMap() {
-    return <String, Map<String, String>>{
-      'Metro20Anniversary': <String, String>{
-        '5896': '15:15:48', // 竹橋
-      },
-      'MetroPokepoke': <String, String>{
-        '5895': '12:25:08', // 九段下
-        '5894': '13:14:10', // 飯田橋
-      },
-    };
-  }
+  Map<String, Map<String, String>> getStampNearestGeolocTimeAdjustMap() => _stampNearestGeolocTimeAdjustMap;
 
   ///
   Map<StampRallyKind, List<String>> getSpecialStampGuideMap() {
@@ -450,5 +489,6 @@ class Utility {
 class NavigationService {
   const NavigationService._();
 
-  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  /// MaterialApp.scaffoldMessengerKey に設定し、どこからでもスナックバーを出せるようにする
+  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 }

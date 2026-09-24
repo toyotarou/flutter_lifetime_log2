@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
-import '../../../extensions/extensions.dart';
 import '../../../models/weather_model.dart';
 import '../../../utility/utility.dart';
 
@@ -37,22 +36,20 @@ class Weather extends _$Weather {
       final List<WeatherModel> list = <WeatherModel>[];
       final Map<String, WeatherModel> map = <String, WeatherModel>{};
 
-      // ignore: always_specify_types
-      await client.post(path: APIPath.getAllWeather).then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          final WeatherModel val = WeatherModel.fromJson(value['data'][i] as Map<String, dynamic>);
+      final dynamic value = await client.post(path: APIPath.getAllWeather);
+      final List<dynamic> data = (value as Map<String, dynamic>)['data'] as List<dynamic>;
 
-          list.add(val);
+      for (final dynamic item in data) {
+        final WeatherModel val = WeatherModel.fromJson(item as Map<String, dynamic>);
 
-          map[val.date] = val;
-        }
-      });
+        list.add(val);
+
+        map[val.date] = val;
+      }
 
       return state.copyWith(weatherList: list, weatherMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（weather）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

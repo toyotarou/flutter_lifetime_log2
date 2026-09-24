@@ -35,9 +35,10 @@ class WalkInput extends _$WalkInput {
     uploadData['step'] = steps;
     uploadData['distance'] = distance;
 
-    // ignore: always_specify_types
-    await client.post(path: APIPath.insertWalkRecord, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
-    });
+    try {
+      await client.post(path: APIPath.insertWalkRecord, body: uploadData);
+    } catch (e) {
+      utility.showError('予期せぬエラーが発生しました（walk_input）', error: e);
+    }
   }
 }

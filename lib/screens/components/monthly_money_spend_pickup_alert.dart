@@ -30,11 +30,6 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
   // autoScrollControllerはStateとして保持する必要があります
   final AutoScrollController autoScrollController = AutoScrollController();
 
-  // buildメソッド内での副作用を避けるため、クラスフィールドとしてのデータ保持変数は削除しました。
-  // List<MoneySpendModel> moneySpendModelList = <MoneySpendModel>[];
-  // Map<String, List<Map<String, int>>> itemMoneySpendModelMap = <String, List<Map<String, int>>>{};
-  // Set<String> spendModelItemList = <String>{};
-
   static const double _moveAmount = 18;
   static const int _tickMs = 16;
 
@@ -680,12 +675,17 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
     final Map<String, List<Map<String, int>>> map = <String, List<Map<String, int>>>{};
     final Set<String> list = <String>{};
 
+    // 各明細の「/」前のキーを一度だけ計算しておく（キー数×明細数の split を避ける）
+    final List<String?> heads = moneySpendModelList.map<String?>((MoneySpendModel e) {
+      final List<String> exItem = e.item.split('/');
+
+      // splitの結果が空でないか確認（通常は最低1要素あるが、安全のため）
+      return exItem.isNotEmpty ? exItem[0].trim() : null;
+    }).toList();
+
     for (final String key in itemKeys) {
       for (int i = 0; i < moneySpendModelList.length; i++) {
-        final List<String> exItem = moneySpendModelList[i].item.split('/');
-
-        // splitの結果が空でないか確認（通常は最低1要素あるが、安全のため）
-        if (exItem.isNotEmpty && exItem[0].trim() == key) {
+        if (heads[i] == key) {
           (map[key] ??= <Map<String, int>>[]).add(<String, int>{'index': i, 'price': moneySpendModelList[i].price});
 
           list.add(key);

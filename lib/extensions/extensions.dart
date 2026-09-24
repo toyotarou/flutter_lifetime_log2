@@ -7,7 +7,8 @@ extension ContextEx on BuildContext {
 
   ColorScheme get colorTheme => Theme.of(this).colorScheme;
 
-  Size get screenSize => MediaQuery.of(this).size;
+  /// MediaQuery.sizeOf はサイズ変化時のみ再構築される（キーボード表示等で全体が再構築されない）
+  Size get screenSize => MediaQuery.sizeOf(this);
 
   void showKeyboard(FocusNode node) {
     FocusScope.of(this).requestFocus(node);
@@ -15,41 +16,31 @@ extension ContextEx on BuildContext {
   }
 }
 
+/// DateFormat / NumberFormat は生成コストが高いため、使い回す（build中に大量に呼ばれる）
+final DateFormat _fmtYmd = DateFormat('yyyy-MM-dd');
+final DateFormat _fmtYm = DateFormat('yyyy-MM');
+final DateFormat _fmtMd = DateFormat('MM-dd');
+final DateFormat _fmtY = DateFormat('yyyy');
+final DateFormat _fmtM = DateFormat('MM');
+final DateFormat _fmtD = DateFormat('dd');
+final DateFormat _fmtYoubi = DateFormat('EEEE');
+final DateFormat _fmtDateTime = DateFormat('yyyy-MM-dd HH:mm:ss');
+final NumberFormat _fmtCurrency = NumberFormat('#,###');
+
 extension DateTimeEx on DateTime {
-  String get yyyymmdd {
-    final DateFormat outputFormat = DateFormat('yyyy-MM-dd');
-    return outputFormat.format(this);
-  }
+  String get yyyymmdd => _fmtYmd.format(this);
 
-  String get yyyymm {
-    final DateFormat outputFormat = DateFormat('yyyy-MM');
-    return outputFormat.format(this);
-  }
+  String get yyyymm => _fmtYm.format(this);
 
-  String get mmdd {
-    final DateFormat outputFormat = DateFormat('MM-dd');
-    return outputFormat.format(this);
-  }
+  String get mmdd => _fmtMd.format(this);
 
-  String get yyyy {
-    final DateFormat outputFormat = DateFormat('yyyy');
-    return outputFormat.format(this);
-  }
+  String get yyyy => _fmtY.format(this);
 
-  String get mm {
-    final DateFormat outputFormat = DateFormat('MM');
-    return outputFormat.format(this);
-  }
+  String get mm => _fmtM.format(this);
 
-  String get dd {
-    final DateFormat outputFormat = DateFormat('dd');
-    return outputFormat.format(this);
-  }
+  String get dd => _fmtD.format(this);
 
-  String get youbiStr {
-    final DateFormat outputFormat = DateFormat('EEEE');
-    return outputFormat.format(this);
-  }
+  String get youbiStr => _fmtYoubi.format(this);
 
   // ===== ここから追記：日付比較を“日単位”で扱うためのヘルパ =====
 
@@ -82,11 +73,11 @@ extension DateTimeEx on DateTime {
 
 const int _fullLengthCode = 65248;
 
+final RegExp _halfAlnumRegex = RegExp(r'^[a-zA-Z0-9]+$');
+final RegExp _fullAlnumRegex = RegExp(r'^[Ａ-Ｚａ-ｚ０-９]+$');
+
 extension StringEx on String {
-  DateTime toDateTime() {
-    final DateFormat dateFormatter = DateFormat('yyyy-MM-dd HH:mm:ss');
-    return dateFormatter.parseStrict(this);
-  }
+  DateTime toDateTime() => _fmtDateTime.parseStrict(this);
 
   int toInt({int defaultValue = 0}) {
     return int.tryParse(this) ?? defaultValue;
@@ -97,8 +88,7 @@ extension StringEx on String {
     if (val == null) {
       return this;
     }
-    final NumberFormat formatter = NumberFormat('#,###');
-    return formatter.format(val);
+    return _fmtCurrency.format(val);
   }
 
   double toDouble({double defaultValue = 0.0}) {
@@ -106,19 +96,17 @@ extension StringEx on String {
   }
 
   String alphanumericToFullLength() {
-    final RegExp regex = RegExp(r'^[a-zA-Z0-9]+$');
     final Iterable<String> string = runes.map<String>((int rune) {
       final String char = String.fromCharCode(rune);
-      return regex.hasMatch(char) ? String.fromCharCode(rune + _fullLengthCode) : char;
+      return _halfAlnumRegex.hasMatch(char) ? String.fromCharCode(rune + _fullLengthCode) : char;
     });
     return string.join();
   }
 
   String alphanumericToHalfLength() {
-    final RegExp regex = RegExp(r'^[Ａ-Ｚａ-ｚ０-９]+$');
     final Iterable<String> string = runes.map<String>((int rune) {
       final String char = String.fromCharCode(rune);
-      return regex.hasMatch(char) ? String.fromCharCode(rune - _fullLengthCode) : char;
+      return _fullAlnumRegex.hasMatch(char) ? String.fromCharCode(rune - _fullLengthCode) : char;
     });
     return string.join();
   }

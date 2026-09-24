@@ -215,6 +215,13 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
   List<String> _sortedDates = <String>[];
   String _currentVisibleYM = '';
 
+  /// ===== build 毎の再計算を避けるためのキャッシュ（keepToushiShintakuMap が変わった時だけ再計算） =====
+  /// freezed の Map getter は毎回ラッパーを返すため、identical ではなく == で比較する（元の Map で比較される）
+  Map<String, List<ToushiShintakuModel>>? _dataSource;
+  Map<String, _MonthData> _dailyDataMap = <String, _MonthData>{};
+  Map<String, int> _monthlyCostIncrease = <String, int>{};
+  Map<String, String> _monthLastDate = <String, String>{};
+
   ///
   @override
   void initState() {
@@ -404,9 +411,9 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
   ///
   @override
   Widget build(BuildContext context) {
-    final Map<String, _MonthData> dailyDataMap = _buildDailyDataMap();
-    final List<String> sortedDates = dailyDataMap.keys.toList()..sort();
-    _sortedDates = sortedDates;
+    _rebuildDataIfNeeded();
+    final Map<String, _MonthData> dailyDataMap = _dailyDataMap;
+    final List<String> sortedDates = _sortedDates;
 
     if (_currentVisibleYM.isEmpty && sortedDates.isNotEmpty) {
       final List<String> parts = sortedDates[0].split('-');
@@ -427,19 +434,8 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
     const double barWidth = 36.0;
     final double effectiveBarWidth = appParamState.isShowBarChartMidashi ? barWidth : 1.0;
 
-    final Map<String, int> monthlyCostIncrease = <String, int>{};
-    final Map<String, String> monthLastDate = <String, String>{};
-    for (int i = 0; i < sortedDates.length; i++) {
-      final String d = sortedDates[i];
-      final String ym = d.split('-').take(2).join('-');
-      final int prevCost = i > 0 ? (dailyDataMap[sortedDates[i - 1]]?.cost ?? 0) : 0;
-      final int thisCost = dailyDataMap[d]?.cost ?? 0;
-      final int diff = thisCost - prevCost;
-      if (diff > 0) {
-        monthlyCostIncrease[ym] = (monthlyCostIncrease[ym] ?? 0) + diff;
-      }
-      monthLastDate[ym] = d;
-    }
+    final Map<String, int> monthlyCostIncrease = _monthlyCostIncrease;
+    final Map<String, String> monthLastDate = _monthLastDate;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -864,6 +860,38 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
         Text(label, style: TextStyle(fontSize: 11, color: color)),
       ],
     );
+  }
+
+  ///
+  /// スクロール位置の年月表示更新などで build が頻繁に走るため、元データが変わった時だけ集計し直す
+  void _rebuildDataIfNeeded() {
+    final Map<String, List<ToushiShintakuModel>> source = appParamState.keepToushiShintakuMap;
+    if (_dataSource != null && _dataSource == source) {
+      return;
+    }
+
+    final Map<String, _MonthData> dailyDataMap = _buildDailyDataMap();
+    final List<String> sortedDates = dailyDataMap.keys.toList()..sort();
+
+    final Map<String, int> monthlyCostIncrease = <String, int>{};
+    final Map<String, String> monthLastDate = <String, String>{};
+    for (int i = 0; i < sortedDates.length; i++) {
+      final String d = sortedDates[i];
+      final String ym = d.split('-').take(2).join('-');
+      final int prevCost = i > 0 ? (dailyDataMap[sortedDates[i - 1]]?.cost ?? 0) : 0;
+      final int thisCost = dailyDataMap[d]?.cost ?? 0;
+      final int diff = thisCost - prevCost;
+      if (diff > 0) {
+        monthlyCostIncrease[ym] = (monthlyCostIncrease[ym] ?? 0) + diff;
+      }
+      monthLastDate[ym] = d;
+    }
+
+    _dailyDataMap = dailyDataMap;
+    _sortedDates = sortedDates;
+    _monthlyCostIncrease = monthlyCostIncrease;
+    _monthLastDate = monthLastDate;
+    _dataSource = source;
   }
 
   ///

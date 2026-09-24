@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import '../../extensions/extensions.dart';
 import '../../utility/utility.dart';
 
+/// bodyCell はセル毎に呼ばれるため、Utility を使い回す
+final Utility _utility = Utility();
+
 class FlexibleColumn {
   const FlexibleColumn({required this.title, required this.width});
 
@@ -98,7 +101,6 @@ class FlexibleTable extends StatefulWidget {
     required List<String> holiday,
   }) {
     final String youbi = DateTime.parse(text).youbiStr;
-    final Utility utility = Utility();
 
     final TextStyle resolvedTextStyle = textStyle ?? const TextStyle(fontSize: 10);
 
@@ -116,7 +118,7 @@ class FlexibleTable extends StatefulWidget {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
             decoration: BoxDecoration(
-              color: utility.getYoubiColor(date: text, youbiStr: youbi, holiday: holiday).withValues(alpha: 0.2),
+              color: _utility.getYoubiColor(date: text, youbiStr: youbi, holiday: holiday).withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(youbi.substring(0, 3), style: resolvedTextStyle),

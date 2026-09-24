@@ -54,6 +54,9 @@ class _OhakamairiDataDisplayAlertState extends ConsumerState<OhakamairiDataDispl
     final int totalWeeks = ((totalDays + 6) ~/ 7) + 1;
     final List<String> sortedMatchDates = dataMap.keys.toList()..sort();
 
+    // セル毎の List.contains を避けるため Set にしておく
+    final Set<String> holidaySet = appParamState.keepHolidayList.toSet();
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
@@ -145,7 +148,13 @@ class _OhakamairiDataDisplayAlertState extends ConsumerState<OhakamairiDataDispl
                           final int matchIndex = hasData ? sortedMatchDates.indexOf(dateKey) + 1 : 0;
 
                           return Expanded(
-                            child: _buildDayCell(date: cellDate, col: col, hasData: hasData, matchIndex: matchIndex),
+                            child: _buildDayCell(
+                              date: cellDate,
+                              col: col,
+                              hasData: hasData,
+                              isHoliday: holidaySet.contains(dateKey),
+                              matchIndex: matchIndex,
+                            ),
                           );
                         }),
                       ),
@@ -160,7 +169,13 @@ class _OhakamairiDataDisplayAlertState extends ConsumerState<OhakamairiDataDispl
     );
   }
 
-  Widget _buildDayCell({required DateTime date, required int col, required bool hasData, int matchIndex = 0}) {
+  Widget _buildDayCell({
+    required DateTime date,
+    required int col,
+    required bool hasData,
+    required bool isHoliday,
+    int matchIndex = 0,
+  }) {
     Color dayNumColor = const Color(0xFFDDDDDD);
     if (col == 0) {
       dayNumColor = _sunColor;
@@ -175,12 +190,6 @@ class _OhakamairiDataDisplayAlertState extends ConsumerState<OhakamairiDataDispl
     final bool isFirstDay = date.day == 1;
     final String dayStr = date.day.toString().padLeft(2, '0');
     final String monthStr = date.month.toString().padLeft(2, '0');
-
-    final String dateKey =
-        '${date.year.toString().padLeft(4, '0')}-'
-        '${date.month.toString().padLeft(2, '0')}-'
-        '${date.day.toString().padLeft(2, '0')}';
-    final bool isHoliday = appParamState.keepHolidayList.contains(dateKey);
 
     Color? bgColor;
     if (isToday) {

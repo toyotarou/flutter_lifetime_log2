@@ -40,11 +40,11 @@ class _FortuneDisplayAlertState extends ConsumerState<FortuneDisplayAlert> with 
 
   ///
   Widget displayFortuneWidget() {
-    if (appParamState.keepFortuneMap[widget.date] == null) {
+    final FortuneModel? fortune = appParamState.keepFortuneMap[widget.date];
+
+    if (fortune == null) {
       return const SizedBox.shrink();
     }
-
-    final FortuneModel? fortune = appParamState.keepFortuneMap[widget.date];
 
     return SingleChildScrollView(
       child: DefaultTextStyle(
@@ -54,7 +54,7 @@ class _FortuneDisplayAlertState extends ConsumerState<FortuneDisplayAlert> with 
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[Text(widget.date), Text(fortune!.rank)],
+              children: <Widget>[Text(widget.date), Text(fortune.rank)],
             ),
             const SizedBox(height: 10),
             Divider(color: Colors.white.withOpacity(0.4), thickness: 3, indent: 20, endIndent: 20),

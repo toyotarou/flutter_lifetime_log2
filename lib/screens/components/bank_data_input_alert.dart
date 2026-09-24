@@ -30,6 +30,9 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
 
   bool _isLoading = false;
 
+  static final RegExp _bankRegExp = RegExp('bank');
+  static final RegExp _payRegExp = RegExp('pay');
+
   ///
   @override
   void initState() {
@@ -43,6 +46,20 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
 
     // ignore: always_specify_types
     focusNodeList = List.generate(10, (int index) => FocusNode());
+  }
+
+  ///
+  @override
+  void dispose() {
+    for (final TextEditingController element in priceTecs) {
+      element.dispose();
+    }
+
+    for (final FocusNode element in focusNodeList) {
+      element.dispose();
+    }
+
+    super.dispose();
   }
 
   ///
@@ -98,9 +115,6 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
 
   ///
   Widget _displayLastPriceBox() {
-    final RegExp reg = RegExp('bank');
-    final RegExp reg2 = RegExp('pay');
-
     return ExpansionTile(
       iconColor: Colors.white,
 
@@ -117,7 +131,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
                 Expanded(
                   child: Column(
                     children: bankNameMap.entries.map((MapEntry<String, String> e) {
-                      if (reg.firstMatch(e.key) != null) {
+                      if (_bankRegExp.firstMatch(e.key) != null) {
                         final List<Map<String, int>>? mapList = moneyState.bankMoneyMap[e.key];
                         if (mapList != null) {
                           // 日付順にソートした新しいリストを作成
@@ -174,7 +188,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
                 Expanded(
                   child: Column(
                     children: bankNameMap.entries.map((MapEntry<String, String> e) {
-                      if (reg2.firstMatch(e.key) != null) {
+                      if (_payRegExp.firstMatch(e.key) != null) {
                         final List<Map<String, int>>? mapList = moneyState.bankMoneyMap[e.key];
                         if (mapList != null) {
                           Map<String, int> map = <String, int>{};
@@ -236,7 +250,7 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
         scrollDirection: Axis.horizontal,
 
         child: Row(
-          children: utility.getBankName().entries.map((MapEntry<String, String> e) {
+          children: bankNameMap.entries.map((MapEntry<String, String> e) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
 
@@ -413,6 +427,11 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
 
   ///
   Future<void> _inputBankData() async {
+    // 送信中（再起動待ちを含む）の二重タップを無視する
+    if (_isLoading) {
+      return;
+    }
+
     bool errFlg = false;
 
     if (appParamState.keepMoneyMap.isNotEmpty) {

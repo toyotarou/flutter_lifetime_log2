@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../enums/stamp_rally_kind.dart';
 import '../../extensions/extensions.dart';
+import '../../models/geoloc_model.dart';
 import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
 import '../../utility/functions.dart';
@@ -54,6 +55,14 @@ class _WeeklyHistoryAlertState extends ConsumerState<WeeklyHistoryAlert> with Co
     super.initState();
 
     gridHeight = (endHour - weeklyHistoryStartTime) * 60 * pxPerMinute;
+  }
+
+  ///
+  @override
+  void dispose() {
+    gutterVertical.dispose();
+
+    super.dispose();
   }
 
   ///
@@ -162,6 +171,10 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
 
   List<GlobalKey> globalKeyList = <GlobalKey>[];
 
+  /// イベント配置計算のキャッシュ（events が同じ間は再計算しない）
+  List<WeeklyHistoryEventModel>? _placedSource;
+  List<PlacedItemModel> _placedCache = <PlacedItemModel>[];
+
   ///
   @override
   void initState() {
@@ -213,7 +226,7 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
                       builder: (BuildContext context, BoxConstraints constraints) {
                         final double colW = constraints.maxWidth / 7;
 
-                        final List<PlacedItemModel> placed = _placeWeekly(widget.events, colW);
+                        final List<PlacedItemModel> placed = _getPlaced(colW);
 
                         return Stack(
                           children: <Widget>[
@@ -272,6 +285,16 @@ class _WeeklyScheduleViewState extends ConsumerState<WeeklyScheduleView> with Co
         ),
       ],
     );
+  }
+
+  ///
+  /// _placeWeekly の結果は columnWidth に依存しないため、events が同じなら使い回す
+  List<PlacedItemModel> _getPlaced(double colW) {
+    if (!identical(_placedSource, widget.events)) {
+      _placedSource = widget.events;
+      _placedCache = _placeWeekly(widget.events, colW);
+    }
+    return _placedCache;
   }
 
   ///
@@ -441,12 +464,28 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
 
   Utility utility = Utility();
 
+  /// 日付ごとの getBoundingBoxArea 結果のキャッシュ（geoloc リストが同じ間は再計算しない）
+  final Map<String, List<GeolocModel>> _boundingBoxAreaSource = <String, List<GeolocModel>>{};
+  final Map<String, String> _boundingBoxAreaCache = <String, String>{};
+
   ///
   @override
   void initState() {
     super.initState();
 
     weeklyHistoryDisplayWeekDate = getWeeklyHistoryDisplayWeekDate(date: widget.date);
+  }
+
+  ///
+  String _getBoundingBoxArea({required String date, required List<GeolocModel> points}) {
+    final String? cached = _boundingBoxAreaCache[date];
+    if (cached != null && identical(_boundingBoxAreaSource[date], points)) {
+      return cached;
+    }
+    final String area = utility.getBoundingBoxArea(points: points);
+    _boundingBoxAreaSource[date] = points;
+    _boundingBoxAreaCache[date] = area;
+    return area;
   }
 
   ///
@@ -503,7 +542,7 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
 
                 String boundingBoxArea = '';
                 if (widget.isNeedGeolocMapDisplayHeight && appParamState.keepGeolocMap[date] != null) {
-                  boundingBoxArea = utility.getBoundingBoxArea(points: appParamState.keepGeolocMap[date]!);
+                  boundingBoxArea = _getBoundingBoxArea(date: date, points: appParamState.keepGeolocMap[date]!);
                 }
 
                 return Container(

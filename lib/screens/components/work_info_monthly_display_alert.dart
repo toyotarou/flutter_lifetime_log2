@@ -34,6 +34,9 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
 
   final AutoScrollController autoScrollController = AutoScrollController();
 
+  /// 勤務履歴を API から取得している間だけ true
+  bool _isLoading = false;
+
   ///
   @override
   void initState() {
@@ -54,11 +57,19 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
         return;
       }
       if (appParamState.keepWorkHistoryModelMap.isEmpty) {
-        final Map<String, WorkHistoryModel> fetchedMap = await workHistoryNotifier.getAllWorkHistoryData();
-        if (!mounted) {
-          return;
+        setState(() => _isLoading = true);
+
+        try {
+          final Map<String, WorkHistoryModel> fetchedMap = await workHistoryNotifier.getAllWorkHistoryData();
+          if (!mounted) {
+            return;
+          }
+          appParamNotifier.setKeepWorkHistoryModelMap(map: fetchedMap);
+        } finally {
+          if (mounted) {
+            setState(() => _isLoading = false);
+          }
         }
-        appParamNotifier.setKeepWorkHistoryModelMap(map: fetchedMap);
       }
     });
   }
@@ -87,9 +98,9 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
   Widget makeMonthlyWorktimeSlide(int index) {
     final DateTime genDate = monthForIndex(index: index, baseMonth: _baseMonth);
 
-    final bool hasData = appParamState.keepWorkTimeMap.containsKey(
-      '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}',
-    );
+    final String yearmonth = '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}';
+
+    final bool hasData = appParamState.keepWorkTimeMap.containsKey(yearmonth);
 
     return DefaultTextStyle(
       style: const TextStyle(fontSize: 12),
@@ -113,7 +124,7 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text('${genDate.year}-${genDate.month.toString().padLeft(2, '0')}'),
+                      Text(yearmonth),
 
                       if (hasData) ...<Widget>[
                         GestureDetector(
@@ -149,13 +160,9 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
                   Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
 
                   if (hasData) ...<Widget>[
-                    displayGenbaName(yearmonth: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}'),
+                    displayGenbaName(yearmonth: yearmonth),
                     const SizedBox(height: 10),
-                    Expanded(
-                      child: displayMonthlyWorkTimeList(
-                        yearmonth: '${genDate.year}-${genDate.month.toString().padLeft(2, '0')}',
-                      ),
-                    ),
+                    Expanded(child: displayMonthlyWorkTimeList(yearmonth: yearmonth)),
                   ] else ...<Widget>[
                     const Expanded(
                       child: Column(
@@ -182,6 +189,8 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
 
   ///
   Widget displayGenbaName({required String yearmonth}) {
+    final WorkTimeModel? workTime = appParamState.keepWorkTimeMap[yearmonth];
+
     return Container(
       margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.all(5),
@@ -200,11 +209,7 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   const Text('エージェント'),
-                  Text(
-                    (appParamState.keepWorkTimeMap[yearmonth] != null)
-                        ? appParamState.keepWorkTimeMap[yearmonth]!.agentName
-                        : '',
-                  ),
+                  Text(workTime?.agentName ?? ''),
                 ],
               ),
             ),
@@ -217,11 +222,7 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   const Text('現場'),
-                  Text(
-                    (appParamState.keepWorkTimeMap[yearmonth] != null)
-                        ? appParamState.keepWorkTimeMap[yearmonth]!.genbaName
-                        : '',
-                  ),
+                  Text(workTime?.genbaName ?? ''),
                 ],
               ),
             ),
@@ -260,6 +261,8 @@ class _WorkInfoMonthlyDisplayAlertState extends ConsumerState<WorkInfoMonthlyDis
             },
             slideBuilder: (int index) => makeMonthlyWorktimeSlide(index),
           ),
+
+          if (_isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
     );

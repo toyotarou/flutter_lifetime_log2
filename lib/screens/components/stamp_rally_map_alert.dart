@@ -55,6 +55,10 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
   late GlowBlink sharedBlink;
   bool _blinkRunning = true;
 
+  /// _routeColorByKey のキャッシュ（元マップが同一インスタンスの間は再ソートしない）
+  Map<String, List<StampRallyModel>>? _routeColorSource;
+  Map<String, Color> _routeColorCache = <String, Color>{};
+
   ///
   Map<String, List<StampRallyModel>> get _currentStampMap {
     switch (widget.type) {
@@ -105,12 +109,20 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
 
   ///
   Map<String, Color> get _routeColorByKey {
+    final Map<String, List<StampRallyModel>> source = _currentStampMap;
+    if (_routeColorSource != null && source == _routeColorSource) {
+      return _routeColorCache;
+    }
+
     final List<MapEntry<String, List<StampRallyModel>>> entries = _validEntriesSorted;
 
     final Map<String, Color> map = <String, Color>{};
     for (int i = 0; i < entries.length; i++) {
       map[entries[i].key] = fortyEightColor[i % 48];
     }
+
+    _routeColorSource = source;
+    _routeColorCache = map;
     return map;
   }
 

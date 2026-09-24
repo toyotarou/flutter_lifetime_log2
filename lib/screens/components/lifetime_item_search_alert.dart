@@ -112,9 +112,12 @@ class _LifetimeItemSearchAlertState extends ConsumerState<LifetimeItemSearchAler
 
     String keepYear = '';
 
+    // 全日付ループ内で毎回 ref.watch しないよう、ループ前に一度だけ取得する
+    final String selectedItem = lifetimeInputState.selectedInputChoiceChip;
+
     appParamState.keepAllDateLifetimeSummaryMap.forEach((String key, List<Map<String, dynamic>> value) {
       for (final Map<String, dynamic> element in value) {
-        if (element['title'] == lifetimeInputState.selectedInputChoiceChip) {
+        if (element['title'] == selectedItem) {
           if (key.split('-')[0] != keepYear) {
             list.add(
               Container(

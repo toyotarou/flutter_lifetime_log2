@@ -60,7 +60,8 @@ class _MonthlyWeatherDisplayAlertState extends ConsumerState<MonthlyWeatherDispl
             itemCount: _itemCount,
             initialPage: _initialIndex,
             slideTransform: const CubeTransform(),
-            onSlideChanged: (int index) => setState(() {}),
+            // 修正: onSlideChanged で状態を何も変えない setState(() {}) を呼び、ページ切替毎に画面全体を
+            // 無駄に再構築していたため削除（スライドの内容は index と appParamState だけで決まり、この State に変化する値は無い）
             slideBuilder: (int index) => _buildSlide(index),
           ),
         ],

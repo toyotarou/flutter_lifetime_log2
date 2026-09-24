@@ -1,13 +1,17 @@
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../controllers/app_param/app_param.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/lifetime_model.dart';
 import '../../models/stamp_rally_model.dart';
 import '../../models/weekly_history_badge_model.dart';
 import '../../models/weekly_history_event_model.dart';
+import '../../models/work_time_model.dart';
 import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../components/weekly_history_alert.dart';
@@ -48,17 +52,18 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   final ScrollController monthSelectorScrollController = ScrollController();
 
   final List<GlobalKey> _monthKeys = List<GlobalKey>.generate(12, (_) => GlobalKey());
-  late final List<GlobalKey> _yearKeys;
+  late List<GlobalKey> _yearKeys;
 
   bool _syncingH = false;
   bool _syncingV = false;
   int _currentMonth = 1;
 
-  late final Map<int, int> _monthStartIndex;
+  /// widget の monthDays / colWidths が変わった時に didUpdateWidget で再計算するため final にしない
+  late Map<int, int> _monthStartIndex;
 
-  late final Map<String, int> _dayIndex;
+  late Map<String, int> _dayIndex;
 
-  late final List<double> _prefixWidths;
+  late List<double> _prefixWidths;
 
   Utility utility = Utility();
 
@@ -68,21 +73,39 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
   final Map<String, bool> _holidayCache = <String, bool>{};
 
-  late final List<double> _rowPrefixHeights;
-  final bool _sundayNavLocked = false;
+  /// _holidayCache を作った時の keepHolidayList（freezed はビューを返すため identical ではなく == で比較する）
+  List<String>? _holidayCacheSource;
 
   static const TextStyle _text12 = TextStyle(fontSize: 12);
   static const TextStyle _text12Bold = TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
   static const EdgeInsets _cellPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 6);
 
+  /// セル毎に生成していた色・装飾を使い回す
+  static final Color _white10 = Colors.white.withValues(alpha: 0.1);
+  static final Color _white20 = Colors.white.withValues(alpha: 0.2);
+  static final Color _black20 = Colors.black.withValues(alpha: 0.2);
+  static final BorderSide _white20Side = BorderSide(color: _white20);
+  static final BoxDecoration _gridBorderDecoration = BoxDecoration(
+    border: Border(bottom: _white20Side, right: _white20Side),
+  );
+
   bool doAutoScroll = true;
 
-  ///
-  double get _bodyTotalHeight => widget.rowHeights
-      .asMap()
-      .entries
-      .where((MapEntry<int, double> e) => e.key > 0)
-      .fold<double>(0, (double sum, MapEntry<int, double> e) => sum + e.value);
+  List<double>? _bodyTotalHeightSource;
+  double _bodyTotalHeightCache = 0;
+
+  /// 全行の高さ合計（rowHeights が変わった時のみ再計算）
+  double get _bodyTotalHeight {
+    if (!identical(_bodyTotalHeightSource, widget.rowHeights)) {
+      _bodyTotalHeightSource = widget.rowHeights;
+      _bodyTotalHeightCache = widget.rowHeights
+          .asMap()
+          .entries
+          .where((MapEntry<int, double> e) => e.key > 0)
+          .fold<double>(0, (double sum, MapEntry<int, double> e) => sum + e.value);
+    }
+    return _bodyTotalHeightCache;
+  }
 
   ///
   @override
@@ -96,21 +119,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     _currentMonth = now.month;
     _yearKeys = List<GlobalKey>.generate(widget.years.length, (_) => GlobalKey());
 
-    _monthStartIndex = <int, int>{
-      for (int m = 1; m <= 12; m++)
-        m: widget.monthDays.indexWhere((String md) => md.startsWith('${m.toString().padLeft(2, '0')}-')),
-    };
-    _dayIndex = <String, int>{for (int i = 0; i < widget.monthDays.length; i++) widget.monthDays[i]: i};
-
-    _prefixWidths = List<double>.filled(widget.monthDays.length + 1, 0);
-    for (int i = 1; i <= widget.monthDays.length; i++) {
-      _prefixWidths[i] = _prefixWidths[i - 1] + widget.colWidths[i];
-    }
-
-    _rowPrefixHeights = List<double>.filled(widget.years.length + 1, 0);
-    for (int i = 1; i <= widget.years.length; i++) {
-      _rowPrefixHeights[i] = _rowPrefixHeights[i - 1] + widget.rowHeights[i];
-    }
+    _rebuildDayIndexCaches();
 
     horizontalHeaderAutoScrollController.addListener(() {
       if (_syncingH) {
@@ -162,9 +171,6 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       }
 
       _syncingV = false;
-      if (!_sundayNavLocked) {
-        _updateBaseYearByOffset(verticalLeftScrollController.offset);
-      }
     });
     verticalBodyScrollController.addListener(() {
       if (_syncingV) {
@@ -181,14 +187,41 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       }
 
       _syncingV = false;
-      if (!_sundayNavLocked) {
-        _updateBaseYearByOffset(verticalBodyScrollController.offset);
-      }
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _scrollToTodayDay(fromInit: true);
     });
+  }
+
+  /// monthDays / colWidths から月開始位置・日付インデックス・累積幅を作る
+  void _rebuildDayIndexCaches() {
+    _monthStartIndex = <int, int>{
+      for (int m = 1; m <= 12; m++)
+        m: widget.monthDays.indexWhere((String md) => md.startsWith('${m.toString().padLeft(2, '0')}-')),
+    };
+    _dayIndex = <String, int>{for (int i = 0; i < widget.monthDays.length; i++) widget.monthDays[i]: i};
+
+    _prefixWidths = List<double>.filled(widget.monthDays.length + 1, 0);
+    for (int i = 1; i <= widget.monthDays.length; i++) {
+      _prefixWidths[i] = _prefixWidths[i - 1] + widget.colWidths[i];
+    }
+  }
+
+  /// 修正: initState で一度だけ計算していたため、親から渡される monthDays / colWidths / years が
+  /// 変わると _prefixWidths などが古いままになっていた。入力が変わった時だけ再計算する。
+  /// （親は build 毎に新しい List を作るので、中身で比較する）
+  @override
+  void didUpdateWidget(covariant CrossCalendar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (!listEquals(oldWidget.monthDays, widget.monthDays) || !listEquals(oldWidget.colWidths, widget.colWidths)) {
+      _rebuildDayIndexCaches();
+    }
+
+    if (oldWidget.years.length != widget.years.length) {
+      _yearKeys = List<GlobalKey>.generate(widget.years.length, (_) => GlobalKey());
+    }
   }
 
   ///
@@ -347,19 +380,6 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   }
 
   ///
-  void _updateBaseYearByOffset(double dy) {
-    int lo = 0, hi = widget.years.length;
-    while (lo < hi) {
-      final int mid = (lo + hi) >> 1;
-      if (_rowPrefixHeights[mid] <= dy) {
-        lo = mid + 1;
-      } else {
-        hi = mid;
-      }
-    }
-  }
-
-  ///
   int _currentColIndex() {
     final double dx = horizontalBodyAutoScrollController.hasClients ? horizontalBodyAutoScrollController.offset : 0.0;
     int lo = 0, hi = widget.monthDays.length;
@@ -421,14 +441,21 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
   }
 
   ///
-  bool _isHoliday(String date, String youbi) {
+  bool _isHoliday(String date, String youbi, List<String> holidayList) {
+    /// 修正: キャッシュを一度もリセットしていなかったため、初回 build 後に keepHolidayList が
+    /// 届いた／変わった場合に祝日が色付けされなかった。入力リストが変わったらキャッシュを破棄する。
+    if (_holidayCacheSource != holidayList) {
+      _holidayCache.clear();
+      _holidayCacheSource = holidayList;
+    }
+
     final bool? c = _holidayCache[date];
     if (c != null) {
       return c;
     }
 
     /// アプリデータ依存
-    final bool v = youbi == 'Saturday' || youbi == 'Sunday' || appParamState.keepHolidayList.contains(date);
+    final bool v = youbi == 'Saturday' || youbi == 'Sunday' || holidayList.contains(date);
     _holidayCache[date] = v;
     return v;
   }
@@ -452,7 +479,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     final double headerH = widget.headerHeight;
     final double leftW = widget.leftColWidth;
 
-    final double lifetimeTileW = MediaQuery.of(context).size.width / 30;
+    final double lifetimeTileW = MediaQuery.sizeOf(context).width / 30;
 
     return Column(
       children: <Widget>[
@@ -677,8 +704,8 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       height: widget.headerHeight,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.2),
-          border: Border(right: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
+          color: _black20,
+          border: Border(right: _white20Side),
         ),
         child: Center(child: Text(md, style: _text12Bold)),
       ),
@@ -691,70 +718,77 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     final String todayMd = '${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
     final String todayYear = today.year.toString();
 
-    double sum = 0;
+    /// AppParamState の ref.watch をセル毎に何度も呼ばないよう、1列につき1回だけ取得する
+    final AppParamState appParam = appParamState;
+
+    final List<Widget> cells = <Widget>[];
     for (int r = 0; r < widget.years.length; r++) {
-      sum += widget.rowHeights[r + 1];
-    }
-    if ((sum - _bodyTotalHeight).abs() > 0.5) {
-      debugPrint('[CrossCalendar] ⚠ sumRows=$sum  bodyTotal=$_bodyTotalHeight  (md:$md)');
+      final String year = widget.years[r];
+      final bool isDisabled = _isNonLeapFeb29(year, md);
+      cells.add(
+        _bodyCell(
+          width: colWidth,
+          height: widget.rowHeights[r + 1],
+          isDisabled: isDisabled,
+          isCurrentYear: year == todayYear,
+          isToday: year == todayYear && md == todayMd,
+          child: isDisabled
+              ? const SizedBox.shrink()
+              : getOneCellContent(year, md, lifetimeTileW: lifetimeTileW, appParam: appParam),
+
+          date: '$year-$md',
+          youbi: _weekdayOf(year, md),
+          appParam: appParam,
+        ),
+      );
     }
 
     return SizedBox(
       width: colWidth,
       height: _bodyTotalHeight,
 
-      child: Column(
-        children: <Widget>[
-          for (int r = 0; r < widget.years.length; r++)
-            _bodyCell(
-              width: colWidth,
-              height: widget.rowHeights[r + 1],
-              isDisabled: _isNonLeapFeb29(widget.years[r], md),
-              isCurrentYear: widget.years[r] == todayYear,
-              isToday: widget.years[r] == todayYear && md == todayMd,
-              child: _isNonLeapFeb29(widget.years[r], md)
-                  ? const SizedBox.shrink()
-                  : getOneCellContent(widget.years[r], md, lifetimeTileW: lifetimeTileW),
-
-              date: '${widget.years[r]}-$md',
-            ),
-        ],
-      ),
+      child: Column(children: cells),
     );
   }
 
   ///
-  Widget getOneCellContent(String year, String md, {required double lifetimeTileW}) {
+  Widget getOneCellContent(
+    String year,
+    String md, {
+    required double lifetimeTileW,
+    required AppParamState appParam,
+  }) {
     final String date = '$year-$md';
 
     final String youbi = _weekdayOf(year, md);
 
-    final bool isHoliday = _isHoliday(date, youbi);
+    final bool isHoliday = _isHoliday(date, youbi, appParam.keepHolidayList);
 
     /// アプリデータ依存
     final Color containerColor = isHoliday
-        ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParamState.keepHolidayList)
+        ? utility.getYoubiColor(date: date, youbiStr: youbi, holiday: appParam.keepHolidayList)
         : Colors.transparent;
 
-    final List<String> lifetimeData = (appParamState.keepLifetimeMap[date] != null)
-        ? getLifetimeData(lifetimeModel: appParamState.keepLifetimeMap[date]!)
+    final LifetimeModel? lifetimeModel = appParam.keepLifetimeMap[date];
+    final List<String> lifetimeData = (lifetimeModel != null)
+        ? getLifetimeData(lifetimeModel: lifetimeModel)
         : <String>[];
 
     final Map<int, String> duplicateConsecutiveMap = getDuplicateConsecutiveMap(lifetimeData);
 
     final List<Widget> displayIcons = <Widget>[];
 
-    if (appParamState.keepTempleMap[date] != null) {
+    if (appParam.keepTempleMap[date] != null) {
       displayIcons.add(FaIcon(FontAwesomeIcons.toriiGate, size: 20, color: Colors.white.withValues(alpha: 0.3)));
     }
 
-    if (appParamState.keepTransportationMap[date] != null) {
+    if (appParam.keepTransportationMap[date] != null) {
       displayIcons.add(Icon(Icons.train, size: 20, color: Colors.white.withValues(alpha: 0.3)));
     }
 
-    if (appParamState.keepStampRallyMetroAllStationMap[date] != null ||
-        appParamState.keepStampRallyMetro20AnniversaryMap[date] != null ||
-        appParamState.keepStampRallyMetroPokepokeMap[date] != null) {
+    if (appParam.keepStampRallyMetroAllStationMap[date] != null ||
+        appParam.keepStampRallyMetro20AnniversaryMap[date] != null ||
+        appParam.keepStampRallyMetroPokepokeMap[date] != null) {
       displayIcons.add(FaIcon(FontAwesomeIcons.stamp, size: 15, color: Colors.white.withValues(alpha: 0.3)));
     }
 
@@ -873,6 +907,26 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     return !isLeap;
   }
 
+  /// future が終わるまで、画面中央にくるくるを表示する（タップで閉じられない）
+  Future<void> _waitWithLoadingDialog(Future<void> future) async {
+    // 待機中にこの画面が破棄されてもダイアログを確実に閉じられるよう、先に Navigator を確保する
+    final NavigatorState navigator = Navigator.of(context, rootNavigator: true);
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      await future;
+    } finally {
+      if (navigator.mounted) {
+        navigator.pop();
+      }
+    }
+  }
+
   ///
   Widget _bodyCell({
     required double width,
@@ -882,14 +936,16 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     bool isCurrentYear = false,
     bool isToday = false,
     required String date,
+    required String youbi,
+    required AppParamState appParam,
   }) {
     Color? bg;
     if (isDisabled) {
-      bg = Colors.black.withValues(alpha: 0.2);
+      bg = _black20;
     } else if (isToday) {
-      bg = Colors.white.withValues(alpha: 0.2);
+      bg = _white20;
     } else if (isCurrentYear) {
-      bg = Colors.white.withValues(alpha: 0.1);
+      bg = _white10;
     }
 
     BorderSide borderColor;
@@ -898,8 +954,11 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     } else if (isCurrentYear) {
       borderColor = BorderSide(color: Colors.orangeAccent.withValues(alpha: 0.2), width: 1.5);
     } else {
-      borderColor = BorderSide(color: Colors.white.withValues(alpha: 0.2));
+      borderColor = _white20Side;
     }
+
+    final List<String> dateParts = date.split('-');
+    final WorkTimeModel? workTime = appParam.keepWorkTimeMap['${dateParts[0]}-${dateParts[1]}'];
 
     return SizedBox(
       width: width,
@@ -912,9 +971,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
 
             if (isDisabled) CustomPaint(size: Size(width, height), painter: DiagonalSlashPainter()),
 
-            if (appParamState.keepWorkTimeMap['${date.split('-')[0]}-${date.split('-')[1]}'] != null &&
-                appParamState.keepWorkTimeMap['${date.split('-')[0]}-${date.split('-')[1]}']!.genbaName !=
-                    '✕') ...<Widget>[
+            if (workTime != null && workTime.genbaName != '✕') ...<Widget>[
               Positioned(
                 bottom: 5,
                 left: 5,
@@ -927,9 +984,9 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(appParamState.keepWorkTimeMap['${date.split('-')[0]}-${date.split('-')[1]}']!.genbaName),
+                        Text(workTime.genbaName),
 
-                        Text(appParamState.keepWorkTimeMap['${date.split('-')[0]}-${date.split('-')[1]}']!.agentName),
+                        Text(workTime.agentName),
                       ],
                     ),
                   ),
@@ -937,16 +994,7 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
               ),
             ],
 
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                    right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                  ),
-                ),
-              ),
-            ),
+            Positioned.fill(child: DecoratedBox(decoration: _gridBorderDecoration)),
 
             Positioned.fill(
               child: Padding(
@@ -975,18 +1023,31 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
               ),
             ),
 
-            if (DateTime.parse(date).youbiStr == 'Sunday') ...<Widget>[
+            if (youbi == 'Sunday') ...<Widget>[
               Positioned(
                 bottom: 10,
                 right: 10,
                 child: GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     appParamNotifier.setWeeklyHistorySelectedDate(date: date);
 
                     // 日曜〜土曜の1週間分のgeoloc を取得（月またぎ対応、取得済みならスキップ）
                     final String fromDate = date;
                     final String toDate = DateTime.parse(date).add(const Duration(days: 6)).yyyymmdd;
-                    geolocNotifier.getGeolocDataByDateRange(fromDate, toDate);
+                    final Future<void> geolocRequest = geolocNotifier.getGeolocDataByDateRange(fromDate, toDate);
+
+                    // 取得中なら、終わるまでくるくるを表示して待つ
+                    // （以前は取得完了前に下の高さ判定をしていたため、未取得の週を初めて開くと地図欄の高さがずれていた）
+                    if (geolocNotifier.isDateRangeLoading(fromDate, toDate)) {
+                      await _waitWithLoadingDialog(geolocRequest);
+
+                      if (!mounted) {
+                        return;
+                      }
+                    }
+
+                    // 待っている間に更新された最新の状態で判定する
+                    final AppParamState appParamState = ref.read(appParamProvider);
 
                     bool isNeedGeolocMapDisplayHeight = false;
                     bool isNeedStationStampDisplayHeight = false;

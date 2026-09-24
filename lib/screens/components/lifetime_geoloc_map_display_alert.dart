@@ -107,12 +107,37 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
   bool _cacheBuilt = false;
 
+  /// 部分的に作り直すための前回値（ゴースト選択日 / 時刻マーカーのズーム）
+  String _cachedGhostDate = '';
+  double _cachedTimeMarkerZoom = 0;
+
   StreamSubscription<dynamic>? _mapReadySubscription;
 
   List<Polyline<Object>> ghostPolylines = <Polyline<Object>>[];
 
   /// ===== zoom更新のデバウンス用 =====
   Timer? _zoomDebounce;
+
+  /// TileProvider は build 毎に生成しない（TileLayer 側の破棄・再生成を避ける）
+  final CachedTileProvider _tileProvider = CachedTileProvider();
+
+  /// ===== build 毎の再計算を避けるためのキャッシュ =====
+  /// freezed の List getter は毎回ラッパーを返すため、identical ではなく == で比較する（中身の元リストで比較される）
+  List<List<List<List<double>>>>? _areaPolygonsSource;
+  List<Polygon<Object>> _areaPolygons = <Polygon<Object>>[];
+
+  TransportationModel? _transportationPolylineSource;
+  List<Polyline<Object>> _transportationPolylines = <Polyline<Object>>[];
+
+  List<GeolocModel>? _routePolylineSource;
+  List<Polyline<Object>> _routePolylines = <Polyline<Object>>[];
+
+  List<GeolocModel>? _sortedGeolocSource;
+  int _sortedGeolocSourceLength = -1;
+  List<GeolocModel>? _sortedGeolocCache;
+
+  List<StationModel>? _stationMapSource;
+  Map<int, StationModel> _stationMap = <int, StationModel>{};
 
   /// ref.watch の代わりに ref.read を使用（サブスクリプションを作らない）。
   /// 再描画は initState の ref.listen が担う。
@@ -256,8 +281,24 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   void _rebuildCachesIfNeeded() {
     final String key = _buildCacheKey();
     if (_cacheBuilt && key == _cacheKey) {
+      // 全体を作り直す必要はないが、ゴースト選択・ズームの変化は該当部分だけ反映する
+      // （以前はキャッシュキーに含まれておらず、ゴーストルートの選択やズームが表示に反映されなかった）
+      final String ghostDate = appParamState.selectedGhostPolylineDate;
+      if (ghostDate != _cachedGhostDate) {
+        _cachedGhostDate = ghostDate;
+        makeDisplayGhostGeolocDateMarker();
+        ghostPolylines = makeGhostGeolocPolyline();
+      }
+
+      if (currentZoom2 != _cachedTimeMarkerZoom) {
+        _cachedTimeMarkerZoom = currentZoom2;
+        makeDisplayTimeMarker();
+      }
+
       return;
     }
+    _cachedGhostDate = appParamState.selectedGhostPolylineDate;
+    _cachedTimeMarkerZoom = currentZoom2;
     _cacheKey = key;
     _cacheBuilt = true;
 
@@ -356,28 +397,23 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
     return <Widget>[
       TileLayer(
         urlTemplate: 'https://tile.openstreetmap.jp/{z}/{x}/{y}.png',
-        tileProvider: CachedTileProvider(),
+        tileProvider: _tileProvider,
         userAgentPackageName: 'com.example.app',
       ),
       if (appParamState.keepAllPolygonsList.isNotEmpty) ...<Widget>[
         // ignore: always_specify_types
-        PolygonLayer(
-          polygons: makeAreaPolygons(
-            allPolygonsList: appParamState.keepAllPolygonsList,
-            fortyEightColor: fortyEightColor,
-          ),
-        ),
+        PolygonLayer(polygons: _getAreaPolygons()),
       ],
       MarkerLayer(markers: markerList),
       if (appParamState.keepTransportationMap[widget.date] case final TransportationModel transport
           when transport.spotDataModelListMap.isNotEmpty) ...<Widget>[
         // ignore: always_specify_types
-        PolylineLayer(polylines: makeTransportationPolyline()),
+        PolylineLayer(polylines: _getTransportationPolylines(transport)),
         MarkerLayer(markers: routePolylineInfoMarkerList),
       ],
       if (appParamState.routePolylinePartsGeolocList.isNotEmpty) ...<Widget>[
         // ignore: always_specify_types
-        PolylineLayer(polylines: makeRouteGeolocPolyline()),
+        PolylineLayer(polylines: _getRoutePolylines()),
       ],
       MarkerLayer(markers: transportationGoalMarkerList),
       MarkerLayer(markers: templeMarkerList),
@@ -391,6 +427,37 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
         MarkerLayer(markers: displayGhostGeolocDateList),
       ],
     ];
+  }
+
+  ///
+  /// 行政区域ポリゴンは重い（全ポリゴンの toString による重複排除を含む）ため、元リストが変わった時だけ作り直す
+  List<Polygon<Object>> _getAreaPolygons() {
+    final List<List<List<List<double>>>> allPolygonsList = appParamState.keepAllPolygonsList;
+    if (_areaPolygonsSource != allPolygonsList) {
+      _areaPolygons = makeAreaPolygons(allPolygonsList: allPolygonsList, fortyEightColor: fortyEightColor);
+      _areaPolygonsSource = allPolygonsList;
+    }
+    return _areaPolygons;
+  }
+
+  ///
+  /// 交通経路の Polyline（と routePolylineInfoMarkerList）は TransportationModel が変わった時だけ作り直す
+  List<Polyline<Object>> _getTransportationPolylines(TransportationModel transport) {
+    if (!identical(_transportationPolylineSource, transport)) {
+      _transportationPolylines = makeTransportationPolyline();
+      _transportationPolylineSource = transport;
+    }
+    return _transportationPolylines;
+  }
+
+  ///
+  List<Polyline<Object>> _getRoutePolylines() {
+    final List<GeolocModel> routeList = appParamState.routePolylinePartsGeolocList;
+    if (_routePolylineSource != routeList) {
+      _routePolylines = makeRouteGeolocPolyline();
+      _routePolylineSource = routeList;
+    }
+    return _routePolylines;
   }
 
   ///
@@ -712,12 +779,23 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
   }
 
   ///
+  /// 時刻順ソート結果は元リストが同じ間は使い回す（呼び出し側は結果を変更しないこと）
   List<GeolocModel>? _sortedGeolocListByTime() {
     final List<GeolocModel>? geolocList = widget.geolocList;
     if (geolocList == null || geolocList.isEmpty) {
       return null;
     }
-    return <GeolocModel>[...geolocList]..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
+    if (_sortedGeolocCache != null &&
+        identical(_sortedGeolocSource, geolocList) &&
+        _sortedGeolocSourceLength == geolocList.length) {
+      return _sortedGeolocCache;
+    }
+    final List<GeolocModel> sorted = <GeolocModel>[...geolocList]
+      ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
+    _sortedGeolocSource = geolocList;
+    _sortedGeolocSourceLength = geolocList.length;
+    _sortedGeolocCache = sorted;
+    return sorted;
   }
 
   ///
@@ -941,23 +1019,21 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
 
     final String boundingBoxArea = utility.getBoundingBoxArea(points: sortedByTime);
 
-    for (int index = 0; index < sortedByTime.length; index++) {
-      final GeolocModel current = sortedByTime[index];
+    // 各地点の座標は1回だけ parse する
+    final List<LatLng> positions = sortedByTime
+        .map((GeolocModel g) => LatLng(g.latitude.toDouble(), g.longitude.toDouble()))
+        .toList();
 
+    for (int index = 0; index < sortedByTime.length; index++) {
       double bearingDegrees = 0.0;
 
       if (index >= 1) {
-        final GeolocModel previous = sortedByTime[index - 1];
-
-        final LatLng previousPosition = LatLng(previous.latitude.toDouble(), previous.longitude.toDouble());
-        final LatLng currentPosition = LatLng(current.latitude.toDouble(), current.longitude.toDouble());
-
-        bearingDegrees = _bearingDegrees(from: previousPosition, to: currentPosition);
+        bearingDegrees = _bearingDegrees(from: positions[index - 1], to: positions[index]);
       }
 
       markerList.add(
         Marker(
-          point: LatLng(current.latitude.toDouble(), current.longitude.toDouble()),
+          point: positions[index],
           width: 40,
           height: 40,
           child: Center(
@@ -1484,14 +1560,11 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           return null;
         }
 
-        final Iterable<StationModel> matches = appParamState.keepStationList.where(
-          (StationModel element) => element.id == stationId,
-        );
-        if (matches.isEmpty) {
+        final StationModel? stationModel = _getStationMap()[stationId];
+        if (stationModel == null) {
           return null;
         }
 
-        final StationModel stationModel = matches.first;
         return TempleDataModel(
           name: stationModel.stationName,
           address: stationModel.address,
@@ -1500,6 +1573,21 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           rank: '',
         );
     }
+  }
+
+  ///
+  /// 駅ID -> StationModel（同一IDが複数ある場合は従来の where().first と同じく先頭を採用）
+  Map<int, StationModel> _getStationMap() {
+    final List<StationModel> stationList = appParamState.keepStationList;
+    if (_stationMapSource != stationList) {
+      final Map<int, StationModel> map = <int, StationModel>{};
+      for (final StationModel station in stationList) {
+        map.putIfAbsent(station.id, () => station);
+      }
+      _stationMap = map;
+      _stationMapSource = stationList;
+    }
+    return _stationMap;
   }
 
   ///

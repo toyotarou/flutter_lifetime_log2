@@ -36,6 +36,12 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
   bool zoomMode = false;
   double _currentScale = 1.0;
 
+  /// _setChartData の集計キャッシュ（ズーム操作等での再ビルド時に keepMoneyMap 全件を再走査しないため）
+  Map<String, MoneyModel>? _cachedMoneyMap;
+  int? _cachedGraphYear;
+  List<int> _cachedValueList = <int>[];
+  List<String> _cachedDateList = <String>[];
+
   ///
   @override
   void initState() {
@@ -231,40 +237,17 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
 
   ///
   void _setChartData() {
-    _flspots = <FlSpot>[];
-    final List<int> list = <int>[];
-    final List<String> dateList = <String>[];
+    final Map<String, MoneyModel> moneyMap = appParamState.keepMoneyMap;
+    final int selectedGraphYear = appParamState.selectedGraphYear;
 
-    int i = 0;
-    appParamState.keepMoneyMap.forEach((String key, MoneyModel value) {
-      if (key.split('-')[0].toInt() >= 2023) {
-        if (appParamState.selectedGraphYear == 0) {
-          _flspots.add(FlSpot(i.toDouble(), value.sum.toDouble()));
-          list.add(value.sum.toInt());
-          dateList.add(value.date);
+    if (_cachedMoneyMap != moneyMap || _cachedGraphYear != selectedGraphYear) {
+      _cachedMoneyMap = moneyMap;
+      _cachedGraphYear = selectedGraphYear;
+      _collectSpots();
+    }
 
-          if (i == 0) {
-            startPrice = value.sum.toInt();
-          }
-          endPrice = value.sum.toInt();
-
-          i++;
-        } else {
-          if (appParamState.selectedGraphYear == key.split('-')[0].toInt()) {
-            _flspots.add(FlSpot(i.toDouble(), value.sum.toDouble()));
-            list.add(value.sum.toInt());
-            dateList.add(value.date);
-
-            if (i == 0) {
-              startPrice = value.sum.toInt();
-            }
-            endPrice = value.sum.toInt();
-
-            i++;
-          }
-        }
-      }
-    });
+    final List<int> list = _cachedValueList;
+    final List<String> dateList = _cachedDateList;
 
     if (list.isNotEmpty) {
       const int warisuu = 500000;
@@ -447,6 +430,47 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
         ],
       );
     }
+  }
+
+  ///
+  void _collectSpots() {
+    _flspots = <FlSpot>[];
+    final List<int> list = <int>[];
+    final List<String> dateList = <String>[];
+
+    int i = 0;
+    appParamState.keepMoneyMap.forEach((String key, MoneyModel value) {
+      if (key.split('-')[0].toInt() >= 2023) {
+        if (appParamState.selectedGraphYear == 0) {
+          _flspots.add(FlSpot(i.toDouble(), value.sum.toDouble()));
+          list.add(value.sum.toInt());
+          dateList.add(value.date);
+
+          if (i == 0) {
+            startPrice = value.sum.toInt();
+          }
+          endPrice = value.sum.toInt();
+
+          i++;
+        } else {
+          if (appParamState.selectedGraphYear == key.split('-')[0].toInt()) {
+            _flspots.add(FlSpot(i.toDouble(), value.sum.toDouble()));
+            list.add(value.sum.toInt());
+            dateList.add(value.date);
+
+            if (i == 0) {
+              startPrice = value.sum.toInt();
+            }
+            endPrice = value.sum.toInt();
+
+            i++;
+          }
+        }
+      }
+    });
+
+    _cachedValueList = list;
+    _cachedDateList = dateList;
   }
 
   ///

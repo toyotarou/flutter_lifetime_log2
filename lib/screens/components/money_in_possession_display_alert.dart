@@ -80,8 +80,6 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
   ///
   @override
   Widget build(BuildContext context) {
-    final DateTime startDate = _resolveStartDateFromMoneySumList();
-
     return Scaffold(
       backgroundColor: Colors.transparent,
 
@@ -109,6 +107,9 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
 
                         GestureDetector(
                           onTap: () {
+                            // 全件の日付 parse を伴うため、build 毎ではなくタップ時にだけ計算する
+                            final DateTime startDate = _resolveStartDateFromMoneySumList();
+
                             final List<int> sumList = <int>[];
                             for (final ScrollLineChartModel aaa in appParamState.keepMoneySumList) {
                               sumList.add(aaa.sum);
@@ -260,49 +261,15 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
 
   ///
   Widget _displayPossessionMoneyList() {
-    final List<Widget> list = <Widget>[];
+    // 行データだけ先に作り、Widget は表示される行だけ遅延生成する
+    final List<({String key, MoneyModel value, int lastSum})> rows = <({String key, MoneyModel value, int lastSum})>[];
 
     int lastSum = 0;
-    int i = 0;
     appParamState.keepMoneyMap.forEach((String key, MoneyModel value) {
       if (key.split('-')[0].toInt() >= 2023) {
-        list.add(
-          AutoScrollTag(
-            // ignore: always_specify_types
-            key: ValueKey(i),
-            index: i,
-            controller: autoScrollController,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(key),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      Text(value.sum.toCurrency()),
-
-                      if (i == 0)
-                        const SizedBox.shrink()
-                      else
-                        Text(
-                          (lastSum - value.sum.toInt()).toString().toCurrency(),
-                          style: const TextStyle(color: Colors.grey, fontSize: 10),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
+        rows.add((key: key, value: value, lastSum: lastSum));
 
         lastSum = value.sum.toInt();
-        i++;
       }
     });
 
@@ -310,10 +277,42 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
       controller: autoScrollController,
       slivers: <Widget>[
         SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) => list[index],
-            childCount: list.length,
-          ),
+          delegate: SliverChildBuilderDelegate((BuildContext context, int i) {
+            final ({String key, MoneyModel value, int lastSum}) row = rows[i];
+
+            return AutoScrollTag(
+              // ignore: always_specify_types
+              key: ValueKey(i),
+              index: i,
+              controller: autoScrollController,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(row.key),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text(row.value.sum.toCurrency()),
+
+                        if (i == 0)
+                          const SizedBox.shrink()
+                        else
+                          Text(
+                            (row.lastSum - row.value.sum.toInt()).toString().toCurrency(),
+                            style: const TextStyle(color: Colors.grey, fontSize: 10),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }, childCount: rows.length),
         ),
       ],
     );

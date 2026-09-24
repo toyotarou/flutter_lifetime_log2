@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
-import '../../../extensions/extensions.dart';
 import '../../../models/walk_model.dart';
 import '../../../utility/utility.dart';
 
@@ -37,22 +36,19 @@ class Walk extends _$Walk {
       final List<WalkModel> list = <WalkModel>[];
       final Map<String, WalkModel> map = <String, WalkModel>{};
 
-      // ignore: always_specify_types
-      await client.post(path: APIPath.getWalkRecord2).then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value.length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          final WalkModel val = WalkModel.fromJson(value[i] as Map<String, dynamic>);
+      final dynamic value = await client.post(path: APIPath.getWalkRecord2);
 
-          list.add(val);
+      for (final dynamic item in value as List<dynamic>) {
+        final WalkModel val = WalkModel.fromJson(item as Map<String, dynamic>);
 
-          map[val.date] = val;
-        }
-      });
+        list.add(val);
+
+        map[val.date] = val;
+      }
 
       return state.copyWith(walkList: list, walkMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（walk）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

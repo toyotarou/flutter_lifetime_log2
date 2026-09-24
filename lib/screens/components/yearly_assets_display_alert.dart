@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../controllers/app_param/app_param.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/common/prev_year_last_assets_model.dart';
@@ -445,6 +446,9 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
 
   ///
   PrevYearLastAssetsModel _getPrevYearLastValues({required int year}) {
+    /// 修正: post-frame コールバックから呼ばれるため ref.watch（appParamState）ではなく ref.read で取得する
+    final AppParamState appParam = ref.read(appParamProvider);
+
     final DateTime start = DateTime(year - 1, 12, 31);
     final DateTime min = DateTime(year - 1);
 
@@ -460,7 +464,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       final String key = d.yyyymmdd;
 
       if (!foundGold) {
-        final GoldModel? gold = appParamState.keepGoldMap[key];
+        final GoldModel? gold = appParam.keepGoldMap[key];
         if (gold != null && gold.goldValue != '-') {
           lastGold = gold.goldValue.toString().toInt();
           foundGold = true;
@@ -468,7 +472,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       }
 
       if (!foundStock) {
-        final List<StockModel>? stockList = appParamState.keepStockMap[key];
+        final List<StockModel>? stockList = appParam.keepStockMap[key];
         if (stockList != null) {
           lastStock = AssetsCalc.calcStockSum(stockList);
           foundStock = true;
@@ -476,7 +480,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       }
 
       if (!foundToushi) {
-        final List<ToushiShintakuModel>? toushiList = appParamState.keepToushiShintakuMap[key];
+        final List<ToushiShintakuModel>? toushiList = appParam.keepToushiShintakuMap[key];
         if (toushiList != null) {
           lastToushi = AssetsCalc.calcToushiSum(toushiList);
           foundToushi = true;
@@ -493,6 +497,9 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
 
   ///
   List<YearDayAssetsModel> makeYearlyDayAssetsList() {
+    /// 修正: post-frame コールバックから呼ばれるため ref.watch（appParamState）ではなく ref.read で取得する
+    final AppParamState appParam = ref.read(appParamProvider);
+
     yearlyDayAssetsList.clear();
 
     monthEndAssetsList.clear();
@@ -514,39 +521,40 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
 
     int? prevTotal;
 
+    final List<DateTime> insurancePaidDates = AssetsCalc.parsePaidDates(appParam.keepInsuranceDataList);
+    final List<DateTime> nenkinKikinPaidDates = AssetsCalc.parsePaidDates(appParam.keepNenkinKikinDataList);
+
     int first = 0;
     int last = 0;
 
     for (DateTime d = start; d.isBefore(endExclusive); d = d.add(const Duration(days: 1))) {
       final String key = d.yyyymmdd;
 
-      final GoldModel? gold = appParamState.keepGoldMap[key];
+      final GoldModel? gold = appParam.keepGoldMap[key];
       if (gold != null && gold.goldValue != '-') {
         lastGoldSum = gold.goldValue.toString().toInt();
       }
 
-      final List<StockModel>? stockList = appParamState.keepStockMap[key];
+      final List<StockModel>? stockList = appParam.keepStockMap[key];
       if (stockList != null) {
         lastStockSum = AssetsCalc.calcStockSum(stockList);
       }
 
-      final List<ToushiShintakuModel>? toushiList = appParamState.keepToushiShintakuMap[key];
+      final List<ToushiShintakuModel>? toushiList = appParam.keepToushiShintakuMap[key];
       if (toushiList != null) {
         lastToushiShintakuSum = AssetsCalc.calcToushiSum(toushiList);
       }
 
-      final String moneyStr = appParamState.keepMoneyMap[key]?.sum ?? '';
+      final String moneyStr = appParam.keepMoneyMap[key]?.sum ?? '';
       if (moneyStr.isNotEmpty) {
         lastMoneySum = AssetsCalc.calcMoney(moneyStr);
       }
       final int money = lastMoneySum;
 
-      final int insurancePassedMonths =
-          AssetsCalc.countPaidUpTo(data: appParamState.keepInsuranceDataList, date: d) + 102;
+      final int insurancePassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: insurancePaidDates, date: d) + 102;
       final int insuranceSum = (insurancePassedMonths * 55880 * 0.7).toInt();
 
-      final int nenkinKikinPassedMonths =
-          AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: d) + 32;
+      final int nenkinKikinPassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: nenkinKikinPaidDates, date: d) + 32;
       // 2026-06-15に国民年金基金解約のため、同日以降は0
       final int nenkinKikinSum = d.isBefore(DateTime(2026, 6, 15))
           ? (nenkinKikinPassedMonths * 26625 * 0.7).toInt()

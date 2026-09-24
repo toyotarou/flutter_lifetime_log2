@@ -37,18 +37,10 @@ class LatLngAddressController extends _$LatLngAddressController {
     final List<LatLngAddressDetailModel> list = <LatLngAddressDetailModel>[];
     final Map<String, List<LatLngAddressDetailModel>> map = <String, List<LatLngAddressDetailModel>>{};
 
-    for (int i = 0; i < result.response.location.length; i++) {
-      final LatLngAddressDetailModel val = result.response.location[i];
-
+    for (final LatLngAddressDetailModel val in result.response.location) {
       list.add(val);
 
-      map['${val.y}|${val.x}'] = <LatLngAddressDetailModel>[];
-    }
-
-    for (int i = 0; i < result.response.location.length; i++) {
-      final LatLngAddressDetailModel val = result.response.location[i];
-
-      map['${val.y}|${val.x}']?.add(val);
+      (map['${val.y}|${val.x}'] ??= <LatLngAddressDetailModel>[]).add(val);
     }
 
     return LatLngAddressControllerState(latLngAddressList: list, latLngAddressMap: map);

@@ -39,24 +39,22 @@ class Fund extends _$Fund {
       final Map<String, List<FundModel>> map = <String, List<FundModel>>{};
       final Map<int, List<FundModel>> map2 = <int, List<FundModel>>{};
 
-      // ignore: always_specify_types
-      await client.post(path: APIPath.getFund).then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          final FundModel val = FundModel.fromJson(value['data'][i] as Map<String, dynamic>);
+      final dynamic value = await client.post(path: APIPath.getFund);
+      final List<dynamic> data = (value as Map<String, dynamic>)['data'] as List<dynamic>;
 
-          list.add(val);
+      for (final dynamic item in data) {
+        final FundModel val = FundModel.fromJson(item as Map<String, dynamic>);
 
-          (map[val.name] ??= <FundModel>[]).add(val);
+        list.add(val);
 
-          (map2[val.relationalId.toInt()] ??= <FundModel>[]).add(val);
-        }
-      });
+        (map[val.name] ??= <FundModel>[]).add(val);
+
+        (map2[val.relationalId.toInt()] ??= <FundModel>[]).add(val);
+      }
 
       return state.copyWith(fundList: list, fundMap: map, fundRelationMap: map2);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（fund）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

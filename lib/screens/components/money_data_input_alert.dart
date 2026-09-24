@@ -29,6 +29,32 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
 
   MoneyModel? money;
 
+  bool _isLoading = false;
+
+  ///
+  @override
+  void dispose() {
+    // オーバーレイ（ルート Overlay 上）の TextField がこのコントローラーを使っているため、
+    // コントローラー破棄より先に、このダイアログが作ったオーバーレイを必ず外す。
+    // closeAllOverlays で既に外されたもの（mounted == false）は二重 remove にならないようスキップする。
+    for (final OverlayEntry e in <OverlayEntry>[..._firstEntries, ..._secondEntries]) {
+      if (e.mounted) {
+        try {
+          e.remove();
+        } on Object catch (_) {
+          // 同一フレームで既に remove 済みだった場合の二重 remove は無視する（dispose を失敗させない）
+        }
+      }
+    }
+
+    // appParam 側も同じリストを参照しているので、クリアして後から closeAllOverlays が二重 remove しないようにする
+    _firstEntries.clear();
+    _secondEntries.clear();
+
+    inputDigitsEditingController.dispose();
+    super.dispose();
+  }
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -75,34 +101,40 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
     return Scaffold(
       backgroundColor: Colors.transparent,
 
-      body: SafeArea(
-        child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white),
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: DefaultTextStyle(
+              style: const TextStyle(color: Colors.white),
 
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: <Widget>[
-                    Text(widget.date),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(widget.date),
 
-                    ElevatedButton(
-                      onPressed: () => insertMoneyData(),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-                      child: const Text('input', style: TextStyle(fontSize: 12)),
+                        ElevatedButton(
+                          onPressed: () => insertMoneyData(),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                          child: const Text('input', style: TextStyle(fontSize: 12)),
+                        ),
+                      ],
                     ),
+
+                    Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                    _displayInputParts(),
                   ],
                 ),
-
-                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-                _displayInputParts(),
-              ],
+              ),
             ),
           ),
-        ),
+
+          if (_isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+        ],
       ),
     );
   }
@@ -242,10 +274,10 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
     addFirstOverlay(
       context: context,
       setStateCallback: setState,
-      width: MediaQuery.of(context).size.width * 0.6,
+      width: MediaQuery.sizeOf(context).width * 0.6,
       height: 210,
       color: Colors.blueGrey.withOpacity(0.3),
-      initialPosition: Offset(MediaQuery.of(context).size.width * 0.4, 360),
+      initialPosition: Offset(MediaQuery.sizeOf(context).width * 0.4, 360),
 
       widget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -371,6 +403,11 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
 
   ///
   Future<void> insertMoneyData() async {
+    // 送信中の二重タップを無視する
+    if (_isLoading) {
+      return;
+    }
+
     final Map<String, dynamic> uploadData = {
       'date': widget.date,
 
@@ -420,8 +457,16 @@ class _MoneyDataInputAlertState extends ConsumerState<MoneyDataInputAlert> with 
       'pay_f': money?.payF,
     };
 
-    // DB保存＋データリフレッシュはNotifier内で完結する（mounted不要）
-    await moneyInputNotifier.insertMoney(uploadData: uploadData);
+    setState(() => _isLoading = true);
+
+    try {
+      // DB保存＋データリフレッシュはNotifier内で完結する（mounted不要）
+      await moneyInputNotifier.insertMoney(uploadData: uploadData);
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
 
     // contextを使うのはここだけなので、mounted チェックは1箇所でOK
     if (!mounted) {

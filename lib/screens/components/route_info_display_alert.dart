@@ -18,6 +18,10 @@ class RouteInfoDisplayAlert extends ConsumerStatefulWidget {
 
 class _RouteInfoDisplayAlertState extends ConsumerState<RouteInfoDisplayAlert>
     with ControllersMixin<RouteInfoDisplayAlert> {
+  // 駅名 -> 路線番号 のMapは駅リストが変わった時のみ作り直す
+  List<StationModel>? _stationTrainMapSource;
+  Map<String, Set<String>> _stationTrainMap = <String, Set<String>>{};
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -49,10 +53,17 @@ class _RouteInfoDisplayAlertState extends ConsumerState<RouteInfoDisplayAlert>
   Widget _buildRouteList(List<SpotDataModel> spots) {
     final AppParamState state = appParamState;
 
-    final Map<String, Set<String>> stationTrainMap = <String, Set<String>>{};
-    for (final StationModel station in state.keepStationList) {
-      stationTrainMap.putIfAbsent(station.stationName, () => <String>{}).add(station.trainNumber);
+    if (_stationTrainMapSource != state.keepStationList) {
+      _stationTrainMapSource = state.keepStationList;
+
+      final Map<String, Set<String>> map = <String, Set<String>>{};
+      for (final StationModel station in state.keepStationList) {
+        map.putIfAbsent(station.stationName, () => <String>{}).add(station.trainNumber);
+      }
+      _stationTrainMap = map;
     }
+
+    final Map<String, Set<String>> stationTrainMap = _stationTrainMap;
 
     final List<Widget> list = <Widget>[];
 

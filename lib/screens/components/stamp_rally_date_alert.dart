@@ -86,7 +86,8 @@ class _StampRallyAlertState extends ConsumerState<StampRallyDateAlert> with Cont
   Widget _displayStampRallyModelList() {
     final List<Widget> list = <Widget>[];
 
-    final List<StampRallyModel>? stamps = _stampMap[widget.date];
+    // 並べ替えで Provider が保持している共有リストを書き換えないよう、コピーしてから並べ替える
+    final List<StampRallyModel>? stamps = _stampMap[widget.date]?.toList();
 
     if (stamps != null) {
       // 並び順だけ種別で切り替え

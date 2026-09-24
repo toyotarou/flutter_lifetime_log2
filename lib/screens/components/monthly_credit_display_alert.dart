@@ -178,11 +178,13 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
       sum += element.price;
     });
 
-    setState(() => monthlyCreditSum = sum);
+    // build 中のため setState は不要（下部の合計表示はこの後に構築される）
+    monthlyCreditSum = sum;
 
     int sum2 = 0;
     appParamState.keepMoneySpendMap.forEach((String key, List<MoneySpendModel> value) {
-      if ('${key.split('-')[0]}-${key.split('-')[1]}' == widget.yearmonth) {
+      final List<String> exKey = key.split('-');
+      if ('${exKey[0]}-${exKey[1]}' == widget.yearmonth) {
         for (final MoneySpendModel element in value) {
           if (element.item == 'クレジット') {
             sum2 += element.price;
@@ -191,7 +193,7 @@ class _MonthlyCreditDisplayAlertState extends ConsumerState<MonthlyCreditDisplay
       }
     });
 
-    setState(() => monthlySpendCreditSum = sum2);
+    monthlySpendCreditSum = sum2;
 
     return CustomScrollView(
       slivers: <Widget>[

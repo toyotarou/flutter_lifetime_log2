@@ -415,6 +415,10 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
     final List<int> listSumList = <int>[];
 
+    // 日ごとに作り直さないよう、ループ前に一度だけ作る
+    final String todayStr = DateTime.now().yyyymmdd;
+    final List<String> itemKeys = _buildSpendItemKeys();
+
     for (int i = 1; i <= endNum; i++) {
       final DateTime dateObj = DateTime(genDate.year, genDate.month, i);
       final String date = dateObj.yyyymmdd;
@@ -440,7 +444,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
       final bool inputDisplay = dateObj.isBeforeOrSameDate(now);
 
-      if (date == DateTime.now().yyyymmdd) {
+      if (date == todayStr) {
         monthlyMoneySpendList.add(const DottedLine(dashColor: Colors.orangeAccent, lineThickness: 2, dashGapLength: 3));
       }
 
@@ -463,7 +467,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                     child: FaIcon(FontAwesomeIcons.amazon, color: Colors.white.withValues(alpha: 0.4)),
                   ),
                 ],
-                if (date == DateTime.now().yyyymmdd) ...<Widget>[
+                if (date == todayStr) ...<Widget>[
                   const Positioned(
                     left: 3,
                     bottom: 3,
@@ -550,7 +554,11 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
                                 ),
                               ),
                               if (appParamState.keepMoneySpendMap[date] != null) ...<Widget>[
-                                displayDateMoneySpendList(date: date, creditRecordMap: creditRecordMap),
+                                displayDateMoneySpendList(
+                                  date: date,
+                                  creditRecordMap: creditRecordMap,
+                                  itemKeys: itemKeys,
+                                ),
                               ],
                               const SizedBox(height: 5),
                               Row(
@@ -635,7 +643,26 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
   }
 
   ///
-  Widget displayDateMoneySpendList({required String date, required Map<String, int> creditRecordMap}) {
+  List<String> _buildSpendItemKeys() {
+    final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
+
+    const List<String> extraItems = <String>['共済戻り', '年金', 'アイアールシー', 'メルカリ', '牛乳代', '弁当代'];
+
+    for (final String item in extraItems) {
+      if (!itemKeys.contains(item)) {
+        itemKeys.add(item);
+      }
+    }
+
+    return itemKeys;
+  }
+
+  ///
+  Widget displayDateMoneySpendList({
+    required String date,
+    required Map<String, int> creditRecordMap,
+    required List<String> itemKeys,
+  }) {
     final List<MoneySpendModel>? spends = appParamState.keepMoneySpendMap[date];
     if (spends == null) {
       return const SizedBox.shrink();
@@ -647,16 +674,6 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
     for (final MoneySpendModel element in spends) {
       (map[element.item] ??= <MoneySpendModel>[]).add(element);
-    }
-
-    final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
-
-    const List<String> extraItems = <String>['共済戻り', '年金', 'アイアールシー', 'メルカリ', '牛乳代', '弁当代'];
-
-    for (final String item in extraItems) {
-      if (!itemKeys.contains(item)) {
-        itemKeys.add(item);
-      }
     }
 
     for (final String key in itemKeys) {

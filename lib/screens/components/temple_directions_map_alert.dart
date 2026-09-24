@@ -44,6 +44,9 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
 
   bool isLoading = false;
 
+  /// Directions API でルートを取得している間だけ true（成功・失敗どちらでも終了時に false）
+  bool _isFetchingRoute = true;
+
   double? currentZoom;
 
   Utility utility = Utility();
@@ -54,6 +57,9 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
 
   List<Color> fortyEightColor = <Color>[];
 
+  List<List<List<List<double>>>>? _areaPolygonsSource;
+  List<Polygon<Object>> _areaPolygons = <Polygon<Object>>[];
+
   ///
   @override
   void initState() {
@@ -61,11 +67,26 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
 
     // ignore: always_specify_types
     Future(() async {
-      await directionsNotifier.fetch(
-        origin: widget.fromSpot.address,
-        destination: widget.toSpot.address,
-        apiKey: dotenv.env['GOOGLE_API_KEY']!,
-      );
+      try {
+        await directionsNotifier.fetch(
+          origin: widget.fromSpot.address,
+          destination: widget.toSpot.address,
+          apiKey: dotenv.env['GOOGLE_API_KEY']!,
+        );
+      } catch (e) {
+        // 取得失敗時は従来どおりルート描画を行わない（以前は未捕捉の例外だった）
+        debugPrint('TempleDirectionsMapAlert directions fetch error: $e');
+        return;
+      } finally {
+        if (mounted) {
+          setState(() => _isFetchingRoute = false);
+        }
+      }
+
+      /// 修正: 通信待ちの間に画面が閉じられていると ref / setState が例外になるため中断する
+      if (!mounted) {
+        return;
+      }
 
       final DirectionsModel? state = ref.read(directionsProvider);
 
@@ -100,6 +121,11 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
 
       // ignore: always_specify_types
       Future.delayed(const Duration(seconds: 2), () {
+        /// 修正: 2秒待つ間に画面が閉じられていたら何もしない（dispose 後の setState を防ぐ）
+        if (!mounted) {
+          return;
+        }
+
         setDefaultBoundsMap();
 
         setState(() => isLoading = false);
@@ -143,10 +169,7 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
                 if (appParamState.keepAllPolygonsList.isNotEmpty) ...<Widget>[
                   // ignore: always_specify_types
                   PolygonLayer(
-                    polygons: makeAreaPolygons(
-                      allPolygonsList: appParamState.keepAllPolygonsList,
-                      fortyEightColor: fortyEightColor,
-                    ),
+                    polygons: _getAreaPolygons(),
                   ),
                 ],
 
@@ -237,11 +260,23 @@ class _TempleDirectionsMapAlertState extends ConsumerState<TempleDirectionsMapAl
               ),
             ),
 
-            if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+            if (isLoading || _isFetchingRoute) ...<Widget>[const Center(child: CircularProgressIndicator())],
           ],
         ),
       ),
     );
+  }
+
+  ///
+  /// 行政区域ポリゴンは重い（全ポリゴンの toString による重複排除を含む）ため、元リストが変わった時だけ作り直す
+  /// （地図移動のたびに setCurrentZoom で再ビルドされるため）
+  List<Polygon<Object>> _getAreaPolygons() {
+    final List<List<List<List<double>>>> allPolygonsList = appParamState.keepAllPolygonsList;
+    if (_areaPolygonsSource != allPolygonsList) {
+      _areaPolygonsSource = allPolygonsList;
+      _areaPolygons = makeAreaPolygons(allPolygonsList: allPolygonsList, fortyEightColor: fortyEightColor);
+    }
+    return _areaPolygons;
   }
 
   ///

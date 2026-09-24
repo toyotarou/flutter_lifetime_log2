@@ -45,8 +45,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
   List<Color> fortyEightColor = <Color>[];
 
-  List<String> toushiGraphSelectYearList = <String>[];
-
   final TransformationController transformationController = TransformationController();
 
   bool zoomMode = false;
@@ -189,7 +187,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
   ///
   void setChartData() {
     flspotsList.clear();
-    toushiGraphSelectYearList.clear();
 
     List<String> dateList = <String>[];
 
@@ -207,8 +204,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           if (flag) {
             dateList.add(key);
           }
-
-          toushiGraphSelectYearList.add(value.year);
         });
       case 'stock':
         appParamState.keepStockTickerMap.forEach((String key, List<StockModel> value) {
@@ -223,8 +218,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
             if (flag2) {
               dateList.add('${element.year}-${element.month}-${element.day}');
             }
-
-            toushiGraphSelectYearList.add(element.year);
           }
         });
 
@@ -241,8 +234,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
             if (flag2) {
               dateList.add('${element.year}-${element.month}-${element.day}');
             }
-
-            toushiGraphSelectYearList.add(element.year);
           }
         });
     }
@@ -250,15 +241,23 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
     dateList = dateList.toSet().toList();
     dateList.sort();
 
-    final List<String> eachMonthStartDateList = <String>[];
+    /// indexWhere をループ内で繰り返さないよう、日付 -> 位置 のMapを作る（dateList は重複なし）
+    final Map<String, int> dateIndexMap = <String, int>{
+      for (int idx = 0; idx < dateList.length; idx++) dateList[idx]: idx,
+    };
+
+    /// 描画コールバック内で contains を繰り返すため Set にする
+    final Set<String> eachMonthStartDateSet = <String>{};
 
     String keepYearmonth = '';
     for (final String element in dateList) {
-      if (keepYearmonth != '${element.split('-')[0]}-${element.split('-')[1]}') {
-        eachMonthStartDateList.add(element);
+      final List<String> exElement = element.split('-');
+      final String yearmonth = '${exElement[0]}-${exElement[1]}';
+      if (keepYearmonth != yearmonth) {
+        eachMonthStartDateSet.add(element);
       }
 
-      keepYearmonth = '${element.split('-')[0]}-${element.split('-')[1]}';
+      keepYearmonth = yearmonth;
     }
 
     final List<int> list = <int>[];
@@ -284,7 +283,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
             final int? payPrice = _tryParseIntValue(value.payPrice.toString());
 
             if (goldValue != null && payPrice != null) {
-              final int pos = dateList.indexWhere((String element2) => element2 == key);
+              final int pos = dateIndexMap[key] ?? -1;
               if (pos < 0) {
                 return;
               }
@@ -317,9 +316,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
             final String heikinShutokuKagaku = element2.heikinShutokuKagaku.replaceAll(',', '');
 
             if (int.tryParse(jikaHyoukagaku) != null && double.tryParse(heikinShutokuKagaku) != null) {
-              final int pos = dateList.indexWhere(
-                (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
-              );
+              final int pos = dateIndexMap['${element2.year}-${element2.month}-${element2.day}'] ?? -1;
               if (pos < 0) {
                 return;
               }
@@ -369,9 +366,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
               final String shutokuSougaku = element2.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim();
 
               if (int.tryParse(jikaHyoukagaku) != null && int.tryParse(shutokuSougaku) != null) {
-                final int pos = dateList.indexWhere(
-                  (String element3) => element3 == '${element2.year}-${element2.month}-${element2.day}',
-                );
+                final int pos = dateIndexMap['${element2.year}-${element2.month}-${element2.day}'] ?? -1;
                 if (pos < 0) {
                   return;
                 }
@@ -492,7 +487,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
             final String date = dateList[idx];
 
             return FlLine(
-              color: (eachMonthStartDateList.contains(date))
+              color: (eachMonthStartDateSet.contains(date))
                   ? Colors.yellowAccent.withOpacity(0.1)
                   : Colors.transparent,
             );
@@ -740,7 +735,9 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                           onTap: () {
                             final List<ScrollLineChartModel> scrollLineChartModelList = <ScrollLineChartModel>[];
 
+                            // 共有リストを書き換えないようコピーしてから並べ替える
                             final List<StockModel>? sorted = appParamState.keepStockTickerMap[element2.ticker]
+                              ?.toList()
                               ?..sort(
                                 (StockModel a, StockModel b) =>
                                     '${a.year}-${a.month}-${a.day}'.compareTo('${b.year}-${b.month}-${b.day}'),
@@ -922,8 +919,11 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                             onTap: () {
                               final List<ScrollLineChartModel> scrollLineChartModelList = <ScrollLineChartModel>[];
 
-                              final List<ToushiShintakuModel>? sorted =
-                                  appParamState.keepToushiShintakuRelationalMap[element2.relationalId]?..sort(
+                              // 共有リストを書き換えないようコピーしてから並べ替える
+                              final List<ToushiShintakuModel>? sorted = appParamState
+                                  .keepToushiShintakuRelationalMap[element2.relationalId]
+                                  ?.toList()
+                                  ?..sort(
                                     (ToushiShintakuModel a, ToushiShintakuModel b) =>
                                         '${a.year}-${a.month}-${a.day}'.compareTo('${b.year}-${b.month}-${b.day}'),
                                   );
@@ -1059,22 +1059,6 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         ),
       ],
     );
-  }
-
-  ///
-  double makeFixedY({required List<int> sumList}) {
-    final int minSum = sumList.reduce(min);
-    final int maxSum = sumList.reduce(max);
-
-    final int diff = maxSum - minSum;
-
-    switch (diff.toString().length) {
-      case 6:
-        return 1000000;
-
-      default:
-        return 100000;
-    }
   }
 
   ///

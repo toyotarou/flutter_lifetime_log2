@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
-import '../../../extensions/extensions.dart';
 import '../../../models/temple_model.dart';
 import '../../../utility/utility.dart';
 
@@ -37,40 +36,44 @@ class Temple extends _$Temple {
       final List<TempleModel> list = <TempleModel>[];
       final Map<String, TempleModel> map = <String, TempleModel>{};
 
+      // 3つのAPIは互いに独立しているので並行して取得する
+      final List<dynamic> results = await Future.wait<dynamic>(<Future<dynamic>>[
+        client.post(path: APIPath.getTempleLatLng),
+        client.post(path: APIPath.getTempleDatePhoto),
+        client.post(path: APIPath.getAllTemple),
+      ]);
+
       //---------------------------------------------------------------------------//
-      final dynamic value2 = await client.post(path: APIPath.getTempleLatLng);
+      final dynamic value2 = results[0];
 
       final Map<String, Map<String, String>> latlngMap1 = <String, Map<String, String>>{};
 
       // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value2['list'].length.toString().toInt(); i++) {
+      for (final dynamic row in value2['list'] as List<dynamic>) {
         // ignore: avoid_dynamic_calls
-        latlngMap1[value2['list'][i]['temple'].toString()] = <String, String>{
+        latlngMap1[row['temple'].toString()] = <String, String>{
           // ignore: avoid_dynamic_calls
-          'temple': value2['list'][i]['temple'].toString(),
+          'temple': row['temple'].toString(),
           // ignore: avoid_dynamic_calls
-          'address': value2['list'][i]['address'].toString(),
+          'address': row['address'].toString(),
           // ignore: avoid_dynamic_calls
-          'latitude': value2['list'][i]['lat'].toString(),
+          'latitude': row['lat'].toString(),
           // ignore: avoid_dynamic_calls
-          'longitude': value2['list'][i]['lng'].toString(),
+          'longitude': row['lng'].toString(),
           // ignore: avoid_dynamic_calls
-          'rank': value2['list'][i]['rank'].toString(),
+          'rank': row['rank'].toString(),
         };
       }
 
       //---------------------------------------------------------------------------//
 
       //---------------------------------------------------------------------------//
-      final dynamic value3 = await client.post(path: APIPath.getTempleDatePhoto);
+      final dynamic value3 = results[1];
 
       final Map<String, List<TemplePhotoModel>> photoMap1 = <String, List<TemplePhotoModel>>{};
 
       // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value3['data'].length.toString().toInt(); i++) {
-        // ignore: avoid_dynamic_calls
-        final dynamic item = value3['data'][i];
-
+      for (final dynamic item in value3['data'] as List<dynamic>) {
         // ignore: avoid_dynamic_calls
         final String temple = item['temple'].toString();
         // ignore: avoid_dynamic_calls
@@ -94,71 +97,76 @@ class Temple extends _$Temple {
 
       //---------------------------------------------------------------------------//
 
-      final dynamic value = await client.post(path: APIPath.getAllTemple);
-
-      ///////////////////////////
-      final Map<String, List<String>> countMap1 = <String, List<String>>{};
+      final dynamic value = results[2];
 
       // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value['list'].length.toString().toInt(); i++) {
-        // ignore: avoid_dynamic_calls
-        final String templeName = value['list'][i]['temple'].toString();
+      final List<dynamic> templeRows = value['list'] as List<dynamic>;
 
-        (countMap1[templeName] ??= <String>[]).add(templeName);
+      ///////////////////////////
+      // 寺ごとの出現回数
+      final Map<String, int> countMap1 = <String, int>{};
+
+      for (final dynamic row in templeRows) {
+        // ignore: avoid_dynamic_calls
+        final String templeName = row['temple'].toString();
+
+        countMap1[templeName] = (countMap1[templeName] ?? 0) + 1;
       }
 
       ///////////////////////////
 
-      // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value['list'].length.toString().toInt(); i++) {
+      // latlngMap1 に存在する寺だけ TempleDataModel を作る
+      TempleDataModel? buildTempleDataModel(String name) {
+        final Map<String, String>? latlng = latlngMap1[name];
+
+        if (latlng == null) {
+          return null;
+        }
+
+        return TempleDataModel(
+          name: latlng['temple']!,
+          address: latlng['address']!,
+          latitude: latlng['latitude']!,
+          longitude: latlng['longitude']!,
+          rank: latlng['rank']!,
+          count: countMap1[name] ?? 0,
+          templePhotoModelList: photoMap1[name],
+        );
+      }
+
+      for (final dynamic row in templeRows) {
         // ignore: avoid_dynamic_calls
-        final String templeName = value['list'][i]['temple'].toString();
+        final String templeName = row['temple'].toString();
 
         final List<TempleDataModel> templeDataList = <TempleDataModel>[];
 
-        if (latlngMap1[templeName] != null) {
-          templeDataList.add(
-            TempleDataModel(
-              name: latlngMap1[templeName]!['temple']!,
-              address: latlngMap1[templeName]!['address']!,
-              latitude: latlngMap1[templeName]!['latitude']!,
-              longitude: latlngMap1[templeName]!['longitude']!,
-              rank: latlngMap1[templeName]!['rank']!,
-              count: (countMap1[templeName] != null) ? countMap1[templeName]!.length : 0,
-              templePhotoModelList: photoMap1[templeName],
-            ),
-          );
+        final TempleDataModel? mainTemple = buildTempleDataModel(templeName);
+
+        if (mainTemple != null) {
+          templeDataList.add(mainTemple);
         }
 
         // ignore: avoid_dynamic_calls
-        if (value['list'][i]['memo'] != null) {
+        if (row['memo'] != null) {
           // ignore: avoid_dynamic_calls
-          final List<String> exMemo = value['list'][i]['memo'].toString().split('、');
+          final List<String> exMemo = row['memo'].toString().split('、');
 
           for (final String element in exMemo) {
-            if (latlngMap1[element] != null) {
-              templeDataList.add(
-                TempleDataModel(
-                  name: latlngMap1[element]!['temple']!,
-                  address: latlngMap1[element]!['address']!,
-                  latitude: latlngMap1[element]!['latitude']!,
-                  longitude: latlngMap1[element]!['longitude']!,
-                  rank: latlngMap1[element]!['rank']!,
-                  count: (countMap1[element] != null) ? countMap1[element]!.length : 0,
-                  templePhotoModelList: photoMap1[element],
-                ),
-              );
+            final TempleDataModel? memoTemple = buildTempleDataModel(element);
+
+            if (memoTemple != null) {
+              templeDataList.add(memoTemple);
             }
           }
         }
 
         final TempleModel templeModel = TempleModel(
           // ignore: avoid_dynamic_calls
-          date: value['list'][i]['date'].toString(),
+          date: row['date'].toString(),
           // ignore: avoid_dynamic_calls
-          startPoint: value['list'][i]['start_point'].toString(),
+          startPoint: row['start_point'].toString(),
           // ignore: avoid_dynamic_calls
-          endPoint: value['list'][i]['end_point'].toString(),
+          endPoint: row['end_point'].toString(),
           templeDataList: templeDataList,
         );
 
@@ -171,7 +179,7 @@ class Temple extends _$Temple {
 
       return state.copyWith(templeList: list, templeMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（temple）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

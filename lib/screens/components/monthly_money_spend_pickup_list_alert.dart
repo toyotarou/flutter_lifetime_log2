@@ -69,8 +69,10 @@ class _MonthlyMoneySpendPickupListAlertState extends ConsumerState<MonthlyMoneyS
 
     final Set<String> set = <String>{};
 
+    final DateTime now = DateTime.now();
+
     for (int i = 0; i < 500; i++) {
-      set.add(DateTime.now().subtract(Duration(days: i)).yyyymm);
+      set.add(now.subtract(Duration(days: i)).yyyymm);
     }
 
     final List<String> list = set.toList();
@@ -190,6 +192,9 @@ class _MonthlyMoneySpendPickupListAlertState extends ConsumerState<MonthlyMoneyS
       itemMoneySpendModelMap[item] = <String, int>{};
     }
 
+    // contains 判定用
+    final Set<String> itemKeySet = itemKeysFromDisplayList.toSet();
+
     // 月単位で処理
     for (final String yearMonth in yearMonthList) {
       // この月にクレジットサマリーが存在するか
@@ -203,7 +208,7 @@ class _MonthlyMoneySpendPickupListAlertState extends ConsumerState<MonthlyMoneyS
       if (hasCreditSummary) {
         appParamState.keepCreditSummaryMap[yearMonth]?.forEach((CreditSummaryModel element) {
           // 表示対象 item でない場合は無視
-          if (!itemKeysFromDisplayList.contains(element.item)) {
+          if (!itemKeySet.contains(element.item)) {
             return;
           }
 
@@ -216,6 +221,29 @@ class _MonthlyMoneySpendPickupListAlertState extends ConsumerState<MonthlyMoneyS
       ///
       /// ---- 日別支出集計（keepMoneySpendMap） ----
       ///
+      /// item ごとに31日分を走査しないよう、月内の日付ループ1回で item 別合計を作る
+      final Map<String, int> monthItemSumMap = <String, int>{};
+
+      // 月内の日付をループ
+      for (int day = 1; day <= 31; day++) {
+        final String date = '$yearMonth-${day.toString().padLeft(2, '0')}';
+
+        // その日の支出一覧
+        appParamState.keepMoneySpendMap[date]?.forEach((MoneySpendModel moneySpendModel) {
+          ///
+          /// ---- クレジット明細の除外ルール ----
+          ///
+          /// credit summary が存在する月は、通常の credit 明細は二重計上になるので除外する
+          /// ただし「投資」は credit 経由でも実支出として扱うため例外として除外しない
+          ///
+          if (hasCreditSummary && moneySpendModel.kind == 'credit' && moneySpendModel.item != '投資') {
+            return;
+          }
+
+          monthItemSumMap[moneySpendModel.item] = (monthItemSumMap[moneySpendModel.item] ?? 0) + moneySpendModel.price;
+        });
+      }
+
       for (final String item in itemKeysFromDisplayList) {
         // 交通費は Suica チャージ（credit）経由のため
         // credit summary がある月は二重計上になるのでスキップ
@@ -223,30 +251,8 @@ class _MonthlyMoneySpendPickupListAlertState extends ConsumerState<MonthlyMoneyS
           continue;
         }
 
-        int sum = 0;
-
-        // 月内の日付をループ
-        for (int day = 1; day <= 31; day++) {
-          final String date = '$yearMonth-${day.toString().padLeft(2, '0')}';
-
-          // その日の支出一覧
-          appParamState.keepMoneySpendMap[date]?.forEach((MoneySpendModel moneySpendModel) {
-            ///
-            /// ---- クレジット明細の除外ルール ----
-            ///
-            /// credit summary が存在する月は、通常の credit 明細は二重計上になるので除外する
-            /// ただし「投資」は credit 経由でも実支出として扱うため例外として除外しない
-            ///
-            if (hasCreditSummary && moneySpendModel.kind == 'credit' && moneySpendModel.item != '投資') {
-              return;
-            }
-
-            // item が一致する場合のみ加算
-            if (moneySpendModel.item == item) {
-              sum += moneySpendModel.price;
-            }
-          });
-        }
+        // item が一致するものの合計
+        final int sum = monthItemSumMap[item] ?? 0;
 
         // 既存値があれば加算
         itemMoneySpendModelMap[item]![yearMonth] = (itemMoneySpendModelMap[item]![yearMonth] ?? 0) + sum;

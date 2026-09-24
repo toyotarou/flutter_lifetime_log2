@@ -67,16 +67,33 @@ class AssetsCalc {
     required DateTime date,
     String dateKey = 'date',
   }) {
-    final DateTime target = DateTime(date.year, date.month, date.day);
-
-    final List<DateTime> dates =
-        data
-            .where((Map<String, dynamic> e) => e[dateKey] != null)
-            .map((Map<String, dynamic> e) => DateTime.parse(e[dateKey] as String))
-            .map((DateTime d) => DateTime(d.year, d.month, d.day))
-            .toList()
-          ..sort();
-
-    return dates.where((DateTime d) => !d.isAfter(target)).length;
+    return countPaidDatesUpTo(paidDates: parsePaidDates(data, dateKey: dateKey), date: date);
   }
+
+  /// 支払データ（{'date': 'yyyy-MM-dd', ...}）の日付を「日単位」の DateTime に変換する。
+  /// 日ごとのループ内で countPaidUpTo を繰り返し呼ぶと毎回パースが走るため、
+  /// ループの外で 1 回だけこれを呼び、結果を countPaidDatesUpTo に渡すこと。
+  static List<DateTime> parsePaidDates(List<Map<String, dynamic>> data, {String dateKey = 'date'}) {
+    return <DateTime>[
+      for (final Map<String, dynamic> e in data)
+        if (e[dateKey] != null) _dateOnly(DateTime.parse(e[dateKey] as String)),
+    ];
+  }
+
+  /// parsePaidDates の結果のうち、date 以前（同日を含む）の件数
+  static int countPaidDatesUpTo({required List<DateTime> paidDates, required DateTime date}) {
+    final DateTime target = _dateOnly(date);
+
+    int count = 0;
+    for (final DateTime d in paidDates) {
+      if (!d.isAfter(target)) {
+        count++;
+      }
+    }
+
+    return count;
+  }
+
+  ///
+  static DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 }

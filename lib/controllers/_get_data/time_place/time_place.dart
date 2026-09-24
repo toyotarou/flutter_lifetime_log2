@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
-import '../../../extensions/extensions.dart';
 import '../../../models/time_place_model.dart';
 import '../../../utility/utility.dart';
 
@@ -37,22 +36,20 @@ class TimePlace extends _$TimePlace {
       final List<TimePlaceModel> list = <TimePlaceModel>[];
       final Map<String, List<TimePlaceModel>> map = <String, List<TimePlaceModel>>{};
 
-      // ignore: always_specify_types
-      await client.post(path: APIPath.getAllTimePlaceRecord).then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          final TimePlaceModel val = TimePlaceModel.fromJson(value['data'][i] as Map<String, dynamic>);
+      final dynamic value = await client.post(path: APIPath.getAllTimePlaceRecord);
+      final List<dynamic> data = (value as Map<String, dynamic>)['data'] as List<dynamic>;
 
-          list.add(val);
+      for (final dynamic item in data) {
+        final TimePlaceModel val = TimePlaceModel.fromJson(item as Map<String, dynamic>);
 
-          (map['${val.year}-${val.month}-${val.day}'] ??= <TimePlaceModel>[]).add(val);
-        }
-      });
+        list.add(val);
+
+        (map['${val.year}-${val.month}-${val.day}'] ??= <TimePlaceModel>[]).add(val);
+      }
 
       return state.copyWith(timePlaceList: list, timePlaceMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（time_place）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

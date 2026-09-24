@@ -29,50 +29,56 @@ class StampRallyMetroPokepoke extends _$StampRallyMetroPokepoke {
 
   //============================================== api
 
+  ///
   Future<StampRallyMetroPokepokeState> fetchAllStampRallyMetroPokepokeData() async {
     final HttpClient client = ref.read(httpClientProvider);
 
-    final List<StampRallyModel> list = <StampRallyModel>[];
-    final Map<String, List<StampRallyModel>> map = <String, List<StampRallyModel>>{};
-    final Map<String, List<StampRallyModel>> map2 = <String, List<StampRallyModel>>{};
+    try {
+      final List<StampRallyModel> list = <StampRallyModel>[];
+      final Map<String, List<StampRallyModel>> map = <String, List<StampRallyModel>>{};
+      final Map<String, List<StampRallyModel>> map2 = <String, List<StampRallyModel>>{};
 
-    final dynamic value = await client.post(path: APIPath.getMetroStampPokePoke);
+      final dynamic value = await client.post(path: APIPath.getMetroStampPokePoke);
 
-    // ignore: avoid_dynamic_calls
-    final List<dynamic> data = value['data'] as List<dynamic>;
+      // ignore: avoid_dynamic_calls
+      final List<dynamic> data = value['data'] as List<dynamic>;
 
-    for (int i = 0; i < data.length; i++) {
-      final dynamic row = data[i];
+      for (int i = 0; i < data.length; i++) {
+        final dynamic row = data[i];
 
-      final StampRallyModel val = StampRallyModel(
-        // ignore: avoid_dynamic_calls
-        stationCode: row['station_id'].toString(),
-        // ignore: avoid_dynamic_calls
-        stationName: row['station_name'].toString(),
-        // ignore: avoid_dynamic_calls
-        stampGetDate: row['get_date'].toString(),
-        // ignore: avoid_dynamic_calls
-        stamp: row['stamp'].toString(),
-        // ignore: avoid_dynamic_calls
-        posterPosition: row['in_out'].toString(),
+        final StampRallyModel val = StampRallyModel(
+          // ignore: avoid_dynamic_calls
+          stationCode: row['station_id'].toString(),
+          // ignore: avoid_dynamic_calls
+          stationName: row['station_name'].toString(),
+          // ignore: avoid_dynamic_calls
+          stampGetDate: row['get_date'].toString(),
+          // ignore: avoid_dynamic_calls
+          stamp: row['stamp'].toString(),
+          // ignore: avoid_dynamic_calls
+          posterPosition: row['in_out'].toString(),
 
-        lat: '',
-        lng: '',
-        trainCode: '',
-        trainName: '',
-        imageFolder: '',
-        imageCode: '',
-        stampGetOrder: 0,
-        time: '',
-      );
+          lat: '',
+          lng: '',
+          trainCode: '',
+          trainName: '',
+          imageFolder: '',
+          imageCode: '',
+          stampGetOrder: 0,
+          time: '',
+        );
 
-      list.add(val);
+        list.add(val);
 
-      (map[val.stationName] ??= <StampRallyModel>[]).add(val);
-      (map2[val.stampGetDate] ??= <StampRallyModel>[]).add(val);
+        (map[val.stationName] ??= <StampRallyModel>[]).add(val);
+        (map2[val.stampGetDate] ??= <StampRallyModel>[]).add(val);
+      }
+
+      return state.copyWith(stationStampList: list, stationStampMap: map, dateStationStampMap: map2);
+    } catch (e) {
+      utility.showError('予期せぬエラーが発生しました（stamp_rally_metro_pokepoke）', error: e);
+      rethrow; // 呼び出し元（getAllStampRallyMetroPokepokeData）でキャッチする
     }
-
-    return state.copyWith(stationStampList: list, stationStampMap: map, dateStationStampMap: map2);
   }
 
   ///

@@ -24,6 +24,9 @@ class YearlyAssetsGraphAlert extends StatefulWidget {
 
 class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
   late final List<int> _plotTotals;
+
+  /// _plotTotals から作る FlSpot 一覧（不変なので一度だけ作る。ドット描画ごとの再生成を避ける）
+  late final List<FlSpot> _spots;
   late final double _minY;
   late final double _maxY;
 
@@ -47,6 +50,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
     super.initState();
 
     _plotTotals = _buildPlotTotals(year: widget.year, totals: widget.totals, lastTotal: widget.lastYearFinalAssets);
+    _spots = _buildSpots();
 
     if (_plotTotals.isEmpty) {
       _minY = 0;
@@ -172,7 +176,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Container(width: MediaQuery.of(context).size.width),
+              Container(width: MediaQuery.sizeOf(context).width),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -233,7 +237,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
 
   ///
   String _buildSpotLabel(FlSpot spot) {
-    final List<FlSpot> spots = _buildSpots();
+    final List<FlSpot> spots = _spots;
     final int idx = spot.x.round().clamp(0, spots.length - 1);
 
     final DateTime date = _baseDate.add(Duration(days: idx));
@@ -246,7 +250,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
 
   ///
   LineChartData makeMainChart({required bool zoomMode, required bool showPointLabels}) {
-    final List<FlSpot> spots = _buildSpots();
+    final List<FlSpot> spots = _spots;
 
     return LineChartData(
       minX: 0,
@@ -320,7 +324,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
   ///
   LineChartData makeAxisChart() {
     const double interval = _gridStep;
-    final List<FlSpot> spots = _buildSpots();
+    final List<FlSpot> spots = _spots;
 
     return LineChartData(
       minX: 0,
@@ -377,7 +381,7 @@ class _YearlyAssetsGraphAlertState extends State<YearlyAssetsGraphAlert> {
 
   ///
   LineChartData makeBackgroundChart() {
-    final List<FlSpot> spots = _buildSpots();
+    final List<FlSpot> spots = _spots;
 
     final List<VerticalRangeAnnotation> ranges = <VerticalRangeAnnotation>[
       ..._buildOddMonthBands(),

@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../controllers/app_param/app_param.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/common/monthly_assets_data.dart';
@@ -36,6 +37,11 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
   int? _moneyUp, _shintakuUp, _stockUp, _goldUp, _insuranceUp, _nenkinUp;
 
   static const String _startMonth = '2023-01';
+
+  // グラフデータ再計算の判定用（前回計算時の入力）
+  List<String>? _chartSourceMonths;
+  AppParamState? _chartSourceState;
+  bool? _chartSourceTaxAdjusted;
 
   ///
   String get _currentYearMonth {
@@ -98,7 +104,7 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
   ///
   @override
   Widget build(BuildContext context) {
-    _setChartData();
+    _setChartDataIfNeeded();
 
     final String headerLabel = _displayedMonths.length == 1
         ? _displayedMonths[0]
@@ -344,12 +350,28 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
   ///
   List<String> _buildMonthList() {
     final List<String> list = <String>[];
+    final String currentYearMonth = _currentYearMonth;
     String m = _startMonth;
-    while (m.compareTo(_currentYearMonth) <= 0) {
+    while (m.compareTo(currentYearMonth) <= 0) {
       list.add(m);
       m = _addMonths(m, 1);
     }
     return list;
+  }
+
+  /// 表示月・データ・税引後フラグのいずれかが変わった時のみ再計算する（ホイール操作の setState 毎に再計算しない）
+  void _setChartDataIfNeeded() {
+    final AppParamState state = appParamState;
+    if (identical(_chartSourceMonths, _displayedMonths) &&
+        identical(_chartSourceState, state) &&
+        _chartSourceTaxAdjusted == widget.taxAdjusted) {
+      return;
+    }
+    _chartSourceMonths = _displayedMonths;
+    _chartSourceState = state;
+    _chartSourceTaxAdjusted = widget.taxAdjusted;
+
+    _setChartData();
   }
 
   ///
@@ -446,11 +468,14 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
       // --- 保険・年金（生値）---
       final List<FlSpot> insuranceSpots = <FlSpot>[];
       final List<FlSpot> nenkinSpots = <FlSpot>[];
+      // 支払日リストのパースはループ外で 1 回だけ
+      final List<DateTime> insurancePaidDates = AssetsCalc.parsePaidDates(appParamState.keepInsuranceDataList);
+      final List<DateTime> nenkinKikinPaidDates = AssetsCalc.parsePaidDates(appParamState.keepNenkinKikinDataList);
       for (final String date in dateList) {
         final int day = date.split('-')[2].toInt();
         final DateTime d = DateTime.parse(date);
-        final int insPassed = AssetsCalc.countPaidUpTo(data: appParamState.keepInsuranceDataList, date: d) + 102;
-        final int nenkinPassed = AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: d) + 32;
+        final int insPassed = AssetsCalc.countPaidDatesUpTo(paidDates: insurancePaidDates, date: d) + 102;
+        final int nenkinPassed = AssetsCalc.countPaidDatesUpTo(paidDates: nenkinKikinPaidDates, date: d) + 32;
         insuranceSpots.add(FlSpot(day.toDouble(), (insPassed * 55880).toDouble()));
         nenkinSpots.add(
           FlSpot(day.toDouble(), d.isBefore(DateTime(2026, 6, 15)) ? (nenkinPassed * 26625).toDouble() : 0),

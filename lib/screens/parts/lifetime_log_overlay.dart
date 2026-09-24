@@ -3,12 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/app_param/app_param.dart';
 
-// import '../../controllers/money_input/money_input.dart';
-//
-//
-//
-//
-
 //=======================================================//
 
 class DraggableOverlayItem {
@@ -37,7 +31,7 @@ OverlayEntry createDraggableOverlayEntry({
   required ValueChanged<Offset> onPositionChanged,
   bool? fixedFlag,
 }) {
-  final Size screenSize = MediaQuery.of(context).size;
+  final Size screenSize = MediaQuery.sizeOf(context);
 
   final DraggableOverlayItem item = DraggableOverlayItem(
     position: initialOffset,
@@ -77,10 +71,7 @@ OverlayEntry createDraggableOverlayEntry({
                               final num clampedX = item.position.dx.clamp(0, maxX);
                               final num clampedY = item.position.dy.clamp(0, maxY);
 
-                              item.position = Offset(
-                                double.parse(clampedX.toString()),
-                                double.parse(clampedY.toString()),
-                              );
+                              item.position = Offset(clampedX.toDouble(), clampedY.toDouble());
 
                               onPositionChanged(item.position);
 
@@ -223,10 +214,11 @@ void addSecondOverlay({
 }
 
 ///
+/// 修正: コールバック（onTap / post-frame）から呼ばれるため ref.watch ではなく ref.read を使う
 void closeAllOverlays({required WidgetRef ref}) {
-  final List<OverlayEntry>? firstEntries = ref.watch(
-    appParamProvider.select((AppParamState value) => value.firstEntries),
-  );
+  final AppParamState appParam = ref.read(appParamProvider);
+
+  final List<OverlayEntry>? firstEntries = appParam.firstEntries;
 
   if (firstEntries != null) {
     for (final OverlayEntry e in firstEntries) {
@@ -234,9 +226,7 @@ void closeAllOverlays({required WidgetRef ref}) {
     }
   }
 
-  final List<OverlayEntry>? secondEntries = ref.watch(
-    appParamProvider.select((AppParamState value) => value.secondEntries),
-  );
+  final List<OverlayEntry>? secondEntries = appParam.secondEntries;
 
   if (secondEntries != null) {
     for (final OverlayEntry e2 in secondEntries) {

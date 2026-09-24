@@ -96,44 +96,45 @@ class _MonthlyCreditSummaryAlertState extends ConsumerState<MonthlyCreditSummary
 
     final Map<String, int> totalMap = <String, int>{};
 
-    utility.getCreditItemList().forEach((String element2) {
-      creditSummaryMap.forEach((String key, List<int> value) {
-        if (element2 == key) {
-          int sum = 0;
-          for (final int element in value) {
-            sum += element;
-          }
+    // creditSummaryMap を全走査して一致キーを探す代わりに、直接引く（結果・順序は同じ）
+    utility.getCreditItemList().forEach((String key) {
+      final List<int>? value = creditSummaryMap[key];
+      if (value != null) {
+        int sum = 0;
+        for (final int element in value) {
+          sum += element;
+        }
 
-          totalMap[key] = sum;
+        totalMap[key] = sum;
 
-          final Color listColor = (sum >= 30000) ? Colors.orangeAccent : Colors.white;
+        final Color listColor = (sum >= 30000) ? Colors.orangeAccent : Colors.white;
 
-          list.add(
-            DayFlipCard(
-              dayIndex: list.length,
-              pageOpenTime: _pageOpenTime,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                ),
-                padding: const EdgeInsets.all(5),
-                child: DefaultTextStyle(
-                  style: TextStyle(fontSize: 12, color: listColor),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[Text(key), Text(sum.toString().toCurrency())],
-                  ),
+        list.add(
+          DayFlipCard(
+            dayIndex: list.length,
+            pageOpenTime: _pageOpenTime,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+              ),
+              padding: const EdgeInsets.all(5),
+              child: DefaultTextStyle(
+                style: TextStyle(fontSize: 12, color: listColor),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[Text(key), Text(sum.toString().toCurrency())],
                 ),
               ),
             ),
-          );
-        }
-      });
+          ),
+        );
+      }
     });
 
     final int total = utility.getListSum<int>(totalMap.values.toList(), (int e) => e);
 
-    setState(() => listSum = total);
+    // build 中なので setState は不要（下部の合計 Text はこの後に生成される）
+    listSum = total;
 
     return CustomScrollView(
       slivers: <Widget>[

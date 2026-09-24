@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'controllers/controllers_mixin.dart';
 import 'screens/home_screen.dart';
+import 'utility/utility.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +58,7 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
   void initState() {
     super.initState();
 
+    // 各データを並行して取得する（取得できたものから順に HomeScreen へ反映される）
     lifetimeNotifier.getAllLifetimeData();
     holidayNotifier.getAllHolidayData();
     walkNotifier.getAllWalkData();
@@ -92,6 +94,9 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // Utility.showError() のスナックバー表示に使う
+      scaffoldMessengerKey: NavigationService.scaffoldMessengerKey,
+
       // ignore: always_specify_types
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -115,44 +120,8 @@ class _MyAppState extends ConsumerState<MyApp> with ControllersMixin<MyApp> {
       debugShowCheckedModeBanner: false,
       home: GestureDetector(
         onTap: () => primaryFocus?.unfocus(),
-        child: HomeScreen(
-          holidayList: holidayState.holidayList,
-          walkMap: walkState.walkMap,
-          moneyMap: moneyState.moneyMap,
-          lifetimeMap: lifetimeState.lifetimeMap,
-          lifetimeItemList: lifetimeItemState.lifetimeItemList,
-          geolocMap: geolocState.geolocMap,
-          templeMap: templeState.templeMap,
-          transportationMap: transportationState.transportationMap,
-          moneySpendMap: moneySpendState.moneySpendMap,
-          workTimeMap: workTimeState.workTimeMap,
-          workTimeDateMap: workTimeState.workTimeDateMap,
-          weatherMap: weatherState.weatherMap,
-          moneySpendItemMap: moneySpendItemState.moneySpendItemMap,
-          salaryMap: salaryState.salaryMap,
-          goldMap: goldState.goldMap,
-          stockMap: stockState.stockMap,
-          toushiShintakuMap: toushiShintakuState.toushiShintakuMap,
-          stationList: transportationState.stationList,
-          trainMap: transportationState.trainMap,
-          creditSummaryMap: creditSummaryState.creditSummaryMap,
-          fundRelationMap: fundState.fundRelationMap,
-          stockTickerMap: stockState.stockTickerMap,
-          toushiShintakuRelationalMap: toushiShintakuState.toushiShintakuRelationalMap,
-          timePlaceMap: timePlaceState.timePlaceMap,
-          amazonPurchaseMap: amazonPurchaseState.amazonPurchaseMap,
-          tokyoMunicipalList: tokyoMunicipalState.tokyoMunicipalList,
-          tokyoMunicipalMap: tokyoMunicipalState.tokyoMunicipalMap,
-          stampRallyMetroAllStationMap: stampRallyMetroAllStationState.dateStationStampMap,
-          stampRallyMetro20AnniversaryMap: stampRallyMetro20AnniversaryState.dateStationStampMap,
-          stampRallyMetroPokepokeMap: stampRallyMetroPokepokeState.dateStationStampMap,
-          moneySumList: moneySumState.moneySumList,
-          fortuneMap: fortuneState.fortuneMap,
-          tarotMap: tarotState.tarotMap,
-          tarotHistoryMap: tarothistoryState.tarotHistoryMap,
-          toushiShintakuHistoryMap: toushiShintakuHistoryState.toushiShintakuHistoryMap,
-          toushiShintakuHistoryCostDateMap: toushiShintakuHistoryState.toushiShintakuHistoryCostDateMap,
-        ),
+        // HomeScreen が必要なデータを自分で watch するため、MyApp（MaterialApp）はデータ更新で再構築されない
+        child: const HomeScreen(),
       ),
     );
   }

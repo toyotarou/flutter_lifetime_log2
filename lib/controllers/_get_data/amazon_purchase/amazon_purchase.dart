@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
-import '../../../extensions/extensions.dart';
 import '../../../models/amazon_purchase_model.dart';
 import '../../../utility/utility.dart';
 
@@ -37,22 +36,20 @@ class AmazonPurchase extends _$AmazonPurchase {
       final List<AmazonPurchaseModel> list = <AmazonPurchaseModel>[];
       final Map<String, List<AmazonPurchaseModel>> map = <String, List<AmazonPurchaseModel>>{};
 
-      // ignore: always_specify_types
-      await client.post(path: APIPath.getAmazonData).then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          final AmazonPurchaseModel val = AmazonPurchaseModel.fromJson(value['data'][i] as Map<String, dynamic>);
+      final dynamic value = await client.post(path: APIPath.getAmazonData);
+      final List<dynamic> data = (value as Map<String, dynamic>)['data'] as List<dynamic>;
 
-          list.add(val);
+      for (final dynamic item in data) {
+        final AmazonPurchaseModel val = AmazonPurchaseModel.fromJson(item as Map<String, dynamic>);
 
-          (map['${val.year}-${val.month}-${val.day}'] ??= <AmazonPurchaseModel>[]).add(val);
-        }
-      });
+        list.add(val);
+
+        (map['${val.year}-${val.month}-${val.day}'] ??= <AmazonPurchaseModel>[]).add(val);
+      }
 
       return state.copyWith(amazonPurchaseList: list, amazonPurchaseMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（amazon_purchase）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

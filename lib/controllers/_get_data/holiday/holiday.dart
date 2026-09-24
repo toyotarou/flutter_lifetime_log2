@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
-import '../../../extensions/extensions.dart';
 import '../../../utility/utility.dart';
 
 part 'holiday.freezed.dart';
@@ -32,18 +31,16 @@ class Holiday extends _$Holiday {
     try {
       final List<String> list = <String>[];
 
-      // ignore: always_specify_types
-      await client.post(path: APIPath.getholiday).then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          list.add(value['data'][i].toString());
-        }
-      });
+      final dynamic value = await client.post(path: APIPath.getholiday);
+      final List<dynamic> data = (value as Map<String, dynamic>)['data'] as List<dynamic>;
+
+      for (final dynamic item in data) {
+        list.add(item.toString());
+      }
 
       return state.copyWith(holidayList: list);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（holiday）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

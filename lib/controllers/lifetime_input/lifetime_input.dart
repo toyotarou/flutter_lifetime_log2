@@ -54,9 +54,10 @@ class LifetimeInput extends _$LifetimeInput {
     uploadData['date'] = date;
     uploadData['lifetime'] = items.join('|');
 
-    // ignore: always_specify_types
-    await client.post(path: APIPath.insertLifetime, body: uploadData).then((value) {}).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
-    });
+    try {
+      await client.post(path: APIPath.insertLifetime, body: uploadData);
+    } catch (e) {
+      utility.showError('予期せぬエラーが発生しました（lifetime_input）', error: e);
+    }
   }
 }

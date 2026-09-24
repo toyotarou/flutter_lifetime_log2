@@ -47,6 +47,25 @@ class _LifetimeGeolocNearlyStationDisplayAlertState extends ConsumerState<Lifeti
   OverlayState? _savedOverlayState;
   List<OverlayEntry>? _cachedFirstEntries;
 
+  /// TileProvider は build 毎に生成しない（TileLayer 側の破棄・再生成を避ける）
+  final CachedTileProvider _tileProvider = CachedTileProvider();
+
+  /// ===== build 毎の再計算を避けるためのキャッシュ =====
+  List<GeolocModel>? _sortedGeolocSource;
+  int _sortedGeolocSourceLength = -1;
+  List<GeolocModel> _sortedGeolocCache = <GeolocModel>[];
+
+  /// freezed の List getter は毎回ラッパーを返すため、identical ではなく == で比較する
+  List<List<List<List<double>>>>? _areaPolygonsSource;
+  List<Polygon<Object>> _areaPolygons = <Polygon<Object>>[];
+
+  bool _routePolylinesBuilt = false;
+  TransportationModel? _routePolylinesSource;
+  List<Polyline<Object>> _routePolylines = <Polyline<Object>>[];
+
+  List<StationModel>? _stationMarkersSource;
+  List<Marker> _stationMarkers = <Marker>[];
+
   @override
   AppParamState get appParamState => ref.read(appParamProvider);
 
@@ -151,12 +170,68 @@ class _LifetimeGeolocNearlyStationDisplayAlertState extends ConsumerState<Lifeti
   }
 
   ///
+  /// 時刻順ソート結果は元リストが同じ間は使い回す（呼び出し側は結果を変更しないこと）
   List<GeolocModel> get _sortedGeolocList {
     final List<GeolocModel>? list = appParamState.keepGeolocMap[widget.date];
     if (list == null || list.isEmpty) {
       return <GeolocModel>[];
     }
-    return <GeolocModel>[...list]..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
+    if (_sortedGeolocSource == list && _sortedGeolocSourceLength == list.length) {
+      return _sortedGeolocCache;
+    }
+    _sortedGeolocSource = list;
+    _sortedGeolocSourceLength = list.length;
+    _sortedGeolocCache = <GeolocModel>[...list]..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
+    return _sortedGeolocCache;
+  }
+
+  ///
+  List<Polygon<Object>> _getAreaPolygons() {
+    final List<List<List<List<double>>>> allPolygonsList = appParamState.keepAllPolygonsList;
+    if (_areaPolygonsSource != allPolygonsList) {
+      _areaPolygons = makeAreaPolygons(allPolygonsList: allPolygonsList, fortyEightColor: fortyEightColor);
+      _areaPolygonsSource = allPolygonsList;
+    }
+    return _areaPolygons;
+  }
+
+  ///
+  List<Polyline<Object>> _getRoutePolylines() {
+    final TransportationModel? transport = appParamState.keepTransportationMap[widget.date];
+    if (!_routePolylinesBuilt || _routePolylinesSource != transport) {
+      _routePolylines = _makeRoutePolylines();
+      _routePolylinesBuilt = true;
+      _routePolylinesSource = transport;
+    }
+    return _routePolylines;
+  }
+
+  ///
+  List<Marker> _getStationMarkers() {
+    if (!identical(_stationMarkersSource, _visibleStations)) {
+      _stationMarkers = _visibleStations.map((StationModel station) {
+        final double lat = double.parse(station.lat);
+        final double lng = double.parse(station.lng);
+        return Marker(
+          point: LatLng(lat, lng),
+          width: 60,
+          height: 40,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Icon(Icons.train, color: Colors.red, size: 16),
+              Text(
+                station.stationName,
+                style: const TextStyle(fontSize: 8, color: Colors.red, fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        );
+      }).toList();
+      _stationMarkersSource = _visibleStations;
+    }
+    return _stationMarkers;
   }
 
   ///
@@ -330,8 +405,7 @@ class _LifetimeGeolocNearlyStationDisplayAlertState extends ConsumerState<Lifeti
     final List<GeolocModel> list = _sortedGeolocList;
     final GeolocModel? first = list.isNotEmpty ? list[0] : null;
 
-    // ignore: always_specify_types
-    final List<Polyline> routePolylines = _makeRoutePolylines();
+    final List<Polyline<Object>> routePolylines = _getRoutePolylines();
 
     return Scaffold(
       body: Stack(
@@ -364,17 +438,12 @@ class _LifetimeGeolocNearlyStationDisplayAlertState extends ConsumerState<Lifeti
             children: <Widget>[
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.jp/{z}/{x}/{y}.png',
-                tileProvider: CachedTileProvider(),
+                tileProvider: _tileProvider,
                 userAgentPackageName: 'com.example.app',
               ),
               if (appParamState.keepAllPolygonsList.isNotEmpty) ...<Widget>[
                 // ignore: always_specify_types
-                PolygonLayer(
-                  polygons: makeAreaPolygons(
-                    allPolygonsList: appParamState.keepAllPolygonsList,
-                    fortyEightColor: fortyEightColor,
-                  ),
-                ),
+                PolygonLayer(polygons: _getAreaPolygons()),
               ],
               MarkerLayer(markers: markerList),
               if (routePolylines.isNotEmpty) ...<Widget>[
@@ -382,28 +451,7 @@ class _LifetimeGeolocNearlyStationDisplayAlertState extends ConsumerState<Lifeti
                 PolylineLayer(polylines: routePolylines),
               ],
               if (_showStations && _visibleStations.isNotEmpty)
-                MarkerLayer(
-                  markers: _visibleStations.map((StationModel station) {
-                    final double lat = double.parse(station.lat);
-                    final double lng = double.parse(station.lng);
-                    return Marker(
-                      point: LatLng(lat, lng),
-                      width: 60,
-                      height: 40,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          const Icon(Icons.train, color: Colors.red, size: 16),
-                          Text(
-                            station.stationName,
-                            style: const TextStyle(fontSize: 8, color: Colors.red, fontWeight: FontWeight.bold),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
+                MarkerLayer(markers: _getStationMarkers()),
             ],
           ),
           Positioned(

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../controllers/app_param/app_param.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/credit_summary_model.dart';
@@ -320,13 +321,19 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
   ///
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_builtBaseYm != widget.yearmonth) {
-        makeCreditSummaryDateMap();
-        _builtBaseYm = widget.yearmonth;
-        setState(() {});
-      }
-    });
+    /// 未構築（または対象月が変わった）時のみコールバックを登録する（毎ビルドで登録しない）
+    if (_builtBaseYm != widget.yearmonth) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        if (_builtBaseYm != widget.yearmonth) {
+          makeCreditSummaryDateMap();
+          _builtBaseYm = widget.yearmonth;
+          setState(() {});
+        }
+      });
+    }
 
     return Stack(
       children: <Widget>[
@@ -345,6 +352,9 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
 
   ///
   void makeCreditSummaryDateMap() {
+    /// 修正: post-frame コールバックから呼ばれるため ref.watch（appParamState）ではなく ref.read で取得する
+    final AppParamState appParam = ref.read(appParamProvider);
+
     String? baseYm = widget.yearmonth;
 
     DateTime? baseDt;
@@ -355,9 +365,9 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
     }
 
     if (baseDt == null) {
-      final String? lastDate = appParamState.keepCreditSummaryMap.isEmpty
+      final String? lastDate = appParam.keepCreditSummaryMap.isEmpty
           ? null
-          : appParamState.keepCreditSummaryMap.keys.reduce((String a, String b) => a.compareTo(b) > 0 ? a : b);
+          : appParam.keepCreditSummaryMap.keys.reduce((String a, String b) => a.compareTo(b) > 0 ? a : b);
 
       if (lastDate == null) {
         return;
@@ -390,7 +400,7 @@ class _CreditCalendarState extends ConsumerState<CreditCalendar> with Controller
     targetYmList.sort((String a, String b) => a.compareTo(b) * -1);
 
     for (final String ym in targetYmList) {
-      final List<CreditSummaryModel> items = appParamState.keepCreditSummaryMap[ym] ?? <CreditSummaryModel>[];
+      final List<CreditSummaryModel> items = appParam.keepCreditSummaryMap[ym] ?? <CreditSummaryModel>[];
 
       final Map<String, List<CreditSummaryModel>> byUseDate = <String, List<CreditSummaryModel>>{};
       for (final CreditSummaryModel item in items) {

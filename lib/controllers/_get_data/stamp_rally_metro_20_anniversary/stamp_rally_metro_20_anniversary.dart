@@ -2,7 +2,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
-import '../../../extensions/extensions.dart';
 import '../../../models/stamp_rally_model.dart';
 import '../../../utility/utility.dart';
 
@@ -40,17 +39,16 @@ class StampRallyMetro20Anniversary extends _$StampRallyMetro20Anniversary {
       final Map<String, List<StampRallyModel>> map = <String, List<StampRallyModel>>{};
       final Map<String, List<StampRallyModel>> map2 = <String, List<StampRallyModel>>{};
 
-      // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value.length.toString().toInt(); i++) {
+      for (final dynamic row in value as List<dynamic>) {
         final StampRallyModel val = StampRallyModel(
           // ignore: avoid_dynamic_calls
-          stationCode: value[i]['station_id'].toString(),
+          stationCode: row['station_id'].toString(),
           // ignore: avoid_dynamic_calls
-          stationName: value[i]['station_name'].toString(),
+          stationName: row['station_name'].toString(),
           // ignore: avoid_dynamic_calls
-          stampGetDate: value[i]['get_date'].toString(),
+          stampGetDate: row['get_date'].toString(),
           // ignore: avoid_dynamic_calls
-          stamp: value[i]['stamp'].toString(),
+          stamp: row['stamp'].toString(),
 
           ///
           lat: '',
@@ -75,7 +73,7 @@ class StampRallyMetro20Anniversary extends _$StampRallyMetro20Anniversary {
 
       return state.copyWith(stationStampList: list, stationStampMap: map, dateStationStampMap: map2);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（stamp_rally_metro_20_anniversary）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

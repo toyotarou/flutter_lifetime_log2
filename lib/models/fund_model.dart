@@ -2,13 +2,16 @@ class FundModel {
   FundModel({required this.name, required this.relationalId, required this.record});
 
   factory FundModel.fromJson(Map<String, dynamic> json) {
-    final List<FundRecordModel> list = json['record'] as List<FundRecordModel>;
+    // 修正: JSON の配列は List<dynamic>（中身は Map）で届くため、
+    // 以前の `as List<FundRecordModel>` は必ずキャストに失敗し、fund の取得が毎回エラーになっていた
+    final List<dynamic> list = (json['record'] as List<dynamic>?) ?? <dynamic>[];
 
     return FundModel(
-      name: (json['name'] as String?) ?? '',
-      relationalId: (json['relational_id'] as String?) ?? '',
+      name: json['name']?.toString() ?? '',
+      // 数値で届いても落ちないよう文字列化する
+      relationalId: json['relational_id']?.toString() ?? '',
 
-      record: list.map((FundRecordModel e) => FundRecordModel.fromJson(e as Map<String, dynamic>)).toList(),
+      record: list.map((dynamic e) => FundRecordModel.fromJson(e as Map<String, dynamic>)).toList(),
     );
   }
 
@@ -36,11 +39,12 @@ class FundRecordModel {
 
   factory FundRecordModel.fromJson(Map<String, dynamic> json) {
     return FundRecordModel(
-      date: (json['date'] as String?) ?? '',
-      basePrice: (json['base_price'] as String?) ?? '',
-      compareFront: (json['compare_front'] as String?) ?? '',
-      yearlyReturn: (json['yearly_return'] as String?) ?? '',
-      flag: (json['flag'] as String?) ?? '',
+      // 数値で届いても落ちないよう文字列化する
+      date: json['date']?.toString() ?? '',
+      basePrice: json['base_price']?.toString() ?? '',
+      compareFront: json['compare_front']?.toString() ?? '',
+      yearlyReturn: json['yearly_return']?.toString() ?? '',
+      flag: json['flag']?.toString() ?? '',
     );
   }
 

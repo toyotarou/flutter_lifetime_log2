@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/gold_model.dart';
+import '../../models/money_model.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../../utility/assets_calc.dart';
@@ -221,8 +222,16 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
   List<Map<String, dynamic>> _generateData({required DateTime asOf}) {
     final List<Map<String, dynamic>> results = <Map<String, dynamic>>[];
 
+    // 支払日リストのパースは月ごとではなく一度だけ行う
+    final List<DateTime> insurancePaidDates = AssetsCalc.parsePaidDates(appParamState.keepInsuranceDataList);
+    final List<DateTime> nenkinKikinPaidDates = AssetsCalc.parsePaidDates(appParamState.keepNenkinKikinDataList);
+
     final DateTime baselineDate = DateTime(2022, 12, 31);
-    int prevMonthEndAssets = _calcTotalAssetsAtDate(baselineDate);
+    int prevMonthEndAssets = _calcTotalAssetsAtDate(
+      baselineDate,
+      insurancePaidDates: insurancePaidDates,
+      nenkinKikinPaidDates: nenkinKikinPaidDates,
+    );
 
     results.add(<String, dynamic>{'type': 'baseline', 'title': '2022-12-31 基準資産合計', 'value': prevMonthEndAssets});
 
@@ -241,7 +250,11 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
 
         final DateTime targetDate = monthEnd.isAfter(asOf) ? asOf : monthEnd;
 
-        final int currentMonthEndAssets = _calcTotalAssetsAtDate(targetDate);
+        final int currentMonthEndAssets = _calcTotalAssetsAtDate(
+          targetDate,
+          insurancePaidDates: insurancePaidDates,
+          nenkinKikinPaidDates: nenkinKikinPaidDates,
+        );
         final int monthlyDiff = currentMonthEndAssets - prevMonthEndAssets;
 
         results.add(<String, dynamic>{
@@ -269,18 +282,20 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
   }
 
   ///
-  int _calcTotalAssetsAtDate(DateTime date) {
+  int _calcTotalAssetsAtDate(
+    DateTime date, {
+    required List<DateTime> insurancePaidDates,
+    required List<DateTime> nenkinKikinPaidDates,
+  }) {
     final int lastGoldSum = _findLastValidGoldValue(date);
     final int lastStockSum = _findLastValidStockSum(date);
     final int lastToushiSum = _findLastValidToushiSum(date);
     final int lastMoneySum = _findLastValidMoneySum(date);
 
-    final int insurancePassedMonths =
-        AssetsCalc.countPaidUpTo(data: appParamState.keepInsuranceDataList, date: date) + 102;
+    final int insurancePassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: insurancePaidDates, date: date) + 102;
     final int insuranceSum = insurancePassedMonths * (55880 * 0.7).toInt();
 
-    final int nenkinKikinPassedMonths =
-        AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: date) + 32;
+    final int nenkinKikinPassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: nenkinKikinPaidDates, date: date) + 32;
     // 2026-06-15に国民年金基金解約のため、同日以降は0
     final int nenkinKikinSum = date.isBefore(DateTime(2026, 6, 15))
         ? nenkinKikinPassedMonths * (26625 * 0.7).toInt()
@@ -298,9 +313,10 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
 
   ///
   int _findLastValidGoldValue(DateTime date) {
+    final Map<String, GoldModel> goldMap = appParamState.keepGoldMap;
     for (int i = 0; i < 366; i++) {
       final String key = date.subtract(Duration(days: i)).yyyymmdd;
-      final GoldModel? model = appParamState.keepGoldMap[key];
+      final GoldModel? model = goldMap[key];
       if (model != null) {
         final dynamic val = model.goldValue;
         if (val != null && val.toString() != '-') {
@@ -313,9 +329,10 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
 
   ///
   int _findLastValidStockSum(DateTime date) {
+    final Map<String, List<StockModel>> stockMap = appParamState.keepStockMap;
     for (int i = 0; i < 366; i++) {
       final String key = date.subtract(Duration(days: i)).yyyymmdd;
-      final List<StockModel>? list = appParamState.keepStockMap[key];
+      final List<StockModel>? list = stockMap[key];
       if (list != null && list.isNotEmpty) {
         return AssetsCalc.calcStockSum(list);
       }
@@ -325,9 +342,10 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
 
   ///
   int _findLastValidToushiSum(DateTime date) {
+    final Map<String, List<ToushiShintakuModel>> toushiShintakuMap = appParamState.keepToushiShintakuMap;
     for (int i = 0; i < 366; i++) {
       final String key = date.subtract(Duration(days: i)).yyyymmdd;
-      final List<ToushiShintakuModel>? list = appParamState.keepToushiShintakuMap[key];
+      final List<ToushiShintakuModel>? list = toushiShintakuMap[key];
       if (list != null && list.isNotEmpty) {
         return AssetsCalc.calcToushiSum(list);
       }
@@ -337,9 +355,10 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
 
   ///
   int _findLastValidMoneySum(DateTime date) {
+    final Map<String, MoneyModel> moneyMap = appParamState.keepMoneyMap;
     for (int i = 0; i < 366; i++) {
       final String key = date.subtract(Duration(days: i)).yyyymmdd;
-      final String? sum = appParamState.keepMoneyMap[key]?.sum;
+      final String? sum = moneyMap[key]?.sum;
       if (sum != null && sum.isNotEmpty) {
         return sum.toInt();
       }

@@ -32,7 +32,9 @@ void iconToolChipDisplayOverlay({
 
   final CurvedAnimation curvedAnimation = CurvedAnimation(parent: animationController, curve: Curves.easeInOut);
 
-  late OverlayEntry? overlayEntry;
+  /// 修正: `late OverlayEntry?` だと未知の type で未代入のまま読まれ LateInitializationError になっていた。
+  /// 通常の nullable（初期値 null）にして、null の場合は何もせずコントローラを破棄する。
+  OverlayEntry? overlayEntry;
 
   switch (type) {
     case 'weekly_history_alert_badge':
@@ -56,17 +58,21 @@ void iconToolChipDisplayOverlay({
       );
   }
 
-  if (overlayEntry != null) {
-    overlayState.insert(overlayEntry);
-    animationController.forward();
-
-    // ignore: always_specify_types
-    Future.delayed(displayDuration, () async {
-      await animationController.reverse();
-      overlayEntry!.remove();
-      animationController.dispose();
-    });
+  final OverlayEntry? entry = overlayEntry;
+  if (entry == null) {
+    animationController.dispose();
+    return;
   }
+
+  overlayState.insert(entry);
+  animationController.forward();
+
+  // ignore: always_specify_types
+  Future.delayed(displayDuration, () async {
+    await animationController.reverse();
+    entry.remove();
+    animationController.dispose();
+  });
 }
 
 ///
@@ -140,6 +146,11 @@ OverlayEntry? getOverlayContents({
   return null;
 }
 
+/// displayText で毎回生成しないよう使い回す
+final RegExp _kaisatsuNaiRegExp = RegExp('改札内');
+final RegExp _kaisatsuGaiRegExp = RegExp('改札外');
+const List<String> _specialStationList = <String>['中目黒', '中野', '西船橋', '代々木上原', '和光市', '目黒'];
+
 ///
 String displayText({TempleDataModel? templeDataModel, StampRallyModel? stampRallyModel}) {
   if (templeDataModel != null) {
@@ -147,16 +158,11 @@ String displayText({TempleDataModel? templeDataModel, StampRallyModel? stampRall
   } else if (stampRallyModel != null) {
     final List<String> textList = <String>[stampRallyModel.stationName];
 
-    final RegExp reg = RegExp('改札内');
-    final RegExp reg2 = RegExp('改札外');
-
-    final List<String> specialStation = <String>['中目黒', '中野', '西船橋', '代々木上原', '和光市', '目黒'];
-
-    if (specialStation.contains(stampRallyModel.stationName)) {
+    if (_specialStationList.contains(stampRallyModel.stationName)) {
       textList.add('（特殊）');
-    } else if (reg.firstMatch(stampRallyModel.posterPosition) != null) {
+    } else if (_kaisatsuNaiRegExp.firstMatch(stampRallyModel.posterPosition) != null) {
       textList.add('（改札内）');
-    } else if (reg2.firstMatch(stampRallyModel.posterPosition) != null) {
+    } else if (_kaisatsuGaiRegExp.firstMatch(stampRallyModel.posterPosition) != null) {
       textList.add('（改札外）');
     }
 

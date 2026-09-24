@@ -37,6 +37,14 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
   double _currentScale = 1.0;
   Map<int, int> _millionCrossings = <int, int>{};
 
+  /// ===== 系列データのキャッシュ（元データが変わった時だけ再集計） =====
+  /// freezed の Map/List getter は毎回ラッパーを返すため、identical ではなく == で比較する
+  bool _seriesBuilt = false;
+  Map<String, List<ToushiShintakuModel>>? _shintakuSource;
+  Map<String, List<StockModel>>? _stockSource;
+  Map<String, GoldModel>? _goldSource;
+  List<ScrollLineChartModel>? _moneySumSource;
+
   // insurance: 2023-01-01時点で102回払いずみ → 102ヶ月前 = 2014-07スタート
   static final DateTime _insuranceStart = DateTime(2014, 7);
 
@@ -205,7 +213,21 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
   }
 
   ///
-  void _setChartData() {
+  /// 系列データ（各資産の集計・FlSpot 化）は元データが変わった時だけ作り直す。
+  /// ズーム操作中は拡大率が変わるたびに build されるため、ここを毎回実行しない。
+  void _rebuildSeriesIfNeeded() {
+    final Map<String, List<ToushiShintakuModel>> shintakuSource = appParamState.keepToushiShintakuMap;
+    final Map<String, List<StockModel>> stockSource = appParamState.keepStockMap;
+    final Map<String, GoldModel> goldSource = appParamState.keepGoldMap;
+    final List<ScrollLineChartModel> moneySumSource = appParamState.keepMoneySumList;
+    if (_seriesBuilt &&
+        _shintakuSource == shintakuSource &&
+        _stockSource == stockSource &&
+        _goldSource == goldSource &&
+        _moneySumSource == moneySumSource) {
+      return;
+    }
+
     // keepToushiShintakuMap → 年月キーで集約
     final Map<String, int> shintakuMap = <String, int>{};
     appParamState.keepToushiShintakuMap.forEach((String date, List<ToushiShintakuModel> list) {
@@ -372,6 +394,18 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
         graphMax = 15000000;
       }
     }
+
+    // 集計が最後まで成功した時だけキャッシュ済みとする
+    _seriesBuilt = true;
+    _shintakuSource = shintakuSource;
+    _stockSource = stockSource;
+    _goldSource = goldSource;
+    _moneySumSource = moneySumSource;
+  }
+
+  ///
+  void _setChartData() {
+    _rebuildSeriesIfNeeded();
 
     if (_flspots.isNotEmpty) {
       // 奇数年の背景を薄黄色にする

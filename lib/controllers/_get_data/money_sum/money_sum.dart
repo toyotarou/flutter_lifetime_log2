@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
-import '../../../extensions/extensions.dart';
 import '../../../models/common/scroll_line_chart_model.dart';
 import '../../../utility/utility.dart';
 
@@ -37,22 +36,20 @@ class MoneySum extends _$MoneySum {
       final List<ScrollLineChartModel> list = <ScrollLineChartModel>[];
       final Map<String, ScrollLineChartModel> map = <String, ScrollLineChartModel>{};
 
-      // ignore: always_specify_types
-      await client.post(path: APIPath.getAllMoneySum).then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          final ScrollLineChartModel val = ScrollLineChartModel.fromJson(value['data'][i] as Map<String, dynamic>);
+      final dynamic value = await client.post(path: APIPath.getAllMoneySum);
+      final List<dynamic> data = (value as Map<String, dynamic>)['data'] as List<dynamic>;
 
-          list.add(val);
+      for (final dynamic item in data) {
+        final ScrollLineChartModel val = ScrollLineChartModel.fromJson(item as Map<String, dynamic>);
 
-          map[val.date] = val;
-        }
-      });
+        list.add(val);
+
+        map[val.date] = val;
+      }
 
       return state.copyWith(moneySumList: list, moneySumMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（money_sum）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

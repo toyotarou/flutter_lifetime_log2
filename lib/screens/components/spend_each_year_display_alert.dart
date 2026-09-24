@@ -19,6 +19,45 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
     with ControllersMixin<SpendEachYearDisplayAlert> {
   final AutoScrollController autoScrollController = AutoScrollController();
 
+  /// ===== keepMoneySpendMap 由来の集計キャッシュ（元データが変わった時だけ再計算） =====
+  /// freezed の Map getter は毎回ラッパーを返すため、identical ではなく == で比較する
+  Map<String, List<MoneySpendModel>>? _spendSource;
+  List<String> _sortedSpendDates = <String>[];
+  Map<int, int> _eachYearSpendMap = <int, int>{};
+
+  ///
+  @override
+  void dispose() {
+    autoScrollController.dispose();
+
+    super.dispose();
+  }
+
+  ///
+  void _rebuildSpendCacheIfNeeded() {
+    final Map<String, List<MoneySpendModel>> source = appParamState.keepMoneySpendMap;
+    if (_spendSource != null && _spendSource == source) {
+      return;
+    }
+
+    final Map<int, int> eachYearSpendMap = <int, int>{};
+
+    source.forEach((String key, List<MoneySpendModel> value) {
+      for (final MoneySpendModel element in value) {
+        final int year = int.parse(element.date.split('-')[0]);
+
+        eachYearSpendMap.update(year, (int prev) => prev + element.price, ifAbsent: () => element.price);
+      }
+    });
+
+    final List<String> dates = source.keys.toList();
+    dates.sort();
+
+    _eachYearSpendMap = eachYearSpendMap;
+    _sortedSpendDates = dates;
+    _spendSource = source;
+  }
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -166,18 +205,11 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
   Widget displaySpendEachYearList() {
     final List<Widget> list = <Widget>[];
 
-    final Map<int, int> eachYearSpendMap = <int, int>{};
+    _rebuildSpendCacheIfNeeded();
 
-    appParamState.keepMoneySpendMap.forEach((String key, List<MoneySpendModel> value) {
-      for (final MoneySpendModel element in value) {
-        final int year = int.parse(element.date.split('-')[0]);
+    final Map<int, int> eachYearSpendMap = _eachYearSpendMap;
 
-        eachYearSpendMap.update(year, (int prev) => prev + element.price, ifAbsent: () => element.price);
-      }
-    });
-
-    final List<String> dates = appParamState.keepMoneySpendMap.keys.toList();
-    dates.sort();
+    final List<String> dates = _sortedSpendDates;
 
     final List<int> keys = eachYearSpendMap.keys.toList();
     final Map<int, Map<String, String>> eachYearStartEndDate = <int, Map<String, String>>{};
@@ -304,16 +336,13 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
 
     final List<Widget> list = <Widget>[];
 
-    // ignore: always_specify_types
-    final Map<String, List<MoneySpendModel>> sortedByKey = Map.fromEntries(
-      appParamState.keepMoneySpendMap.entries.toList()..sort(
-        (MapEntry<String, List<MoneySpendModel>> a, MapEntry<String, List<MoneySpendModel>> b) =>
-            a.key.compareTo(b.key),
-      ),
-    );
+    // 日付キーのソートはキャッシュ済みのものを使う（毎回全件ソートしない）
+    _rebuildSpendCacheIfNeeded();
+    final Map<String, List<MoneySpendModel>> spendMap = appParamState.keepMoneySpendMap;
 
     int i = 0;
-    sortedByKey.forEach((String key, List<MoneySpendModel> value) {
+    for (final String key in _sortedSpendDates) {
+      final List<MoneySpendModel> value = spendMap[key]!;
       if (appParamState.yearlyAllSpendSelectedYear == key.split('-')[0]) {
         for (final MoneySpendModel element in value) {
           bool flag = true;
@@ -327,8 +356,9 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
           if (flag) {
             list.add(
               AutoScrollTag(
-                // ignore: always_specify_types
-                key: ValueKey(i),
+                /// 修正: 同じ日付の全エントリに同じ ValueKey(i) を付けていた（キー重複）ため、
+                /// 日付とリスト内の位置（list.length は追加毎に増えるので一意）を含めたキーにする
+                key: ValueKey<String>('${key}_${list.length}'),
                 index: i,
                 controller: autoScrollController,
 
@@ -364,7 +394,7 @@ class _SpendEachYearDisplayAlertState extends ConsumerState<SpendEachYearDisplay
 
         i++;
       }
-    });
+    }
 
     return CustomScrollView(
       controller: autoScrollController,

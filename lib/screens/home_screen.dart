@@ -2,34 +2,50 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../controllers/_get_data/amazon_purchase/amazon_purchase.dart';
+import '../controllers/_get_data/credit_summary/credit_summary.dart';
+import '../controllers/_get_data/fortune/fortune.dart';
+import '../controllers/_get_data/fund/fund.dart';
+import '../controllers/_get_data/geoloc/geoloc.dart';
+import '../controllers/_get_data/gold/gold.dart';
+import '../controllers/_get_data/holiday/holiday.dart';
+import '../controllers/_get_data/lifetime/lifetime.dart';
+import '../controllers/_get_data/lifetime_item/lifetime_item.dart';
+import '../controllers/_get_data/money/money.dart';
+import '../controllers/_get_data/money_spend/money_spend.dart';
+import '../controllers/_get_data/money_spend_item/money_spend_item.dart';
+import '../controllers/_get_data/money_sum/money_sum.dart';
+import '../controllers/_get_data/salary/salary.dart';
+import '../controllers/_get_data/stamp_rally_metro_20_anniversary/stamp_rally_metro_20_anniversary.dart';
+import '../controllers/_get_data/stamp_rally_metro_all_station/stamp_rally_metro_all_station.dart';
+import '../controllers/_get_data/stamp_rally_metro_pokepoke/stamp_rally_metro_pokepoke.dart';
+import '../controllers/_get_data/stock/stock.dart';
+import '../controllers/_get_data/tarot/tarot.dart';
+import '../controllers/_get_data/tarot_history/tarot_history.dart';
+import '../controllers/_get_data/temple/temple.dart';
+import '../controllers/_get_data/time_place/time_place.dart';
+import '../controllers/_get_data/tokyo_municipal/tokyo_municipal.dart';
+import '../controllers/_get_data/toushi_shintaku/toushi_shintaku.dart';
+import '../controllers/_get_data/toushi_shintaku_history/toushi_shintaku_history.dart';
+import '../controllers/_get_data/transportation/transportation.dart';
+import '../controllers/_get_data/walk/walk.dart';
+import '../controllers/_get_data/weather/weather.dart';
+import '../controllers/_get_data/work_time/work_time.dart';
+import '../controllers/app_param/app_param.dart';
 import '../controllers/controllers_mixin.dart';
+import '../data/http/client.dart';
 import '../enums/stamp_rally_kind.dart';
 import '../extensions/extensions.dart';
 import '../main.dart';
-import '../models/amazon_purchase_model.dart';
-import '../models/common/scroll_line_chart_model.dart';
 import '../models/credit_summary_model.dart';
-import '../models/fortune_model.dart';
-import '../models/fund_model.dart';
 import '../models/geoloc_model.dart';
-import '../models/gold_model.dart';
 import '../models/lifetime_model.dart';
 import '../models/money_model.dart';
 import '../models/money_spend_model.dart';
 import '../models/municipal_model.dart';
-import '../models/salary_model.dart';
 import '../models/stamp_rally_model.dart';
-import '../models/stock_model.dart';
-import '../models/tarot_history_model.dart';
-import '../models/tarot_model.dart';
 import '../models/temple_model.dart';
-import '../models/time_place_model.dart';
-import '../models/toushi_shintaku_history_model.dart';
-import '../models/toushi_shintaku_model.dart';
 import '../models/transportation_model.dart';
-import '../models/walk_model.dart';
-import '../models/weather_model.dart';
-import '../models/work_time_model.dart';
 import '../utility/functions.dart';
 import '../utility/utility.dart';
 import 'components/amazon_purchase_list_alert.dart';
@@ -66,469 +82,58 @@ const List<dynamic> bottomNavigationMenuIcons = <dynamic>[
 ];
 
 class TabInfo {
-  TabInfo(this.label, this.widget, {this.highlight = false});
+  const TabInfo(this.label, this.widget, {this.highlight = false});
 
-  String label;
-  Widget widget;
-  bool highlight;
+  final String label;
+  final Widget widget;
+  final bool highlight;
 }
 
+/// ホーム画面
+///
+/// 以前は MyApp で全 Provider を watch してコンストラクタ引数で受け取っていたが、
+/// どれか 1 つのデータが届くたびに MaterialApp ごと再構築されていたため、
+/// HomeScreen 自身が必要な Provider を watch する形に変更した。
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({
-    super.key,
-    required this.walkMap,
-    required this.moneyMap,
-    required this.lifetimeMap,
-    required this.lifetimeItemList,
-    required this.holidayList,
-    required this.geolocMap,
-    required this.templeMap,
-    required this.transportationMap,
-    required this.moneySpendMap,
-    required this.workTimeMap,
-    required this.workTimeDateMap,
-    required this.weatherMap,
-    required this.moneySpendItemMap,
-    required this.salaryMap,
-    required this.goldMap,
-    required this.stockMap,
-    required this.toushiShintakuMap,
-    required this.stationList,
-    required this.trainMap,
-    required this.creditSummaryMap,
-    required this.fundRelationMap,
-    required this.stockTickerMap,
-    required this.toushiShintakuRelationalMap,
-    required this.timePlaceMap,
-    required this.amazonPurchaseMap,
-    required this.tokyoMunicipalMap,
-    required this.stampRallyMetroAllStationMap,
-    required this.stampRallyMetro20AnniversaryMap,
-    required this.stampRallyMetroPokepokeMap,
-    required this.tokyoMunicipalList,
-    required this.moneySumList,
-    required this.fortuneMap,
-    required this.tarotMap,
-    required this.tarotHistoryMap,
-    required this.toushiShintakuHistoryMap,
-    required this.toushiShintakuHistoryCostDateMap,
-  });
-
-  final List<String> holidayList;
-  final Map<String, WalkModel> walkMap;
-  final Map<String, MoneyModel> moneyMap;
-  final Map<String, LifetimeModel> lifetimeMap;
-  final List<LifetimeItemModel> lifetimeItemList;
-  final Map<String, List<GeolocModel>> geolocMap;
-  final Map<String, TempleModel> templeMap;
-  final Map<String, TransportationModel> transportationMap;
-  final Map<String, List<MoneySpendModel>> moneySpendMap;
-  final Map<String, WorkTimeModel> workTimeMap;
-  final Map<String, Map<String, String>> workTimeDateMap;
-  final Map<String, WeatherModel> weatherMap;
-  final Map<String, MoneySpendItemModel> moneySpendItemMap;
-  final Map<String, List<SalaryModel>> salaryMap;
-  final Map<String, GoldModel> goldMap;
-  final Map<String, List<StockModel>> stockMap;
-  final Map<String, List<ToushiShintakuModel>> toushiShintakuMap;
-  final List<StationModel> stationList;
-  final Map<String, String> trainMap;
-  final Map<String, List<CreditSummaryModel>> creditSummaryMap;
-  final Map<int, List<FundModel>> fundRelationMap;
-  final Map<String, List<StockModel>> stockTickerMap;
-  final Map<int, List<ToushiShintakuModel>> toushiShintakuRelationalMap;
-  final Map<String, List<TimePlaceModel>> timePlaceMap;
-  final Map<String, List<AmazonPurchaseModel>> amazonPurchaseMap;
-  final Map<String, List<StampRallyModel>> stampRallyMetroAllStationMap;
-  final Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap;
-  final Map<String, List<StampRallyModel>> stampRallyMetroPokepokeMap;
-  final List<MunicipalModel> tokyoMunicipalList;
-  final Map<String, MunicipalModel> tokyoMunicipalMap;
-  final List<ScrollLineChartModel> moneySumList;
-  final Map<String, FortuneModel> fortuneMap;
-  final Map<String, TarotModel> tarotMap;
-  final Map<String, TarotHistoryModel> tarotHistoryMap;
-  final Map<String, List<ToushiShintakuHistoryModel>> toushiShintakuHistoryMap;
-  final Map<String, List<ToushiShintakuHistoryModel>> toushiShintakuHistoryCostDateMap;
+  const HomeScreen({super.key});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<HomeScreen> {
-  final List<TabInfo> _tabs = <TabInfo>[];
   final Utility utility = Utility();
+
+  /// タブ（年月）一覧。元データ（lifetimeList）と「今月」が変わらない限り使い回す
+  List<TabInfo> _tabs = <TabInfo>[];
+  List<LifetimeModel>? _tabsSourceList;
+  String _tabsSourceNowYm = '';
 
   TabController? _tabController;
   bool _postFrameSyncQueued = false;
-  bool _needsDataSync = true;
 
-  List<Map<String, String>> insuranceDataList = <Map<String, String>>[];
-
-  List<Map<String, String>> nenkinKikinDataList = <Map<String, String>>[];
-
-  ///
-  @override
-  void initState() {
-    super.initState();
-    _scheduleDataSync();
-  }
-
-  ///
-  @override
-  void didUpdateWidget(covariant HomeScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _needsDataSync = true;
-    _scheduleDataSync();
-  }
-
-  ///
-  void _scheduleDataSync() {
-    if (_postFrameSyncQueued || !_needsDataSync) {
-      return;
-    }
-
-    _postFrameSyncQueued = true;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _postFrameSyncQueued = false;
-
-      if (!mounted || !_needsDataSync) {
-        return;
-      }
-
-      _needsDataSync = false;
-      _syncDataAfterFrame();
-    });
-  }
-
-  ///
-  void _syncDataAfterFrame() {
-    try {
-      appParamNotifier.setKeepHolidayList(list: widget.holidayList);
-      appParamNotifier.setKeepWalkModelMap(map: widget.walkMap);
-      appParamNotifier.setKeepMoneyMap(map: widget.moneyMap);
-      appParamNotifier.setKeepLifetimeMap(map: widget.lifetimeMap);
-      appParamNotifier.setKeepLifetimeItemList(list: widget.lifetimeItemList);
-      appParamNotifier.setKeepGeolocMap(map: widget.geolocMap);
-      appParamNotifier.setKeepTempleMap(map: widget.templeMap);
-      appParamNotifier.setKeepGeoSpotModelMap(map: widget.transportationMap);
-      appParamNotifier.setKeepMoneySpendMap(map: widget.moneySpendMap);
-      appParamNotifier.setKeepWorkTimeMap(map: widget.workTimeMap);
-      appParamNotifier.setKeepWorkTimeDateMap(map: widget.workTimeDateMap);
-      appParamNotifier.setKeepWeatherMap(map: widget.weatherMap);
-      appParamNotifier.setKeepMoneySpendItemMap(map: widget.moneySpendItemMap);
-      appParamNotifier.setKeepSalaryMap(map: widget.salaryMap);
-      appParamNotifier.setKeepGoldMap(map: widget.goldMap);
-      appParamNotifier.setKeepStockMap(map: widget.stockMap);
-      appParamNotifier.setKeepToushiShintakuMap(map: widget.toushiShintakuMap);
-      appParamNotifier.setKeepStationList(list: widget.stationList);
-      appParamNotifier.setKeepCreditSummaryMap(map: widget.creditSummaryMap);
-      appParamNotifier.setKeepFundRelationMap(map: widget.fundRelationMap);
-      appParamNotifier.setKeepStockTickerMap(map: widget.stockTickerMap);
-      appParamNotifier.setKeepToushiShintakuRelationalMap(map: widget.toushiShintakuRelationalMap);
-      appParamNotifier.setKeepTimePlaceMap(map: widget.timePlaceMap);
-      appParamNotifier.setKeepAmazonPurchaseMap(map: widget.amazonPurchaseMap);
-      appParamNotifier.setKeepStampRallyMetroAllStationMap(map: widget.stampRallyMetroAllStationMap);
-      appParamNotifier.setKeepTokyoMunicipalList(list: widget.tokyoMunicipalList);
-      appParamNotifier.setKeepTokyoMunicipalMap(map: widget.tokyoMunicipalMap);
-      appParamNotifier.setKeepMoneySumList(list: widget.moneySumList);
-      appParamNotifier.setKeepTrainMap(map: widget.trainMap);
-      appParamNotifier.setKeepFortuneMap(map: widget.fortuneMap);
-      appParamNotifier.setKeepTarotMap(map: widget.tarotMap);
-      appParamNotifier.setKeepTarotHistoryMap(map: widget.tarotHistoryMap);
-      appParamNotifier.setKeepToushiShintakuHistoryMap(map: widget.toushiShintakuHistoryMap);
-      appParamNotifier.setKeepToushiShintakuHistoryCostDateMap(map: widget.toushiShintakuHistoryCostDateMap);
-    } catch (e) {
-      debugPrint('setKeep error: $e');
-    }
-
-    try {
-      final Map<String, List<String>> templeDateTimeBadgeMap = <String, List<String>>{};
-      final Map<String, String> templeDateTimeNameMap = <String, String>{};
-
-      widget.templeMap.forEach((String key, TempleModel value) {
-        final List<String> tempBadgeList = <String>[];
-        final Map<String, String> tempNameMap = <String, String>{};
-        bool hasError = false;
-
-        try {
-          final List<TempleDataModel> templeDataList = value.templeDataList;
-
-          for (final TempleDataModel element in templeDataList) {
-            final List<TemplePhotoModel>? photoModelList = element.templePhotoModelList;
-            if (photoModelList == null) {
-              continue;
-            }
-
-            for (final TemplePhotoModel element2 in photoModelList) {
-              final List<String> photos = element2.templephotos;
-              if (photos.isEmpty) {
-                continue;
-              }
-
-              final List<String> sortedPhotos = List<String>.from(photos)..sort();
-              final String fileName = sortedPhotos.first;
-
-              if (fileName.isEmpty) {
-                continue;
-              }
-
-              final List<String> exFileName = fileName.split('/');
-              if (exFileName.isEmpty) {
-                continue;
-              }
-
-              final String lastPart = exFileName.last;
-              if (lastPart.isEmpty) {
-                continue;
-              }
-
-              final List<String> exFileNameLast = lastPart.split('_');
-              if (exFileNameLast.isEmpty) {
-                continue;
-              }
-
-              final String keyWithoutHyphen = key.replaceAll('-', '');
-              if (exFileNameLast.first == keyWithoutHyphen) {
-                if (exFileNameLast.length < 2) {
-                  continue;
-                }
-
-                final List<String> exFileNameLastLast = exFileNameLast.last.split('.');
-                if (exFileNameLastLast.isEmpty) {
-                  continue;
-                }
-
-                final String timePart = exFileNameLastLast.first;
-                if (timePart.length >= 4) {
-                  final String fileHourMinute = timePart.substring(0, 4);
-                  final String hour = fileHourMinute.substring(0, 2);
-                  final String minute = fileHourMinute.substring(2);
-
-                  tempBadgeList.add('$hour:$minute');
-                  tempNameMap['$key|$hour:$minute'] = element2.temple;
-                }
-              }
-            }
-          }
-        } catch (e) {
-          hasError = true;
-          debugPrint('templeMap processing error for key $key: $e');
-        }
-
-        if (!hasError && tempBadgeList.isNotEmpty) {
-          templeDateTimeBadgeMap[key] = tempBadgeList;
-          tempNameMap.forEach((String k, String v) {
-            templeDateTimeNameMap[k] = v;
-          });
-        }
-      });
-
-      final Map<String, List<Map<String, dynamic>>> allDateLifetimeSummaryMap = <String, List<Map<String, dynamic>>>{};
-
-      widget.lifetimeMap.forEach((String key, LifetimeModel value) {
-        try {
-          final List<String> lifetimeData = getLifetimeData(lifetimeModel: value);
-          final Map<int, String> duplicateConsecutiveMap = getDuplicateConsecutiveMap(lifetimeData);
-          final List<Map<String, dynamic>> startEndTitleList = getStartEndTitleList(data: duplicateConsecutiveMap);
-          allDateLifetimeSummaryMap[key] = startEndTitleList;
-        } catch (e) {
-          debugPrint('lifetimeMap processing error for key $key: $e');
-        }
-      });
-
-      Map<String, List<StampRallyModel>> stampRallyMetro20AnniversaryMap = <String, List<StampRallyModel>>{};
-      try {
-        stampRallyMetro20AnniversaryMap = makeStampRallyDisplayDataMap(
-          stampRallyMetroAllStationMap: widget.stampRallyMetroAllStationMap,
-          type: 'Metro20Anniversary',
-          stampRallyMetro20AnniversaryMapSrc: widget.stampRallyMetro20AnniversaryMap,
-          stampRallyMetroPokepokeMapSrc: <String, List<StampRallyModel>>{},
-          geolocMap: widget.geolocMap,
-          stationList: widget.stationList,
-          trainMap: widget.trainMap,
-          utility: utility,
-        );
-      } catch (e) {
-        debugPrint('stampRallyMetro20AnniversaryMap error: $e');
-      }
-
-      Map<String, List<StampRallyModel>> stampRallyMetroPokepokeMap = <String, List<StampRallyModel>>{};
-      try {
-        stampRallyMetroPokepokeMap = makeStampRallyDisplayDataMap(
-          stampRallyMetroAllStationMap: widget.stampRallyMetroAllStationMap,
-          type: 'MetroPokepoke',
-          stampRallyMetro20AnniversaryMapSrc: <String, List<StampRallyModel>>{},
-          stampRallyMetroPokepokeMapSrc: widget.stampRallyMetroPokepokeMap,
-          geolocMap: widget.geolocMap,
-          stationList: widget.stationList,
-          trainMap: widget.trainMap,
-          utility: utility,
-        );
-      } catch (e) {
-        debugPrint('stampRallyMetroPokepokeMap error: $e');
-      }
-
-      final Map<int, Map<String, int>> creditSummaryTotalMap = <int, Map<String, int>>{};
-      final Map<int, Map<String, List<int>>> creditSummaryListMap = <int, Map<String, List<int>>>{};
-
-      try {
-        final List<String> creditItemList = utility.getCreditItemList();
-        final String? homeTabYear = appParamState.homeTabYearMonth.split('-').firstOrNull;
-
-        widget.creditSummaryMap.forEach((String key, List<CreditSummaryModel> value) {
-          try {
-            final String? keyYear = key.split('-').firstOrNull;
-            if (homeTabYear != null && keyYear == homeTabYear) {
-              final Map<String, List<int>> creditListMap = <String, List<int>>{};
-
-              for (final String element2 in creditItemList) {
-                for (final CreditSummaryModel element in value) {
-                  if (element2 == element.item) {
-                    (creditListMap[element2] ??= <int>[]).add(element.price);
-                  }
-                }
-              }
-
-              final List<String> keyParts = key.split('-');
-              if (keyParts.length >= 2) {
-                final int? monthInt = int.tryParse(keyParts[1]);
-                if (monthInt != null) {
-                  creditSummaryListMap[monthInt] = creditListMap;
-                }
-              }
-            }
-          } catch (e) {
-            debugPrint('creditSummaryMap processing error for key $key: $e');
-          }
-        });
-
-        creditSummaryListMap.forEach((int key, Map<String, List<int>> value) {
-          final Map<String, int> creditCategoryTotalMap = <String, int>{};
-          value.forEach((String key2, List<int> value2) {
-            int total = 0;
-            for (final int element in value2) {
-              total += element;
-            }
-            creditCategoryTotalMap[key2] = total;
-          });
-          creditSummaryTotalMap[key] = creditCategoryTotalMap;
-        });
-      } catch (e) {
-        debugPrint('creditSummary processing error: $e');
-      }
-
-      final List<List<List<List<double>>>> allPolygonsList = <List<List<List<double>>>>[];
-
-      try {
-        for (final MunicipalModel element in widget.tokyoMunicipalList) {
-          final List<List<List<List<double>>>> polygons = element.polygons;
-          allPolygonsList.addAll(polygons);
-        }
-      } catch (e) {
-        debugPrint('allPolygonsList error: $e');
-      }
-
-      if (mounted) {
-        appParamNotifier.setKeepTempleDateTimeBadgeMap(map: templeDateTimeBadgeMap);
-        appParamNotifier.setKeepTempleDateTimeNameMap(map: templeDateTimeNameMap);
-        appParamNotifier.setKeepAllDateLifetimeSummaryMap(map: allDateLifetimeSummaryMap);
-        appParamNotifier.setKeepStampRallyMetro20AnniversaryMap(map: stampRallyMetro20AnniversaryMap);
-        appParamNotifier.setKeepStampRallyMetroPokepokeMap(map: stampRallyMetroPokepokeMap);
-        appParamNotifier.setKeepCreditSummaryTotalMap(map: creditSummaryTotalMap);
-        appParamNotifier.setKeepAllPolygonsList(list: allPolygonsList);
-
-        final Map<String, List<MoneySpendModel>> ohakamairiDataMap = <String, List<MoneySpendModel>>{};
-        widget.moneySpendMap.forEach((String key, List<MoneySpendModel> value) {
-          final List<MoneySpendModel> filtered = value.where((MoneySpendModel e) => e.item == 'お線香代').toList();
-          if (filtered.isNotEmpty) {
-            ohakamairiDataMap[key] = filtered;
-          }
-        });
-        appParamNotifier.setKeepOhakamairiDataMap(map: ohakamairiDataMap);
-      }
-    } catch (e) {
-      debugPrint('sync derived data error: $e');
-    }
-
-    try {
-      makeNenkinKikinDataList();
-    } catch (e) {
-      debugPrint('makeNenkinKikinDataList error: $e');
-    }
-  }
-
-  ///
-  void _onTabChanged() {
-    try {
-      final TabController? c = _tabController;
-
-      if (c != null && !c.indexIsChanging) {
-        final int index = c.index;
-
-        if (_tabs.isNotEmpty && index >= 0 && index < _tabs.length) {
-          final String ym = _tabs[index].label;
-
-          if (ym.isNotEmpty) {
-            appParamNotifier.setHomeTabYearMonth(yearmonth: ym);
-            _fetchGeolocAround(ym);
-          }
-        }
-      }
-    } catch (e) {
-      debugPrint('_onTabChanged error: $e');
-    }
-  }
-
-  /// 指定月 + 前後1ヶ月のgeoloc を取得（取得済みの月はスキップされる）
-  void _fetchGeolocAround(String yearmonth) {
-    try {
-      final List<String> parts = yearmonth.split('-');
-      if (parts.length < 2) {
-        return;
-      }
-
-      final int year = int.tryParse(parts[0]) ?? 0;
-      final int month = int.tryParse(parts[1]) ?? 0;
-      if (year == 0 || month == 0) {
-        return;
-      }
-
-      String ym(int y, int m) => '${y.toString().padLeft(4, '0')}-${m.toString().padLeft(2, '0')}';
-
-      final int prevMonth = month == 1 ? 12 : month - 1;
-      final int prevYear = month == 1 ? year - 1 : year;
-      final int nextMonth = month == 12 ? 1 : month + 1;
-      final int nextYear = month == 12 ? year + 1 : year;
-
-      geolocNotifier.getGeolocDataByYearmonth(yearmonth);
-      geolocNotifier.getGeolocDataByYearmonth(ym(prevYear, prevMonth));
-      geolocNotifier.getGeolocDataByYearmonth(ym(nextYear, nextMonth));
-    } catch (e) {
-      debugPrint('_fetchGeolocAround error: $e');
-    }
-  }
+  /// 派生データの入力値（前回計算時）。入力が変わっていない派生データは再計算しない
+  final Map<String, List<Object?>> _derivedInputs = <String, List<Object?>>{};
 
   ///
   @override
   void dispose() {
-    try {
-      _tabController?.removeListener(_onTabChanged);
-    } catch (e) {
-      debugPrint('dispose error: $e');
-    }
+    _tabController?.removeListener(_onTabChanged);
     super.dispose();
   }
 
   ///
   @override
   Widget build(BuildContext context) {
-    try {
-      _makeTab();
-    } catch (e) {
-      debugPrint('_makeTab error: $e');
-    }
+    // データ系 Provider を購読（どれかが更新されたら再構築 → フレーム後に appParam へ同期）
+    _watchSourceProviders();
+
+    // ボトムメニューの選択状態だけを購読（appParamState 全体を watch しない）
+    final int? bottomSelected = ref.watch(
+      appParamProvider.select((AppParamState s) => s.bottomNavigationSelectedIndex),
+    );
+
+    _makeTab();
     _scheduleDataSync();
 
     if (_tabs.isEmpty) {
@@ -553,30 +158,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       length: _tabs.length,
       child: Builder(
         builder: (BuildContext tabScopeContext) {
-          try {
-            final TabController newController = DefaultTabController.of(tabScopeContext);
-            if (newController != _tabController) {
-              _tabController?.removeListener(_onTabChanged);
-              _tabController = newController;
-              _tabController?.addListener(_onTabChanged);
-
-              if (_tabs.isNotEmpty) {
-                final int index = _tabController!.index;
-                if (index >= 0 && index < _tabs.length) {
-                  final String ym = _tabs[index].label;
-                  // build() 中のプロバイダー変更は禁止なので、フレーム後に遅延実行
-                  Future<void>(() {
-                    if (mounted) {
-                      appParamNotifier.setHomeTabYearMonth(yearmonth: ym);
-                      _fetchGeolocAround(ym);
-                    }
-                  });
-                }
-              }
-            }
-          } catch (e) {
-            debugPrint('TabController setup error: $e');
-          }
+          _attachTabController(DefaultTabController.of(tabScopeContext));
 
           return Scaffold(
             backgroundColor: Colors.transparent,
@@ -587,15 +169,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 title: const Text('LIFETIME LOG'),
                 centerTitle: true,
                 leading: IconButton(
-                  onPressed: () {
-                    try {
-                      context.findAncestorStateOfType<AppRootState>()?.restartApp();
-                    } catch (e) {
-                      debugPrint('restartApp error: $e');
-                    }
-                  },
+                  onPressed: () => context.findAncestorStateOfType<AppRootState>()?.restartApp(),
                   icon: const Icon(Icons.refresh),
                 ),
+                // API 通信中はくるくるを表示する（actions を指定すると endDrawer のボタンが自動で付かないため明示する）
+                actions: const <Widget>[_ApiLoadingIndicator(), EndDrawerButton()],
                 bottom: TabBar(
                   isScrollable: true,
                   tabAlignment: TabAlignment.start,
@@ -631,8 +209,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
             ///
             bottomNavigationBar: _ScrollableBottomDialogMenu(
-              bottomSelected: appParamState.bottomNavigationSelectedIndex,
-              onTap: (int index) async {
+              bottomSelected: bottomSelected,
+              onTap: (int index) {
                 try {
                   appParamNotifier.setSelectedBottomNavigationIndex(
                     index: index,
@@ -657,8 +235,534 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
     );
   }
 
+  //==========================================================================//
+  // データ同期
+  //==========================================================================//
+
+  /// HomeScreen が依存するデータ系 Provider を購読する
+  void _watchSourceProviders() {
+    ref.watch(holidayProvider);
+    ref.watch(walkProvider);
+    ref.watch(moneyProvider);
+    ref.watch(lifetimeProvider);
+    ref.watch(lifetimeItemProvider);
+    ref.watch(geolocProvider);
+    ref.watch(templeProvider);
+    ref.watch(transportationProvider);
+    ref.watch(moneySpendProvider);
+    ref.watch(workTimeProvider);
+    ref.watch(weatherProvider);
+    ref.watch(moneySpendItemProvider);
+    ref.watch(salaryProvider);
+    ref.watch(goldProvider);
+    ref.watch(stockProvider);
+    ref.watch(toushiShintakuProvider);
+    ref.watch(creditSummaryProvider);
+    ref.watch(fundProvider);
+    ref.watch(timePlaceProvider);
+    ref.watch(amazonPurchaseProvider);
+    ref.watch(tokyoMunicipalProvider);
+    ref.watch(stampRallyMetroAllStationProvider);
+    ref.watch(stampRallyMetro20AnniversaryProvider);
+    ref.watch(stampRallyMetroPokepokeProvider);
+    ref.watch(moneySumProvider);
+    ref.watch(fortuneProvider);
+    ref.watch(tarotProvider);
+    ref.watch(tarotHistoryProvider);
+    ref.watch(toushiShintakuHistoryProvider);
+  }
+
+  /// build 中に Provider を変更できないため、フレーム後にまとめて同期する（同一フレーム内の重複はまとめる）
+  void _scheduleDataSync() {
+    if (_postFrameSyncQueued) {
+      return;
+    }
+
+    _postFrameSyncQueued = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _postFrameSyncQueued = false;
+
+      if (!mounted) {
+        return;
+      }
+
+      _syncDataAfterFrame();
+    });
+  }
+
+  ///
+  void _syncDataAfterFrame() {
+    final LifetimeState lifetime = ref.read(lifetimeProvider);
+    final GeolocState geoloc = ref.read(geolocProvider);
+    final TempleState temple = ref.read(templeProvider);
+    final TransportationState transportation = ref.read(transportationProvider);
+    final MoneySpendState moneySpend = ref.read(moneySpendProvider);
+    final WorkTimeState workTime = ref.read(workTimeProvider);
+    final StockState stock = ref.read(stockProvider);
+    final ToushiShintakuState toushiShintaku = ref.read(toushiShintakuProvider);
+    final CreditSummaryState creditSummary = ref.read(creditSummaryProvider);
+    final TokyoMunicipalState tokyoMunicipal = ref.read(tokyoMunicipalProvider);
+    final StampRallyMetroAllStationState stampAll = ref.read(stampRallyMetroAllStationProvider);
+    final StampRallyMetro20AnniversaryState stamp20 = ref.read(stampRallyMetro20AnniversaryProvider);
+    final StampRallyMetroPokepokeState stampPoke = ref.read(stampRallyMetroPokepokeProvider);
+    final ToushiShintakuHistoryState toushiHistory = ref.read(toushiShintakuHistoryProvider);
+
+    //------------------------------------------------ 元データ（変化があった場合のみ 1 回で反映）
+    try {
+      appParamNotifier.syncKeepSourceData(
+        holidayList: ref.read(holidayProvider).holidayList,
+        walkModelMap: ref.read(walkProvider).walkMap,
+        moneyMap: ref.read(moneyProvider).moneyMap,
+        lifetimeMap: lifetime.lifetimeMap,
+        lifetimeItemList: ref.read(lifetimeItemProvider).lifetimeItemList,
+        geolocMap: geoloc.geolocMap,
+        templeMap: temple.templeMap,
+        transportationMap: transportation.transportationMap,
+        moneySpendMap: moneySpend.moneySpendMap,
+        workTimeMap: workTime.workTimeMap,
+        workTimeDateMap: workTime.workTimeDateMap,
+        weatherMap: ref.read(weatherProvider).weatherMap,
+        moneySpendItemMap: ref.read(moneySpendItemProvider).moneySpendItemMap,
+        salaryMap: ref.read(salaryProvider).salaryMap,
+        goldMap: ref.read(goldProvider).goldMap,
+        stockMap: stock.stockMap,
+        toushiShintakuMap: toushiShintaku.toushiShintakuMap,
+        stationList: transportation.stationList,
+        creditSummaryMap: creditSummary.creditSummaryMap,
+        fundRelationMap: ref.read(fundProvider).fundRelationMap,
+        stockTickerMap: stock.stockTickerMap,
+        toushiShintakuRelationalMap: toushiShintaku.toushiShintakuRelationalMap,
+        timePlaceMap: ref.read(timePlaceProvider).timePlaceMap,
+        amazonPurchaseMap: ref.read(amazonPurchaseProvider).amazonPurchaseMap,
+        stampRallyMetroAllStationMap: stampAll.dateStationStampMap,
+        tokyoMunicipalList: tokyoMunicipal.tokyoMunicipalList,
+        tokyoMunicipalMap: tokyoMunicipal.tokyoMunicipalMap,
+        moneySumList: ref.read(moneySumProvider).moneySumList,
+        trainMap: transportation.trainMap,
+        fortuneMap: ref.read(fortuneProvider).fortuneMap,
+        tarotMap: ref.read(tarotProvider).tarotMap,
+        tarotHistoryMap: ref.read(tarotHistoryProvider).tarotHistoryMap,
+        toushiShintakuHistoryMap: toushiHistory.toushiShintakuHistoryMap,
+        toushiShintakuHistoryCostDateMap: toushiHistory.toushiShintakuHistoryCostDateMap,
+      );
+    } catch (e) {
+      debugPrint('syncKeepSourceData error: $e');
+    }
+
+    //------------------------------------------------ 派生データ（入力が変わったものだけ再計算）
+    Map<String, List<String>>? templeDateTimeBadgeMap;
+    Map<String, String>? templeDateTimeNameMap;
+    Map<String, List<Map<String, dynamic>>>? allDateLifetimeSummaryMap;
+    Map<String, List<StampRallyModel>>? stampRallyMetro20AnniversaryMap;
+    Map<String, List<StampRallyModel>>? stampRallyMetroPokepokeMap;
+    Map<int, Map<String, int>>? creditSummaryTotalMap;
+    List<List<List<List<double>>>>? allPolygonsList;
+    Map<String, List<MoneySpendModel>>? ohakamairiDataMap;
+    List<Map<String, String>>? nenkinKikinDataList;
+    List<Map<String, String>>? insuranceDataList;
+
+    if (_inputsChanged('temple', <Object?>[temple.templeMap])) {
+      try {
+        final (Map<String, List<String>>, Map<String, String>) result = _makeTempleDateTimeMaps(temple.templeMap);
+        templeDateTimeBadgeMap = result.$1;
+        templeDateTimeNameMap = result.$2;
+      } catch (e) {
+        debugPrint('temple derived error: $e');
+      }
+    }
+
+    if (_inputsChanged('lifetime', <Object?>[lifetime.lifetimeMap])) {
+      allDateLifetimeSummaryMap = _makeAllDateLifetimeSummaryMap(lifetime.lifetimeMap);
+    }
+
+    final List<Object?> stampCommonInputs = <Object?>[
+      stampAll.dateStationStampMap,
+      geoloc.geolocMap,
+      transportation.stationList,
+      transportation.trainMap,
+    ];
+
+    if (_inputsChanged('stamp20', <Object?>[...stampCommonInputs, stamp20.dateStationStampMap])) {
+      try {
+        stampRallyMetro20AnniversaryMap = makeStampRallyDisplayDataMap(
+          stampRallyMetroAllStationMap: stampAll.dateStationStampMap,
+          type: 'Metro20Anniversary',
+          stampRallyMetro20AnniversaryMapSrc: stamp20.dateStationStampMap,
+          stampRallyMetroPokepokeMapSrc: <String, List<StampRallyModel>>{},
+          geolocMap: geoloc.geolocMap,
+          stationList: transportation.stationList,
+          trainMap: transportation.trainMap,
+          utility: utility,
+        );
+      } catch (e) {
+        debugPrint('stampRallyMetro20AnniversaryMap error: $e');
+      }
+    }
+
+    if (_inputsChanged('stampPoke', <Object?>[...stampCommonInputs, stampPoke.dateStationStampMap])) {
+      try {
+        stampRallyMetroPokepokeMap = makeStampRallyDisplayDataMap(
+          stampRallyMetroAllStationMap: stampAll.dateStationStampMap,
+          type: 'MetroPokepoke',
+          stampRallyMetro20AnniversaryMapSrc: <String, List<StampRallyModel>>{},
+          stampRallyMetroPokepokeMapSrc: stampPoke.dateStationStampMap,
+          geolocMap: geoloc.geolocMap,
+          stationList: transportation.stationList,
+          trainMap: transportation.trainMap,
+          utility: utility,
+        );
+      } catch (e) {
+        debugPrint('stampRallyMetroPokepokeMap error: $e');
+      }
+    }
+
+    // クレジット集計は表示中タブの「年」にも依存するため、タブ切替で年が変わった場合も再計算する
+    final String homeTabYear = ref.read(appParamProvider).homeTabYearMonth.split('-').first;
+
+    if (_inputsChanged('credit', <Object?>[creditSummary.creditSummaryMap, homeTabYear])) {
+      creditSummaryTotalMap = _makeCreditSummaryTotalMap(
+        creditSummaryMap: creditSummary.creditSummaryMap,
+        homeTabYear: homeTabYear,
+      );
+    }
+
+    if (_inputsChanged('polygons', <Object?>[tokyoMunicipal.tokyoMunicipalList])) {
+      allPolygonsList = <List<List<List<double>>>>[
+        for (final MunicipalModel element in tokyoMunicipal.tokyoMunicipalList) ...element.polygons,
+      ];
+    }
+
+    if (_inputsChanged('moneySpend', <Object?>[moneySpend.moneySpendMap])) {
+      ohakamairiDataMap = <String, List<MoneySpendModel>>{};
+      nenkinKikinDataList = <Map<String, String>>[];
+      insuranceDataList = <Map<String, String>>[];
+
+      moneySpend.moneySpendMap.forEach((String key, List<MoneySpendModel> value) {
+        final List<MoneySpendModel> ohakamairi = <MoneySpendModel>[];
+
+        for (final MoneySpendModel element in value) {
+          if (element.item == 'お線香代') {
+            ohakamairi.add(element);
+          }
+
+          if (element.price == 55880) {
+            insuranceDataList!.add(<String, String>{'date': key, 'price': element.price.toString()});
+          }
+
+          if (element.item == '国民年金基金') {
+            nenkinKikinDataList!.add(<String, String>{'date': key, 'price': element.price.toString()});
+          }
+        }
+
+        if (ohakamairi.isNotEmpty) {
+          ohakamairiDataMap![key] = ohakamairi;
+        }
+      });
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    appParamNotifier.syncKeepDerivedData(
+      templeDateTimeBadgeMap: templeDateTimeBadgeMap,
+      templeDateTimeNameMap: templeDateTimeNameMap,
+      allDateLifetimeSummaryMap: allDateLifetimeSummaryMap,
+      stampRallyMetro20AnniversaryMap: stampRallyMetro20AnniversaryMap,
+      stampRallyMetroPokepokeMap: stampRallyMetroPokepokeMap,
+      creditSummaryTotalMap: creditSummaryTotalMap,
+      allPolygonsList: allPolygonsList,
+      ohakamairiDataMap: ohakamairiDataMap,
+      nenkinKikinDataList: nenkinKikinDataList,
+      insuranceDataList: insuranceDataList,
+    );
+  }
+
+  /// 前回計算時と入力が同じなら false。変わっていれば記録して true
+  bool _inputsChanged(String key, List<Object?> inputs) {
+    final List<Object?>? prev = _derivedInputs[key];
+
+    if (prev != null && prev.length == inputs.length) {
+      bool same = true;
+
+      for (int i = 0; i < inputs.length; i++) {
+        final Object? a = prev[i];
+        final Object? b = inputs[i];
+
+        // freezed の Map / List は getter のたびに View で包み直されるが、View の == は中身のインスタンス同一性で比較する。
+        // 文字列は値で比較される。いずれも要素の深い比較はしないので軽量。
+        if (a != b) {
+          same = false;
+          break;
+        }
+      }
+
+      if (same) {
+        return false;
+      }
+    }
+
+    _derivedInputs[key] = inputs;
+    return true;
+  }
+
+  /// お寺の写真ファイル名（例: .../20240101_1234xx.jpg）から、日付ごとの到着時刻バッジとお寺名を作る
+  (Map<String, List<String>>, Map<String, String>) _makeTempleDateTimeMaps(Map<String, TempleModel> templeMap) {
+    final Map<String, List<String>> templeDateTimeBadgeMap = <String, List<String>>{};
+    final Map<String, String> templeDateTimeNameMap = <String, String>{};
+
+    templeMap.forEach((String key, TempleModel value) {
+      final List<String> tempBadgeList = <String>[];
+      final Map<String, String> tempNameMap = <String, String>{};
+      final String keyWithoutHyphen = key.replaceAll('-', '');
+
+      try {
+        for (final TempleDataModel element in value.templeDataList) {
+          final List<TemplePhotoModel>? photoModelList = element.templePhotoModelList;
+          if (photoModelList == null) {
+            continue;
+          }
+
+          for (final TemplePhotoModel element2 in photoModelList) {
+            final String? hourMinute = _getTemplePhotoHourMinute(
+              photos: element2.templephotos,
+              keyWithoutHyphen: keyWithoutHyphen,
+            );
+
+            if (hourMinute != null) {
+              tempBadgeList.add(hourMinute);
+              tempNameMap['$key|$hourMinute'] = element2.temple;
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('templeMap processing error for key $key: $e');
+        return;
+      }
+
+      if (tempBadgeList.isNotEmpty) {
+        templeDateTimeBadgeMap[key] = tempBadgeList;
+        templeDateTimeNameMap.addAll(tempNameMap);
+      }
+    });
+
+    return (templeDateTimeBadgeMap, templeDateTimeNameMap);
+  }
+
+  /// 写真リストの先頭（ソート順）ファイル名から "HH:mm" を取り出す。該当しなければ null
+  String? _getTemplePhotoHourMinute({required List<String> photos, required String keyWithoutHyphen}) {
+    if (photos.isEmpty) {
+      return null;
+    }
+
+    final List<String> sortedPhotos = List<String>.from(photos)..sort();
+    final String fileName = sortedPhotos.first;
+    if (fileName.isEmpty) {
+      return null;
+    }
+
+    final String lastPart = fileName.split('/').last;
+    if (lastPart.isEmpty) {
+      return null;
+    }
+
+    final List<String> exFileNameLast = lastPart.split('_');
+    if (exFileNameLast.first != keyWithoutHyphen || exFileNameLast.length < 2) {
+      return null;
+    }
+
+    final String timePart = exFileNameLast.last.split('.').first;
+    if (timePart.length < 4) {
+      return null;
+    }
+
+    return '${timePart.substring(0, 2)}:${timePart.substring(2, 4)}';
+  }
+
+  ///
+  Map<String, List<Map<String, dynamic>>> _makeAllDateLifetimeSummaryMap(Map<String, LifetimeModel> lifetimeMap) {
+    final Map<String, List<Map<String, dynamic>>> result = <String, List<Map<String, dynamic>>>{};
+
+    lifetimeMap.forEach((String key, LifetimeModel value) {
+      try {
+        final List<String> lifetimeData = getLifetimeData(lifetimeModel: value);
+        final Map<int, String> duplicateConsecutiveMap = getDuplicateConsecutiveMap(lifetimeData);
+        result[key] = getStartEndTitleList(data: duplicateConsecutiveMap);
+      } catch (e) {
+        debugPrint('lifetimeMap processing error for key $key: $e');
+      }
+    });
+
+    return result;
+  }
+
+  /// 表示中タブの年について、月ごと・項目ごとのクレジット合計を作る
+  Map<int, Map<String, int>> _makeCreditSummaryTotalMap({
+    required Map<String, List<CreditSummaryModel>> creditSummaryMap,
+    required String homeTabYear,
+  }) {
+    final Map<int, Map<String, int>> creditSummaryTotalMap = <int, Map<String, int>>{};
+
+    if (homeTabYear.isEmpty) {
+      return creditSummaryTotalMap;
+    }
+
+    final List<String> creditItemList = utility.getCreditItemList();
+
+    creditSummaryMap.forEach((String key, List<CreditSummaryModel> value) {
+      final List<String> keyParts = key.split('-');
+      if (keyParts.length < 2 || keyParts[0] != homeTabYear) {
+        return;
+      }
+
+      final int? monthInt = int.tryParse(keyParts[1]);
+      if (monthInt == null) {
+        return;
+      }
+
+      // 項目の並び順は creditItemList の順を維持する
+      final Map<String, int> creditCategoryTotalMap = <String, int>{};
+
+      for (final String item in creditItemList) {
+        bool found = false;
+        int total = 0;
+
+        for (final CreditSummaryModel element in value) {
+          if (element.item == item) {
+            found = true;
+            total += element.price;
+          }
+        }
+
+        if (found) {
+          creditCategoryTotalMap[item] = total;
+        }
+      }
+
+      creditSummaryTotalMap[monthInt] = creditCategoryTotalMap;
+    });
+
+    return creditSummaryTotalMap;
+  }
+
+  //==========================================================================//
+  // タブ
+  //==========================================================================//
+
+  ///
+  void _attachTabController(TabController newController) {
+    if (newController == _tabController) {
+      return;
+    }
+
+    _tabController?.removeListener(_onTabChanged);
+    _tabController = newController;
+    newController.addListener(_onTabChanged);
+
+    final int index = newController.index;
+
+    if (index >= 0 && index < _tabs.length) {
+      final String ym = _tabs[index].label;
+
+      // build() 中のプロバイダー変更は禁止なので、フレーム後に遅延実行
+      Future<void>(() {
+        if (mounted) {
+          appParamNotifier.setHomeTabYearMonth(yearmonth: ym);
+          _fetchGeolocAround(ym);
+          _scheduleDataSync();
+        }
+      });
+    }
+  }
+
+  ///
+  void _onTabChanged() {
+    final TabController? c = _tabController;
+
+    if (c == null || c.indexIsChanging) {
+      return;
+    }
+
+    final int index = c.index;
+
+    if (index >= 0 && index < _tabs.length) {
+      final String ym = _tabs[index].label;
+
+      if (ym.isNotEmpty) {
+        appParamNotifier.setHomeTabYearMonth(yearmonth: ym);
+        _fetchGeolocAround(ym);
+
+        // 表示年が変わるとクレジット集計が変わるため同期を予約（入力が同じなら何もしない）
+        _scheduleDataSync();
+      }
+    }
+  }
+
+  /// 指定月 + 前後1ヶ月のgeoloc を取得（取得済みの月はスキップされる）
+  void _fetchGeolocAround(String yearmonth) {
+    final List<String> parts = yearmonth.split('-');
+    if (parts.length < 2) {
+      return;
+    }
+
+    final int year = int.tryParse(parts[0]) ?? 0;
+    final int month = int.tryParse(parts[1]) ?? 0;
+    if (year == 0 || month == 0) {
+      return;
+    }
+
+    // DateTime の月繰り上がり/繰り下がりを利用して前後の月を求める
+    final DateTime prev = DateTime(year, month - 1);
+    final DateTime next = DateTime(year, month + 1);
+
+    geolocNotifier.getGeolocDataByYearmonth(yearmonth);
+    geolocNotifier.getGeolocDataByYearmonth(prev.yyyymm);
+    geolocNotifier.getGeolocDataByYearmonth(next.yyyymm);
+  }
+
+  /// lifetimeList から年月タブを作る（元データと「今月」が変わらなければ前回のタブを使い回す）
+  void _makeTab() {
+    final List<LifetimeModel> lifetimeList = ref.read(lifetimeProvider).lifetimeList;
+    final String nowYm = DateTime.now().yyyymm;
+
+    if (lifetimeList == _tabsSourceList && nowYm == _tabsSourceNowYm) {
+      return;
+    }
+
+    _tabsSourceList = lifetimeList;
+    _tabsSourceNowYm = nowYm;
+
+    if (lifetimeList.isEmpty) {
+      _tabs = <TabInfo>[];
+      return;
+    }
+
+    try {
+      final Set<String> yearmonthSet = <String>{nowYm};
+
+      for (final LifetimeModel element in lifetimeList) {
+        yearmonthSet.add('${element.year}-${element.month}');
+      }
+
+      // 新しい年月が先頭（year / month はゼロ埋め文字列なので文字列比較で年月順になる）
+      final List<String> yearmonthList = yearmonthSet.toList()..sort((String a, String b) => b.compareTo(a));
+
+      _tabs = <TabInfo>[
+        for (final String element in yearmonthList)
+          TabInfo(element, MonthlyLifetimeDisplayPage(key: ValueKey<String>(element), yearmonth: element)),
+      ];
+    } catch (e) {
+      debugPrint('_makeTab error: $e');
+      _tabs = <TabInfo>[];
+    }
+  }
+
   ///
   Object getBottomMenuContents({required int index}) {
+    // コールバック内なので watch ではなく read で参照する
+    final AppParamState appParamState = ref.read(appParamProvider);
+
     try {
       switch (index) {
         case 0:
@@ -668,13 +772,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             // ignore: always_specify_types
             Future.delayed(Duration.zero, () {
               if (mounted) {
-                error_dialog(context: context, title: '表示できません。', content: '資産情報が作成されていません。');
+                error_dialog(
+                  context: context,
+                  title: '表示できません。',
+                  content: _notReadyContent('資産情報が作成されていません。'),
+                );
               }
             });
           } else {
-            appParamNotifier.setKeepNenkinKikinDataList(list: nenkinKikinDataList);
-            appParamNotifier.setKeepInsuranceDataList(list: insuranceDataList);
-
             final String yearmonth = appParamState.homeTabYearMonth;
             if (yearmonth.isEmpty) {
               return const SizedBox.shrink();
@@ -694,7 +799,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 error_dialog(
                   context: context,
                   title: '表示できません。',
-                  content: 'appParamState.keepMoneySpendItemMapが作成されていません。',
+                  content: _notReadyContent('appParamState.keepMoneySpendItemMapが作成されていません。'),
                 );
               }
             });
@@ -715,7 +820,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             // ignore: always_specify_types
             Future.delayed(Duration.zero, () {
               if (mounted) {
-                error_dialog(context: context, title: '表示できません。', content: 'appParamState.keepWalkModelMapが作成されていません。');
+                error_dialog(
+                  context: context,
+                  title: '表示できません。',
+                  content: _notReadyContent('appParamState.keepWalkModelMapが作成されていません。'),
+                );
               }
             });
           } else {
@@ -772,7 +881,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             // ignore: always_specify_types
             Future.delayed(Duration.zero, () {
               if (mounted) {
-                error_dialog(context: context, title: '表示できません。', content: 'appParamState.keepWorkTimeMapが作成されていません。');
+                error_dialog(
+                  context: context,
+                  title: '表示できません。',
+                  content: _notReadyContent('appParamState.keepWorkTimeMapが作成されていません。'),
+                );
               }
             });
           } else {
@@ -792,7 +905,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             // ignore: always_specify_types
             Future.delayed(Duration.zero, () {
               if (mounted) {
-                error_dialog(context: context, title: '表示できません。', content: 'appParamState.keepWeatherMapが作成されていません。');
+                error_dialog(
+                  context: context,
+                  title: '表示できません。',
+                  content: _notReadyContent('appParamState.keepWeatherMapが作成されていません。'),
+                );
               }
             });
           } else {
@@ -815,7 +932,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                 error_dialog(
                   context: context,
                   title: '表示できません。',
-                  content: 'appParamState.keepOhakamairiDataMapが作成されていません。',
+                  content: _notReadyContent('appParamState.keepOhakamairiDataMapが作成されていません。'),
                 );
               }
             });
@@ -838,26 +955,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
     return const SizedBox.shrink();
   }
 
-  ///
-  void makeNenkinKikinDataList() {
-    try {
-      insuranceDataList.clear();
-      nenkinKikinDataList.clear();
-
-      widget.moneySpendMap.forEach((String key, List<MoneySpendModel> value) {
-        for (final MoneySpendModel element in value) {
-          if (element.price == 55880) {
-            insuranceDataList.add(<String, String>{'date': key, 'price': element.price.toString()});
-          }
-
-          if (element.item == '国民年金基金') {
-            nenkinKikinDataList.add(<String, String>{'date': key, 'price': element.price.toString()});
-          }
-        }
-      });
-    } catch (e) {
-      debugPrint('makeNenkinKikinDataList error: $e');
+  /// データ未取得時のメッセージ。まだ API 通信中なら「読み込み中」と案内する
+  String _notReadyContent(String message) {
+    if (ref.read(httpClientProvider).inFlightCount.value > 0) {
+      return 'データを読み込み中です。しばらくしてからもう一度お試しください。';
     }
+
+    return message;
   }
 
   ///
@@ -877,16 +981,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                   try {
                     appParamNotifier.setSelectedCrossCalendarYear(year: DateTime.now().year);
 
-                    final List<String> yList = <String>[];
-                    widget.lifetimeMap.forEach((String key, LifetimeModel value) {
-                      final List<String> exKey = key.split('-');
-                      if (exKey.isNotEmpty) {
-                        yList.add(exKey[0]);
-                      }
-                    });
+                    final Set<String> yearSet = <String>{
+                      for (final String key in ref.read(lifetimeProvider).lifetimeMap.keys) key.split('-').first,
+                    };
 
-                    final List<String> years = yList.toSet().toList();
-                    years.sort();
+                    final List<String> years = yearSet.toList()..sort();
 
                     LifetimeDialog(
                       context: context,
@@ -932,6 +1031,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               GestureDetector(
                 onTap: () {
                   try {
+                    final AppParamState appParamState = ref.read(appParamProvider);
+
                     final Map<String, MoneyModel> keepMoneyMap = appParamState.keepMoneyMap;
                     if (keepMoneyMap.isEmpty) {
                       return;
@@ -1138,52 +1239,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       ),
     );
   }
+}
 
-  ///
-  void _makeTab() {
-    _tabs.clear();
+/////////////////////////////////////////////////////////////////////////////////
 
-    try {
-      final List<LifetimeModel> lifetimeList = lifetimeState.lifetimeList;
-      if (lifetimeList.isEmpty) {
-        return;
-      }
+/// API 通信中（起動時の一括取得・月切替時の位置情報取得など）だけ表示する小さなくるくる
+class _ApiLoadingIndicator extends ConsumerWidget {
+  const _ApiLoadingIndicator();
 
-      final List<String> yearmonthList = <String>[];
-      final Set<String> yearmonthSet = <String>{};
-
-      final List<LifetimeModel> sortedList = List<LifetimeModel>.from(lifetimeList);
-      sortedList.sort((LifetimeModel a, LifetimeModel b) {
-        final int ay = int.tryParse(a.year) ?? 0;
-        final int by = int.tryParse(b.year) ?? 0;
-        if (ay != by) {
-          return by.compareTo(ay);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ValueListenableBuilder<int>(
+      valueListenable: ref.watch(httpClientProvider).inFlightCount,
+      builder: (BuildContext context, int count, Widget? child) {
+        if (count <= 0) {
+          return const SizedBox.shrink();
         }
 
-        final int am = int.tryParse(a.month) ?? 0;
-        final int bm = int.tryParse(b.month) ?? 0;
-        return bm.compareTo(am);
-      });
-
-      for (final LifetimeModel element in sortedList) {
-        final String ym = '${element.year}-${element.month}';
-        if (yearmonthSet.add(ym)) {
-          yearmonthList.add(ym);
-        }
-      }
-
-      final String nowYm = DateTime.now().yyyymm;
-      if (!yearmonthList.contains(nowYm)) {
-        yearmonthList.add(nowYm);
-        yearmonthList.sort((String a, String b) => b.compareTo(a));
-      }
-
-      for (final String element in yearmonthList) {
-        _tabs.add(TabInfo(element, MonthlyLifetimeDisplayPage(yearmonth: element)));
-      }
-    } catch (e) {
-      debugPrint('_makeTab error: $e');
-    }
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -1268,6 +1348,15 @@ Map<String, List<StampRallyModel>> makeStampRallyDisplayDataMap({
       }
     });
 
+    // 駅コード → 駅 のマップ（ループ内で毎回 where 検索しない）
+    final Map<int, StationModel> stationById = <int, StationModel>{};
+    for (final StationModel station in stationList) {
+      stationById.putIfAbsent(station.id, () => station);
+    }
+
+    // 最寄り時刻の手動補正（ループ外で 1 回だけ取得）
+    final Map<String, String>? adjustTypeMap = utility.getStampNearestGeolocTimeAdjustMap()[type];
+
     Map<String, List<StampRallyModel>> targetSourceMap;
 
     switch (type) {
@@ -1311,13 +1400,11 @@ Map<String, List<StampRallyModel>> makeStampRallyDisplayDataMap({
             continue;
           }
 
-          final Iterable<StationModel> st = stationList.where((StationModel station) => station.id == stationCodeInt);
+          final StationModel? stationModel = stationById[stationCodeInt];
 
-          if (st.isEmpty) {
+          if (stationModel == null) {
             continue;
           }
-
-          final StationModel stationModel = st.first;
 
           // 一時変数で全ての値を計算
           String nearestGeolocTime = '';
@@ -1337,18 +1424,9 @@ Map<String, List<StampRallyModel>> makeStampRallyDisplayDataMap({
             }
           }
 
-          try {
-            final Map<String, Map<String, String>> adjustMap = utility.getStampNearestGeolocTimeAdjustMap();
-            final Map<String, String>? typeMap = adjustMap[type];
-            if (typeMap != null) {
-              final String? adjustedTime = typeMap[element.stationCode];
-              if (adjustedTime != null) {
-                nearestGeolocTime = adjustedTime;
-              }
-            }
-          } catch (e) {
-            debugPrint('getStampNearestGeolocTimeAdjustMap error: $e');
-            // 調整マップエラーは無視して続行
+          final String? adjustedTime = adjustTypeMap?[element.stationCode];
+          if (adjustedTime != null) {
+            nearestGeolocTime = adjustedTime;
           }
 
           final String trainName = trainMap[stationModel.trainNumber] ?? '';

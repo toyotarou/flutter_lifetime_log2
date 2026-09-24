@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/http/client.dart';
 import '../../../data/http/path.dart';
-import '../../../extensions/extensions.dart';
 import '../../../models/money_spend_model.dart';
 import '../../../utility/utility.dart';
 
@@ -37,22 +36,20 @@ class MoneySpendItem extends _$MoneySpendItem {
     final Map<String, MoneySpendItemModel> map = <String, MoneySpendItemModel>{};
 
     try {
-      // ignore: always_specify_types
-      await client.post(path: APIPath.getMoneySpendItem).then((value) {
-        // ignore: avoid_dynamic_calls
-        for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-          // ignore: avoid_dynamic_calls
-          final MoneySpendItemModel val = MoneySpendItemModel.fromJson(value['data'][i] as Map<String, dynamic>);
+      final dynamic value = await client.post(path: APIPath.getMoneySpendItem);
+      final List<dynamic> data = (value as Map<String, dynamic>)['data'] as List<dynamic>;
 
-          list.add(val);
+      for (final dynamic item in data) {
+        final MoneySpendItemModel val = MoneySpendItemModel.fromJson(item as Map<String, dynamic>);
 
-          map[val.name] = val;
-        }
-      });
+        list.add(val);
+
+        map[val.name] = val;
+      }
 
       return state.copyWith(moneySpendItemList: list, moneySpendItemMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（money_spend_item）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

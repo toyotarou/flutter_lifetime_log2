@@ -37,9 +37,6 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
 
   Utility utility = Utility();
 
-  bool todayStockExists = false;
-  bool todayToushiShintakuRelationalIdBlankExists = false;
-
   final AutoScrollController autoScrollController = AutoScrollController();
 
   static const double _moveAmount = 18;
@@ -339,7 +336,7 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
                               children: <Widget>[
                                 Text(day.toString().padLeft(2, '0')),
                                 const SizedBox(width: 10),
-                                Text(DateTime.parse(date).youbiStr.substring(0, 3)),
+                                Text(youbi.substring(0, 3)),
                               ],
                             ),
                           ),
@@ -501,32 +498,6 @@ class _WalkDataListAlertState extends ConsumerState<WalkDataListAlert> with Cont
           ),
         ),
       ],
-    );
-  }
-
-  ///
-  LatLngBounds? buildBoundsFromGeoloc(List<GeolocModel> list) {
-    if (list.isEmpty) {
-      return null;
-    }
-
-    double? minLat, maxLat, minLng, maxLng;
-
-    for (final GeolocModel e in list) {
-      final double lat = double.tryParse(e.latitude) ?? 0;
-      final double lng = double.tryParse(e.longitude) ?? 0;
-
-      minLat = (minLat == null) ? lat : (lat < minLat ? lat : minLat);
-      maxLat = (maxLat == null) ? lat : (lat > maxLat ? lat : maxLat);
-      minLng = (minLng == null) ? lng : (lng < minLng ? lng : minLng);
-      maxLng = (maxLng == null) ? lng : (lng > maxLng ? lng : maxLng);
-    }
-
-    const double pad = 0.0005;
-
-    return LatLngBounds(
-      LatLng((minLat ?? 0) - pad, (minLng ?? 0) - pad),
-      LatLng((maxLat ?? 0) + pad, (maxLng ?? 0) + pad),
     );
   }
 

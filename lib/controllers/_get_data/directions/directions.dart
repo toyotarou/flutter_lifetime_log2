@@ -17,7 +17,8 @@ class Directions extends _$Directions {
     final String url =
         'https://maps.googleapis.com/maps/api/directions/json?origin=$encodedOrigin&destination=$encodedDestination&mode=walking&key=$apiKey';
 
-    final http.Response res = await http.get(Uri.parse(url));
+    // 応答が返らない場合に待ち続けないよう、HttpClient.post と同じ 15 秒でタイムアウトさせる（TimeoutException を送出）
+    final http.Response res = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 15));
     if (res.statusCode != 200) {
       throw Exception('API Error: ${res.statusCode}');
     }

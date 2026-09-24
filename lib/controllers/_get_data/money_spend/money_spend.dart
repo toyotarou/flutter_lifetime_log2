@@ -37,14 +37,18 @@ class MoneySpend extends _$MoneySpend {
       final List<MoneySpendModel> list = <MoneySpendModel>[];
       final Map<String, List<MoneySpendModel>> map = <String, List<MoneySpendModel>>{};
 
+      // 2つのAPIは互いに独立しているので並行して取得する
+      final List<dynamic> results = await Future.wait<dynamic>(<Future<dynamic>>[
+        client.post(path: APIPath.getAllDailySpend),
+        client.post(path: APIPath.getAllCredit),
+      ]);
+
       //---------------------------------------------------------------------------//
 
-      final dynamic value = await client.post(path: APIPath.getAllDailySpend);
+      final List<dynamic> dailySpendData = (results[0] as Map<String, dynamic>)['data'] as List<dynamic>;
 
-      // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value['data'].length.toString().toInt(); i++) {
-        // ignore: avoid_dynamic_calls
-        final DailySpendModel val = DailySpendModel.fromJson(value['data'][i] as Map<String, dynamic>);
+      for (final dynamic item in dailySpendData) {
+        final DailySpendModel val = DailySpendModel.fromJson(item as Map<String, dynamic>);
 
         final MoneySpendModel moneySpend = MoneySpendModel(
           '${val.year}-${val.month}-${val.day}',
@@ -55,17 +59,15 @@ class MoneySpend extends _$MoneySpend {
 
         list.add(moneySpend);
 
-        (map['${val.year}-${val.month}-${val.day}'] ??= <MoneySpendModel>[]).add(moneySpend);
+        (map[moneySpend.date] ??= <MoneySpendModel>[]).add(moneySpend);
       }
 
       //---------------------------------------------------------------------------//
 
-      final dynamic value2 = await client.post(path: APIPath.getAllCredit);
+      final List<dynamic> creditData = (results[1] as Map<String, dynamic>)['data'] as List<dynamic>;
 
-      // ignore: avoid_dynamic_calls
-      for (int i = 0; i < value2['data'].length.toString().toInt(); i++) {
-        // ignore: avoid_dynamic_calls
-        final CreditModel val = CreditModel.fromJson(value2['data'][i] as Map<String, dynamic>);
+      for (final dynamic item in creditData) {
+        final CreditModel val = CreditModel.fromJson(item as Map<String, dynamic>);
 
         final MoneySpendModel moneySpend = MoneySpendModel(
           '${val.year}-${val.month}-${val.day}',
@@ -76,14 +78,14 @@ class MoneySpend extends _$MoneySpend {
 
         list.add(moneySpend);
 
-        (map['${val.year}-${val.month}-${val.day}'] ??= <MoneySpendModel>[]).add(moneySpend);
+        (map[moneySpend.date] ??= <MoneySpendModel>[]).add(moneySpend);
       }
 
       //---------------------------------------------------------------------------//
 
       return state.copyWith(moneySpendList: list, moneySpendMap: map);
     } catch (e) {
-      utility.showError('予期せぬエラーが発生しました');
+      utility.showError('予期せぬエラーが発生しました（money_spend）', error: e);
       rethrow; // これにより呼び出し元でキャッチできる
     }
   }

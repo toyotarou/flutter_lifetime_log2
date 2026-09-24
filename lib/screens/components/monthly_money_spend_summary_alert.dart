@@ -99,6 +99,9 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
   ///
   void makeMoneySpendSummary() {
+    /// 修正: 前回 build の集計が残り続け、支出を全て削除した項目の合計が表示されたままになっていたため、毎回作り直す
+    moneySpendSummaryMap = <String, int>{};
+
     final Map<String, List<int>> map = <String, List<int>>{};
 
     appParamState.keepMoneySpendMap.forEach((String key, List<MoneySpendModel> value) {
@@ -254,7 +257,8 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
     ///////////////////////////////////////////////////////////////// salary end
 
-    setState(() => monthlySum = listSum);
+    // build 中なので setState は不要（下部の合計 Text はこの後に生成される）
+    monthlySum = listSum;
 
     return CustomScrollView(
       slivers: <Widget>[

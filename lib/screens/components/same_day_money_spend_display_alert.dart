@@ -172,9 +172,11 @@ class _SameDayMoneySpendDisplayAlertState extends ConsumerState<SameDayMoneySpen
   Widget _buildMonthCard({required String yearmonth}) {
     int total = 0;
 
-    if (DateTime.parse(
+    final bool isPast = DateTime.parse(
       '$yearmonth-${appParamState.selectedSameDay}',
-    ).isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
+    ).isBefore(DateTime.now().subtract(const Duration(days: 1)));
+
+    if (isPast) {
       for (int i = 0; i < appParamState.selectedSameDay.toInt(); i++) {
         final String date = '$yearmonth-${(i + 1).toString().padLeft(2, '0')}';
 
@@ -195,9 +197,7 @@ class _SameDayMoneySpendDisplayAlertState extends ConsumerState<SameDayMoneySpen
 
           const SizedBox(height: 50),
 
-          if (DateTime.parse(
-            '$yearmonth-${appParamState.selectedSameDay}',
-          ).isBefore(DateTime.now().subtract(const Duration(days: 1)))) ...<Widget>[
+          if (isPast) ...<Widget>[
             Text(total.toString().toCurrency()),
           ] else ...<Widget>[const Text('no data', style: TextStyle(color: Colors.yellowAccent))],
 

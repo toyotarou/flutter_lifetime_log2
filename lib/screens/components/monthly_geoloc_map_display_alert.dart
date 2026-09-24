@@ -61,12 +61,25 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
   double centerLat = 0.0;
   double centerLng = 0.0;
 
+  /// 地図移動のたび（ズーム値更新）に全マーカーを作り直さないよう、入力が変わった時だけ再計算する
+  /// （freezed の EqualUnmodifiableListView / MapView の == は元のコレクションの同一性で比較される）
+  List<String>? _cachedSelectedDateList;
+  Map<String, List<GeolocModel>>? _cachedGeolocMap;
+
   ///
   @override
   Widget build(BuildContext context) {
-    makeMinMaxLatLng();
+    final List<String> selectedDateList = appParamState.monthlyGeolocMapSelectedDateList;
+    final Map<String, List<GeolocModel>> geolocMap = appParamState.keepGeolocMap;
 
-    makeMarker();
+    if (selectedDateList != _cachedSelectedDateList || geolocMap != _cachedGeolocMap) {
+      makeMinMaxLatLng();
+
+      makeMarker();
+
+      _cachedSelectedDateList = selectedDateList;
+      _cachedGeolocMap = geolocMap;
+    }
 
     return Scaffold(
       body: Stack(
@@ -159,10 +172,10 @@ class _MonthlyGeolocMapDisplayAlertState extends ConsumerState<MonthlyGeolocMapD
                               addFirstOverlay(
                                 context: context,
                                 setStateCallback: setState,
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                height: MediaQuery.of(context).size.height * 0.4,
+                                width: MediaQuery.sizeOf(context).width * 0.4,
+                                height: MediaQuery.sizeOf(context).height * 0.4,
                                 color: Colors.blueGrey.withOpacity(0.3),
-                                initialPosition: Offset(MediaQuery.of(context).size.width * 0.6, 90),
+                                initialPosition: Offset(MediaQuery.sizeOf(context).width * 0.6, 90),
                                 widget: const MonthlyGeolocMapDateListWidget(),
                                 firstEntries: _firstEntries,
                                 secondEntries: _secondEntries,

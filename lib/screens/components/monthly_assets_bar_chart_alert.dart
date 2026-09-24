@@ -217,6 +217,11 @@ class _MonthlyAssetsBarChartAlertState extends ConsumerState<MonthlyAssetsBarCha
   List<String> _sortedDates = <String>[];
   String _currentVisibleYM = '';
 
+  /// _buildDailyDataMap の結果キャッシュ（スクロールによる再ビルドの度に全日付を再計算しないため）
+  List<Object?> _dataMapCacheInputs = <Object?>[];
+  Map<String, _DayData> _dataMapCache = <String, _DayData>{};
+  List<String> _sortedDatesCache = <String>[];
+
   ///
   @override
   void initState() {
@@ -417,6 +422,9 @@ class _MonthlyAssetsBarChartAlertState extends ConsumerState<MonthlyAssetsBarCha
     int lastStockSum = 0;
     int lastToushiSum = 0;
 
+    final List<DateTime> insurancePaidDates = AssetsCalc.parsePaidDates(appParamState.keepInsuranceDataList);
+    final List<DateTime> nenkinKikinPaidDates = AssetsCalc.parsePaidDates(appParamState.keepNenkinKikinDataList);
+
     for (int i = 0; i < days; i++) {
       final DateTime date = startDate.add(Duration(days: i));
       final String key = date.yyyymmdd;
@@ -441,12 +449,10 @@ class _MonthlyAssetsBarChartAlertState extends ConsumerState<MonthlyAssetsBarCha
         lastToushiSum = AssetsCalc.calcToushiSum(toushiList);
       }
 
-      final int insurancePassedMonths =
-          AssetsCalc.countPaidUpTo(data: appParamState.keepInsuranceDataList, date: date) + 102;
+      final int insurancePassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: insurancePaidDates, date: date) + 102;
       final int insuranceSum = (insurancePassedMonths * 55880 * 0.7).toInt();
 
-      final int nenkinKikinPassedMonths =
-          AssetsCalc.countPaidUpTo(data: appParamState.keepNenkinKikinDataList, date: date) + 32;
+      final int nenkinKikinPassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: nenkinKikinPaidDates, date: date) + 32;
       final int nenkinKikinSum = date.isBefore(DateTime(2026, 6, 15))
           ? (nenkinKikinPassedMonths * 26625 * 0.7).toInt()
           : 0;
@@ -467,14 +473,51 @@ class _MonthlyAssetsBarChartAlertState extends ConsumerState<MonthlyAssetsBarCha
   }
 
   ///
+  /// 入力（appParamState の各データ・当日日付）が変わらない限り、キャッシュ済みの日別データを使う
+  void _ensureDailyDataMap() {
+    final List<Object?> inputs = <Object?>[
+      appParamState.keepMoneyMap,
+      appParamState.keepGoldMap,
+      appParamState.keepStockMap,
+      appParamState.keepToushiShintakuMap,
+      appParamState.keepInsuranceDataList,
+      appParamState.keepNenkinKikinDataList,
+      DateTime.now().yyyymmdd,
+    ];
+
+    bool same = _dataMapCacheInputs.length == inputs.length;
+    if (same) {
+      for (int i = 0; i < inputs.length; i++) {
+        final Object? a = _dataMapCacheInputs[i];
+        final Object? b = inputs[i];
+        // freezed の Map / List は getter ごとに View で包み直されるため identical ではなく == で比較（中身のインスタンス比較）
+        final bool eq = a == b;
+        if (!eq) {
+          same = false;
+          break;
+        }
+      }
+    }
+
+    if (same) {
+      return;
+    }
+
+    _dataMapCacheInputs = inputs;
+    _dataMapCache = _buildDailyDataMap();
+    _sortedDatesCache = _dataMapCache.keys.toList()..sort();
+  }
+
+  ///
   @override
   Widget build(BuildContext context) {
     final bool showMidashi = appParamState.isShowBarChartMidashi;
     final double barWidth = showMidashi ? _barWidthFull : 1.0;
     _effectiveBarWidth = barWidth;
 
-    final Map<String, _DayData> dataMap = _buildDailyDataMap();
-    final List<String> sortedDates = dataMap.keys.toList()..sort();
+    _ensureDailyDataMap();
+    final Map<String, _DayData> dataMap = _dataMapCache;
+    final List<String> sortedDates = _sortedDatesCache;
     _sortedDates = sortedDates;
 
     if (_currentVisibleYM.isEmpty && sortedDates.isNotEmpty) {

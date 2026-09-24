@@ -40,13 +40,10 @@ class ToushiShintakuInput extends _$ToushiShintakuInput {
     final Map<String, dynamic> uploadData = <String, dynamic>{};
     uploadData['updateData'] = updateData;
 
-    // ignore: always_specify_types
-    await client.post(path: APIPath.updateToushiShintakuRelationalId, body: uploadData).then((value) {}).catchError((
-      // ignore: always_specify_types
-      error,
-      _,
-    ) {
-      utility.showError('予期せぬエラーが発生しました');
-    });
+    try {
+      await client.post(path: APIPath.updateToushiShintakuRelationalId, body: uploadData);
+    } catch (e) {
+      utility.showError('予期せぬエラーが発生しました（toushi_shintaku_input）', error: e);
+    }
   }
 }

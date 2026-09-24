@@ -31,6 +31,8 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
   final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
   final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
 
+  bool _isLoading = false;
+
   ///
   @override
   void initState() {
@@ -60,38 +62,44 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
     return Scaffold(
       backgroundColor: Colors.transparent,
 
-      body: SafeArea(
-        child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white),
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: DefaultTextStyle(
+              style: const TextStyle(color: Colors.white),
 
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: <Widget>[
-                    Text(widget.date),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(widget.date),
 
-                    ElevatedButton(
-                      onPressed: () {
-                        updateData();
-                      },
+                        ElevatedButton(
+                          onPressed: () {
+                            updateData();
+                          },
 
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
 
-                      child: const Text('input'),
+                          child: const Text('input'),
+                        ),
+                      ],
                     ),
+
+                    Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+
+                    Expanded(child: displayDateToushiShintakuList()),
                   ],
                 ),
-
-                Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-
-                Expanded(child: displayDateToushiShintakuList()),
-              ],
+              ),
             ),
           ),
-        ),
+
+          if (_isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+        ],
       ),
     );
   }
@@ -105,6 +113,10 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
 
     int i = 0;
     for (final ToushiShintakuModel element in widget.todayDataList) {
+      /// 修正: ループ外で宣言した i をクロージャが直接キャプチャすると、全行が最終値を渡していたため、
+      /// 行ごとの値をローカル変数に固定してからキャプチャする
+      final int pos = i;
+
       String displayRelationalId = '';
 
       if (element.relationalId > 0) {
@@ -153,7 +165,7 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
                         Text(textModify(text: element.shutokuSougaku)),
                         GestureDetector(
                           onTap: () => callFirstBox(
-                            pos: i,
+                            pos: pos,
                             id: element.id,
                             name: element.name,
                             shutokuSougaku: textModify(text: element.shutokuSougaku).trim(),
@@ -196,8 +208,8 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
     addFirstOverlay(
       context: context,
       setStateCallback: setState,
-      width: MediaQuery.of(context).size.width * 0.5,
-      height: MediaQuery.of(context).size.height * 0.8,
+      width: MediaQuery.sizeOf(context).width * 0.5,
+      height: MediaQuery.sizeOf(context).height * 0.8,
       color: Colors.blueGrey.withOpacity(0.3),
       initialPosition: const Offset(80, 100),
 
@@ -244,7 +256,8 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
     final List<Widget> list = <Widget>[];
 
     if (widget.referenceDataMapEntry != null) {
-      final List<ToushiShintakuModel> sortedData = widget.referenceDataMapEntry!.value
+      // 呼び出し元のリストを書き換えないようコピーしてから並べ替える
+      final List<ToushiShintakuModel> sortedData = widget.referenceDataMapEntry!.value.toList()
         ..sort(
           (ToushiShintakuModel a, ToushiShintakuModel b) => textModify(text: a.shutokuSougaku)
               .replaceAll(',', '')
@@ -322,6 +335,11 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
 
   ///
   Future<void> updateData() async {
+    // 送信中の二重タップを無視する
+    if (_isLoading) {
+      return;
+    }
+
     bool errFlg = false;
     toushiShintakuInputState.relationalIdMap.forEach((String key, int value) {
       if (value == 0) {
@@ -344,12 +362,20 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
       return;
     }
 
-    toushiShintakuInputNotifier.updateToushiShintakuRelationalId(updateData: toushiShintakuInputState.relationalIdMap)
-    // ignore: always_specify_types
-    .then((value) {
+    setState(() => _isLoading = true);
+
+    try {
+      await toushiShintakuInputNotifier.updateToushiShintakuRelationalId(
+        updateData: toushiShintakuInputState.relationalIdMap,
+      );
+
       if (mounted) {
         context.findAncestorStateOfType<AppRootState>()?.restartApp();
       }
-    });
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }
