@@ -26,7 +26,13 @@ class WorkHistory extends _$WorkHistory {
 
   ///
   @override
-  WorkHistoryState build() => const WorkHistoryState();
+  WorkHistoryState build() {
+    // アプリ全体で使う取得済みデータのキャッシュなので、画面の作り直し（再起動ボタン・登録後の再起動）の途中で
+    // 監視者が一瞬いなくなっても破棄されないようにする（取得中に破棄されると取得処理がエラーになる）
+    ref.keepAlive();
+
+    return const WorkHistoryState();
+  }
 
   //============================================== api
 
