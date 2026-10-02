@@ -1365,7 +1365,7 @@ class _LifetimeGeolocMapDisplayAlertState extends ConsumerState<LifetimeGeolocMa
           latLngAddressControllerProvider(latitude: searchedGeoloc[0].latitude, longitude: searchedGeoloc[0].longitude),
         );
 
-        final List<LatLngAddressDetailModel>? latLngAddressList = latLngAddressControllerState.value?.latLngAddressList;
+        final List<LatLngAddressDetailModel>? latLngAddressList = latLngAddressControllerState.valueOrNull?.latLngAddressList;
 
         latLngAddressList?.forEach(
           (LatLngAddressDetailModel element) => addressList.add('${element.prefecture}${element.city}${element.town}'),

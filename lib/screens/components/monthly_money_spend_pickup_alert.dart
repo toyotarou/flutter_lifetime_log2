@@ -9,6 +9,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/credit_summary_model.dart';
 import '../../models/money_spend_model.dart';
+import '../../utility/functions.dart';
 import '../parts/lifetime_dialog.dart';
 import 'amazon_purchase_list_alert.dart';
 import 'mobile_suica_charge_history_list.dart';
@@ -385,15 +386,7 @@ class _MonthlyMoneySpendPickupAlertState extends ConsumerState<MonthlyMoneySpend
 
   ///
   List<String> _makeItemKeysFromDisplayList(List<MoneySpendModel> items) {
-    final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
-
-    const List<String> extraItems = <String>['共済戻り', '年金', 'アイアールシー', 'メルカリ', '牛乳代', '弁当代'];
-
-    for (final String item in extraItems) {
-      if (!itemKeys.contains(item)) {
-        itemKeys.add(item);
-      }
-    }
+    final List<String> itemKeys = buildSpendItemKeys(masterKeys: appParamState.keepMoneySpendItemMap.keys);
 
     final Set<String> presentKeys = <String>{};
     for (final MoneySpendModel e in items) {

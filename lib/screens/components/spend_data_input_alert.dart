@@ -150,6 +150,13 @@ class _SpendInputAlertState extends ConsumerState<SpendDateInputAlert> with Cont
       (String key, MoneySpendItemModel value) => dropDownItemName.add(value.name),
     );
 
+    // 既存データの項目がマスタに無い（年金・メルカリ等）と DropdownButton の value が items に無く assert で落ちるため、選択肢に足す
+    for (final String item in spendInputState.inputItemList) {
+      if (!dropDownItemName.contains(item)) {
+        dropDownItemName.add(item);
+      }
+    }
+
     for (int i = 0; i < _rowCount; i++) {
       list.add(
         Container(

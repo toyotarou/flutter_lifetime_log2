@@ -644,17 +644,7 @@ class _MonthlyMoneySpendDisplayAlertState extends ConsumerState<MonthlyMoneySpen
 
   ///
   List<String> _buildSpendItemKeys() {
-    final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
-
-    const List<String> extraItems = <String>['共済戻り', '年金', 'アイアールシー', 'メルカリ', '牛乳代', '弁当代'];
-
-    for (final String item in extraItems) {
-      if (!itemKeys.contains(item)) {
-        itemKeys.add(item);
-      }
-    }
-
-    return itemKeys;
+    return buildSpendItemKeys(masterKeys: appParamState.keepMoneySpendItemMap.keys);
   }
 
   ///

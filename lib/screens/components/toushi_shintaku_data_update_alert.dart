@@ -41,8 +41,11 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
     final Map<String, int> map = <String, int>{};
 
     for (final ToushiShintakuModel element in widget.todayDataList) {
-      int defaultRelationalId = 0;
-      if (widget.referenceNameAndToushiShintakuModelListMap[element.name] != null &&
+      // 既に紐付けIDを持っている行は画面にもそのIDが表示されるため、登録用の初期値にもそれを使う
+      // （以前は 0 のままで、画面にIDが出ているのに input で「登録できません」になっていた）
+      int defaultRelationalId = element.relationalId;
+      if (defaultRelationalId == 0 &&
+          widget.referenceNameAndToushiShintakuModelListMap[element.name] != null &&
           widget.referenceNameAndToushiShintakuModelListMap[element.name]!.length == 1) {
         defaultRelationalId = widget.referenceNameAndToushiShintakuModelListMap[element.name]![0].relationalId;
       }
@@ -278,7 +281,8 @@ class _ToushiShintakuDataUpdateAlertState extends ConsumerState<ToushiShintakuDa
           final int ss1 = textModify(text: shutokuSougaku).replaceAll(',', '').trim().toInt();
           final int ss2 = textModify(text: element.shutokuSougaku).replaceAll(',', '').trim().toInt();
 
-          if ((ss1 - ss2) < 50000 && element.name == name) {
+          // 候補のほうが大きい場合も「近い」と判定されていたため、差の絶対値で比べる
+          if ((ss1 - ss2).abs() < 50000 && element.name == name) {
             shutokuSougakuAroundFlag = true;
           }
         }

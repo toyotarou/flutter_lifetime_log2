@@ -139,7 +139,7 @@ void addFirstOverlay({
 }) {
   if (firstEntries.isNotEmpty) {
     for (final OverlayEntry e in firstEntries) {
-      e.remove();
+      _removeOverlayEntrySafely(e);
     }
     setStateCallback(() => firstEntries.clear());
   }
@@ -188,7 +188,7 @@ void addSecondOverlay({
 }) {
   if (secondEntries.isNotEmpty) {
     for (final OverlayEntry e in secondEntries) {
-      e.remove();
+      _removeOverlayEntrySafely(e);
     }
     setStateCallback(() => secondEntries.clear());
   }
@@ -222,7 +222,7 @@ void closeAllOverlays({required WidgetRef ref}) {
 
   if (firstEntries != null) {
     for (final OverlayEntry e in firstEntries) {
-      e.remove();
+      _removeOverlayEntrySafely(e);
     }
   }
 
@@ -230,7 +230,18 @@ void closeAllOverlays({required WidgetRef ref}) {
 
   if (secondEntries != null) {
     for (final OverlayEntry e2 in secondEntries) {
-      e2.remove();
+      _removeOverlayEntrySafely(e2);
     }
+  }
+}
+
+///
+/// closeAllOverlays で外した後もリストに残っている entry を再度 remove すると
+/// OverlayEntry 内部の assert / null チェックで例外になるため、外れ済みの entry は無視する
+void _removeOverlayEntrySafely(OverlayEntry e) {
+  try {
+    e.remove();
+  } on Object catch (_) {
+    // 既に Overlay から外れている entry（何もしない）
   }
 }

@@ -22,8 +22,9 @@ class LatLngAddressResponseModel {
   LatLngAddressResponseModel({required this.location});
 
   factory LatLngAddressResponseModel.fromJson(Map<String, dynamic> json) => LatLngAddressResponseModel(
+      // 該当住所なし（海上など）の場合 API は location を返さず error を返すため、null は空リスト扱いにする
       // ignore: avoid_dynamic_calls
-      location: List<LatLngAddressDetailModel>.from(json['location']
+      location: List<LatLngAddressDetailModel>.from((json['location'] ?? <dynamic>[])
           // ignore: inference_failure_on_untyped_parameter, always_specify_types
           .map((x) => LatLngAddressDetailModel.fromJson(x as Map<String, dynamic>)) as Iterable<dynamic>));
 

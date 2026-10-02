@@ -152,6 +152,10 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
                             }
                             keepPrice = entry.value;
                           }
+                          // 全期間 0 円の口座は map が空のままなので、first で例外にならないよう表示しない
+                          if (map.isEmpty) {
+                            return const SizedBox.shrink();
+                          }
                           final MapEntry<String, int> last1 = map.entries.first;
                           return Container(
                             decoration: BoxDecoration(
@@ -199,6 +203,10 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
                               map = element;
                             }
                             keepPrice = entry.value;
+                          }
+                          // 全期間 0 円の口座は map が空のままなので、first で例外にならないよう表示しない
+                          if (map.isEmpty) {
+                            return const SizedBox.shrink();
                           }
                           final MapEntry<String, int> last1 = map.entries.first;
                           return Container(
@@ -451,7 +459,9 @@ class _BankDataInputAlertState extends ConsumerState<BankDataInputAlert> with Co
     for (int i = 0; i < priceTecs.length; i++) {
       if (bankInputState.inputDateList[i] != '' &&
           bankInputState.inputBankList[i] != '' &&
-          bankInputState.inputValueList[i] != '') {
+          bankInputState.inputValueList[i] != '' &&
+          // inputValueList の初期値は '0' のため、金額を入れ忘れると 0 円で登録されていた。入力欄が空の行は登録しない
+          priceTecs[i].text.trim() != '') {
         uploadDataList.add(<String, dynamic>{
           'date': bankInputState.inputDateList[i],
           'bank': bankInputState.inputBankList[i],

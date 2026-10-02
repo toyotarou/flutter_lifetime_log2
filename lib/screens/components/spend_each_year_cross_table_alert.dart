@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
+import '../../utility/functions.dart';
 import '../parts/flexible_table.dart';
 
 class MoneySpendCrossTableAlert extends ConsumerStatefulWidget {
@@ -36,15 +37,7 @@ class _MoneySpendCrossTableAlertState extends ConsumerState<MoneySpendCrossTable
     final Map<String, Map<String, int>> yearItemTotalMap = _yearItemTotalMap;
     final List<String> years = collectYears(yearItemTotalMap);
 
-    final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
-
-    const List<String> extraItems = <String>['共済戻り', '年金', 'アイアールシー', 'メルカリ', '牛乳代', '弁当代'];
-
-    for (final String item in extraItems) {
-      if (!itemKeys.contains(item)) {
-        itemKeys.add(item);
-      }
-    }
+    final List<String> itemKeys = buildSpendItemKeys(masterKeys: appParamState.keepMoneySpendItemMap.keys);
 
     final Set<String> existingItems = <String>{};
 

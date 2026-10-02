@@ -133,7 +133,8 @@ class _MonthlyCreditBarChartAlertState extends ConsumerState<MonthlyCreditBarCha
                         fitInsideVertically: true,
                         tooltipMargin: 8,
                         getTooltipItem: (BarChartGroupData group, int groupIndex, BarChartRodData rod, int rodIndex) {
-                          final int month = groupIndex + 1;
+                          // groupIndex はデータのある月だけのリスト内の位置なので、月は group.x（month - 1）から求める
+                          final int month = group.x + 1;
 
                           final Map<String, int> data = appParamState.keepCreditSummaryTotalMap[month]!;
 
@@ -144,7 +145,7 @@ class _MonthlyCreditBarChartAlertState extends ConsumerState<MonthlyCreditBarCha
                           final int total = nonZero.fold(0, (int p, MapEntry<String, int> e) => p + e.value);
 
                           final StringBuffer buf = StringBuffer()
-                            ..writeln(months[groupIndex])
+                            ..writeln(months[group.x])
                             ..writeln('────────');
 
                           for (final MapEntry<String, int> e in nonZero) {

@@ -89,7 +89,8 @@ class _MonthlyAssetsLineChartAlertState extends ConsumerState<MonthlyAssetsLineC
     super.dispose();
   }
 
-  bool get _canGoBackward => _displayedMonths[0].compareTo(_startMonth) > 0;
+  /// 2枚表示で基準が開始月のときも「単月に戻る」ため戻れるようにする（_goBackward の該当分岐に到達できなかった）
+  bool get _canGoBackward => _displayedMonths[0].compareTo(_startMonth) > 0 || _displayedMonths.length > 1;
 
   static const int _graphMin = 0;
   static const int _graphMax = 15000000;

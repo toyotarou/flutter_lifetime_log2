@@ -120,16 +120,19 @@ class _MoneyInPossessionGraphAlertState extends ConsumerState<MoneyInPossessionG
               Expanded(
                 child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
-                    final double angleDeg = _calcAngleDeg(
-                      lineA: angleFlspotsA,
-                      lineB: angleFlspotsB,
-                      chartWidth: constraints.maxWidth,
-                      chartHeight: constraints.maxHeight,
-                      minX: 1,
-                      maxX: _flspots.length.toDouble(),
-                      minY: graphMin.toDouble(),
-                      maxY: graphMax.toDouble(),
-                    );
+                    // データが無い年は angleFlspotsA/B が空のままで、last / first が StateError になるため 0 とする
+                    final double angleDeg = (angleFlspotsA.isEmpty || angleFlspotsB.isEmpty)
+                        ? 0
+                        : _calcAngleDeg(
+                          lineA: angleFlspotsA,
+                          lineB: angleFlspotsB,
+                          chartWidth: constraints.maxWidth,
+                          chartHeight: constraints.maxHeight,
+                          minX: 1,
+                          maxX: _flspots.length.toDouble(),
+                          minY: graphMin.toDouble(),
+                          maxY: graphMax.toDouble(),
+                        );
 
                     const double intersectionX = 0.0;
                     final num intersectionY = startPrice;

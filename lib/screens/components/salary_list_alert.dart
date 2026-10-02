@@ -55,6 +55,11 @@ class _SalaryListAlertState extends ConsumerState<SalaryListAlert> with Controll
 
   ///
   Widget displaySalaryList() {
+    // データ未取得時は entries.last が StateError になるため
+    if (appParamState.keepSalaryMap.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     final List<Widget> list = <Widget>[];
 
     final List<String> yearmonthList = <String>[];

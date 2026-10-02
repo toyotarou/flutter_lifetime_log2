@@ -5,10 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
-import '../../models/gold_model.dart';
-import '../../models/money_model.dart';
-import '../../models/stock_model.dart';
-import '../../models/toushi_shintaku_model.dart';
 import '../../utility/assets_calc.dart';
 import '../../utility/utility.dart';
 
@@ -282,88 +278,21 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
   }
 
   ///
+  /// 計算本体は AssetsCalc.calcTotalAssetsAtDate（monthly_assets_graph_alert.dart と yearly_assets_spend_info_alert.dart で共通）
   int _calcTotalAssetsAtDate(
     DateTime date, {
     required List<DateTime> insurancePaidDates,
     required List<DateTime> nenkinKikinPaidDates,
   }) {
-    final int lastGoldSum = _findLastValidGoldValue(date);
-    final int lastStockSum = _findLastValidStockSum(date);
-    final int lastToushiSum = _findLastValidToushiSum(date);
-    final int lastMoneySum = _findLastValidMoneySum(date);
-
-    final int insurancePassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: insurancePaidDates, date: date) + 102;
-    final int insuranceSum = insurancePassedMonths * (55880 * 0.7).toInt();
-
-    final int nenkinKikinPassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: nenkinKikinPaidDates, date: date) + 32;
-    // 2026-06-15に国民年金基金解約のため、同日以降は0
-    final int nenkinKikinSum = date.isBefore(DateTime(2026, 6, 15))
-        ? nenkinKikinPassedMonths * (26625 * 0.7).toInt()
-        : 0;
-
-    const double assetRate = 0.8;
-
-    return lastMoneySum +
-        (lastGoldSum * assetRate).toInt() +
-        (lastStockSum * assetRate).toInt() +
-        (lastToushiSum * assetRate).toInt() +
-        insuranceSum +
-        nenkinKikinSum;
-  }
-
-  ///
-  int _findLastValidGoldValue(DateTime date) {
-    final Map<String, GoldModel> goldMap = appParamState.keepGoldMap;
-    for (int i = 0; i < 366; i++) {
-      final String key = date.subtract(Duration(days: i)).yyyymmdd;
-      final GoldModel? model = goldMap[key];
-      if (model != null) {
-        final dynamic val = model.goldValue;
-        if (val != null && val.toString() != '-') {
-          return val.toString().toInt();
-        }
-      }
-    }
-    return 0;
-  }
-
-  ///
-  int _findLastValidStockSum(DateTime date) {
-    final Map<String, List<StockModel>> stockMap = appParamState.keepStockMap;
-    for (int i = 0; i < 366; i++) {
-      final String key = date.subtract(Duration(days: i)).yyyymmdd;
-      final List<StockModel>? list = stockMap[key];
-      if (list != null && list.isNotEmpty) {
-        return AssetsCalc.calcStockSum(list);
-      }
-    }
-    return 0;
-  }
-
-  ///
-  int _findLastValidToushiSum(DateTime date) {
-    final Map<String, List<ToushiShintakuModel>> toushiShintakuMap = appParamState.keepToushiShintakuMap;
-    for (int i = 0; i < 366; i++) {
-      final String key = date.subtract(Duration(days: i)).yyyymmdd;
-      final List<ToushiShintakuModel>? list = toushiShintakuMap[key];
-      if (list != null && list.isNotEmpty) {
-        return AssetsCalc.calcToushiSum(list);
-      }
-    }
-    return 0;
-  }
-
-  ///
-  int _findLastValidMoneySum(DateTime date) {
-    final Map<String, MoneyModel> moneyMap = appParamState.keepMoneyMap;
-    for (int i = 0; i < 366; i++) {
-      final String key = date.subtract(Duration(days: i)).yyyymmdd;
-      final String? sum = moneyMap[key]?.sum;
-      if (sum != null && sum.isNotEmpty) {
-        return sum.toInt();
-      }
-    }
-    return 0;
+    return AssetsCalc.calcTotalAssetsAtDate(
+      date: date,
+      goldMap: appParamState.keepGoldMap,
+      stockMap: appParamState.keepStockMap,
+      toushiShintakuMap: appParamState.keepToushiShintakuMap,
+      moneyMap: appParamState.keepMoneyMap,
+      insurancePaidDates: insurancePaidDates,
+      nenkinKikinPaidDates: nenkinKikinPaidDates,
+    );
   }
 
   ///
@@ -438,8 +367,9 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
   Widget _buildMonthItem(Map<String, dynamic> data) {
     final int value = data['value'] as int;
 
-    final String aaa = data['prevTotal'].toString().substring(0, 4);
-    final String bbb = data['total'].toString().substring(0, 4);
+    // 先頭4桁を切り出す方式だと、1,000万円未満では千円単位・以上では万円単位になり、4桁未満では RangeError になるため万円単位で揃える
+    final String aaa = ((data['prevTotal'] as int) ~/ 10000).toString();
+    final String bbb = ((data['total'] as int) ~/ 10000).toString();
 
     return Stack(
       children: <Widget>[

@@ -82,7 +82,10 @@ class _GainLinePainter extends CustomPainter {
   ///
   @override
   bool shouldRepaint(_GainLinePainter oldDelegate) =>
-      oldDelegate.scrollOffset != scrollOffset || oldDelegate.maxY != maxY;
+      oldDelegate.scrollOffset != scrollOffset ||
+      oldDelegate.maxY != maxY ||
+      oldDelegate.sortedDates != sortedDates ||
+      oldDelegate.dataMap != dataMap;
 }
 
 class _CostLinePainter extends CustomPainter {
@@ -193,7 +196,11 @@ class _CostLinePainter extends CustomPainter {
   ///
   @override
   bool shouldRepaint(_CostLinePainter oldDelegate) =>
-      oldDelegate.scrollOffset != scrollOffset || oldDelegate.maxY != maxY || oldDelegate.currentYM != currentYM;
+      oldDelegate.scrollOffset != scrollOffset ||
+      oldDelegate.maxY != maxY ||
+      oldDelegate.currentYM != currentYM ||
+      oldDelegate.sortedDates != sortedDates ||
+      oldDelegate.dataMap != dataMap;
 }
 
 class AssetsDetailBarChartAlert extends ConsumerStatefulWidget {

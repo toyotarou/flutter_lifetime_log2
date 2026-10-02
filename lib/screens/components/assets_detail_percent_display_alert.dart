@@ -43,7 +43,8 @@ class _AssetsDetailPercentDisplayAlertState extends ConsumerState<AssetsDetailPe
           widget.goldMap.forEach((String key, GoldModel value) {
             if (value.goldValue.toString() != '-' && value.payPrice.toString() != '-') {
               final List<String> exKey = key.split('-');
-              if (i.toString() == exKey[0]) {
+              // 分母が 0 だと Infinity / NaN になり toInt() が例外を投げるため除外する
+              if (i.toString() == exKey[0] && value.payPrice.toString().toInt() != 0) {
                 (map[i.toString()] ??= <int>[]).add(
                   ((value.goldValue.toString().toInt() / value.payPrice.toString().toInt()) * 100).toInt(),
                 );
@@ -69,7 +70,9 @@ class _AssetsDetailPercentDisplayAlertState extends ConsumerState<AssetsDetailPe
 
           for (int i = 2021; i <= DateTime.now().year; i++) {
             for (final StockModel element in value) {
-              if (element.year == i.toString()) {
+              // 分母が 0 だと Infinity / NaN になり toInt() が例外を投げるため除外する
+              if (element.year == i.toString() &&
+                  element.hoyuuSuuryou * element.heikinShutokuKagaku.replaceAll(',', '').toDouble() != 0) {
                 (map[i.toString()] ??= <int>[]).add(
                   ((element.jikaHyoukagaku.replaceAll(',', '').toInt() /
                               (element.hoyuuSuuryou * element.heikinShutokuKagaku.replaceAll(',', '').toDouble())) *
@@ -104,7 +107,9 @@ class _AssetsDetailPercentDisplayAlertState extends ConsumerState<AssetsDetailPe
 
           for (int i = 2021; i <= DateTime.now().year; i++) {
             for (final ToushiShintakuModel element in value) {
-              if (element.year == i.toString()) {
+              // 分母が 0 だと Infinity / NaN になり toInt() が例外を投げるため除外する
+              if (element.year == i.toString() &&
+                  element.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim().toInt() != 0) {
                 (map[i.toString()] ??= <int>[]).add(
                   ((element.jikaHyoukagaku.replaceAll(',', '').replaceAll('円', '').trim().toInt() /
                               element.shutokuSougaku.replaceAll(',', '').replaceAll('円', '').trim().toInt()) *

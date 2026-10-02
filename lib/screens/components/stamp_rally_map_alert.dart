@@ -167,6 +167,10 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
 
       // ignore: always_specify_types
       Future.delayed(const Duration(seconds: 2), () {
+        // 2秒以内にダイアログが閉じられた場合、破棄後の setState / mapController 操作で例外になるため
+        if (!mounted) {
+          return;
+        }
         setDefaultBoundsMap();
         setState(() => isLoading = false);
       });
@@ -529,6 +533,9 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
           continue;
         }
 
+        // onTap のクロージャは allIndex 変数そのものを捕まえるため、タップ時には総数になってしまう。この時点の値を固定する
+        final int keyIndex = allIndex;
+
         list.add(
           Marker(
             point: LatLng(element.lat.toDouble(), element.lng.toDouble()),
@@ -537,14 +544,14 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
                 iconToolChipDisplayOverlay(
                   type: 'stamp_rally_map_alert_icon',
                   context: context,
-                  buttonKey: globalKeyList[allIndex],
+                  buttonKey: globalKeyList[keyIndex],
                   displayDuration: const Duration(seconds: 2),
                   stampRallyModel: element,
                 );
               },
 
               child: SizedBox(
-                key: globalKeyList[allIndex],
+                key: globalKeyList[keyIndex],
                 width: 30,
                 height: 30,
                 child: Stack(

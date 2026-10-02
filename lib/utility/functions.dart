@@ -371,6 +371,22 @@ ScrollLineChartYAxisRangeModel calcYAxisRange({required double minValue, require
   return ScrollLineChartYAxisRangeModel(min: yMin, max: yMax, interval: interval);
 }
 
+/// 支出項目キー一覧（マスタ + マスタに無い追加項目）
+/// monthly_money_spend_display / pickup / summary、spend_each_year_cross_table / summary_display で同一コードだったものを集約
+List<String> buildSpendItemKeys({required Iterable<String> masterKeys}) {
+  final List<String> itemKeys = masterKeys.toList();
+
+  const List<String> extraItems = <String>['共済戻り', '年金', 'アイアールシー', 'メルカリ', '牛乳代', '弁当代'];
+
+  for (final String item in extraItems) {
+    if (!itemKeys.contains(item)) {
+      itemKeys.add(item);
+    }
+  }
+
+  return itemKeys;
+}
+
 ///
 DateTime monthForIndex({required int index, required DateTime baseMonth}) {
   final int rawOffset = index - (100000 ~/ 2);

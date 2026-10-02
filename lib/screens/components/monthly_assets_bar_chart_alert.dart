@@ -179,7 +179,11 @@ class _SegmentPercentPainter extends CustomPainter {
   ///
   @override
   bool shouldRepaint(_SegmentPercentPainter old) =>
-      old.scrollOffset != scrollOffset || old.maxY != maxY || old.barWidth != barWidth;
+      old.scrollOffset != scrollOffset ||
+      old.maxY != maxY ||
+      old.barWidth != barWidth ||
+      old.sortedDates != sortedDates ||
+      old.dataMap != dataMap;
 }
 
 // ─────────────────────────────────────────────

@@ -570,44 +570,28 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       final String mmdd = '${d.month.toString().padLeft(2, '0')}/${d.day.toString().padLeft(2, '0')}';
       final String youbiShort = youbiStr.length >= 3 ? youbiStr.substring(0, 3) : youbiStr;
 
-      list.add(
-        YearDayAssetsModel(
-          date: key,
-          mmdd: mmdd,
-          youbiStr: youbiStr,
-          youbiShort: youbiShort,
-          money: money,
-          gold: gold80,
-          stock: stock80,
-          toushiShintaku: toushi80,
-          insurance: insuranceSum,
-          insurancePassedMonths: insurancePassedMonths,
-          nenkinKikin: nenkinKikinSum,
-          nenkinKikinPassedMonths: nenkinKikinPassedMonths,
-          total: total,
-          totalBefore: prevTotal,
-        ),
+      // 同じ内容のモデルを日別リストと月末リストの両方に使う（以前は同じ引数で2回生成していた。フィールドは全て final）
+      final YearDayAssetsModel yearDayAssetsModel = YearDayAssetsModel(
+        date: key,
+        mmdd: mmdd,
+        youbiStr: youbiStr,
+        youbiShort: youbiShort,
+        money: money,
+        gold: gold80,
+        stock: stock80,
+        toushiShintaku: toushi80,
+        insurance: insuranceSum,
+        insurancePassedMonths: insurancePassedMonths,
+        nenkinKikin: nenkinKikinSum,
+        nenkinKikinPassedMonths: nenkinKikinPassedMonths,
+        total: total,
+        totalBefore: prevTotal,
       );
 
+      list.add(yearDayAssetsModel);
+
       if (d.yyyymmdd == DateTime(d.year, d.month + 1, 0).yyyymmdd) {
-        monthEndAssetsList.add(
-          YearDayAssetsModel(
-            date: key,
-            mmdd: mmdd,
-            youbiStr: youbiStr,
-            youbiShort: youbiShort,
-            money: money,
-            gold: gold80,
-            stock: stock80,
-            toushiShintaku: toushi80,
-            insurance: insuranceSum,
-            insurancePassedMonths: insurancePassedMonths,
-            nenkinKikin: nenkinKikinSum,
-            nenkinKikinPassedMonths: nenkinKikinPassedMonths,
-            total: total,
-            totalBefore: prevTotal,
-          ),
-        );
+        monthEndAssetsList.add(yearDayAssetsModel);
       }
 
       if (mmdd == '01/01') {

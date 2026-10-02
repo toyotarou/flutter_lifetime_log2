@@ -269,6 +269,10 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
     }
 
     _syncingH = false;
+    // スクロール中にダイアログが閉じられた場合、破棄後の setState で例外になるため
+    if (!mounted) {
+      return;
+    }
     if (_currentMonth != month) {
       setState(() => _currentMonth = month);
     }
@@ -303,6 +307,10 @@ class _CrossCalendarState extends ConsumerState<CrossCalendar> with ControllersM
       await _scrollToMonth(now.month);
     }
 
+    // スクロール中にダイアログが閉じられた場合、破棄後の setState で例外になるため
+    if (!mounted) {
+      return;
+    }
     if (_currentMonth != now.month) {
       setState(() => _currentMonth = now.month);
     }

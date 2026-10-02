@@ -80,7 +80,8 @@ class WorkHistory extends _$WorkHistory {
         final Set<String> yearMonthSet = <String>{};
 
         WorkContractModel? lastRecord;
-        for (int i = 0; i < diffDays; i++) {
+        // 当日（毎月1日に当月分が欠けないよう）も含めるため <= にする
+        for (int i = 0; i <= diffDays; i++) {
           final String yearMonth = firstDate.add(Duration(days: i)).yyyymm;
 
           if (!yearMonthSet.add(yearMonth)) {

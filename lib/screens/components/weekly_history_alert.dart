@@ -505,7 +505,9 @@ class _WeekHeaderState extends ConsumerState<WeekHeader> with ControllersMixin<W
   ///
   @override
   Widget build(BuildContext context) {
-    final String displayWeekDayStr = '${widget.date}|${weeklyHistoryDisplayWeekDate.entries.last.value}';
+    // widget.date は地図アイコンのタップで選択日に変わるため、週の開始日は initState で作った週データの先頭を使う
+    final String displayWeekDayStr =
+        '${weeklyHistoryDisplayWeekDate.entries.first.value}|${weeklyHistoryDisplayWeekDate.entries.last.value}';
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {

@@ -5,6 +5,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
 import '../../models/salary_model.dart';
+import '../../utility/functions.dart';
 import '../../utility/utility.dart';
 import '../parts/error_dialog.dart';
 import '../parts/lifetime_dialog.dart';
@@ -128,15 +129,7 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
 
     int listSum = 0;
 
-    final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
-
-    const List<String> extraItems = <String>['共済戻り', '年金', 'アイアールシー', 'メルカリ', '牛乳代', '弁当代'];
-
-    for (final String item in extraItems) {
-      if (!itemKeys.contains(item)) {
-        itemKeys.add(item);
-      }
-    }
+    final List<String> itemKeys = buildSpendItemKeys(masterKeys: appParamState.keepMoneySpendItemMap.keys);
 
     for (final String key in itemKeys) {
       if (moneySpendSummaryMap[key] != null) {
@@ -219,10 +212,11 @@ class _MonthlyMoneySpendSummaryAlertState extends ConsumerState<MonthlyMoneySpen
     ///////////////////////////////////////////////////////////////// salary start
 
     if (!appParamState.isMonthlySpendSummaryMinusJogai) {
-      List<SalaryModel> salaryModelList = <SalaryModel>[];
+      final List<SalaryModel> salaryModelList = <SalaryModel>[];
       appParamState.keepSalaryMap.forEach((String key, List<SalaryModel> value) {
         if ('${key.split('-')[0]}-${key.split('-')[1]}' == widget.yearmonth) {
-          salaryModelList = value;
+          // keepSalaryMap のキーは日付なので、同じ月に支給日が複数あると代入では最後の日しか残らない。全部足す
+          salaryModelList.addAll(value);
         }
       });
 

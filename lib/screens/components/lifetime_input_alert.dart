@@ -225,6 +225,10 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
               selected: element.item == lifetimeInputState.selectedInputChoiceChip,
               onSelected: (bool isSelected) async {
                 lifetimeInputNotifier.setSelectedInputChoiceChip(item: element.item);
+                // 時間（行）を選ぶ前は itemPos が -1 のため、tecs[-1] で RangeError にならないようにする
+                if (lifetimeInputState.itemPos < 0) {
+                  return;
+                }
                 lifetimeInputNotifier.setLifetimeStringList(pos: lifetimeInputState.itemPos, item: element.item);
                 tecs[lifetimeInputState.itemPos].text = element.item;
               },
@@ -254,6 +258,11 @@ class _LifetimeInputAlertState extends ConsumerState<LifetimeInputAlert> with Co
 
     return GestureDetector(
       onTap: () async {
+        // 時間（行）を選ぶ前は itemPos が -1 のため、lifetimeStringList[-1] で RangeError にならないようにする
+        if (lifetimeInputState.itemPos < 0) {
+          return;
+        }
+
         int endPos = 0;
         for (int i = lifetimeInputState.itemPos + 1; i < tecs.length; i++) {
           if (lifetimeInputState.lifetimeStringList[i] != '') {

@@ -217,10 +217,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                     maxCount: bottomNavigationMenuIcons.length,
                   );
 
-                  getBottomMenuContents(index: index);
+                  final Object result = getBottomMenuContents(index: index);
 
-                  if (mounted) {
-                    appParamNotifier.setSelectedBottomNavigationIndex(maxCount: bottomNavigationMenuIcons.length);
+                  // 以前は同じ処理の中ですぐ解除していたため、黄色ハイライトが一瞬も表示されなかった。
+                  // ダイアログが開いている間はハイライトを残し、閉じたら解除する（ダイアログを開かなかった場合は即解除）
+                  void clearSelected() {
+                    if (mounted) {
+                      appParamNotifier.setSelectedBottomNavigationIndex(maxCount: bottomNavigationMenuIcons.length);
+                    }
+                  }
+
+                  if (result is Future<void>) {
+                    result.whenComplete(clearSelected);
+                  } else {
+                    clearSelected();
                   }
                 } catch (e) {
                   debugPrint('bottomNavigationBar onTap error: $e');

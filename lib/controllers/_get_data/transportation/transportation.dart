@@ -179,18 +179,8 @@ class Transportation extends _$Transportation {
 
         final String date = val.date.yyyymmdd;
 
-        list.add(
-          TransportationModel(
-            date: date,
-            // ignore: avoid_bool_literals_in_conditional_expressions
-            oufuku: (val.oufuku == '1') ? true : false,
-            spotDataModelListMap: spotDataModelListMap,
-            rootSpotCountMap: rootSpotCountMap,
-            stationRouteList: exStation,
-          ),
-        );
-
-        map[date] = TransportationModel(
+        // 同じ内容のモデルを list と map の両方に入れる（以前は同じ引数で2回生成していた）
+        final TransportationModel transportationModel = TransportationModel(
           date: date,
           // ignore: avoid_bool_literals_in_conditional_expressions
           oufuku: (val.oufuku == '1') ? true : false,
@@ -198,6 +188,10 @@ class Transportation extends _$Transportation {
           rootSpotCountMap: rootSpotCountMap,
           stationRouteList: exStation,
         );
+
+        list.add(transportationModel);
+
+        map[date] = transportationModel;
       }
 
       //---------------------------------------------------------------------------//

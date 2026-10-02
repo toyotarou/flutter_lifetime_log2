@@ -46,6 +46,10 @@ class MoneyInput extends _$MoneyInput {
   ///
   void setInputValueList({required String value}) {
     final List<String> list = <String>[...state.inputValueList];
+    // 「反映」「消去」の後は pos が -1 になるため、続けて「反映」を押すと RangeError になるのを防ぐ
+    if (state.pos < 0 || state.pos >= list.length) {
+      return;
+    }
     list[state.pos] = value;
     state = state.copyWith(inputValueList: list);
   }

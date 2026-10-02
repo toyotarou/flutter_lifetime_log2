@@ -5,6 +5,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/money_spend_model.dart';
+import '../../utility/functions.dart';
 import '../parts/lifetime_dialog.dart';
 import 'spend_each_year_cross_table_alert.dart';
 
@@ -88,15 +89,7 @@ class _SpendEachYearSummaryDisplayAlertState extends ConsumerState<SpendEachYear
   Widget displayYearlyAllSpendSummary() {
     final String selectedYear = appParamState.yearlyAllSpendSelectedYear;
 
-    final List<String> itemKeys = appParamState.keepMoneySpendItemMap.keys.toList();
-
-    const List<String> extraItems = <String>['共済戻り', '年金', 'アイアールシー', 'メルカリ', '牛乳代', '弁当代'];
-
-    for (final String item in extraItems) {
-      if (!itemKeys.contains(item)) {
-        itemKeys.add(item);
-      }
-    }
+    final List<String> itemKeys = buildSpendItemKeys(masterKeys: appParamState.keepMoneySpendItemMap.keys);
 
     final Map<String, int> summary = <String, int>{};
     for (final String key in itemKeys) {

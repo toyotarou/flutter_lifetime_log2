@@ -115,6 +115,11 @@ class _MoneyInPossessionDisplayAlertState extends ConsumerState<MoneyInPossessio
                               sumList.add(aaa.sum);
                             }
 
+                            // データ未取得時は reduce が StateError になるため何もしない
+                            if (sumList.isEmpty) {
+                              return;
+                            }
+
                             final ScrollLineChartYAxisRangeModel yAxisRange = calcYAxisRange(
                               minValue: sumList.reduce(min).toDouble(),
                               maxValue: sumList.reduce(max).toDouble(),
