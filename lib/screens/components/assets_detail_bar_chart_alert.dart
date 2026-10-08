@@ -204,7 +204,13 @@ class _CostLinePainter extends CustomPainter {
 }
 
 class AssetsDetailBarChartAlert extends ConsumerStatefulWidget {
-  const AssetsDetailBarChartAlert({super.key});
+  const AssetsDetailBarChartAlert({super.key, this.title, this.priceCostMap});
+
+  /// 見出し（未指定時は投資信託の月別時価評価額）
+  final String? title;
+
+  /// 指定時はこのデータ（日付 yyyy-MM-dd -> 時価・取得額）で棒グラフを描く。未指定時は従来どおり keepToushiShintakuMap を集計
+  final Map<String, ({int price, int cost})>? priceCostMap;
 
   @override
   ConsumerState<AssetsDetailBarChartAlert> createState() => _AssetsDetailBarChartAlertState();
@@ -228,6 +234,7 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
   Map<String, _MonthData> _dailyDataMap = <String, _MonthData>{};
   Map<String, int> _monthlyCostIncrease = <String, int>{};
   Map<String, String> _monthLastDate = <String, String>{};
+  bool _priceCostMapBuilt = false;
 
   ///
   @override
@@ -436,7 +443,7 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
       );
     }
 
-    final int maxValue = dailyDataMap.values.map((_MonthData e) => e.price).reduce(max);
+    final int maxValue = dailyDataMap.values.map((_MonthData e) => max(e.price, e.cost)).reduce(max);
     final double chartMaxY = maxValue > 0 ? (maxValue * 1.35).ceilToDouble() : 1;
     const double barWidth = 36.0;
     final double effectiveBarWidth = appParamState.isShowBarChartMidashi ? barWidth : 1.0;
@@ -456,7 +463,7 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
               children: <Widget>[
                 Row(
                   children: <Widget>[
-                    const Text('投資信託 月別時価評価額'),
+                    Flexible(child: Text(widget.title ?? '投資信託 月別時価評価額')),
                     const SizedBox(width: 16),
                     _legendChip(color: _costColor, label: 'コスト'),
                     const SizedBox(width: 8),
@@ -640,19 +647,27 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                                 final _MonthData data = dailyDataMap[key]!;
                                 final double costY = data.cost.toDouble().clamp(0, data.price.toDouble());
                                 final double priceY = data.price.toDouble();
+                                // 儲けがマイナスの時は、棒の頭を取得額(白)に揃え、時価〜取得額の部分をオレンジにする
+                                final bool isLoss = data.gain < 0;
+                                final double costTopY = data.cost.toDouble();
                                 return BarChartGroupData(
                                   x: i,
                                   showingTooltipIndicators: <int>[0],
                                   barRods: <BarChartRodData>[
                                     BarChartRodData(
-                                      toY: priceY,
+                                      toY: isLoss ? costTopY : priceY,
                                       width: (appParamState.isShowBarChartMidashi) ? barWidth - 2 : 1,
                                       color: Colors.transparent,
                                       borderRadius: BorderRadius.zero,
-                                      rodStackItems: <BarChartRodStackItem>[
-                                        BarChartRodStackItem(0, costY, _costColor.withOpacity(0.4)),
-                                        BarChartRodStackItem(costY, priceY, _gainColor.withOpacity(0.4)),
-                                      ],
+                                      rodStackItems: isLoss
+                                          ? <BarChartRodStackItem>[
+                                              BarChartRodStackItem(0, priceY, _costColor.withOpacity(0.4)),
+                                              BarChartRodStackItem(priceY, costTopY, Colors.orange.withOpacity(0.4)),
+                                            ]
+                                          : <BarChartRodStackItem>[
+                                              BarChartRodStackItem(0, costY, _costColor.withOpacity(0.4)),
+                                              BarChartRodStackItem(costY, priceY, _gainColor.withOpacity(0.4)),
+                                            ],
                                     ),
                                   ],
                                 );
@@ -663,58 +678,61 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
                       ),
 
                       if (appParamState.isShowBarChartMidashi) ...<Widget>[
-                        Positioned.fill(
-                          child: IgnorePointer(
+                        // 折れ線(儲け・コスト)は、リストからの呼び出し(priceCostMap 指定)時は表示しない
+                        if (widget.priceCostMap == null) ...<Widget>[
+                          Positioned.fill(
+                            child: IgnorePointer(
+                              child: AnimatedBuilder(
+                                animation: _scrollController,
+                                builder: (BuildContext context, Widget? child) {
+                                  return CustomPaint(
+                                    painter: _GainLinePainter(
+                                      sortedDates: sortedDates,
+                                      dataMap: dailyDataMap,
+                                      maxY: chartMaxY,
+                                      scrollOffset: _scrollController.hasClients ? _scrollController.offset : 0,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+
+                          Positioned.fill(
                             child: AnimatedBuilder(
                               animation: _scrollController,
                               builder: (BuildContext context, Widget? child) {
-                                return CustomPaint(
-                                  painter: _GainLinePainter(
-                                    sortedDates: sortedDates,
-                                    dataMap: dailyDataMap,
-                                    maxY: chartMaxY,
-                                    scrollOffset: _scrollController.hasClients ? _scrollController.offset : 0,
-                                  ),
+                                late _CostLinePainter costPainter;
+                                final DateTime now = DateTime.now();
+                                final String currentYM = '${now.year}-${now.month.toString().padLeft(2, '0')}';
+                                costPainter = _CostLinePainter(
+                                  sortedDates: sortedDates,
+                                  dataMap: dailyDataMap,
+                                  maxY: chartMaxY,
+                                  scrollOffset: _scrollController.hasClients ? _scrollController.offset : 0,
+                                  currentYM: currentYM,
+                                  onGreenDotTap: (int index) {
+                                    LifetimeDialog(
+                                      context: context,
+                                      widget: AssetsCostDetailDisplayAlert(costChangeDate: sortedDates[index]),
+                                    );
+                                  },
+                                );
+                                return GestureDetector(
+                                  onTapUp: (TapUpDetails details) {
+                                    for (final ({Offset offset, int index}) dot in costPainter.greenDots) {
+                                      if ((details.localPosition - dot.offset).distance <= 20) {
+                                        costPainter.onGreenDotTap?.call(dot.index);
+                                        break;
+                                      }
+                                    }
+                                  },
+                                  child: CustomPaint(painter: costPainter),
                                 );
                               },
                             ),
                           ),
-                        ),
-
-                        Positioned.fill(
-                          child: AnimatedBuilder(
-                            animation: _scrollController,
-                            builder: (BuildContext context, Widget? child) {
-                              late _CostLinePainter costPainter;
-                              final DateTime now = DateTime.now();
-                              final String currentYM = '${now.year}-${now.month.toString().padLeft(2, '0')}';
-                              costPainter = _CostLinePainter(
-                                sortedDates: sortedDates,
-                                dataMap: dailyDataMap,
-                                maxY: chartMaxY,
-                                scrollOffset: _scrollController.hasClients ? _scrollController.offset : 0,
-                                currentYM: currentYM,
-                                onGreenDotTap: (int index) {
-                                  LifetimeDialog(
-                                    context: context,
-                                    widget: AssetsCostDetailDisplayAlert(costChangeDate: sortedDates[index]),
-                                  );
-                                },
-                              );
-                              return GestureDetector(
-                                onTapUp: (TapUpDetails details) {
-                                  for (final ({Offset offset, int index}) dot in costPainter.greenDots) {
-                                    if ((details.localPosition - dot.offset).distance <= 20) {
-                                      costPainter.onGreenDotTap?.call(dot.index);
-                                      break;
-                                    }
-                                  }
-                                },
-                                child: CustomPaint(painter: costPainter),
-                              );
-                            },
-                          ),
-                        ),
+                        ],
 
                         Positioned(
                           top: 8,
@@ -872,12 +890,19 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
   ///
   /// スクロール位置の年月表示更新などで build が頻繁に走るため、元データが変わった時だけ集計し直す
   void _rebuildDataIfNeeded() {
+    final Map<String, ({int price, int cost})>? customMap = widget.priceCostMap;
     final Map<String, List<ToushiShintakuModel>> source = appParamState.keepToushiShintakuMap;
-    if (_dataSource != null && _dataSource == source) {
+    if (customMap != null) {
+      if (_priceCostMapBuilt) {
+        return;
+      }
+    } else if (_dataSource != null && _dataSource == source) {
       return;
     }
 
-    final Map<String, _MonthData> dailyDataMap = _buildDailyDataMap();
+    final Map<String, _MonthData> dailyDataMap = (customMap != null)
+        ? _buildDailyDataMapFromPriceCostMap(customMap)
+        : _buildDailyDataMap();
     final List<String> sortedDates = dailyDataMap.keys.toList()..sort();
 
     final Map<String, int> monthlyCostIncrease = <String, int>{};
@@ -898,7 +923,22 @@ class _AssetsDetailBarChartAlertState extends ConsumerState<AssetsDetailBarChart
     _sortedDates = sortedDates;
     _monthlyCostIncrease = monthlyCostIncrease;
     _monthLastDate = monthLastDate;
-    _dataSource = source;
+    if (customMap != null) {
+      _priceCostMapBuilt = true;
+    } else {
+      _dataSource = source;
+    }
+  }
+
+  ///
+  Map<String, _MonthData> _buildDailyDataMapFromPriceCostMap(Map<String, ({int price, int cost})> priceCostMap) {
+    final Map<String, _MonthData> result = <String, _MonthData>{};
+    priceCostMap.forEach((String key, ({int price, int cost}) value) {
+      if (value.price > 0) {
+        result[key] = _MonthData(price: value.price, cost: value.cost);
+      }
+    });
+    return result;
   }
 
   ///

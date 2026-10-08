@@ -138,9 +138,7 @@ void addFirstOverlay({
   String? from,
 }) {
   if (firstEntries.isNotEmpty) {
-    for (final OverlayEntry e in firstEntries) {
-      _removeOverlayEntrySafely(e);
-    }
+    firstEntries.forEach(_removeOverlayEntrySafely);
     setStateCallback(() => firstEntries.clear());
   }
 
@@ -187,9 +185,7 @@ void addSecondOverlay({
   bool? fixedFlag,
 }) {
   if (secondEntries.isNotEmpty) {
-    for (final OverlayEntry e in secondEntries) {
-      _removeOverlayEntrySafely(e);
-    }
+    secondEntries.forEach(_removeOverlayEntrySafely);
     setStateCallback(() => secondEntries.clear());
   }
 
@@ -221,17 +217,13 @@ void closeAllOverlays({required WidgetRef ref}) {
   final List<OverlayEntry>? firstEntries = appParam.firstEntries;
 
   if (firstEntries != null) {
-    for (final OverlayEntry e in firstEntries) {
-      _removeOverlayEntrySafely(e);
-    }
+    firstEntries.forEach(_removeOverlayEntrySafely);
   }
 
   final List<OverlayEntry>? secondEntries = appParam.secondEntries;
 
   if (secondEntries != null) {
-    for (final OverlayEntry e2 in secondEntries) {
-      _removeOverlayEntrySafely(e2);
-    }
+    secondEntries.forEach(_removeOverlayEntrySafely);
   }
 }
 

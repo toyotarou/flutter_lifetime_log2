@@ -10,6 +10,7 @@ import '../../extensions/extensions.dart';
 import '../../models/stock_model.dart';
 import '../../models/toushi_shintaku_model.dart';
 import '../parts/lifetime_dialog.dart';
+import 'assets_detail_bar_chart_alert.dart';
 import 'assets_detail_yearly_graph_alert.dart';
 import 'weekly_assets_average_display_alert.dart';
 
@@ -173,6 +174,19 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
                   },
                   icon: const Icon(Icons.stacked_line_chart),
                 ),
+
+                const SizedBox(width: 10),
+
+                IconButton(
+                  onPressed: () {
+                    LifetimeDialog(
+                      context: context,
+                      widget: AssetsDetailBarChartAlert(title: widget.name, priceCostMap: _buildPriceCostMap(dataList)),
+                      clearBarrierColor: true,
+                    );
+                  },
+                  icon: const Icon(Icons.bar_chart),
+                ),
               ],
             ),
 
@@ -277,6 +291,31 @@ class _AssetsDetailListAlertState extends ConsumerState<AssetsDetailListAlert>
         dateDiffMap[date] = diff;
       }
     }
+  }
+
+  ///
+  /// dataList から 日付(yyyy-MM-dd) -> (時価, 取得額) を作る（棒グラフ用）
+  Map<String, ({int price, int cost})> _buildPriceCostMap(List<dynamic> dataList) {
+    final Map<String, ({int price, int cost})> result = <String, ({int price, int cost})>{};
+
+    // ignore: always_specify_types
+    for (final item in dataList) {
+      if (widget.title == 'stock' && item is StockModel) {
+        final String date = '${item.year}-${item.month.padLeft(2, '0')}-${item.day.padLeft(2, '0')}';
+        final int cost = (item.hoyuuSuuryou * _safeParseDouble(item.heikinShutokuKagaku)).toInt();
+        final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
+
+        result[date] = (price: price, cost: cost);
+      } else if (widget.title == 'toushiShintaku' && item is ToushiShintakuModel) {
+        final String date = '${item.year}-${item.month.padLeft(2, '0')}-${item.day.padLeft(2, '0')}';
+        final int cost = _safeParseDouble(item.shutokuSougaku).toInt();
+        final int price = _safeParseDouble(item.jikaHyoukagaku).toInt();
+
+        result[date] = (price: price, cost: cost);
+      }
+    }
+
+    return result;
   }
 
   ///

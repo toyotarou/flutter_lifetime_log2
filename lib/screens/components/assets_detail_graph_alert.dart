@@ -110,6 +110,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                             child: const Icon(Icons.bar_chart),
                           ),
 
+                          ///////
                           const SizedBox(width: 20),
                         ],
 
@@ -487,9 +488,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
             final String date = dateList[idx];
 
             return FlLine(
-              color: (eachMonthStartDateSet.contains(date))
-                  ? Colors.yellowAccent.withOpacity(0.1)
-                  : Colors.transparent,
+              color: (eachMonthStartDateSet.contains(date)) ? Colors.yellowAccent.withOpacity(0.1) : Colors.transparent,
             );
           },
         ),
@@ -736,8 +735,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                             final List<ScrollLineChartModel> scrollLineChartModelList = <ScrollLineChartModel>[];
 
                             // 共有リストを書き換えないようコピーしてから並べ替える
-                            final List<StockModel>? sorted = appParamState.keepStockTickerMap[element2.ticker]
-                              ?.toList()
+                            final List<StockModel>? sorted = appParamState.keepStockTickerMap[element2.ticker]?.toList()
                               ?..sort(
                                 (StockModel a, StockModel b) =>
                                     '${a.year}-${a.month}-${a.day}'.compareTo('${b.year}-${b.month}-${b.day}'),
@@ -920,10 +918,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                               final List<ScrollLineChartModel> scrollLineChartModelList = <ScrollLineChartModel>[];
 
                               // 共有リストを書き換えないようコピーしてから並べ替える
-                              final List<ToushiShintakuModel>? sorted = appParamState
-                                  .keepToushiShintakuRelationalMap[element2.relationalId]
-                                  ?.toList()
-                                  ?..sort(
+                              final List<ToushiShintakuModel>? sorted =
+                                  appParamState.keepToushiShintakuRelationalMap[element2.relationalId]?.toList()?..sort(
                                     (ToushiShintakuModel a, ToushiShintakuModel b) =>
                                         '${a.year}-${a.month}-${a.day}'.compareTo('${b.year}-${b.month}-${b.day}'),
                                   );
