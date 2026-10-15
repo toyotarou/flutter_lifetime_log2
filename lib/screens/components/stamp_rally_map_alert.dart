@@ -283,6 +283,7 @@ class _StampRallyMapAlertState extends ConsumerState<StampRallyMapAlert>
               if (nonGlowingPolylines.isNotEmpty) PolylineLayer(polylines: nonGlowingPolylines),
 
               if (glowingPoints != null && glowingColor != null)
+                // ignore: prefer_if_elements_to_conditional_expressions
                 (_blinkRunning
                     ? GlowingPolylineLayer(
                         points: glowingPoints,

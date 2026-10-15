@@ -177,10 +177,19 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
 
                               Row(
                                 children: <Widget>[
-                                  Checkbox(
-                                    value: _taxAdjusted,
-                                    onChanged: (bool? v) => setState(() => _taxAdjusted = v ?? false),
-                                    activeColor: Colors.orangeAccent,
+                                  // Checkbox から Switch に変更（旧記述はコメントアウト）
+                                  // Checkbox(
+                                  //   value: _taxAdjusted,
+                                  //   onChanged: (bool? v) => setState(() => _taxAdjusted = v ?? false),
+                                  //   activeColor: Colors.orangeAccent,
+                                  // ),
+                                  Transform.scale(
+                                    scale: 0.8,
+                                    child: Switch(
+                                      value: _taxAdjusted,
+                                      onChanged: (bool v) => setState(() => _taxAdjusted = v),
+                                      activeColor: Colors.orangeAccent,
+                                    ),
                                   ),
 
                                   const Text(
@@ -603,7 +612,7 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
           }
         }
         if (prevGoldValue > 0) {
-          _goldFlspots.add(FlSpot(idx.toDouble(), (prevGoldValue * 0.8).toInt().toDouble()));
+          _goldFlspots.add(FlSpot(idx.toDouble(), prevGoldValue.toDouble()));
         }
       }
     }
@@ -618,13 +627,13 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
 
       final int insurancePassedMonths =
           AssetsCalc.countPaidDatesUpTo(paidDates: insurancePaidDates, date: d) + 102;
-      final int insuranceSum = (insurancePassedMonths * 55880 * 0.7).toInt();
+      final int insuranceSum = insurancePassedMonths * 55880;
 
       final int nenkinKikinPassedMonths =
           AssetsCalc.countPaidDatesUpTo(paidDates: nenkinKikinPaidDates, date: d) + 32;
       // 2026-06-15に国民年金基金解約のため、同日以降は0
       final int nenkinKikinSum = d.isBefore(DateTime(2026, 6, 15))
-          ? (nenkinKikinPassedMonths * 26625 * 0.7).toInt()
+          ? nenkinKikinPassedMonths * 26625
           : 0;
 
       _insuranceFlspots.add(FlSpot(idx.toDouble(), insuranceSum.toDouble()));
@@ -634,6 +643,9 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
     if (_taxAdjusted) {
       _shintakuFlspots = _shintakuFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
       _stockFlspots = _stockFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
+      _goldFlspots = _goldFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
+      _insuranceFlspots = _insuranceFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.70).toInt().toDouble())).toList();
+      _nenkinFlspots = _nenkinFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.70).toInt().toDouble())).toList();
     }
 
     _buildMonthlyMap();
@@ -648,37 +660,39 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
 
     // FlSpots → index lookup
     final Map<int, int> moneyByIdx = <int, int>{for (final FlSpot s in _flspots) s.x.toInt(): s.y.toInt()};
-    // shintaku/stock は _taxAdjusted 適用済み
+    // shintaku/stock/gold/insurance/nenkin は _taxAdjusted 適用済み
     final Map<int, int> shintakuByIdx = <int, int>{for (final FlSpot s in _shintakuFlspots) s.x.toInt(): s.y.toInt()};
     final Map<int, int> stockByIdx = <int, int>{for (final FlSpot s in _stockFlspots) s.x.toInt(): s.y.toInt()};
-    // gold は常に *0.8 済み → 生値を復元して条件適用
-    final Map<int, int> goldRawByIdx = <int, int>{
-      for (final FlSpot s in _goldFlspots) s.x.toInt(): (s.y / 0.8).round(),
-    };
-    // insurance/nenkin は常に *0.7 済み → 生値を復元して条件適用
-    final Map<int, int> insuranceRawByIdx = <int, int>{
-      for (final FlSpot s in _insuranceFlspots) s.x.toInt(): (s.y / 0.7).round(),
-    };
-    final Map<int, int> nenkinRawByIdx = <int, int>{
-      for (final FlSpot s in _nenkinFlspots) s.x.toInt(): (s.y / 0.7).round(),
-    };
+    final Map<int, int> goldByIdx = <int, int>{for (final FlSpot s in _goldFlspots) s.x.toInt(): s.y.toInt()};
+    final Map<int, int> insuranceByIdx = <int, int>{for (final FlSpot s in _insuranceFlspots) s.x.toInt(): s.y.toInt()};
+    final Map<int, int> nenkinByIdx = <int, int>{for (final FlSpot s in _nenkinFlspots) s.x.toInt(): s.y.toInt()};
+    // 以下は gold/insurance/nenkin を常に *0.8 / *0.7 済みで持っていた時の生値復元（不要になったためコメントアウト）
+    // final Map<int, int> goldRawByIdx = <int, int>{
+    //   for (final FlSpot s in _goldFlspots) s.x.toInt(): (s.y / 0.8).round(),
+    // };
+    // final Map<int, int> insuranceRawByIdx = <int, int>{
+    //   for (final FlSpot s in _insuranceFlspots) s.x.toInt(): (s.y / 0.7).round(),
+    // };
+    // final Map<int, int> nenkinRawByIdx = <int, int>{
+    //   for (final FlSpot s in _nenkinFlspots) s.x.toInt(): (s.y / 0.7).round(),
+    // };
 
     for (int idx = 0; idx < _dateList.length; idx++) {
       final List<String> parts = _dateList[idx].split('-');
       final String monthKey = '${parts[0]}-${parts[1]}-01';
 
-      final int rawGold = goldRawByIdx[idx] ?? 0;
-      final int rawInsurance = insuranceRawByIdx[idx] ?? 0;
-      final int rawNenkin = nenkinRawByIdx[idx] ?? 0;
+      // final int rawGold = goldRawByIdx[idx] ?? 0;
+      // final int rawInsurance = insuranceRawByIdx[idx] ?? 0;
+      // final int rawNenkin = nenkinRawByIdx[idx] ?? 0;
 
       // 各月の最終日のデータで上書き
       monthlyChartData[monthKey] = MonthlyAssetsData(
         money: moneyByIdx[idx] ?? 0,
         shintaku: shintakuByIdx[idx] ?? 0,
         stock: stockByIdx[idx] ?? 0,
-        gold: _taxAdjusted ? (rawGold * 0.8).toInt() : rawGold,
-        insurance: _taxAdjusted ? (rawInsurance * 0.7).toInt() : rawInsurance,
-        nenkin: _taxAdjusted ? (rawNenkin * 0.7).toInt() : rawNenkin,
+        gold: goldByIdx[idx] ?? 0,
+        insurance: insuranceByIdx[idx] ?? 0,
+        nenkin: nenkinByIdx[idx] ?? 0,
       );
     }
   }

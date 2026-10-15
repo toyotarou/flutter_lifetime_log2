@@ -221,6 +221,9 @@ class _MonthlyAssetsBarChartAlertState extends ConsumerState<MonthlyAssetsBarCha
   List<String> _sortedDates = <String>[];
   String _currentVisibleYM = '';
 
+  /// 税引後予想の切替（false=等倍 / true=金・株・信託:80% 保険/年金:70%）
+  bool _taxAdjusted = false;
+
   /// _buildDailyDataMap の結果キャッシュ（スクロールによる再ビルドの度に全日付を再計算しないため）
   List<Object?> _dataMapCacheInputs = <Object?>[];
   Map<String, _DayData> _dataMapCache = <String, _DayData>{};
@@ -454,14 +457,14 @@ class _MonthlyAssetsBarChartAlertState extends ConsumerState<MonthlyAssetsBarCha
       }
 
       final int insurancePassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: insurancePaidDates, date: date) + 102;
-      final int insuranceSum = (insurancePassedMonths * 55880 * 0.7).toInt();
+      final int insuranceSum = (insurancePassedMonths * 55880 * (_taxAdjusted ? 0.7 : 1.0)).toInt();
 
       final int nenkinKikinPassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: nenkinKikinPaidDates, date: date) + 32;
       final int nenkinKikinSum = date.isBefore(DateTime(2026, 6, 15))
-          ? (nenkinKikinPassedMonths * 26625 * 0.7).toInt()
+          ? (nenkinKikinPassedMonths * 26625 * (_taxAdjusted ? 0.7 : 1.0)).toInt()
           : 0;
 
-      const double assetRate = 0.8;
+      final double assetRate = _taxAdjusted ? 0.8 : 1.0;
 
       result[key] = _DayData(
         money: lastMoneySum,
@@ -487,6 +490,7 @@ class _MonthlyAssetsBarChartAlertState extends ConsumerState<MonthlyAssetsBarCha
       appParamState.keepInsuranceDataList,
       appParamState.keepNenkinKikinDataList,
       DateTime.now().yyyymmdd,
+      _taxAdjusted,
     ];
 
     bool same = _dataMapCacheInputs.length == inputs.length;
@@ -741,6 +745,28 @@ class _MonthlyAssetsBarChartAlertState extends ConsumerState<MonthlyAssetsBarCha
                                   ),
                           ),
                         ),
+
+                      // ──── 税引後予想スイッチ（左上）────
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        child: Row(
+                          children: <Widget>[
+                            Transform.scale(
+                              scale: 0.8,
+                              child: Switch(
+                                value: _taxAdjusted,
+                                activeColor: Colors.orangeAccent,
+                                onChanged: (bool v) => setState(() => _taxAdjusted = v),
+                              ),
+                            ),
+                            const Text(
+                              '税引後予想',
+                              style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
 
                       // ──── スイッチ（右上）────
                       Positioned(

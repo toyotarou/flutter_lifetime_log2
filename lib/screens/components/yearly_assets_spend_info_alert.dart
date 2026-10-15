@@ -20,7 +20,10 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
   final Utility utility = Utility();
 
   late final DateTime _asOf;
-  late final Future<List<Map<String, dynamic>>> _futureDisplayData;
+  late Future<List<Map<String, dynamic>>> _futureDisplayData;
+
+  /// 税引後予想の切替（false=等倍 / true=金・株・信託:80% 保険/年金:70%）
+  bool _taxAdjusted = false;
 
   final ScrollController _listController = ScrollController();
 
@@ -59,9 +62,34 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
         padding: const EdgeInsets.all(20),
         child: Column(
           children: <Widget>[
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[Text('資産変動推移 (月次・年次)'), SizedBox.shrink()],
+              children: <Widget>[
+                const Text('資産変動推移 (月次・年次)'),
+
+                /// 税引後予想スイッチ / s
+                Row(
+                  children: <Widget>[
+                    Transform.scale(
+                      scale: 0.8,
+                      child: Switch(
+                        value: _taxAdjusted,
+                        onChanged: (bool v) => setState(() {
+                          _taxAdjusted = v;
+                          _futureDisplayData = Future<List<Map<String, dynamic>>>(() => _generateData(asOf: _asOf));
+                        }),
+                        activeColor: Colors.orangeAccent,
+                      ),
+                    ),
+                    const Text(
+                      '税引後予想',
+                      style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+
+                /// 税引後予想スイッチ / e
+              ],
             ),
 
             Row(
@@ -292,6 +320,7 @@ class _YearlyAssetsSpendInfoAlertState extends ConsumerState<YearlyAssetsSpendIn
       moneyMap: appParamState.keepMoneyMap,
       insurancePaidDates: insurancePaidDates,
       nenkinKikinPaidDates: nenkinKikinPaidDates,
+      taxAdjusted: _taxAdjusted,
     );
   }
 

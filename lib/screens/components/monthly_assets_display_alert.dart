@@ -53,6 +53,9 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
   late DateTime _baseMonth;
   int currentIndex = _initialIndex;
 
+  /// 税引後予想の切替（false=等倍 / true=金・株・信託:80% 保険・年金:70%）
+  bool _taxAdjusted = false;
+
   final Utility utility = Utility();
 
   final AutoScrollController autoScrollController = AutoScrollController();
@@ -201,7 +204,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                             GestureDetector(
                               onTap: () {
                                 final DateTime lastYearEnd = DateTime(genDate.year, 1, 0);
-                                final int lastYearFinalAssets = _calcTotalAssetsAtDate(lastYearEnd);
+                                // 遷移先の画面は税引後予想(80%/70%)固定のため、スイッチに関係なく税引後で渡す
+                                final int lastYearFinalAssets = _calcTotalAssetsAtDate(lastYearEnd, taxAdjusted: true);
 
                                 LifetimeDialog(
                                   context: context,
@@ -228,7 +232,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                                 }
 
                                 final DateTime lastMonthEnd = DateTime(genDate.year, genDate.month, 0);
-                                final int lastMonthFinalAssets = _calcTotalAssetsAtDate(lastMonthEnd);
+                                // 遷移先の画面は税引後予想(80%/70%)固定のため、スイッチに関係なく税引後で渡す
+                                final int lastMonthFinalAssets = _calcTotalAssetsAtDate(lastMonthEnd, taxAdjusted: true);
 
                                 LifetimeDialog(
                                   context: context,
@@ -281,6 +286,26 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
                       ),
 
                       /// 一気ボタン / e
+
+                      /// 税引後予想スイッチ / s
+                      Row(
+                        children: <Widget>[
+                          Transform.scale(
+                            scale: 0.8,
+                            child: Switch(
+                              value: _taxAdjusted,
+                              onChanged: (bool v) => setState(() => _taxAdjusted = v),
+                              activeColor: Colors.orangeAccent,
+                            ),
+                          ),
+                          const Text(
+                            '税引後予想',
+                            style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+
+                      /// 税引後予想スイッチ / e
 
                       /// 押しっぱなしボタン / s
                       Row(
@@ -929,8 +954,8 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
 
     final Map<String, Map<String, int>> monthlyAssetsMap = _buildMonthlyAssetsMap(
       genDate: genDate,
-      adjustNum: 0.7,
-      adjustNum2: 0.8,
+      adjustNum: _taxAdjusted ? 0.7 : 1.0,
+      adjustNum2: _taxAdjusted ? 0.8 : 1.0,
     );
 
     final int endDay = DateTime(genDate.year, genDate.month + 1, 0).day;
@@ -1107,7 +1132,9 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
     DateTime date, {
     List<DateTime>? insurancePaidDates,
     List<DateTime>? nenkinKikinPaidDates,
+    bool? taxAdjusted,
   }) {
+    final bool adjusted = taxAdjusted ?? _taxAdjusted;
     final int lastGoldSum = _findLastValidGoldValue(date);
     final int lastStockSum = _findLastValidStockSum(date);
     final int lastToushiSum = _findLastValidToushiSum(date);
@@ -1119,7 +1146,7 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
           date: date,
         ) +
         102;
-    final int insuranceSum = (insurancePassedMonths * 55880 * 0.7).toInt();
+    final int insuranceSum = (insurancePassedMonths * 55880 * (adjusted ? 0.7 : 1.0)).toInt();
 
     final int nenkinKikinPassedMonths =
         AssetsCalc.countPaidDatesUpTo(
@@ -1129,10 +1156,10 @@ class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplay
         32;
     // 2026-06-15に国民年金基金解約のため、同日以降は0
     final int nenkinKikinSum = date.isBefore(_nenkinKikinCancelDate)
-        ? (nenkinKikinPassedMonths * 26625 * 0.7).toInt()
+        ? (nenkinKikinPassedMonths * 26625 * (adjusted ? 0.7 : 1.0)).toInt()
         : 0;
 
-    const double assetRate = 0.8;
+    final double assetRate = adjusted ? 0.8 : 1.0;
 
     return lastMoneySum +
         (lastGoldSum * assetRate).toInt() +

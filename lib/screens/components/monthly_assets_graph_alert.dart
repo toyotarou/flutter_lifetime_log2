@@ -56,7 +56,10 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
 
   late final DateTime _asOf;
 
-  late final Future<_MonthlyBuiltData> _futureBuiltData;
+  late Future<_MonthlyBuiltData> _futureBuiltData;
+
+  /// 税引後予想の切替（false=等倍 / true=金・株・信託:80% 保険/年金:70%）
+  bool _taxAdjusted = false;
 
   ///
   @override
@@ -154,6 +157,25 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
                       ),
                       Row(
                         children: <Widget>[
+                          /// 税引後予想スイッチ / s
+                          Transform.scale(
+                            scale: 0.8,
+                            child: Switch(
+                              value: _taxAdjusted,
+                              onChanged: (bool v) => setState(() {
+                                _taxAdjusted = v;
+                                _futureBuiltData = Future<_MonthlyBuiltData>(() => _buildData(asOf: _asOf));
+                                _animationController.forward(from: 0);
+                              }),
+                              activeColor: Colors.orangeAccent,
+                            ),
+                          ),
+                          const Text(
+                            '税引後予想',
+                            style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+
+                          /// 税引後予想スイッチ / e
                           if (zoomMode) ...<Widget>[
                             IconButton(
                               onPressed: () => setState(() {
@@ -618,6 +640,7 @@ class _MonthlyAssetsGraphAlertState extends ConsumerState<MonthlyAssetsGraphAler
       moneyMap: appParamState.keepMoneyMap,
       insurancePaidDates: insurancePaidDates,
       nenkinKikinPaidDates: nenkinKikinPaidDates,
+      taxAdjusted: _taxAdjusted,
     );
   }
 

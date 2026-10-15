@@ -109,7 +109,10 @@ class AssetsCalc {
     required Map<String, MoneyModel> moneyMap,
     required List<DateTime> insurancePaidDates,
     required List<DateTime> nenkinKikinPaidDates,
+    // true=税引後予想（金/株/信託:80% 保険/年金:70%）、false=等倍。既定は従来動作(true)
+    bool taxAdjusted = true,
   }) {
+    final double insuranceRate = taxAdjusted ? 0.7 : 1.0;
     final int lastGoldSum = _findLastValidGoldValue(date: date, goldMap: goldMap);
     final int lastStockSum = _findLastValidStockSum(date: date, stockMap: stockMap);
     final int lastToushiSum = _findLastValidToushiSum(date: date, toushiShintakuMap: toushiShintakuMap);
@@ -117,15 +120,15 @@ class AssetsCalc {
 
     final int insurancePassedMonths = countPaidDatesUpTo(paidDates: insurancePaidDates, date: date) + 102;
     // 丸めは他画面（月別資産表示・棒グラフ・年別資産）と同じく最後に1回だけ切り捨てる
-    final int insuranceSum = (insurancePassedMonths * 55880 * 0.7).toInt();
+    final int insuranceSum = (insurancePassedMonths * 55880 * insuranceRate).toInt();
 
     final int nenkinKikinPassedMonths = countPaidDatesUpTo(paidDates: nenkinKikinPaidDates, date: date) + 32;
     // 2026-06-15に国民年金基金解約のため、同日以降は0
     final int nenkinKikinSum = date.isBefore(DateTime(2026, 6, 15))
-        ? (nenkinKikinPassedMonths * 26625 * 0.7).toInt()
+        ? (nenkinKikinPassedMonths * 26625 * insuranceRate).toInt()
         : 0;
 
-    const double assetRate = 0.8;
+    final double assetRate = taxAdjusted ? 0.8 : 1.0;
 
     return lastMoneySum +
         (lastGoldSum * assetRate).toInt() +

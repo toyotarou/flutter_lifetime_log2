@@ -41,6 +41,12 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
   int lastAssets = 0;
   int totalDiff = 0;
 
+  /// 税引後予想の切替（false=等倍 / true=金・株・信託:80% 保険/年金:70%）
+  bool _taxAdjusted = false;
+
+  /// 等倍の前年末総資産（遅延計算してキャッシュ）
+  int? _rawLastYearFinalAssetsCache;
+
   List<YearDayAssetsModel> yearlyDayAssetsList = <YearDayAssetsModel>[];
 
   List<YearDayAssetsModel> monthEndAssetsList = <YearDayAssetsModel>[];
@@ -119,7 +125,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                                 widget: YearlyAssetsGraphAlert(
                                   year: year,
                                   totals: yearlyDayAssetsList.map((YearDayAssetsModel e) => e.total).toList(),
-                                  lastYearFinalAssets: widget.lastYearFinalAssets,
+                                  lastYearFinalAssets: _lastYearFinalAssets,
                                 ),
                               );
                             },
@@ -143,7 +149,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                               const SizedBox(height: 5),
 
                               Text(
-                                widget.lastYearFinalAssets.toString().toCurrency(),
+                                _lastYearFinalAssets.toString().toCurrency(),
                                 style: const TextStyle(fontSize: 10),
                               ),
                             ],
@@ -188,6 +194,29 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                 ),
 
                 /// 一気ボタン / e
+
+                /// 税引後予想スイッチ / s
+                Row(
+                  children: <Widget>[
+                    Transform.scale(
+                      scale: 0.8,
+                      child: Switch(
+                        value: _taxAdjusted,
+                        onChanged: (bool v) {
+                          _taxAdjusted = v;
+                          yearlyDayAssetsList = makeYearlyDayAssetsList();
+                        },
+                        activeColor: Colors.orangeAccent,
+                      ),
+                    ),
+                    const Text(
+                      '税引後予想',
+                      style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+
+                /// 税引後予想スイッチ / e
 
                 /// 押しっぱなしボタン / s
                 Row(
@@ -271,7 +300,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                           widget: MonthEndAssetsDisplayAlert(
                             date: widget.date,
                             monthEndAssetsList: monthEndAssetsList,
-                            lastYearFinalAssets: widget.lastYearFinalAssets,
+                            lastYearFinalAssets: _lastYearFinalAssets,
                           ),
                         );
                       },
@@ -414,12 +443,12 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
                           width: 90,
                           child: Row(
                             children: <Widget>[
-                              utility.dispUpDownMark(before: widget.lastYearFinalAssets, after: item.total, size: 18),
+                              utility.dispUpDownMark(before: _lastYearFinalAssets, after: item.total, size: 18),
 
                               const Spacer(),
 
                               Text(
-                                _diffString(before: widget.lastYearFinalAssets, after: item.total),
+                                _diffString(before: _lastYearFinalAssets, after: item.total),
                                 style: const TextStyle(color: Colors.orange),
                               ),
                             ],
@@ -442,6 +471,50 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       return '+${diff.toString().toCurrency()}';
     }
     return diff.toString().toCurrency();
+  }
+
+  /// 前年末総資産（スイッチに連動）。オンのときは遷移元から渡された税引後の値、オフのときは等倍で計算した値
+  int get _lastYearFinalAssets {
+    if (_taxAdjusted) {
+      return widget.lastYearFinalAssets;
+    }
+    return _rawLastYearFinalAssetsCache ??= _calcRawLastYearFinalAssets();
+  }
+
+  /// 等倍の前年末総資産
+  int _calcRawLastYearFinalAssets() {
+    final AppParamState appParam = ref.read(appParamProvider);
+    final PrevYearLastAssetsModel prev = _getPrevYearLastValues(year: year);
+    final DateTime lastYearEnd = DateTime(year - 1, 12, 31);
+
+    int money = 0;
+    for (int i = 0; i < 366; i++) {
+      final String key = lastYearEnd.subtract(Duration(days: i)).yyyymmdd;
+      final String moneyStr = appParam.keepMoneyMap[key]?.sum ?? '';
+      if (moneyStr.isNotEmpty) {
+        money = AssetsCalc.calcMoney(moneyStr);
+        break;
+      }
+    }
+
+    final int insurancePassedMonths =
+        AssetsCalc.countPaidDatesUpTo(
+          paidDates: AssetsCalc.parsePaidDates(appParam.keepInsuranceDataList),
+          date: lastYearEnd,
+        ) +
+        102;
+    final int insuranceSum = insurancePassedMonths * 55880;
+
+    final int nenkinKikinPassedMonths =
+        AssetsCalc.countPaidDatesUpTo(
+          paidDates: AssetsCalc.parsePaidDates(appParam.keepNenkinKikinDataList),
+          date: lastYearEnd,
+        ) +
+        32;
+    // 2026-06-15に国民年金基金解約のため、同日以降は0
+    final int nenkinKikinSum = lastYearEnd.isBefore(DateTime(2026, 6, 15)) ? nenkinKikinPassedMonths * 26625 : 0;
+
+    return money + prev.gold + prev.stock + prev.toushi + insuranceSum + nenkinKikinSum;
   }
 
   ///
@@ -504,7 +577,8 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
 
     monthEndAssetsList.clear();
 
-    const double assetRate = 0.8;
+    final double assetRate = _taxAdjusted ? 0.8 : 1.0;
+    final double insuranceRate = _taxAdjusted ? 0.7 : 1.0;
 
     final List<YearDayAssetsModel> list = <YearDayAssetsModel>[];
 
@@ -552,12 +626,12 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       final int money = lastMoneySum;
 
       final int insurancePassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: insurancePaidDates, date: d) + 102;
-      final int insuranceSum = (insurancePassedMonths * 55880 * 0.7).toInt();
+      final int insuranceSum = (insurancePassedMonths * 55880 * insuranceRate).toInt();
 
       final int nenkinKikinPassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: nenkinKikinPaidDates, date: d) + 32;
       // 2026-06-15に国民年金基金解約のため、同日以降は0
       final int nenkinKikinSum = d.isBefore(DateTime(2026, 6, 15))
-          ? (nenkinKikinPassedMonths * 26625 * 0.7).toInt()
+          ? (nenkinKikinPassedMonths * 26625 * insuranceRate).toInt()
           : 0;
 
       final int gold80 = (lastGoldSum * assetRate).toInt();
@@ -595,7 +669,7 @@ class _YearlyAssetsDisplayPageState extends ConsumerState<YearlyAssetsDisplayAle
       }
 
       if (mmdd == '01/01') {
-        first = widget.lastYearFinalAssets;
+        first = _lastYearFinalAssets;
       }
 
       if (total != 0) {

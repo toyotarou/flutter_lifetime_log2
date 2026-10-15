@@ -40,6 +40,10 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
   /// ===== 系列データのキャッシュ（元データが変わった時だけ再集計） =====
   /// freezed の Map/List getter は毎回ラッパーを返すため、identical ではなく == で比較する
   bool _seriesBuilt = false;
+
+  /// 税引後予想の切替（false=等倍 / true=金・株・信託:80% 保険/年金:70%）
+  bool _taxAdjusted = false;
+  bool _seriesTaxAdjusted = false;
   Map<String, List<ToushiShintakuModel>>? _shintakuSource;
   Map<String, List<StockModel>>? _stockSource;
   Map<String, GoldModel>? _goldSource;
@@ -108,6 +112,21 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
                   const Text('Lifetime Assets Evolution'),
                   Row(
                     children: <Widget>[
+                      /// 税引後予想スイッチ / s
+                      Transform.scale(
+                        scale: 0.8,
+                        child: Switch(
+                          value: _taxAdjusted,
+                          onChanged: (bool v) => setState(() => _taxAdjusted = v),
+                          activeColor: Colors.orangeAccent,
+                        ),
+                      ),
+                      const Text(
+                        '税引後予想',
+                        style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+
+                      /// 税引後予想スイッチ / e
                       if (_zoomMode)
                         IconButton(
                           onPressed: () => setState(() {
@@ -224,7 +243,8 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
         _shintakuSource == shintakuSource &&
         _stockSource == stockSource &&
         _goldSource == goldSource &&
-        _moneySumSource == moneySumSource) {
+        _moneySumSource == moneySumSource &&
+        _seriesTaxAdjusted == _taxAdjusted) {
       return;
     }
 
@@ -343,6 +363,15 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
       }
     }
 
+    // 税引後予想: 金/株/信託は80%、保険/年金は70%
+    if (_taxAdjusted) {
+      _shintakuFlspots = _shintakuFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
+      _stockFlspots = _stockFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
+      _goldFlspots = _goldFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.80).toInt().toDouble())).toList();
+      _insuranceFlspots = _insuranceFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.70).toInt().toDouble())).toList();
+      _nenkinFlspots = _nenkinFlspots.map((FlSpot s) => FlSpot(s.x, (s.y * 0.70).toInt().toDouble())).toList();
+    }
+
     // 合計額で初めて各百万円を超えたインデックスを検出（過去最高を更新した時のみ）
     _millionCrossings = <int, int>{};
     final Map<int, double> shintakuByIdx = <int, double>{for (final FlSpot s in _shintakuFlspots) s.x.toInt(): s.y};
@@ -401,6 +430,7 @@ class _LifetimeAssetsLineChartAlertState extends ConsumerState<LifetimeAssetsLin
     _stockSource = stockSource;
     _goldSource = goldSource;
     _moneySumSource = moneySumSource;
+    _seriesTaxAdjusted = _taxAdjusted;
   }
 
   ///
