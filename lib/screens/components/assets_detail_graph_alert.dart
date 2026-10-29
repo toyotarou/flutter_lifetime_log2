@@ -33,6 +33,15 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
     with ControllersMixin<AssetsDetailGraphAlert> {
   List<List<FlSpot>> flspotsList = <List<FlSpot>>[];
 
+  /// flspotsList と同じ並びで銘柄名を持つ（ツールチップ表示用）
+  List<String> graphNameList = <String>[];
+
+  /// flspotsList と同じ並びで relationalId を持つ（ツールチップ表示用、投資信託以外は空文字）
+  List<String> graphIdList = <String>[];
+
+  /// 三本線アイコンで選んだ銘柄（stock は ticker、toushiShintaku は relationalId）
+  String selectedListItem = '';
+
   LineChartData graphData = LineChartData();
   LineChartData graphData2 = LineChartData();
 
@@ -188,6 +197,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
   ///
   void setChartData() {
     flspotsList.clear();
+    graphNameList.clear();
+    graphIdList.clear();
 
     List<String> dateList = <String>[];
 
@@ -304,14 +315,23 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
         if (flspots.isNotEmpty) {
           flspotsList.add(flspots);
+          graphNameList.add('gold');
+          graphIdList.add('');
         }
 
       case 'stock':
         flspotsList.clear();
+        graphNameList.clear();
+        graphIdList.clear();
 
         for (final String element in <String>['EPI', 'INFY', 'JMIA']) {
           final List<FlSpot> flspots = <FlSpot>[];
+          String barName = element;
           appParamState.keepStockTickerMap[element]?.forEach((StockModel element2) {
+            if (element2.name != '') {
+              barName = element2.name;
+            }
+
             final String jikaHyoukagaku = element2.jikaHyoukagaku.replaceAll(',', '');
 
             final String heikinShutokuKagaku = element2.heikinShutokuKagaku.replaceAll(',', '');
@@ -341,11 +361,15 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
           if (flspots.isNotEmpty) {
             flspotsList.add(flspots);
+            graphNameList.add(barName);
+            graphIdList.add('');
           }
         }
 
       case 'toushiShintaku':
         flspotsList.clear();
+        graphNameList.clear();
+        graphIdList.clear();
 
         final List<int> relationalIdList = <int>[];
 
@@ -357,7 +381,12 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
           ..sort((int a, int b) => a.compareTo(b))
           ..forEach((int element) {
             final List<FlSpot> flspots = <FlSpot>[];
+            String barName = '';
             appParamState.keepToushiShintakuRelationalMap[element]?.forEach((ToushiShintakuModel element2) {
+              if (element2.name != '') {
+                barName = element2.name;
+              }
+
               final String jikaHyoukagaku = element2.jikaHyoukagaku
                   .replaceAll(',', '')
                   .replaceAll(',', '')
@@ -391,6 +420,8 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
 
             if (flspots.isNotEmpty) {
               flspotsList.add(flspots);
+              graphNameList.add(barName);
+              graphIdList.add(element.toString());
             }
           });
     }
@@ -428,10 +459,50 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
             tooltipRoundedRadius: 2,
+            fitInsideHorizontally: true,
+            fitInsideVertically: true,
+            maxContentWidth: 240,
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
               final List<LineTooltipItem> list = <LineTooltipItem>[];
 
-              final List<String> toolTipDisplayValue = <String>[];
+              /// 銘柄名の頭（左）と金額の末尾（右）を揃えるため、文字幅を測って隙間を細いスペースで埋める
+              const TextStyle measureStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 11);
+
+              /// relationalId 用の小さい文字
+              const TextStyle idMeasureStyle = TextStyle(fontSize: 8);
+
+              double textWidth(String text, {TextStyle style = measureStyle}) {
+                final TextPainter painter = TextPainter(
+                  text: TextSpan(text: text, style: style),
+                  textDirection: TextDirection.ltr,
+                )..layout();
+                return painter.width;
+              }
+
+              const String hairSpace = '\u200A';
+              double padUnit = textWidth(hairSpace * 10) / 10;
+              String padChar = hairSpace;
+              if (padUnit <= 0) {
+                padUnit = textWidth(' ');
+                padChar = ' ';
+              }
+
+              String pad(double width) {
+                if (padUnit <= 0 || width <= 0) {
+                  return '';
+                }
+                return padChar * (width / padUnit).round();
+              }
+
+              final List<String> idList = <String>[];
+              final List<String> nameList = <String>[];
+              final List<String> priceList = <String>[];
+              final List<String?> dateLineList = <String?>[];
+              final List<LineBarSpot> spotList = <LineBarSpot>[];
+
+              double maxIdWidth = 0;
+              double maxNameWidth = 0;
+              double maxPriceWidth = 0;
 
               for (final LineBarSpot element in touchedSpots) {
                 final int x = element.x.toInt();
@@ -441,27 +512,80 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                 final String date = dateList[x];
 
                 final int? maxPrice = dateMaxValueMap[x];
-                if (element.y.toInt() == maxPrice) {
-                  toolTipDisplayValue.add(date);
-                }
 
                 final String price = element.y.toInt().toString().toCurrency();
 
-                toolTipDisplayValue.add(price);
+                /// 銘柄名（長い場合は末尾を … で省略）
+                String barName = (element.barIndex < graphNameList.length) ? graphNameList[element.barIndex] : '';
+                if (barName.characters.length > 12) {
+                  barName = '${barName.characters.take(12)}…';
+                }
+
+                final String barId = (element.barIndex < graphIdList.length) ? graphIdList[element.barIndex] : '';
+
+                spotList.add(element);
+                idList.add(barId);
+                nameList.add(barName);
+                priceList.add(price);
+                dateLineList.add((element.y.toInt() == maxPrice) ? date : null);
+
+                maxIdWidth = max(maxIdWidth, textWidth(barId, style: idMeasureStyle));
+                maxNameWidth = max(maxNameWidth, textWidth(barName));
+                maxPriceWidth = max(maxPriceWidth, textWidth(price));
+              }
+
+              const String gap = '  ';
+
+              for (int i = 0; i < spotList.length; i++) {
+                /// 日付は左寄せ（下線なし）
+                final String? dateLine = dateLineList[i];
+
+                final String barId = idList[i];
+                final String name = nameList[i];
+                final String price = priceList[i];
+
+                /// relationalId の幅を揃えたうえで、銘柄名との間に少しスペースを入れる
+                final String idPad = (maxIdWidth > 0)
+                    ? '${pad(maxIdWidth - textWidth(barId, style: idMeasureStyle))} '
+                    : '';
 
                 list.add(
                   LineTooltipItem(
-                    toolTipDisplayValue.join('\n'),
+                    (dateLine != null) ? '$dateLine\n' : '',
                     TextStyle(
-                      color: (element.y < 0) ? const Color(0xFFFBB6CE) : Colors.white,
+                      color: (spotList[i].y < 0) ? const Color(0xFFFBB6CE) : Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
-                    textAlign: TextAlign.end,
+                    textAlign: TextAlign.start,
+                    children: <TextSpan>[
+                      /// relationalId（小さく表示）
+                      if (barId != '')
+                        TextSpan(
+                          text: barId,
+                          style: TextStyle(
+                            color: (spotList[i].y < 0) ? const Color(0xFFFBB6CE) : Colors.white,
+                            fontSize: 8,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.white.withOpacity(0.3),
+                          ),
+                        ),
+
+                      /// 銘柄行（1行ずつ下線）
+                      TextSpan(
+                        text:
+                            '$idPad$name${pad(maxNameWidth - textWidth(name))}$gap${pad(maxPriceWidth - textWidth(price))}$price',
+                        style: TextStyle(
+                          color: (spotList[i].y < 0) ? const Color(0xFFFBB6CE) : Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.white.withOpacity(0.3),
+                        ),
+                      ),
+                    ],
                   ),
                 );
-
-                toolTipDisplayValue.clear();
               }
 
               return list;
@@ -831,12 +955,21 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                         const SizedBox(width: 20),
 
                         GestureDetector(
-                          onTap: () => LifetimeDialog(
-                            context: context,
-                            widget: AssetsDetailListAlert(title: widget.title, item: element2.ticker, name: name),
-                          ),
+                          onTap: () {
+                            setState(() => selectedListItem = element2.ticker);
 
-                          child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
+                            LifetimeDialog(
+                              context: context,
+                              widget: AssetsDetailListAlert(title: widget.title, item: element2.ticker, name: name),
+                            );
+                          },
+
+                          child: Icon(
+                            Icons.list,
+                            color: (selectedListItem == element2.ticker)
+                                ? Colors.greenAccent
+                                : Colors.white.withValues(alpha: 0.4),
+                          ),
                         ),
                       ],
                     ),
@@ -1020,16 +1153,25 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
                           const SizedBox(width: 20),
 
                           GestureDetector(
-                            onTap: () => LifetimeDialog(
-                              context: context,
-                              widget: AssetsDetailListAlert(
-                                title: widget.title,
-                                item: element2.relationalId.toString(),
-                                name: name,
-                              ),
-                            ),
+                            onTap: () {
+                              setState(() => selectedListItem = element2.relationalId.toString());
 
-                            child: Icon(Icons.list, color: Colors.white.withValues(alpha: 0.4)),
+                              LifetimeDialog(
+                                context: context,
+                                widget: AssetsDetailListAlert(
+                                  title: widget.title,
+                                  item: element2.relationalId.toString(),
+                                  name: name,
+                                ),
+                              );
+                            },
+
+                            child: Icon(
+                              Icons.list,
+                              color: (selectedListItem == element2.relationalId.toString())
+                                  ? Colors.greenAccent
+                                  : Colors.white.withValues(alpha: 0.4),
+                            ),
                           ),
                         ],
                       ),
