@@ -389,7 +389,8 @@ List<String> buildSpendItemKeys({required Iterable<String> masterKeys}) {
 
 ///
 DateTime monthForIndex({required int index, required DateTime baseMonth}) {
-  final int rawOffset = index - (100000 ~/ 2);
+  /// 各カルーセルの _itemCount（1200）と必ず揃えること
+  final int rawOffset = index - (1200 ~/ 2);
   final int offset = -rawOffset;
   return addMonths(baseMonth, offset);
 }

@@ -462,6 +462,7 @@ class _AssetsDetailGraphAlertState extends ConsumerState<AssetsDetailGraphAlert>
             fitInsideHorizontally: true,
             fitInsideVertically: true,
             maxContentWidth: 240,
+            getTooltipColor: (LineBarSpot touchedSpot) => Colors.blueGrey.withValues(alpha: 0.3),
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
               final List<LineTooltipItem> list = <LineTooltipItem>[];
 

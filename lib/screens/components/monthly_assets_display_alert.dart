@@ -35,7 +35,9 @@ class MonthlyAssetsDisplayAlert extends ConsumerStatefulWidget {
 
 class _MonthlyAssetsDisplayAlertState extends ConsumerState<MonthlyAssetsDisplayAlert>
     with ControllersMixin<MonthlyAssetsDisplayAlert> {
-  static const int _itemCount = 100000;
+  /// 100000 だとページ幅が割り切れない端末で小数誤差が積もり、デバッグ時にアサーションが出るため 1200（前後50年）にした
+  /// lib/utility/functions.dart の monthForIndex() 内の値と必ず揃えること
+  static const int _itemCount = 1200;
   static const int _initialIndex = _itemCount ~/ 2;
 
   static const String _kMoney = 'money';

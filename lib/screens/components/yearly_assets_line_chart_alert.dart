@@ -132,7 +132,10 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
                         onPressed: () {
                           LifetimeDialog(
                             context: context,
-                            widget: MonthlyAssetsLineChartAlert(monthlyChartData: monthlyChartData, taxAdjusted: _taxAdjusted),
+                            widget: MonthlyAssetsLineChartAlert(
+                              monthlyChartData: monthlyChartData,
+                              taxAdjusted: _taxAdjusted,
+                            ),
                           );
                         },
                         icon: const Icon(Icons.calendar_month, color: Colors.greenAccent),
@@ -323,6 +326,8 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
             tooltipRoundedRadius: 2,
             fitInsideHorizontally: true,
             fitInsideVertically: true,
+            maxContentWidth: 240,
+            getTooltipColor: (LineBarSpot touchedSpot) => Colors.blueGrey.withValues(alpha: 0.3),
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
               String date = '';
               int moneyVal = 0, shintakuVal = 0, stockVal = 0, goldVal = 0, insuranceVal = 0, nenkinVal = 0;
@@ -350,6 +355,72 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
 
               final int total = moneyVal + shintakuVal + stockVal + goldVal + insuranceVal + nenkinVal;
 
+              /// 項目名（左）と金額（右）を揃えるため、文字幅を測って隙間を細いスペースで埋める
+              const TextStyle measureStyle = TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
+
+              double textWidth(String text) {
+                final TextPainter painter = TextPainter(
+                  text: TextSpan(text: text, style: measureStyle),
+                  textDirection: TextDirection.ltr,
+                )..layout();
+                return painter.width;
+              }
+
+              const String hairSpace = '\u200A';
+              double padUnit = textWidth(hairSpace * 10) / 10;
+              String padChar = hairSpace;
+              if (padUnit <= 0) {
+                padUnit = textWidth(' ');
+                padChar = ' ';
+              }
+
+              String pad(double width) {
+                if (padUnit <= 0 || width <= 0) {
+                  return '';
+                }
+                return padChar * (width / padUnit).round();
+              }
+
+              final Map<String, int> rowValueMap = <String, int>{
+                'money': moneyVal,
+                'shintaku': shintakuVal,
+                'gold': goldVal,
+                'stock': stockVal,
+                'insurance': insuranceVal,
+                'nenkin': nenkinVal,
+              };
+
+              double maxLabelWidth = 0;
+              double maxValueWidth = 0;
+              rowValueMap.forEach((String key, int value) {
+                final double labelWidth = textWidth(key);
+                final double valueWidth = textWidth(value.toString().toCurrency());
+                if (labelWidth > maxLabelWidth) {
+                  maxLabelWidth = labelWidth;
+                }
+                if (valueWidth > maxValueWidth) {
+                  maxValueWidth = valueWidth;
+                }
+              });
+
+              const String gap = '  ';
+
+              String row(String label) {
+                final String value = (rowValueMap[label] ?? 0).toString().toCurrency();
+                return '$label${pad(maxLabelWidth - textWidth(label))}$gap${pad(maxValueWidth - textWidth(value))}$value\n';
+              }
+
+              /// 1行の幅（区切り線を左右いっぱいにする・合計を右寄せするのに使う）
+              final double rowWidth = maxLabelWidth + textWidth(gap) + maxValueWidth;
+
+              const String lineChar = '─';
+              final double lineCharWidth = textWidth(lineChar);
+              final String separator = (lineCharWidth > 0)
+                  ? lineChar * (rowWidth / lineCharWidth).floor()
+                  : '──────────';
+
+              final String totalText = total.toString().toCurrency();
+
               return touchedSpots.map((LineBarSpot s) {
                 if (s.barIndex != 0) {
                   return null;
@@ -358,42 +429,42 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
                 return LineTooltipItem(
                   '$date\n',
                   const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.right,
+                  textAlign: TextAlign.left,
                   children: <TextSpan>[
-                    const TextSpan(
-                      text: '──────────\n',
-                      style: TextStyle(color: Colors.grey),
+                    TextSpan(
+                      text: '$separator\n',
+                      style: const TextStyle(color: Colors.grey),
                     ),
                     TextSpan(
-                      text: '${moneyVal.toString().toCurrency()}\n',
+                      text: row('money'),
                       style: const TextStyle(color: Colors.white),
                     ),
                     TextSpan(
-                      text: '${shintakuVal.toString().toCurrency()}\n',
+                      text: row('shintaku'),
                       style: const TextStyle(color: Colors.yellowAccent),
                     ),
                     TextSpan(
-                      text: '${goldVal.toString().toCurrency()}\n',
+                      text: row('gold'),
                       style: const TextStyle(color: Colors.lightBlueAccent),
                     ),
                     TextSpan(
-                      text: '${stockVal.toString().toCurrency()}\n',
+                      text: row('stock'),
                       style: const TextStyle(color: Colors.greenAccent),
                     ),
                     TextSpan(
-                      text: '${insuranceVal.toString().toCurrency()}\n',
+                      text: row('insurance'),
                       style: const TextStyle(color: Color(0xFFEA80FC)),
                     ),
                     TextSpan(
-                      text: '${nenkinVal.toString().toCurrency()}\n',
+                      text: row('nenkin'),
                       style: const TextStyle(color: Colors.orangeAccent),
                     ),
-                    const TextSpan(
-                      text: '──────────\n',
-                      style: TextStyle(color: Colors.grey),
+                    TextSpan(
+                      text: '$separator\n',
+                      style: const TextStyle(color: Colors.grey),
                     ),
                     TextSpan(
-                      text: total.toString().toCurrency(),
+                      text: '${pad(rowWidth - textWidth(totalText))}$totalText',
                       style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -625,16 +696,12 @@ class _YearlyAssetsLineChartAlertState extends ConsumerState<YearlyAssetsLineCha
     for (int idx = 0; idx < _dateList.length; idx++) {
       final DateTime d = DateTime.parse(_dateList[idx]);
 
-      final int insurancePassedMonths =
-          AssetsCalc.countPaidDatesUpTo(paidDates: insurancePaidDates, date: d) + 102;
+      final int insurancePassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: insurancePaidDates, date: d) + 102;
       final int insuranceSum = insurancePassedMonths * 55880;
 
-      final int nenkinKikinPassedMonths =
-          AssetsCalc.countPaidDatesUpTo(paidDates: nenkinKikinPaidDates, date: d) + 32;
+      final int nenkinKikinPassedMonths = AssetsCalc.countPaidDatesUpTo(paidDates: nenkinKikinPaidDates, date: d) + 32;
       // 2026-06-15に国民年金基金解約のため、同日以降は0
-      final int nenkinKikinSum = d.isBefore(DateTime(2026, 6, 15))
-          ? nenkinKikinPassedMonths * 26625
-          : 0;
+      final int nenkinKikinSum = d.isBefore(DateTime(2026, 6, 15)) ? nenkinKikinPassedMonths * 26625 : 0;
 
       _insuranceFlspots.add(FlSpot(idx.toDouble(), insuranceSum.toDouble()));
       _nenkinFlspots.add(FlSpot(idx.toDouble(), nenkinKikinSum.toDouble()));
