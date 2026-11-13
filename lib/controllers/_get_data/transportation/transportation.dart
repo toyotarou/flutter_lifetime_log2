@@ -20,6 +20,9 @@ class TransportationState with _$TransportationState {
     @Default(<StationModel>[]) List<StationModel> stationList,
 
     @Default(<String, String>{}) Map<String, String> trainMap,
+
+    // 駅名 -> 路線番号リスト（flutter_train_boarding と同じく、重複駅の絞り込みをしない全駅から作る）
+    @Default(<String, List<String>>{}) Map<String, List<String>> stationNameTrainNumberMap,
   }) = _TransportationState;
 }
 
@@ -110,8 +113,13 @@ class Transportation extends _$Transportation {
 
       final Map<String, StationModel> stationMap1 = <String, StationModel>{};
 
+      final Map<String, List<String>> stationNameTrainNumberMap = <String, List<String>>{};
+
       for (final dynamic item in value2 as List<dynamic>) {
         final StationModel val = StationModel.fromJson(item as Map<String, dynamic>);
+
+        // 重複駅の絞り込み（下の continue）より前に入れる
+        stationNameTrainNumberMap.putIfAbsent(val.stationName, () => <String>[]).add(val.trainNumber);
 
         val.trainName = trainMap[val.trainNumber];
 
@@ -201,6 +209,7 @@ class Transportation extends _$Transportation {
         transportationMap: map,
         stationList: stationList,
         trainMap: trainMap,
+        stationNameTrainNumberMap: stationNameTrainNumberMap,
       );
     } catch (e) {
       utility.showError('予期せぬエラーが発生しました（transportation）', error: e);

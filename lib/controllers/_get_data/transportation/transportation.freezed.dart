@@ -22,6 +22,8 @@ mixin _$TransportationState {
       throw _privateConstructorUsedError;
   List<StationModel> get stationList => throw _privateConstructorUsedError;
   Map<String, String> get trainMap => throw _privateConstructorUsedError;
+  Map<String, List<String>> get stationNameTrainNumberMap =>
+      throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TransportationStateCopyWith<TransportationState> get copyWith =>
@@ -38,7 +40,8 @@ abstract class $TransportationStateCopyWith<$Res> {
       {List<TransportationModel> transportationList,
       Map<String, TransportationModel> transportationMap,
       List<StationModel> stationList,
-      Map<String, String> trainMap});
+      Map<String, String> trainMap,
+      Map<String, List<String>> stationNameTrainNumberMap});
 }
 
 /// @nodoc
@@ -58,6 +61,7 @@ class _$TransportationStateCopyWithImpl<$Res, $Val extends TransportationState>
     Object? transportationMap = null,
     Object? stationList = null,
     Object? trainMap = null,
+    Object? stationNameTrainNumberMap = null,
   }) {
     return _then(_value.copyWith(
       transportationList: null == transportationList
@@ -76,6 +80,10 @@ class _$TransportationStateCopyWithImpl<$Res, $Val extends TransportationState>
           ? _value.trainMap
           : trainMap // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
+      stationNameTrainNumberMap: null == stationNameTrainNumberMap
+          ? _value.stationNameTrainNumberMap
+          : stationNameTrainNumberMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
     ) as $Val);
   }
 }
@@ -92,7 +100,8 @@ abstract class _$$TransportationStateImplCopyWith<$Res>
       {List<TransportationModel> transportationList,
       Map<String, TransportationModel> transportationMap,
       List<StationModel> stationList,
-      Map<String, String> trainMap});
+      Map<String, String> trainMap,
+      Map<String, List<String>> stationNameTrainNumberMap});
 }
 
 /// @nodoc
@@ -110,6 +119,7 @@ class __$$TransportationStateImplCopyWithImpl<$Res>
     Object? transportationMap = null,
     Object? stationList = null,
     Object? trainMap = null,
+    Object? stationNameTrainNumberMap = null,
   }) {
     return _then(_$TransportationStateImpl(
       transportationList: null == transportationList
@@ -128,6 +138,10 @@ class __$$TransportationStateImplCopyWithImpl<$Res>
           ? _value._trainMap
           : trainMap // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
+      stationNameTrainNumberMap: null == stationNameTrainNumberMap
+          ? _value._stationNameTrainNumberMap
+          : stationNameTrainNumberMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
     ));
   }
 }
@@ -141,11 +155,14 @@ class _$TransportationStateImpl implements _TransportationState {
       final Map<String, TransportationModel> transportationMap =
           const <String, TransportationModel>{},
       final List<StationModel> stationList = const <StationModel>[],
-      final Map<String, String> trainMap = const <String, String>{}})
+      final Map<String, String> trainMap = const <String, String>{},
+      final Map<String, List<String>> stationNameTrainNumberMap =
+          const <String, List<String>>{}})
       : _transportationList = transportationList,
         _transportationMap = transportationMap,
         _stationList = stationList,
-        _trainMap = trainMap;
+        _trainMap = trainMap,
+        _stationNameTrainNumberMap = stationNameTrainNumberMap;
 
   final List<TransportationModel> _transportationList;
   @override
@@ -185,9 +202,19 @@ class _$TransportationStateImpl implements _TransportationState {
     return EqualUnmodifiableMapView(_trainMap);
   }
 
+  final Map<String, List<String>> _stationNameTrainNumberMap;
+  @override
+  @JsonKey()
+  Map<String, List<String>> get stationNameTrainNumberMap {
+    if (_stationNameTrainNumberMap is EqualUnmodifiableMapView)
+      return _stationNameTrainNumberMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_stationNameTrainNumberMap);
+  }
+
   @override
   String toString() {
-    return 'TransportationState(transportationList: $transportationList, transportationMap: $transportationMap, stationList: $stationList, trainMap: $trainMap)';
+    return 'TransportationState(transportationList: $transportationList, transportationMap: $transportationMap, stationList: $stationList, trainMap: $trainMap, stationNameTrainNumberMap: $stationNameTrainNumberMap)';
   }
 
   @override
@@ -201,7 +228,9 @@ class _$TransportationStateImpl implements _TransportationState {
                 .equals(other._transportationMap, _transportationMap) &&
             const DeepCollectionEquality()
                 .equals(other._stationList, _stationList) &&
-            const DeepCollectionEquality().equals(other._trainMap, _trainMap));
+            const DeepCollectionEquality().equals(other._trainMap, _trainMap) &&
+            const DeepCollectionEquality().equals(
+                other._stationNameTrainNumberMap, _stationNameTrainNumberMap));
   }
 
   @override
@@ -210,7 +239,8 @@ class _$TransportationStateImpl implements _TransportationState {
       const DeepCollectionEquality().hash(_transportationList),
       const DeepCollectionEquality().hash(_transportationMap),
       const DeepCollectionEquality().hash(_stationList),
-      const DeepCollectionEquality().hash(_trainMap));
+      const DeepCollectionEquality().hash(_trainMap),
+      const DeepCollectionEquality().hash(_stationNameTrainNumberMap));
 
   @JsonKey(ignore: true)
   @override
@@ -225,7 +255,8 @@ abstract class _TransportationState implements TransportationState {
       {final List<TransportationModel> transportationList,
       final Map<String, TransportationModel> transportationMap,
       final List<StationModel> stationList,
-      final Map<String, String> trainMap}) = _$TransportationStateImpl;
+      final Map<String, String> trainMap,
+      final Map<String, List<String>> stationNameTrainNumberMap}) = _$TransportationStateImpl;
 
   @override
   List<TransportationModel> get transportationList;
@@ -235,6 +266,8 @@ abstract class _TransportationState implements TransportationState {
   List<StationModel> get stationList;
   @override
   Map<String, String> get trainMap;
+  @override
+  Map<String, List<String>> get stationNameTrainNumberMap;
   @override
   @JsonKey(ignore: true)
   _$$TransportationStateImplCopyWith<_$TransportationStateImpl> get copyWith =>

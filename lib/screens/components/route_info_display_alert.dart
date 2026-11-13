@@ -18,9 +18,10 @@ class RouteInfoDisplayAlert extends ConsumerStatefulWidget {
 
 class _RouteInfoDisplayAlertState extends ConsumerState<RouteInfoDisplayAlert>
     with ControllersMixin<RouteInfoDisplayAlert> {
-  // 駅名 -> 路線番号 のMapは駅リストが変わった時のみ作り直す
-  List<StationModel>? _stationTrainMapSource;
-  Map<String, Set<String>> _stationTrainMap = <String, Set<String>>{};
+  // 駅名 -> 路線番号 は TransportationState.stationNameTrainNumberMap を使うため不要になった
+  // （keepStationList は重複駅の絞り込み後のリストなので、駅によっては路線が拾えず「バス」になっていた）
+  // List<StationModel>? _stationTrainMapSource;
+  // Map<String, Set<String>> _stationTrainMap = <String, Set<String>>{};
 
   ///
   @override
@@ -53,17 +54,20 @@ class _RouteInfoDisplayAlertState extends ConsumerState<RouteInfoDisplayAlert>
   Widget _buildRouteList(List<SpotDataModel> spots) {
     final AppParamState state = appParamState;
 
-    if (_stationTrainMapSource != state.keepStationList) {
-      _stationTrainMapSource = state.keepStationList;
+    // if (_stationTrainMapSource != state.keepStationList) {
+    //   _stationTrainMapSource = state.keepStationList;
+    //
+    //   final Map<String, Set<String>> map = <String, Set<String>>{};
+    //   for (final StationModel station in state.keepStationList) {
+    //     map.putIfAbsent(station.stationName, () => <String>{}).add(station.trainNumber);
+    //   }
+    //   _stationTrainMap = map;
+    // }
+    //
+    // final Map<String, Set<String>> stationTrainMap = _stationTrainMap;
 
-      final Map<String, Set<String>> map = <String, Set<String>>{};
-      for (final StationModel station in state.keepStationList) {
-        map.putIfAbsent(station.stationName, () => <String>{}).add(station.trainNumber);
-      }
-      _stationTrainMap = map;
-    }
-
-    final Map<String, Set<String>> stationTrainMap = _stationTrainMap;
+    // flutter_train_boarding と同じく、重複駅の絞り込みをしない全駅から作った 駅名 -> 路線番号リスト を使う
+    final Map<String, List<String>> stationTrainMap = transportationState.stationNameTrainNumberMap;
 
     final List<Widget> list = <Widget>[];
 
@@ -83,9 +87,14 @@ class _RouteInfoDisplayAlertState extends ConsumerState<RouteInfoDisplayAlert>
         final SpotDataModel spotA = spots[i];
         final SpotDataModel spotB = spots[i + 1];
 
-        final Set<String> aTrainNumbers = stationTrainMap[spotA.name] ?? <String>{};
-        final Set<String> bTrainNumbers = stationTrainMap[spotB.name] ?? <String>{};
+        // final Set<String> aTrainNumbers = stationTrainMap[spotA.name] ?? <String>{};
+        // final Set<String> bTrainNumbers = stationTrainMap[spotB.name] ?? <String>{};
+        final Set<String> aTrainNumbers = (stationTrainMap[spotA.name] ?? <String>[]).toSet();
+        final Set<String> bTrainNumbers = (stationTrainMap[spotB.name] ?? <String>[]).toSet();
         final List<String> commonTrainNumbers = aTrainNumbers.intersection(bTrainNumbers).toList();
+
+        // flutter_train_boarding と同じ、駅データでは路線が拾えない区間の固定名
+        final String? specialRouteName = _getSpecialRouteName(spotA.name, spotB.name);
 
         list.add(
           Row(
@@ -99,7 +108,9 @@ class _RouteInfoDisplayAlertState extends ConsumerState<RouteInfoDisplayAlert>
               ),
               const SizedBox(width: 20),
               Expanded(
-                child: commonTrainNumbers.isEmpty
+                child: (specialRouteName != null)
+                    ? Text(specialRouteName)
+                    : commonTrainNumbers.isEmpty
                     ? const Text('バス')
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,5 +136,22 @@ class _RouteInfoDisplayAlertState extends ConsumerState<RouteInfoDisplayAlert>
         ),
       ],
     );
+  }
+
+  ///
+  /// flutter_train_boarding（polyline_station_info_alert.dart の displayPolylineTrain）と同じ固定区間
+  String? _getSpecialRouteName(String a, String b) {
+    bool isPair(String x, String y) => (a == x && b == y) || (a == y && b == x);
+
+    if (isPair('上野', '長野')) {
+      return '北陸新幹線';
+    }
+    if (isPair('東京', '新大阪')) {
+      return '東海道新幹線';
+    }
+    if (isPair('宮島口', '宮島') || isPair('宮島', '広島港')) {
+      return '西日本宮島フェリー';
+    }
+    return null;
   }
 }
